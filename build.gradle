@@ -1,0 +1,114 @@
+plugins {
+	id 'fabric-loom' version '0.13-SNAPSHOT'
+	id 'maven-publish'
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+archivesBaseName = project.archives_base_name
+version = project.mod_version
+group = project.maven_group
+
+// Repo for CT intermediary mappings
+repositories {
+	maven { url 'https://maven.nucleoid.xyz' }
+	maven { url "https://maven.rizecookey.net/" }
+	maven { url "https://maven.shedaniel.me/" }
+	maven { url "https://maven.terraformersmc.com/releases/" }
+	maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+	maven { url 'https://github.com/ricksouth/serilum-forge-maven/raw/maven/' }
+}
+
+dependencies {
+	//to change the versions see the gradle.properties file
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings loom.officialMojangMappings()
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+	//modApiMapped('com.combatreforged.factory:factory-api:0.1.13-full')
+	//modApiMapped('com.combatreforged.factory:factory-builder:0.1.13-1.16_combat-6')
+
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+	//include(modApi("eu.pb4:hologram-api:0.1.0") { exclude(group: "net.fabricmc.fabric-api") })
+	//include(modApi("eu.pb4:sidebar-api:0.0.2") { exclude(group: "net.fabricmc.fabric-api") })
+
+	modApi('com.natamus.collective:collective-fabric:1.16.5-5.50')
+	include(modApi('xyz.nucleoid:fantasy:0.4.0') {exclude(group: "net.fabricmc.fabric-api") })
+	include(modApi('eu.pb4:sgui:0.5.0')  { exclude(group: "net.fabricmc.fabric-api") })
+	include(modApi('me.sargunvohra.mcmods:autoconfig1u:3.3.1') { exclude(group: "net.fabricmc.fabric-api") })
+	modApi('me.lucko:fabric-permissions-api:0.2-SNAPSHOT')
+
+	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
+	// You may need to force-disable transitiveness on them.
+}
+
+// Custom Manifest and Intermediary mappings declaration
+loom {
+	customMinecraftManifest = "https://gist.githubusercontent.com/rizecookey/4c6142baaccc3875f9b227fe22f2ace5/raw/c8ed74b19f7a5315813c9d4b199798b692a8f359/1.16_combat-6.json"
+	intermediaryUrl = "https://maven.rizecookey.net/net/fabricmc/intermediary/%1\$s/intermediary-%1\$s-v2.jar"
+}
+
+processResources {
+	inputs.property "version", project.version
+	filteringCharset "UTF-8"
+
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
+}
+
+// ensure that the encoding is set to UTF-8, no matter what the system default is
+// this fixes some edge cases with special characters not displaying correctly
+// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+def targetJavaVersion = 17
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = "UTF-8"
+	if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+		it.options.release = targetJavaVersion
+	}
+}
+
+// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+// if it is present.
+// If you remove this task, sources will not be generated.
+task sourcesJar(type: Jar, dependsOn: classes) {
+	classifier = "sources"
+	from sourceSets.main.allSource
+}
+
+java {
+	def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+	if (JavaVersion.current() < javaVersion) {
+		toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+	}
+	archivesBaseName = project.archives_base_name
+}
+
+jar {
+	from("LICENSE") {
+		rename { "${it}_${project.archivesBaseName}" }
+	}
+}
+
+// configure the maven publication
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			// add all the jars that should be included when publishing to maven
+			artifact(remapJar) {
+				builtBy remapJar
+			}
+			artifact(sourcesJar) {
+				builtBy remapSourcesJar
+			}
+		}
+	}
+
+	// select the repositories you want to publish to
+	repositories {
+		// uncomment to publish to the local maven
+		// mavenLocal()
+	}
+}
