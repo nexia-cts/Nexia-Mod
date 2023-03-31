@@ -25,7 +25,7 @@ public class RankCommand {
         );
     }
 
-    public static int give(CommandContext<CommandSourceStack> context, ServerPlayer player, String rank) throws CommandSyntaxException {
+    public static int give(CommandContext<CommandSourceStack> context, ServerPlayer player, String rank) {
         CommandSourceStack executer = context.getSource();
 
         for(int i = 0; i < 8; i++){

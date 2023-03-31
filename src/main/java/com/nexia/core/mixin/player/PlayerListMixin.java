@@ -40,34 +40,34 @@ public abstract class PlayerListMixin {
         com.nexia.ffa.utilities.player.PlayerDataManager.addPlayerData(player);
         com.nexia.minigames.games.duels.util.player.PlayerDataManager.addPlayerData(player);
         if(player.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) <= 1) {
-            if(Main.config.serverFirstJoinCommands.length >= 2 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.serverFirstJoinCommands, null)){
-                for(int i = 0; i < Main.config.serverFirstJoinCommands.length; i++){
-                    PlayerUtil.executeServerCommand(Main.config.serverFirstJoinCommands[i], player);
+            if(Main.config.events.serverFirstJoinCommands.length >= 2 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.serverFirstJoinCommands, null)){
+                for(int i = 0; i < Main.config.events.serverFirstJoinCommands.length; i++){
+                    PlayerUtil.executeServerCommand(Main.config.events.serverFirstJoinCommands[i], player);
                 }
-            } else if(Main.config.serverFirstJoinCommands.length <= 1 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.serverFirstJoinCommands, null)){
-                PlayerUtil.executeServerCommand(Main.config.serverFirstJoinCommands[0], player);
+            } else if(Main.config.events.serverFirstJoinCommands.length <= 1 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.serverFirstJoinCommands, null)){
+                PlayerUtil.executeServerCommand(Main.config.events.serverFirstJoinCommands[0], player);
             }
-            if(Main.config.playerFirstJoinCommands.length >= 2 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.playerFirstJoinCommands, null)){
-                for(int i = 0; i < Main.config.playerFirstJoinCommands.length; i++){
-                    PlayerUtil.executePlayerCommand(player, Main.config.playerFirstJoinCommands[i]);
+            if(Main.config.events.playerFirstJoinCommands.length >= 2 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.playerFirstJoinCommands, null)){
+                for(int i = 0; i < Main.config.events.playerFirstJoinCommands.length; i++){
+                    PlayerUtil.executePlayerCommand(player, Main.config.events.playerFirstJoinCommands[i]);
                 }
-            } else if(Main.config.playerFirstJoinCommands.length <= 1 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.playerFirstJoinCommands, null)){
-                PlayerUtil.executePlayerCommand(player, Main.config.playerFirstJoinCommands[0]);
+            } else if(Main.config.events.playerFirstJoinCommands.length <= 1 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.playerFirstJoinCommands, null)){
+                PlayerUtil.executePlayerCommand(player, Main.config.events.playerFirstJoinCommands[0]);
             }
         }
-        if(Main.config.serverJoinCommands.length >= 2 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.serverJoinCommands, null)){
-            for(int i = 0; i < Main.config.serverJoinCommands.length; i++){
-                PlayerUtil.executeServerCommand(Main.config.serverJoinCommands[i], player);
+        if(Main.config.events.serverJoinCommands.length >= 2 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.serverJoinCommands, null)){
+            for(int i = 0; i < Main.config.events.serverJoinCommands.length; i++){
+                PlayerUtil.executeServerCommand(Main.config.events.serverJoinCommands[i], player);
             }
-        } else if(Main.config.serverJoinCommands.length <= 1 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.serverJoinCommands, null)){
-            PlayerUtil.executeServerCommand(Main.config.serverJoinCommands[0], player);
+        } else if(Main.config.events.serverJoinCommands.length <= 1 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.serverJoinCommands, null)){
+            PlayerUtil.executeServerCommand(Main.config.events.serverJoinCommands[0], player);
         }
-        if(Main.config.playerJoinCommands.length >= 2 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.serverJoinCommands, null)){
-            for(int i = 0; i < Main.config.playerJoinCommands.length; i++){
-                PlayerUtil.executePlayerCommand(player, Main.config.playerJoinCommands[i]);
+        if(Main.config.events.playerJoinCommands.length >= 2 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.serverJoinCommands, null)){
+            for(int i = 0; i < Main.config.events.playerJoinCommands.length; i++){
+                PlayerUtil.executePlayerCommand(player, Main.config.events.playerJoinCommands[i]);
             }
-        } else if(Main.config.playerJoinCommands.length <= 1 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.playerJoinCommands, null)){
-            PlayerUtil.executePlayerCommand(player, Main.config.playerJoinCommands[0]);
+        } else if(Main.config.events.playerJoinCommands.length <= 1 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.playerJoinCommands, null)){
+            PlayerUtil.executePlayerCommand(player, Main.config.events.playerJoinCommands[0]);
         }
     }
 
@@ -88,19 +88,19 @@ public abstract class PlayerListMixin {
     @Inject(at = @At("HEAD"), method = "remove")
     private void removeHead(ServerPlayer player, CallbackInfo ci) {
         LobbyUtil.leaveAllGames(player, false);
-        if(Main.config.serverLeaveCommands.length >= 2 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.serverLeaveCommands, null)){
-            for(int i = 0; i < Main.config.serverLeaveCommands.length; i++){
-                PlayerUtil.executeServerCommand(Main.config.serverLeaveCommands[i], player);
+        if(Main.config.events.serverLeaveCommands.length >= 2 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.serverLeaveCommands, null)){
+            for(int i = 0; i < Main.config.events.serverLeaveCommands.length; i++){
+                PlayerUtil.executeServerCommand(Main.config.events.serverLeaveCommands[i], player);
             }
-        } else if(Main.config.serverFirstJoinCommands.length <= 1 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.serverFirstJoinCommands, null)){
-            PlayerUtil.executeServerCommand(Main.config.serverLeaveCommands[0], player);
+        } else if(Main.config.events.serverFirstJoinCommands.length <= 1 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.serverFirstJoinCommands, null)){
+            PlayerUtil.executeServerCommand(Main.config.events.serverLeaveCommands[0], player);
         }
-        if(Main.config.playerLeaveCommands.length >= 2 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.playerLeaveCommands, null)){
-            for(int i = 0; i < Main.config.playerLeaveCommands.length; i++){
-                PlayerUtil.executePlayerCommand(player, Main.config.playerLeaveCommands[i]);
+        if(Main.config.events.playerLeaveCommands.length >= 2 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.playerLeaveCommands, null)){
+            for(int i = 0; i < Main.config.events.playerLeaveCommands.length; i++){
+                PlayerUtil.executePlayerCommand(player, Main.config.events.playerLeaveCommands[i]);
             }
-        } else if(Main.config.playerLeaveCommands.length <= 1 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.playerLeaveCommands, null)){
-            PlayerUtil.executePlayerCommand(player, Main.config.playerLeaveCommands[0]);
+        } else if(Main.config.events.playerLeaveCommands.length <= 1 && !ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.playerLeaveCommands, null)){
+            PlayerUtil.executePlayerCommand(player, Main.config.events.playerLeaveCommands[0]);
         }
     }
 
@@ -127,7 +127,7 @@ public abstract class PlayerListMixin {
             Component component = args.get(0);
             ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayer(args.get(2));
 
-            if(Main.config.statusMessages){
+            if(Main.config.events.statusMessages){
                 String key = ((TranslatableComponent) component).getKey();
                 if (
                         key.contains("multiplayer.player.join")
@@ -139,7 +139,6 @@ public abstract class PlayerListMixin {
                 ) {
                     args.set(0, leaveFormat(component, player));
                 }
-
             }
 
             if(!PlayerMutes.muted(player)){
@@ -153,8 +152,8 @@ public abstract class PlayerListMixin {
         try {
             String name = String.valueOf(joinPlayer.getScoreboardName());
             if(ChatFormat.hasWhiteSpacesOrSpaces(null, name)) { return original; }
-            if(joinPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) < 1) { return ChatFormat.format(Main.config.firstJoinMessage.replaceAll("%player%", name)); }
-            return ChatFormat.format(Main.config.joinMessage.replaceAll("%player%", name));
+            if(joinPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) < 1) { return ChatFormat.format(Main.config.events.firstJoinMessage.replaceAll("%player%", name)); }
+            return ChatFormat.format(Main.config.events.joinMessage.replaceAll("%player%", name));
         } catch (Exception var8) {
             return original;
         }
@@ -164,7 +163,7 @@ public abstract class PlayerListMixin {
         try {
             String name = String.valueOf(leavePlayer.getScoreboardName());
             if(ChatFormat.hasWhiteSpacesOrSpaces(null, name)) { return original; }
-            return ChatFormat.format(Main.config.leaveMessage.replaceAll("%player%", name));
+            return ChatFormat.format(Main.config.events.leaveMessage.replaceAll("%player%", name));
         } catch (Exception var8) {
             return original;
         }

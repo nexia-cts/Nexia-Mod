@@ -2,8 +2,7 @@ package com.nexia.core.mixin.item;
 
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.PlayGUI;
-import com.nexia.core.gui.RankGUI;
-import com.nexia.core.utilities.player.PlayerData;
+import com.nexia.core.gui.PrefixGUI;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -26,7 +25,7 @@ public class UseItemMixin {
             PlayGUI.openMainGUI((ServerPlayer) player);
         }
         if(player.getItemInHand(interactionHand).getDisplayName().getString().toLowerCase().contains("prefix selector") && gameMode == PlayerGameMode.LOBBY) {
-            RankGUI.openRankGUI((ServerPlayer) player);
+            PrefixGUI.openRankGUI((ServerPlayer) player);
         }
     }
 }

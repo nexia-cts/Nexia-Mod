@@ -1,4 +1,4 @@
-package com.nexia.core.commands.staff;
+package com.nexia.core.commands.staff.dev;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -8,7 +8,6 @@ import com.nexia.core.utilities.player.PlayerUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
-import java.util.Random;
 public class RandomCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
         dispatcher.register(Commands.literal("random")

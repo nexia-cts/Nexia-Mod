@@ -63,7 +63,7 @@ public class PlayGUI extends SimpleGui {
     private void setFFALayout(){
         this.setTitle(ffaTitle);
         ItemStack enchanted_sword = new ItemStack(Items.NETHERITE_SWORD, 1);
-        enchanted_sword.setHoverName(new TextComponent("§7§lClassic FFA"));
+        enchanted_sword.setHoverName(new TextComponent("§7§lClassic"));
         enchanted_sword.enchant(Enchantments.SHARPNESS, 1);
         enchanted_sword.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
         enchanted_sword.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
@@ -73,7 +73,6 @@ public class PlayGUI extends SimpleGui {
         unknown.enchant(Enchantments.SHARPNESS, 1);
         unknown.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
         unknown.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
-
 
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
@@ -125,8 +124,8 @@ public class PlayGUI extends SimpleGui {
         if(element != null && clickType != ClickType.MOUSE_DOUBLE_CLICK) {
             ItemStack itemStack = element.getItemStack();
             Component name = itemStack.getHoverName();
-            if(name.getString().equalsIgnoreCase("§7§lClassic FFA")){
-                LobbyUtil.sendGame(this.player, "normal ffa", true);
+            if(name.getString().equalsIgnoreCase("§7§lClassic")){
+                LobbyUtil.sendGame(this.player, "classic ffa", true);
                 this.close();
             }
             if(name.getString().equalsIgnoreCase("§7§lFFA")){

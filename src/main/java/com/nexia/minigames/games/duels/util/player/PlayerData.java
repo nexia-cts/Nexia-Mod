@@ -19,7 +19,6 @@ public class PlayerData {
 
     public boolean isDead;
 
-    public boolean isLeaving;
 
     public String inviteMap;
 
@@ -33,7 +32,6 @@ public class PlayerData {
         this.gameMode = DuelGameMode.LOBBY;
         this.invitingPlayer = null;
         this.isDead = false;
-        this.isLeaving = false;
         this.duelPlayer = null;
         this.inviteMap = "";
     }

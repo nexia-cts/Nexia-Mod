@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.duels;
 
-import com.nexia.core.Main;
+import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.NxFileUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
@@ -17,7 +17,7 @@ import net.minecraft.world.level.GameType;
 
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 
-public class DuelsGame {
+public class DuelsGame { //implements Runnable{
 
     public static final String duelsDirectory = NxFileUtil.addConfigDir("duels");
 
@@ -27,7 +27,6 @@ public class DuelsGame {
             return;
         }
         PlayerData data = PlayerDataManager.get(player);
-        data.isLeaving = true;
         data.inviting = false;
         data.inDuel = false;
         data.duelPlayer = null;
@@ -44,14 +43,16 @@ public class DuelsGame {
         DuelGameMode.UHC_QUEUE.clear();
         DuelGameMode.BOW_ONLY_QUEUE.clear();
         DuelGameMode.VANILLA_QUEUE.clear();
+        DuelGameMode.SHIELD_QUEUE.clear();
+        DuelGameMode.POT_QUEUE.clear();
+        DuelGameMode.NETH_POT_QUEUE.clear();
+        DuelGameMode.OG_VANILLA_QUEUE.clear();
+        DuelGameMode.SMP_QUEUE.clear();
 
         for(ServerLevel level : ServerTime.minecraftServer.getAllLevels()){
             String[] split = level.dimension().toString().replaceAll("]", "").split(":");
             if(split[1].toLowerCase().contains("duels") && !split[2].toLowerCase().contains("hub")){
-                //GamemodeHandler.deleteWorld(split[2]);
-                Main.server.sendMessage(new TextComponent(split[0]), Util.NIL_UUID);
-                Main.server.sendMessage(new TextComponent(split[1]), Util.NIL_UUID);
-                Main.server.sendMessage(new TextComponent(split[2]), Util.NIL_UUID);
+                GamemodeHandler.deleteWorld(split[2]);
             }
         }
     }
@@ -88,39 +89,41 @@ public class DuelsGame {
             PlayerData victimData = PlayerDataManager.get(victim);
             PlayerData attackerData = PlayerDataManager.get(attacker);
 
-            if((victimData.inDuel && attackerData.inDuel) && (victimData.duelPlayer.getStringUUID().equalsIgnoreCase(attacker.getStringUUID())) && attackerData.duelPlayer.getStringUUID().equalsIgnoreCase(victim.getStringUUID())){
+            if((victimData.inDuel && attackerData.inDuel) && (victimData.duelPlayer.getStringUUID().equalsIgnoreCase(attacker.getStringUUID())) && attackerData.duelPlayer.getStringUUID().equalsIgnoreCase(victim.getStringUUID())) {
                 ServerLevel duelLevel = attacker.getLevel();
 
-                if(!victimData.isLeaving){
-                    victim.teleportTo(DuelsSpawn.duelWorld, DuelsSpawn.spawn.x, DuelsSpawn.spawn.y, DuelsSpawn.spawn.z, DuelsSpawn.spawn.yaw, DuelsSpawn.spawn.pitch);
-                    victim.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
-                }
-                victimData.isLeaving = false;
                 victimData.inviting = false;
                 victimData.inDuel = false;
                 victimData.duelPlayer = null;
                 removeQueue(victim, victimData.gameMode.id, true);
                 victimData.gameMode = DuelGameMode.LOBBY;
 
-                if(!attackerData.isLeaving) {
-                    attacker.teleportTo(DuelsSpawn.duelWorld, DuelsSpawn.spawn.x, DuelsSpawn.spawn.y, DuelsSpawn.spawn.z, DuelsSpawn.spawn.yaw, DuelsSpawn.spawn.pitch);
-                    attacker.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
-                }
-                attackerData.isLeaving = false;
                 attackerData.inviting = false;
                 attackerData.inDuel = false;
                 attackerData.duelPlayer = null;
-                removeQueue(attacker, attackerData.gameMode.id, true);
                 attackerData.gameMode = DuelGameMode.LOBBY;
 
                 attackerData.savedData.wins++;
                 victimData.savedData.loss++;
 
+                victim.setGameMode(GameType.SPECTATOR);
+                victim.teleportTo(attacker.getX(), attacker.getY(), attacker.getZ());
+
                 attacker.sendMessage(ChatFormat.format("{b2}{} {b1}has won the duel!", attacker.getScoreboardName()), Util.NIL_UUID);
                 victim.sendMessage(ChatFormat.format("{b2}{} {b1}has won the duel!", attacker.getScoreboardName()), Util.NIL_UUID);
 
+                attacker.teleportTo(DuelsSpawn.duelWorld, DuelsSpawn.spawn.x, DuelsSpawn.spawn.y, DuelsSpawn.spawn.z, DuelsSpawn.spawn.yaw, DuelsSpawn.spawn.pitch);
+                attacker.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
+
+                victim.teleportTo(DuelsSpawn.duelWorld, DuelsSpawn.spawn.x, DuelsSpawn.spawn.y, DuelsSpawn.spawn.z, DuelsSpawn.spawn.yaw, DuelsSpawn.spawn.pitch);
+                victim.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
+
                 PlayerUtil.resetHealthStatus(attacker);
                 PlayerUtil.resetHealthStatus(victim);
+
+                // Fix command bug (/duel & /queue being red indicating you can't use them, but you actually still can)
+                LobbyUtil.sendGame(victim, "duels", false);
+                LobbyUtil.sendGame(attacker, "duels", false);
 
                 attacker.inventory.clearContent();
                 victim.inventory.clearContent();
@@ -139,46 +142,47 @@ public class DuelsGame {
             if ((victimData.inDuel && attackerData.inDuel) && (victimData.duelPlayer.getStringUUID().equalsIgnoreCase(attacker.getStringUUID())) && attackerData.duelPlayer.getStringUUID().equalsIgnoreCase(victim.getStringUUID())) {
                 ServerLevel duelLevel = attacker.getLevel();
 
-                if(!victimData.isLeaving){
-                    victim.teleportTo(DuelsSpawn.duelWorld, DuelsSpawn.spawn.x, DuelsSpawn.spawn.y, DuelsSpawn.spawn.z, DuelsSpawn.spawn.yaw, DuelsSpawn.spawn.pitch);
-                    victim.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
-                }
-                victimData.isLeaving = false;
                 victimData.inviting = false;
                 victimData.inDuel = false;
                 victimData.duelPlayer = null;
                 removeQueue(victim, victimData.gameMode.id, true);
                 victimData.gameMode = DuelGameMode.LOBBY;
 
-                if(!attackerData.isLeaving){
-                    attacker.teleportTo(DuelsSpawn.duelWorld, DuelsSpawn.spawn.x, DuelsSpawn.spawn.y, DuelsSpawn.spawn.z, DuelsSpawn.spawn.yaw, DuelsSpawn.spawn.pitch);
-                    attacker.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
-                }
-                attackerData.isLeaving = false;
                 attackerData.inviting = false;
                 attackerData.inDuel = false;
                 attackerData.duelPlayer = null;
-                removeQueue(attacker, attackerData.gameMode.id, true);
                 attackerData.gameMode = DuelGameMode.LOBBY;
-
-                attacker.sendMessage(ChatFormat.format("{b2}{} {b1}has won the duel!", attacker.getScoreboardName()), Util.NIL_UUID);
-                victim.sendMessage(ChatFormat.format("{b2}{} {b1}has won the duel!", attacker.getScoreboardName()), Util.NIL_UUID);
 
                 attackerData.savedData.wins++;
                 victimData.savedData.loss++;
 
-                attacker.setGameMode(GameType.ADVENTURE);
-                victim.setGameMode(GameType.ADVENTURE);
+                victim.setGameMode(GameType.SPECTATOR);
+                victim.teleportTo(attacker.getX(), attacker.getY(), attacker.getZ());
 
-                attacker.inventory.clearContent();
-                victim.inventory.clearContent();
+                attacker.sendMessage(ChatFormat.format("{b2}{} {b1}has won the duel!", attacker.getScoreboardName()), Util.NIL_UUID);
+                victim.sendMessage(ChatFormat.format("{b2}{} {b1}has won the duel!", attacker.getScoreboardName()), Util.NIL_UUID);
+
+                attacker.teleportTo(DuelsSpawn.duelWorld, DuelsSpawn.spawn.x, DuelsSpawn.spawn.y, DuelsSpawn.spawn.z, DuelsSpawn.spawn.yaw, DuelsSpawn.spawn.pitch);
+                attacker.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
+
+                victim.teleportTo(DuelsSpawn.duelWorld, DuelsSpawn.spawn.x, DuelsSpawn.spawn.y, DuelsSpawn.spawn.z, DuelsSpawn.spawn.yaw, DuelsSpawn.spawn.pitch);
+                victim.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
 
                 PlayerUtil.resetHealthStatus(attacker);
                 PlayerUtil.resetHealthStatus(victim);
 
+                // Fix command bug (/duel & /queue being red indicating you can't use them, but you actually still can)
+                LobbyUtil.sendGame(victim, "duels", false);
+                LobbyUtil.sendGame(attacker, "duels", false);
+
+                attacker.inventory.clearContent();
+                victim.inventory.clearContent();
+
+                attacker.setGameMode(GameType.ADVENTURE);
+                victim.setGameMode(GameType.ADVENTURE);
+
                 GamemodeHandler.deleteWorld(duelLevel.dimension().toString().replaceAll("]", "").split(":")[2]);
             }
         }
-
     }
 }

@@ -2,6 +2,7 @@ package com.nexia.minigames.games.duels.gamemodes;
 
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
+import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
@@ -25,6 +26,7 @@ import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
+import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
 import java.util.UUID;
 
@@ -39,8 +41,28 @@ public class GamemodeHandler {
             return DuelGameMode.BOW_ONLY;
         }
 
+        if(gameMode.equalsIgnoreCase("shield")){
+            return DuelGameMode.SHIELD;
+        }
+
+        if(gameMode.equalsIgnoreCase("pot")){
+            return DuelGameMode.POT;
+        }
+
+        if(gameMode.equalsIgnoreCase("neth_pot")){
+            return DuelGameMode.NETH_POT;
+        }
+
+        if(gameMode.equalsIgnoreCase("og_vanilla")){
+            return DuelGameMode.OG_VANILLA;
+        }
+
         if(gameMode.equalsIgnoreCase("vanilla")){
             return DuelGameMode.VANILLA;
+        }
+
+        if(gameMode.equalsIgnoreCase("smp")){
+            return DuelGameMode.SMP;
         }
 
         if(gameMode.equalsIgnoreCase("sword_only")){
@@ -63,13 +85,15 @@ public class GamemodeHandler {
             return DuelGameMode.TRIDENT_ONLY;
         }
 
-        if(gameMode.equalsIgnoreCase("lobby") || gameMode.equalsIgnoreCase("leave")){
-            return DuelGameMode.LOBBY;
-        }
         return null;
     }
 
     public static void joinQueue(ServerPlayer player, String stringGameMode, boolean silent){
+        if(stringGameMode.equalsIgnoreCase("lobby") || stringGameMode.equalsIgnoreCase("leave")){
+            LobbyUtil.sendGame(player, "duels", false);
+            return;
+        }
+
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
 
         if(gameMode == null){
@@ -79,10 +103,7 @@ public class GamemodeHandler {
             return;
         }
 
-        if(gameMode == DuelGameMode.LOBBY){
-            LobbyUtil.sendGame(player, "duels", false);
-            return;
-        }
+
 
         if(!silent){
             player.sendMessage(ChatFormat.format("{b1}You have queued up for {b2}{}{b1}.", stringGameMode.toUpperCase()), Util.NIL_UUID);
@@ -126,6 +147,41 @@ public class GamemodeHandler {
             }
         }
 
+        if(gameMode == DuelGameMode.SHIELD){
+            DuelGameMode.SHIELD_QUEUE.add(player);
+            if(DuelGameMode.SHIELD_QUEUE.size() >= 2){
+                GamemodeHandler.joinGamemode(player, DuelGameMode.SHIELD_QUEUE.get(0), stringGameMode, null,false);
+            }
+        }
+
+        if(gameMode == DuelGameMode.POT){
+            DuelGameMode.POT_QUEUE.add(player);
+            if(DuelGameMode.POT_QUEUE.size() >= 2){
+                GamemodeHandler.joinGamemode(player, DuelGameMode.POT_QUEUE.get(0), stringGameMode, null,false);
+            }
+        }
+
+        if(gameMode == DuelGameMode.NETH_POT){
+            DuelGameMode.NETH_POT_QUEUE.add(player);
+            if(DuelGameMode.NETH_POT_QUEUE.size() >= 2){
+                GamemodeHandler.joinGamemode(player, DuelGameMode.NETH_POT_QUEUE.get(0), stringGameMode, null,false);
+            }
+        }
+
+        if(gameMode == DuelGameMode.OG_VANILLA){
+            DuelGameMode.OG_VANILLA_QUEUE.add(player);
+            if(DuelGameMode.OG_VANILLA_QUEUE.size() >= 2){
+                GamemodeHandler.joinGamemode(player, DuelGameMode.OG_VANILLA_QUEUE.get(0), stringGameMode, null,false);
+            }
+        }
+
+        if(gameMode == DuelGameMode.SMP){
+            DuelGameMode.SMP_QUEUE.add(player);
+            if(DuelGameMode.SMP_QUEUE.size() >= 2){
+                GamemodeHandler.joinGamemode(player, DuelGameMode.SMP_QUEUE.get(0), stringGameMode, null,false);
+            }
+        }
+
         if(gameMode == DuelGameMode.VANILLA){
             DuelGameMode.VANILLA_QUEUE.add(player);
             if(DuelGameMode.VANILLA_QUEUE.size() >= 2){
@@ -148,50 +204,85 @@ public class GamemodeHandler {
         }
     }
 
-    public static void removeQueue(ServerPlayer player, String stringGameMode, boolean silent){
-        DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
-        if(gameMode == null){
-            if(!silent){
-                player.sendMessage(ChatFormat.formatFail("Invalid gamemode!"), Util.NIL_UUID);
+    public static void removeQueue(ServerPlayer player, @Nullable String stringGameMode, boolean silent){
+        if(stringGameMode != null) {
+            DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
+            if(gameMode == null){
+                if(!silent){
+                    player.sendMessage(ChatFormat.formatFail("Invalid gamemode!"), Util.NIL_UUID);
+                }
+                return;
             }
-            return;
-        }
+            if(gameMode == DuelGameMode.AXE){
+                DuelGameMode.AXE_QUEUE.remove(player);
+            }
 
-        if(!silent){
-            player.sendMessage(ChatFormat.format("{b1}You have left the queue for {b2}{}{b1}.", stringGameMode.toUpperCase()), Util.NIL_UUID);
-        }
+            if(gameMode == DuelGameMode.BOW_ONLY) {
+                DuelGameMode.BOW_ONLY_QUEUE.remove(player);
+            }
 
-        if(gameMode == DuelGameMode.AXE){
+            if(gameMode == DuelGameMode.SHIELD) {
+                DuelGameMode.SHIELD_QUEUE.remove(player);
+            }
+
+            if(gameMode == DuelGameMode.POT) {
+                DuelGameMode.POT_QUEUE.remove(player);
+            }
+
+            if(gameMode == DuelGameMode.NETH_POT) {
+                DuelGameMode.NETH_POT_QUEUE.remove(player);
+            }
+
+            if(gameMode == DuelGameMode.OG_VANILLA) {
+                DuelGameMode.OG_VANILLA_QUEUE.remove(player);
+            }
+
+            if(gameMode == DuelGameMode.SMP) {
+                DuelGameMode.SMP_QUEUE.remove(player);
+            }
+
+            if(gameMode == DuelGameMode.VANILLA) {
+                DuelGameMode.VANILLA_QUEUE.remove(player);
+            }
+
+            if(gameMode == DuelGameMode.SWORD_ONLY){
+                DuelGameMode.SWORD_ONLY_QUEUE.remove(player);
+            }
+
+            if(gameMode == DuelGameMode.FFA){
+                DuelGameMode.FFA_QUEUE.remove(player);
+            }
+
+            if(gameMode == DuelGameMode.UHC){
+                DuelGameMode.UHC_QUEUE.remove(player);
+            }
+
+            if(gameMode == DuelGameMode.TRIDENT_ONLY){
+                DuelGameMode.TRIDENT_ONLY_QUEUE.remove(player);
+            }
+
+            if(gameMode == DuelGameMode.HOE_ONLY){
+                DuelGameMode.HOE_ONLY_QUEUE.remove(player);
+            }
+            if(!silent){
+                player.sendMessage(ChatFormat.format("{b1}You have left the queue for {b2}{}{b1}.", stringGameMode.toUpperCase()), Util.NIL_UUID);
+            }
+        } else {
             DuelGameMode.AXE_QUEUE.remove(player);
-        }
-
-        if(gameMode == DuelGameMode.BOW_ONLY) {
             DuelGameMode.BOW_ONLY_QUEUE.remove(player);
-        }
-
-        if(gameMode == DuelGameMode.VANILLA) {
+            DuelGameMode.SHIELD_QUEUE.remove(player);
+            DuelGameMode.POT_QUEUE.remove(player);
+            DuelGameMode.NETH_POT_QUEUE.remove(player);
+            DuelGameMode.OG_VANILLA_QUEUE.remove(player);
+            DuelGameMode.SMP_QUEUE.remove(player);
             DuelGameMode.VANILLA_QUEUE.remove(player);
-        }
-
-        if(gameMode == DuelGameMode.SWORD_ONLY){
             DuelGameMode.SWORD_ONLY_QUEUE.remove(player);
-        }
-
-        if(gameMode == DuelGameMode.FFA){
             DuelGameMode.FFA_QUEUE.remove(player);
-        }
-
-        if(gameMode == DuelGameMode.UHC){
             DuelGameMode.UHC_QUEUE.remove(player);
-        }
-
-        if(gameMode == DuelGameMode.TRIDENT_ONLY){
             DuelGameMode.TRIDENT_ONLY_QUEUE.remove(player);
-        }
-
-        if(gameMode == DuelGameMode.HOE_ONLY){
             DuelGameMode.HOE_ONLY_QUEUE.remove(player);
         }
+
 
     }
 
@@ -214,6 +305,11 @@ public class GamemodeHandler {
             return;
         }
 
+        if(com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode != PlayerGameMode.DUELS){
+            executor.sendMessage(ChatFormat.formatFail("That player is not in duels!"), Util.NIL_UUID);
+            return;
+        }
+
         String map = selectedmap;
         if(map == null) {
             map = com.nexia.minigames.Main.config.duelsMaps.get(RandomUtil.randomInt(0, com.nexia.minigames.Main.config.duelsMaps.size()-1));
@@ -232,14 +328,15 @@ public class GamemodeHandler {
         if(playerData.inviting && playerData.invitingPlayer != null && playerData.invitingPlayer == executor && executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap)){
             GamemodeHandler.joinGamemode(executor, player, stringGameMode, map, true);
         } else if(!executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) && (playerData.invitingPlayer == null || !playerData.invitingPlayer.getStringUUID().equalsIgnoreCase(executor.getStringUUID())) && playerData.gameMode == DuelGameMode.LOBBY){
-            player.sendMessage(ChatFormat.format("{b1}Dueled {b2}{} {b1}on map {b2} {b1}with kit {}", player.getScoreboardName(), map, stringGameMode), Util.NIL_UUID);
+            executor.sendMessage(ChatFormat.format("{b1}Sending a duel request to {b2}{} {b1}on map {b2}{} {b1}with kit {b2}{}{b1}.", player.getScoreboardName(), map, stringGameMode), Util.NIL_UUID);
             TextComponent message = new TextComponent(ChatFormat.brandColor2 + executor.getScoreboardName() + ChatFormat.brandColor1 + " has challenged you to a duel!");
 
             TextComponent kit = new TextComponent(ChatFormat.brandColor2 + "Kit: " + ChatFormat.brandColor1 + stringGameMode.toUpperCase());
             TextComponent mapName = new TextComponent(ChatFormat.brandColor2 + "Map: " + ChatFormat.brandColor1 + map.toUpperCase());
 
             TextComponent yes = new TextComponent("§8[§aACCEPT§8]  ");
-            yes.withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/duel " + executor.getScoreboardName() + " " + stringGameMode + " " + selectedmap)));
+            String finalMap = map;
+            yes.withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/duel " + executor.getScoreboardName() + " " + stringGameMode + " " + finalMap)));
 
             TextComponent no = new TextComponent("§8[§cIGNORE§8]");
 
@@ -309,8 +406,8 @@ public class GamemodeHandler {
         player.setGameMode(GameType.SURVIVAL);
         invitor.setGameMode(GameType.SURVIVAL);
 
-        removeQueue(player, stringGameMode, true);
-        removeQueue(invitor, stringGameMode, true);
+        removeQueue(player, null, true);
+        removeQueue(invitor, null, true);
 
         /*
         InventoryUtil.setInventory(player, stringGameMode.toLowerCase(), "/duels", true);
@@ -343,11 +440,13 @@ public class GamemodeHandler {
                 .setGameRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS, false)
                 .setTimeOfDay(6000);
 
-        return ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", UUID.randomUUID().toString())).location(), config).asWorld();
+        return ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", UUID.randomUUID().toString().replaceAll("-", ""))).location(), config).asWorld();
     }
 
     public static void deleteWorld(String id) {
-        ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("duels", id), null).delete();
+        try {
+            ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", id)).location(), null).delete();
+        } catch(Exception ignored) { }
     }
 
 }

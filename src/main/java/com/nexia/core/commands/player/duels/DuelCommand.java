@@ -5,7 +5,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.minigames.Main;
@@ -26,7 +25,8 @@ public class DuelCommand {
                         com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException());
                         PlayerData playerData1 = PlayerDataManager.get(commandSourceStack.getPlayerOrException());
                         return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.DUELS;
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) {
+                    }
                     return false;
                 })
                 .then(Commands.argument("player", EntityArgument.player())

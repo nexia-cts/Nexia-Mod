@@ -20,6 +20,7 @@
     "entity.ThrownEnderpearlMixin",
     "entity.ThrownTridentMixin",
     "item.AxeItemMixin",
+    "item.EnderPearlItemMixin",
     "item.BlockItemMixin",
     "item.CompassItemMixin",
     "item.UseItemMixin",

@@ -1,4 +1,4 @@
-package com.nexia.core.commands.staff;
+package com.nexia.core.commands.staff.dev;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;

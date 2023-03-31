@@ -54,12 +54,17 @@ public class LobbyUtil {
 
     public static final String NO_DAMAGE_TAG = "no_damage";
 
+    public static final String NO_SATURATION_TAG = "no_saturation";
+
     public static String[] removedTags = {
             "in_bedwars",
             "ffa",
             "duels",
             "oitc",
-            "in_oitc_game"
+            "in_oitc_game",
+            NO_RANK_DISPLAY_TAG,
+            NO_SATURATION_TAG,
+            NO_FALL_DAMAGE_TAG
     };
 
     public static void leaveAllGames(ServerPlayer player, boolean tp) {
@@ -136,8 +141,9 @@ public class LobbyUtil {
 
             player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
             player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+            player.removeTag(LobbyUtil.NO_SATURATION_TAG);
         }
-        if(game.equalsIgnoreCase("normal ffa")){
+        if(game.equalsIgnoreCase("classic ffa")){
             player.addTag("ffa");
             FfaUtil.wasInSpawn.add(player.getUUID());
             PlayerDataManager.get(player).gameMode = PlayerGameMode.FFA;
@@ -155,9 +161,15 @@ public class LobbyUtil {
         if(game.equalsIgnoreCase("duels")){
             player.addTag("duels");
             PlayerDataManager.get(player).gameMode = PlayerGameMode.DUELS;
-            GamemodeHandler.removeQueue(player, com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).gameMode.toString(), true);
+            GamemodeHandler.removeQueue(player, null, true);
             DuelsGame.death(player, player.getLastDamageSource());
-            com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).gameMode = DuelGameMode.LOBBY;
+            com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
+            data.gameMode = DuelGameMode.LOBBY;
+            data.inDuel = false;
+            data.inviteMap = null;
+            data.isDead = false;
+            data.invitingPlayer = null;
+            data.inviting = false;
             player.teleportTo(DuelsSpawn.duelWorld, DuelsSpawn.spawn.x, DuelsSpawn.spawn.y, DuelsSpawn.spawn.z, DuelsSpawn.spawn.yaw, DuelsSpawn.spawn.pitch);
             player.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
             if(message){PlayerUtil.sendActionbar(player, "You have joined §f☯ §c§lDuels §7\uD83E\uDE93");}

@@ -17,8 +17,8 @@ import xyz.nucleoid.fantasy.Fantasy;
 
 public class ServerTime {
 
-    static int totalTickCount = -1;
-    static int totalSecondCount = -1;
+    public static int totalTickCount = -1;
+    public static int totalSecondCount = -1;
 
     public static MinecraftServer minecraftServer = null;
 

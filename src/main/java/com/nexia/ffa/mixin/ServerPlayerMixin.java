@@ -129,17 +129,5 @@ public class ServerPlayerMixin {
         if(attackerTag){
             calculateKill(attacker);
         }
-
-        /*
-        SavedPlayerData victimData = PlayerDataManager.get(victim).savedData;
-        SavedPlayerData attackerData = PlayerDataManager.get(attacker).savedData;
-
-        victimData.lastHitEntity = null;
-        attackerData.lastHitEntity = null;
-
-         */
-
-
-        //info.cancel();
     }
 }

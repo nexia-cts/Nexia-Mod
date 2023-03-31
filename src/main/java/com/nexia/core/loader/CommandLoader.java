@@ -1,13 +1,11 @@
 package com.nexia.core.loader;
 
-import com.mojang.brigadier.tree.CommandNode;
 import com.nexia.core.commands.player.*;
 import com.nexia.core.commands.player.duels.*;
-import com.nexia.core.commands.player.oitc.OitcCommand;
+import com.nexia.core.commands.player.oitc.*;
 import com.nexia.core.commands.staff.*;
-import com.nexia.core.utilities.misc.NxCmdUtil;
+import com.nexia.core.commands.staff.dev.*;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
-import net.minecraft.commands.CommandSourceStack;
 
 public class CommandLoader {
 
@@ -28,6 +26,9 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(RankCommand::register);
         CommandRegistrationCallback.EVENT.register(RoundPosCommand::register);
         CommandRegistrationCallback.EVENT.register(PingCommand::register);
+        CommandRegistrationCallback.EVENT.register(DuelsDeleteWorldsCommand::register);
+
+        CommandRegistrationCallback.EVENT.register(StaffPrefixCommand::register);
 
 
         CommandRegistrationCallback.EVENT.register(DuelCommand::register);

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class DuelGameMode {
     String id;
 
-    public static String[] duels = {"LEAVE", "AXE", "SWORD_ONLY", "TRIDENT_ONLY", "HOE_ONLY", "FFA", "BOW_ONLY", "UHC", "VANILLA"};
+    public static String[] duels = {"AXE", "SWORD_ONLY", "SHIELD", "POT", "NETH_POT", "OG_VANILLA", "SMP", "TRIDENT_ONLY", "HOE_ONLY", "FFA", "BOW_ONLY", "UHC", "VANILLA"};
 
     public static ArrayList<ServerPlayer> AXE_QUEUE = new ArrayList<>();
     public static final DuelGameMode AXE = new DuelGameMode("axe");
@@ -26,6 +26,21 @@ public class DuelGameMode {
 
     public static ArrayList<ServerPlayer> VANILLA_QUEUE = new ArrayList<>();
     public static final DuelGameMode VANILLA = new DuelGameMode("vanilla");
+
+    public static ArrayList<ServerPlayer> SHIELD_QUEUE = new ArrayList<>();
+    public static final DuelGameMode SHIELD = new DuelGameMode("shield");
+
+    public static ArrayList<ServerPlayer> NETH_POT_QUEUE = new ArrayList<>();
+    public static final DuelGameMode NETH_POT = new DuelGameMode("neth_pot");
+
+    public static ArrayList<ServerPlayer> POT_QUEUE = new ArrayList<>();
+    public static final DuelGameMode POT = new DuelGameMode("neth_pot");
+
+    public static ArrayList<ServerPlayer> OG_VANILLA_QUEUE = new ArrayList<>();
+    public static final DuelGameMode OG_VANILLA = new DuelGameMode("og_vanilla");
+
+    public static ArrayList<ServerPlayer> SMP_QUEUE = new ArrayList<>();
+    public static final DuelGameMode SMP = new DuelGameMode("smp");
 
     public static ArrayList<ServerPlayer> UHC_QUEUE = new ArrayList<>();
     public static final DuelGameMode UHC = new DuelGameMode("uhc");

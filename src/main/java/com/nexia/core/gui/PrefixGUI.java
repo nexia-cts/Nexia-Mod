@@ -16,9 +16,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 
-public class RankGUI extends SimpleGui {
+public class PrefixGUI extends SimpleGui {
     static final TextComponent title = new TextComponent("Prefix Menu");
-    public RankGUI(MenuType<?> type, ServerPlayer player, boolean includePlayer) {
+    public PrefixGUI(MenuType<?> type, ServerPlayer player, boolean includePlayer) {
         super(type, player, includePlayer);
     }
 
@@ -96,7 +96,7 @@ public class RankGUI extends SimpleGui {
         return super.click(index, clickType, action);
     }
     public static void openRankGUI(ServerPlayer player) {
-        RankGUI shop = new RankGUI(MenuType.GENERIC_9x4, player, false);
+        PrefixGUI shop = new PrefixGUI(MenuType.GENERIC_9x4, player, false);
         shop.setTitle(title);
         shop.setMainLayout(player);
         shop.open();

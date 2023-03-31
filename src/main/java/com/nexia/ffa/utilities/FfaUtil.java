@@ -29,7 +29,7 @@ public class FfaUtil {
     public static HashMap<Integer, ItemStack> invItems;
 
     public static boolean isFfaPlayer(Player player) {
-        return PlayerUtil.hasTag((ServerPlayer) player, "ffa") || com.nexia.core.utilities.player.PlayerDataManager.get((ServerPlayer) player).gameMode == PlayerGameMode.FFA;
+        return PlayerUtil.hasTag((ServerPlayer) player, "ffa") || com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.FFA;
     }
 
     public static void ffaSecond() {

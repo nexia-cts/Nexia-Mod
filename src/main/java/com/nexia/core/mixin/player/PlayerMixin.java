@@ -56,7 +56,7 @@ public abstract class PlayerMixin extends LivingEntity {
         this.getCooldowns().addCooldown(Items.SHIELD, (int)(f * 20.0F));
         this.stopUsingItem();
         this.level.broadcastEntityEvent(this, (byte)30);
-        if((this.getLastDamageSource() != null && this.getLastDamageSource().getEntity() instanceof Player attacker) && Main.config.betterShields){
+        if((this.getLastDamageSource() != null && this.getLastDamageSource().getEntity() instanceof Player attacker) && Main.config.enhancements.betterShields){
             //this.level.broadcastEntityEvent(attacker, (byte)30);
 
             SoundSource soundSource = null;

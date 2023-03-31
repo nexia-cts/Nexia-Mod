@@ -37,7 +37,7 @@ public abstract class FishingBobberEntity extends Entity {
         if (entity != null) {
             Vec3 vec3;
             vec3 = (new Vec3(entity.getX() - this.getX(), entity.getY() - this.getY(), entity.getZ() - this.getZ())).scale(0.1);
-            if(Main.config.modifiedRods) {
+            if(Main.config.enhancements.modifiedRods) {
                 vec3 = (new Vec3(entity.getX() - this.getX()/2, entity.getY() - this.getY()/2, entity.getZ() - this.getZ()/2)).scale(0.2);
             }
             this.hookedIn.setDeltaMovement(this.hookedIn.getDeltaMovement().add(vec3));

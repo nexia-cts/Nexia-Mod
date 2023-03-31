@@ -21,7 +21,7 @@ public class PlayCommand {
                 .then(Commands.literal("bw").executes(PlayCommand::playBedWars)));
         dispatcher.register(Commands.literal("join").executes(PlayCommand::openGUI)
                 .then(Commands.literal("ffa").executes(PlayCommand::openGUI)
-                        .then(Commands.literal("classic")).executes(PlayCommand::playNormalFFA))
+                        .then(Commands.literal("classic").executes(PlayCommand::playNormalFFA)))
                 .then(Commands.literal("bedwars").executes(PlayCommand::playBedWars))
                 .then(Commands.literal("duels").executes(PlayCommand::playDuels))
                 .then(Commands.literal("bw").executes(PlayCommand::playBedWars))
@@ -37,7 +37,7 @@ public class PlayCommand {
 
     private static int playNormalFFA(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        LobbyUtil.sendGame(player, "normal ffa", true);
+        LobbyUtil.sendGame(player, "classic ffa", true);
         return 1;
     }
 

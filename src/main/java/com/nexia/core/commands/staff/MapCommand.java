@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
@@ -22,6 +23,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.GameRules;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
+
+import java.util.stream.Stream;
 
 public class MapCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
