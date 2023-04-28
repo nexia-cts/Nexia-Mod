@@ -16,6 +16,7 @@ import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.minecraft.Util;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -56,6 +57,11 @@ public class GamemodeHandler {
         if(gameMode.equalsIgnoreCase("og_vanilla")){
             return DuelGameMode.OG_VANILLA;
         }
+
+        if(gameMode.equalsIgnoreCase("uhc_shield")){
+            return DuelGameMode.UHC_SHIELD;
+        }
+
 
         if(gameMode.equalsIgnoreCase("vanilla")){
             return DuelGameMode.VANILLA;
@@ -182,6 +188,13 @@ public class GamemodeHandler {
             }
         }
 
+        if(gameMode == DuelGameMode.UHC_SHIELD){
+            DuelGameMode.UHC_SHIELD_QUEUE.add(player);
+            if(DuelGameMode.UHC_SHIELD_QUEUE.size() >= 2){
+                GamemodeHandler.joinGamemode(player, DuelGameMode.UHC_SHIELD_QUEUE.get(0), stringGameMode, null,false);
+            }
+        }
+
         if(gameMode == DuelGameMode.VANILLA){
             DuelGameMode.VANILLA_QUEUE.add(player);
             if(DuelGameMode.VANILLA_QUEUE.size() >= 2){
@@ -241,6 +254,10 @@ public class GamemodeHandler {
                 DuelGameMode.SMP_QUEUE.remove(player);
             }
 
+            if(gameMode == DuelGameMode.UHC_SHIELD) {
+                DuelGameMode.UHC_SHIELD_QUEUE.remove(player);
+            }
+
             if(gameMode == DuelGameMode.VANILLA) {
                 DuelGameMode.VANILLA_QUEUE.remove(player);
             }
@@ -275,6 +292,7 @@ public class GamemodeHandler {
             DuelGameMode.NETH_POT_QUEUE.remove(player);
             DuelGameMode.OG_VANILLA_QUEUE.remove(player);
             DuelGameMode.SMP_QUEUE.remove(player);
+            DuelGameMode.UHC_SHIELD_QUEUE.remove(player);
             DuelGameMode.VANILLA_QUEUE.remove(player);
             DuelGameMode.SWORD_ONLY_QUEUE.remove(player);
             DuelGameMode.FFA_QUEUE.remove(player);
@@ -321,13 +339,25 @@ public class GamemodeHandler {
             }
         }
 
-        executorData.inviteMap = map;
-        executorData.inviting = true;
-        executorData.invitingPlayer = player;
+        if(!executorData.inviteMap.equalsIgnoreCase(map)) {
+            executorData.inviteMap = map;
+        }
 
-        if(playerData.inviting && playerData.invitingPlayer != null && playerData.invitingPlayer == executor && executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap)){
+        if(!executorData.inviteKit.equalsIgnoreCase(stringGameMode.toUpperCase())) {
+            executorData.inviteKit = stringGameMode.toUpperCase();
+        }
+
+        if(!executorData.inviting) {
+            executorData.inviting = true;
+        }
+
+        if(executorData.invitingPlayer != player) {
+            executorData.invitingPlayer = player;
+        }
+
+        if(playerData.inviting && playerData.invitingPlayer != null && playerData.invitingPlayer == executor && executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) && executorData.inviteKit.equalsIgnoreCase(playerData.inviteKit)){
             GamemodeHandler.joinGamemode(executor, player, stringGameMode, map, true);
-        } else if(!executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) && (playerData.invitingPlayer == null || !playerData.invitingPlayer.getStringUUID().equalsIgnoreCase(executor.getStringUUID())) && playerData.gameMode == DuelGameMode.LOBBY){
+        } else if((!executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) || !executorData.inviteKit.equalsIgnoreCase(playerData.inviteKit)) && (playerData.invitingPlayer == null || !playerData.invitingPlayer.getStringUUID().equalsIgnoreCase(executor.getStringUUID())) && playerData.gameMode == DuelGameMode.LOBBY){
             executor.sendMessage(ChatFormat.format("{b1}Sending a duel request to {b2}{} {b1}on map {b2}{} {b1}with kit {b2}{}{b1}.", player.getScoreboardName(), map, stringGameMode), Util.NIL_UUID);
             TextComponent message = new TextComponent(ChatFormat.brandColor2 + executor.getScoreboardName() + ChatFormat.brandColor1 + " has challenged you to a duel!");
 
@@ -336,7 +366,7 @@ public class GamemodeHandler {
 
             TextComponent yes = new TextComponent("§8[§aACCEPT§8]  ");
             String finalMap = map;
-            yes.withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/duel " + executor.getScoreboardName() + " " + stringGameMode + " " + finalMap)));
+            yes.withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/duel " + executor.getScoreboardName() + " " + stringGameMode + " " + finalMap)).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent("§cClick me"))));
 
             TextComponent no = new TextComponent("§8[§cIGNORE§8]");
 
@@ -367,12 +397,14 @@ public class GamemodeHandler {
         }
         String name = duelLevel.dimension().toString().replaceAll("]", "").split(":")[2];
 
-        Main.server.getCommands().performCommand(Main.server.createCommandSourceStack(), "/execute in duels:" + name + " run forceload add 0 0");
-        Main.server.getCommands().performCommand(Main.server.createCommandSourceStack(), "/execute in duels:" + name + " run " + DuelsGame.returnCommandMap(map));
-        Main.server.getCommands().performCommand(Main.server.createCommandSourceStack(), "/execute in duels:" + name + " run setblock 1 80 0 minecraft:redstone_block");
+        String mapid = "duels";
 
-        Main.server.getCommands().performCommand(Main.server.createCommandSourceStack(), "/execute in duels:" + name + " if block 0 80 0 minecraft:structure_block run setblock 0 80 0 air");
-        Main.server.getCommands().performCommand(Main.server.createCommandSourceStack(), "/execute in duels:" + name + " if block 1 80 0 minecraft:redstone_block run setblock 1 80 0 air");
+        Main.server.getCommands().performCommand(Main.server.createCommandSourceStack(), "/execute in " + mapid + ":" + name + " run forceload add 0 0");
+        Main.server.getCommands().performCommand(Main.server.createCommandSourceStack(), "/execute in " + mapid + ":" + name + " run " + DuelsGame.returnCommandMap(map));
+        Main.server.getCommands().performCommand(Main.server.createCommandSourceStack(), "/execute in " + mapid + ":" + name + " run setblock 1 80 0 minecraft:redstone_block");
+
+        Main.server.getCommands().performCommand(Main.server.createCommandSourceStack(), "/execute in " + mapid + ":" + name + " if block 0 80 0 minecraft:structure_block run setblock 0 80 0 air");
+        Main.server.getCommands().performCommand(Main.server.createCommandSourceStack(), "/execute in " + mapid + ":" + name + " if block 1 80 0 minecraft:redstone_block run setblock 1 80 0 air");
 
 
         PlayerData invitorData = PlayerDataManager.get(invitor);
@@ -387,7 +419,10 @@ public class GamemodeHandler {
         PlayerUtil.resetHealthStatus(player);
         PlayerUtil.resetHealthStatus(invitor);
 
-        player.teleportTo(duelLevel, 30, 85, 0, 0, 0);
+        float[] invitorpos = DuelsGame.returnPosMap(map, true);
+        float[] playerpos = DuelsGame.returnPosMap(map, false);
+
+        player.teleportTo(duelLevel, playerpos[0], playerpos[1], playerpos[2], playerpos[3], playerpos[4]);
         EntityPos playerPos = new EntityPos(0, 85, 0, 0, 0);
         player.setRespawnPosition(duelLevel.dimension(), playerPos.toBlockPos(), playerPos.yaw, true, false);
         playerData.inviting = false;
@@ -395,7 +430,7 @@ public class GamemodeHandler {
         playerData.inDuel = true;
         playerData.duelPlayer = invitor;
 
-        invitor.teleportTo(duelLevel, -30, 85, 0, 0, 0);
+        invitor.teleportTo(duelLevel, invitorpos[0], invitorpos[1], invitorpos[2], invitorpos[3], invitorpos[4]);
         EntityPos invitorPos = new EntityPos(0, 85, 0, 0, 0);
         invitor.setRespawnPosition(duelLevel.dimension(), invitorPos.toBlockPos(), invitorPos.yaw, true, false);
         invitorData.inviting = false;
@@ -440,13 +475,12 @@ public class GamemodeHandler {
                 .setGameRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS, false)
                 .setTimeOfDay(6000);
 
+        //return ServerTime.fantasy.openTemporaryWorld(config).asWorld();
         return ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", UUID.randomUUID().toString().replaceAll("-", ""))).location(), config).asWorld();
     }
 
     public static void deleteWorld(String id) {
-        try {
-            ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", id)).location(), null).delete();
-        } catch(Exception ignored) { }
+        RuntimeWorldHandle worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", id)).location(), null);
+        worldHandle.delete();
     }
-
 }

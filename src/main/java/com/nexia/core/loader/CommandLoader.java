@@ -26,8 +26,9 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(RankCommand::register);
         CommandRegistrationCallback.EVENT.register(RoundPosCommand::register);
         CommandRegistrationCallback.EVENT.register(PingCommand::register);
-        CommandRegistrationCallback.EVENT.register(DuelsDeleteWorldsCommand::register);
 
+        CommandRegistrationCallback.EVENT.register(DuelsDeleteWorldsCommand::register);
+        CommandRegistrationCallback.EVENT.register(DevExperimentalMapCommand::register);
         CommandRegistrationCallback.EVENT.register(StaffPrefixCommand::register);
 
 

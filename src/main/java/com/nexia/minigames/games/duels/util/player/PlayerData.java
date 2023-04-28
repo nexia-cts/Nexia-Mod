@@ -22,6 +22,8 @@ public class PlayerData {
 
     public String inviteMap;
 
+    public String inviteKit;
+
     public ServerPlayer duelPlayer;
 
     public PlayerData(SavedPlayerData savedData) {
@@ -33,6 +35,7 @@ public class PlayerData {
         this.invitingPlayer = null;
         this.isDead = false;
         this.duelPlayer = null;
+        this.inviteKit = "";
         this.inviteMap = "";
     }
 

@@ -5,6 +5,8 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.core.gui.duels.DuelGUI;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.minigames.Main;
@@ -29,7 +31,16 @@ public class DuelCommand {
                     }
                     return false;
                 })
-                .then(Commands.argument("player", EntityArgument.player())
+                .then(Commands.argument("player", EntityArgument.player()).executes(context -> {
+                    ServerPlayer player = EntityArgument.getPlayer(context, "player");
+                    ServerPlayer executor = context.getSource().getPlayerOrException();
+                    if(player != executor){
+                        DuelGUI.openDuelGui(executor, player);
+                    } else {
+                        context.getSource().sendFailure(ChatFormat.formatFail("You cannot duel yourself!"));
+                    }
+                    return 1;
+                })
                         .then(Commands.argument("gamemode", StringArgumentType.string())
                                 .suggests(((context, builder) -> SharedSuggestionProvider.suggest((DuelGameMode.duels), builder)))
                                 .executes(context -> DuelCommand.challenge(context, EntityArgument.getPlayer(context, "player"), StringArgumentType.getString(context, "gamemode"), null))

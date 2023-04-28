@@ -166,7 +166,8 @@ public class LobbyUtil {
             com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
             data.gameMode = DuelGameMode.LOBBY;
             data.inDuel = false;
-            data.inviteMap = null;
+            data.inviteKit = "";
+            data.inviteMap = "";
             data.isDead = false;
             data.invitingPlayer = null;
             data.inviting = false;

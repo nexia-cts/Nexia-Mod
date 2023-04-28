@@ -26,8 +26,8 @@ dependencies {
 	mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	//modApiMapped('com.combatreforged.factory:factory-api:0.1.13-full')
-	//modApiMapped('com.combatreforged.factory:factory-builder:0.1.13-1.16_combat-6')
+	//modApiMapped("com.combatreforged.factory:factory-api:${project.factory_version}-full")
+	//modApiMapped("com.combatreforged.factory:factory-builder:${project.factory_version}-1.16_combat-6")
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 

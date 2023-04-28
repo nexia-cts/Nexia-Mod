@@ -15,8 +15,8 @@ public class FfaAreas {
     public static BlockPos spawnCorner1 = spawn.toBlockPos().offset(-9, -12, -9);
     public static BlockPos spawnCorner2 = spawn.toBlockPos().offset(9, 12, 9);
 
-    public static BlockPos ffaCorner1 = spawn.toBlockPos().offset(-120, -spawn.y, -120);
-    public static BlockPos ffaCorner2 = spawn.toBlockPos().offset(250, -spawn.y + 255, 80);
+    public static BlockPos ffaCorner1 = spawn.toBlockPos().offset(-220, -spawn.y, -220);
+    public static BlockPos ffaCorner2 = spawn.toBlockPos().offset(250, -spawn.y + 255, 160);
 
     public FfaAreas() {
     }

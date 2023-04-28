@@ -23,6 +23,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.GameRules;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
+import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
 import java.util.stream.Stream;
 
@@ -81,7 +82,8 @@ public class MapCommand {
         }
 
         if (type.equalsIgnoreCase("delete")) {
-            ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), null).delete();
+            RuntimeWorldHandle worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), null);
+            worldHandle.delete();
             player.sendMessage(ChatFormat.format("{b1}Deleted map called: {b2}{}{b1}.", mapname[1]), Util.NIL_UUID);
             return 1;
         }

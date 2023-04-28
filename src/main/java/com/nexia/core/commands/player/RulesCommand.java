@@ -14,11 +14,11 @@ public class RulesCommand {
     }
 
     private static final String[] rules = {
-            "No cheats or other unfair advantages",
-            "No racism, excessive spamming or hate speech",
-            "Don't abuse any bugs and glitches",
-            "Keep it G, PG and PG-13",
-            "No interrupting",
+            "No hacking, cheating, griefing or exploiting bugs.",
+            "Be respectful. No toxicity and/or annoying behaviour.",
+            "No advertising.",
+            "No encouraging of illegal activity.",
+            "No interrupting other player's fights.",
     };
 
     public static int run(CommandContext<CommandSourceStack> context) {
