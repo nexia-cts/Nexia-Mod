@@ -41,11 +41,12 @@ public abstract class AbstractLivingEntityMixin extends Entity {
 
         f = (float)((double)f * (1.0 - g));
 
-        if (f > 0.0F && Main.config.enhancements.modifiedKnockback) {
+        if ((!(f <= 0.0F)) && Main.config.enhancements.modifiedKnockback) {
             this.hasImpulse = true;
             Vec3 vec3 = this.getDeltaMovement();
             Vec3 vec32 = (new Vec3(d, 0.0, e)).normalize().scale((double)f);
-            this.setDeltaMovement(vec3.x / 2.0 - vec32.x, this.onGround ? Math.min(0.4, (double)f * 0.75) : Math.min(0.4, vec3.y * 0.5 + (double)f * 0.675), vec3.z / 2.0 - vec32.z);
+            //this.setDeltaMovement(vec3.x / 2.0 - vec32.x, this.onGround ? Math.min(0.4, (double)f * 0.75) : Math.min(0.4, vec3.y * 0.5 + (double)f * 0.675), vec3.z / 2.0 - vec32.z);
+            this.setDeltaMovement(vec3.x / 2.0 - vec32.x, this.onGround ? Math.min(0.4, (double)f * 0.75) : Math.min(0.4, vec3.y * 0.5 + (double)f * 0.625), vec3.z / 2.0 - vec32.z);
         } else if ((!(f <= 0.0F)) && !Main.config.enhancements.modifiedKnockback) {
             this.hasImpulse = true;
             Vec3 vec3 = this.getDeltaMovement();

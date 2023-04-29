@@ -7,6 +7,7 @@ import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.bedwars.BwGame;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
+import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.DuelsSpawn;
 import com.nexia.minigames.games.oitc.OitcGame;
@@ -35,7 +36,7 @@ public class ServerTime {
         OitcGame.firstTick(minecraftServer);
 
         BwGame.firstTick();
-        DuelsGame.starting();
+        DuelGameHandler.starting();
     }
 
     public static void stopServer() {
@@ -43,7 +44,6 @@ public class ServerTime {
             for(ServerPlayer player : ServerTime.minecraftServer.getPlayerList().getPlayers()){
                 player.connection.disconnect(ChatFormat.formatFail("The server is restarting!"));
             }
-            DuelsGame.starting();
             BwAreas.clearQueueBuild();
         } catch (Exception e) {
             e.printStackTrace();

@@ -6,11 +6,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Set;
@@ -19,6 +22,8 @@ import java.util.Set;
 public abstract class EntityMixin implements Nameable, CommandSource {
 
     @Shadow public abstract Set<String> getTags();
+
+    @Shadow public abstract Vec3 getDeltaMovement();
 
     @Inject(method = "isInvulnerableTo", at = @At("HEAD"), cancellable = true)
     private void hurt(DamageSource damageSource, CallbackInfoReturnable<Boolean> cir) {

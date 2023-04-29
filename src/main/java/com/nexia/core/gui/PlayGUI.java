@@ -1,7 +1,6 @@
 package com.nexia.core.gui;
 
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.utilities.player.PlayerUtil;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
@@ -84,7 +83,10 @@ public class PlayGUI extends SimpleGui {
     }
 
     private void setMinigamesLayout(){
-        this.setTitle(minigamesTitle);
+
+        PlayGUI shop = new PlayGUI(MenuType.GENERIC_9x4, player, false);
+        shop.setTitle(minigamesTitle);
+
         ItemStack unknown = new ItemStack(Items.BARRIER, 1);
         unknown.setHoverName(new TextComponent("§7§l???"));
         unknown.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
@@ -113,10 +115,12 @@ public class PlayGUI extends SimpleGui {
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
 
-        fillEmptySlots(emptySlot, 27);
+        fillEmptySlots(emptySlot, 36);
         this.setSlot(11, duels);
         this.setSlot(13, bedwars);
         this.setSlot(15, oitc);
+        this.close();
+        shop.open();
     }
 
     public boolean click(int index, ClickType clickType, net.minecraft.world.inventory.ClickType action){

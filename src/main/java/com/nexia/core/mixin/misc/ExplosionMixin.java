@@ -1,5 +1,6 @@
 package com.nexia.core.mixin.misc;
 
+import com.nexia.core.Main;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.core.BlockPos;
@@ -27,7 +28,7 @@ public class ExplosionMixin {
     @Shadow @Final private Level level;
 
     @Redirect(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/ExplosionDamageCalculator;getBlockExplosionResistance(Lnet/minecraft/world/level/Explosion;Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/material/FluidState;)Ljava/util/Optional;"))
-    protected Optional<Float> modifyExplosionResistance(ExplosionDamageCalculator instance, Explosion explosion, BlockGetter blockGetter, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
+    private Optional<Float> modifyExplosionResistance(ExplosionDamageCalculator instance, Explosion explosion, BlockGetter blockGetter, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
         if (blockState.isAir() && fluidState.isEmpty()) return Optional.empty();
 
         float resistance = blockState.getBlock().getExplosionResistance();
@@ -38,7 +39,7 @@ public class ExplosionMixin {
     }
 
     @Redirect(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/ExplosionDamageCalculator;shouldBlockExplode(Lnet/minecraft/world/level/Explosion;Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;F)Z"))
-    protected boolean shouldExplode(ExplosionDamageCalculator instance, Explosion explosion, BlockGetter blockGetter, BlockPos blockPos, BlockState blockState, float resistance) {
+    private boolean shouldExplode(ExplosionDamageCalculator instance, Explosion explosion, BlockGetter blockGetter, BlockPos blockPos, BlockState blockState, float resistance) {
 
         if (BwAreas.isBedWarsWorld(level)) {
             if (!BwUtil.shouldExplode(blockPos, blockState)) return false;
@@ -48,16 +49,19 @@ public class ExplosionMixin {
     }
 
     @ModifyArgs(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;add(DDD)Lnet/minecraft/world/phys/Vec3;"))
-    protected void modifyKnockback(Args args) {
+    private void modifyKnockback(Args args) {
 
         if (BwAreas.isBedWarsWorld(level)) {
             BwUtil.modifyExplosionKb(source, args);
+        } else if(Main.config.enhancements.modifiedKnockback){
+            args.set(1, (double)args.get(1)*100);
+            args.set(2, (double)args.get(2)*100);
+            args.set(3, (double)args.get(3)*100);
         }
-
     }
 
     @ModifyArg(method = "explode", index = 1, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
-    protected float modifyDamage(float damage) {
+    private float modifyDamage(float damage) {
 
         if (BwAreas.isBedWarsWorld(level)) {
             return BwUtil.getExplosionDamage(damage);

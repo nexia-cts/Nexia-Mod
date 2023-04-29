@@ -13,7 +13,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 
@@ -71,7 +70,7 @@ public class DuelGUI extends SimpleGui {
             this.setSlot(airSlots, new ItemStack(Items.AIR));
             airSlots++;
         }
-        this.setSlot(4, HeadFunctions.getPlayerHead(otherp.getScoreboardName(), 1));
+        //this.setSlot(4, HeadFunctions.getPlayerHead(otherp.getScoreboardName(), 1));
         int i1 = 0;
         for(String duel : DuelGameMode.duels){
             if(slot == 17) {

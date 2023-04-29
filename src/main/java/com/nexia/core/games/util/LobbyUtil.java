@@ -11,6 +11,7 @@ import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwScoreboard;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
+import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.DuelsSpawn;
@@ -70,7 +71,7 @@ public class LobbyUtil {
     public static void leaveAllGames(ServerPlayer player, boolean tp) {
         if (BwUtil.isInBedWars(player)) BwPlayerEvents.leaveInBedWars(player);
         else if (FfaUtil.isFfaPlayer(player)) FfaUtil.leaveOrDie(player, player.getLastDamageSource());
-        else if (PlayerDataManager.get(player).gameMode == PlayerGameMode.DUELS) DuelsGame.leave(player);
+        else if (PlayerDataManager.get(player).gameMode == PlayerGameMode.DUELS) DuelGameHandler.leave(player);
         else if (PlayerDataManager.get(player).gameMode == PlayerGameMode.OITC) OitcGame.leave(player);
 
         BwScoreboard.removeScoreboardFor(player);
@@ -126,7 +127,7 @@ public class LobbyUtil {
         player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
     }
 
-    public static void sendGame(ServerPlayer player, String game, boolean message){
+    public static void sendGame(ServerPlayer player, String game, boolean message, boolean tp){
         if (!LobbyUtil.isLobbyWorld(player.level) || PlayerDataManager.get(player).gameMode != PlayerGameMode.LOBBY) {
             LobbyUtil.leaveAllGames(player, false);
         } else{
@@ -147,8 +148,11 @@ public class LobbyUtil {
             player.addTag("ffa");
             FfaUtil.wasInSpawn.add(player.getUUID());
             PlayerDataManager.get(player).gameMode = PlayerGameMode.FFA;
-            player.teleportTo(FfaAreas.ffaWorld, FfaAreas.spawn.x, FfaAreas.spawn.y, FfaAreas.spawn.z, FfaAreas.spawn.yaw, FfaAreas.spawn.pitch);
-            player.setRespawnPosition(FfaAreas.ffaWorld.dimension(), FfaAreas.spawn.toBlockPos(), FfaAreas.spawn.yaw, true, false);
+            if(tp){
+                player.teleportTo(FfaAreas.ffaWorld, FfaAreas.spawn.x, FfaAreas.spawn.y, FfaAreas.spawn.z, FfaAreas.spawn.yaw, FfaAreas.spawn.pitch);
+                player.setRespawnPosition(FfaAreas.ffaWorld.dimension(), FfaAreas.spawn.toBlockPos(), FfaAreas.spawn.yaw, true, false);
+            }
+
             FfaUtil.clearThrownTridents(player);
             if(message){PlayerUtil.sendActionbar(player, "You have joined §8🗡 §7§lFFA §b🔱");}
             FfaUtil.setInventory(player);
@@ -168,11 +172,15 @@ public class LobbyUtil {
             data.inDuel = false;
             data.inviteKit = "";
             data.inviteMap = "";
+            data.duelsGame = null;
             data.isDead = false;
             data.invitingPlayer = null;
             data.inviting = false;
-            player.teleportTo(DuelsSpawn.duelWorld, DuelsSpawn.spawn.x, DuelsSpawn.spawn.y, DuelsSpawn.spawn.z, DuelsSpawn.spawn.yaw, DuelsSpawn.spawn.pitch);
-            player.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
+            if(tp){
+                player.teleportTo(DuelsSpawn.duelWorld, DuelsSpawn.spawn.x, DuelsSpawn.spawn.y, DuelsSpawn.spawn.z, DuelsSpawn.spawn.yaw, DuelsSpawn.spawn.pitch);
+                player.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
+            }
+
             if(message){PlayerUtil.sendActionbar(player, "You have joined §f☯ §c§lDuels §7\uD83E\uDE93");}
         }
 
