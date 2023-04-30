@@ -22,7 +22,7 @@ public class OitcCommand {
                     return 1;
                 }))
                 .then(Commands.literal("leave").executes(context -> {
-                    LobbyUtil.sendGame(context.getSource().getPlayerOrException(), "oitc", false);
+                    LobbyUtil.sendGame(context.getSource().getPlayerOrException(), "oitc", false, true);
                     return 1;
                 }))
         );

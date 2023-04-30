@@ -96,7 +96,7 @@ public class GamemodeHandler {
 
     public static void joinQueue(ServerPlayer player, String stringGameMode, boolean silent){
         if(stringGameMode.equalsIgnoreCase("lobby") || stringGameMode.equalsIgnoreCase("leave")){
-            LobbyUtil.sendGame(player, "duels", false);
+            LobbyUtil.sendGame(player, "duels", false, false);
             return;
         }
 
@@ -300,8 +300,6 @@ public class GamemodeHandler {
             DuelGameMode.TRIDENT_ONLY_QUEUE.remove(player);
             DuelGameMode.HOE_ONLY_QUEUE.remove(player);
         }
-
-
     }
 
     public static void challengePlayer(ServerPlayer executor, ServerPlayer player, String stringGameMode, @Nullable String selectedmap){

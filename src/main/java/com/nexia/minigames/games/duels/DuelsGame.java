@@ -81,7 +81,8 @@ public class DuelsGame { //implements Runnable{
 
         p1.teleportTo(duelLevel, playerpos[0], playerpos[1], playerpos[2], playerpos[3], playerpos[4]);
         EntityPos playerPos = new EntityPos(0, 85, 0, 0, 0);
-        p1.setRespawnPosition(duelLevel.dimension(), playerPos.toBlockPos(), playerPos.yaw, true, false);
+        //p1.setRespawnPosition(duelLevel.dimension(), playerPos.toBlockPos(), playerPos.yaw, true, false);
+        p1.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
         playerData.inviting = false;
         playerData.invitingPlayer = null;
         playerData.inDuel = true;
@@ -89,7 +90,8 @@ public class DuelsGame { //implements Runnable{
 
         p2.teleportTo(duelLevel, invitorpos[0], invitorpos[1], invitorpos[2], invitorpos[3], invitorpos[4]);
         EntityPos invitorPos = new EntityPos(0, 85, 0, 0, 0);
-        p2.setRespawnPosition(duelLevel.dimension(), invitorPos.toBlockPos(), invitorPos.yaw, true, false);
+        //p2.setRespawnPosition(duelLevel.dimension(), invitorPos.toBlockPos(), invitorPos.yaw, true, false);
+        p2.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
         invitorData.inviting = false;
         invitorData.invitingPlayer = null;
         invitorData.inDuel = true;
@@ -157,18 +159,20 @@ public class DuelsGame { //implements Runnable{
         attacker.sendMessage(ChatFormat.format("{b2}{} {b1}has won the duel!", attacker.getScoreboardName()), Util.NIL_UUID);
         victim.sendMessage(ChatFormat.format("{b2}{} {b1}has won the duel!", attacker.getScoreboardName()), Util.NIL_UUID);
 
-        attacker.teleportTo(DuelsSpawn.duelWorld, DuelsSpawn.spawn.x, DuelsSpawn.spawn.y, DuelsSpawn.spawn.z, DuelsSpawn.spawn.yaw, DuelsSpawn.spawn.pitch);
-        attacker.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
+        attacker.die(DamageSource.GENERIC);
 
-        victim.teleportTo(DuelsSpawn.duelWorld, DuelsSpawn.spawn.x, DuelsSpawn.spawn.y, DuelsSpawn.spawn.z, DuelsSpawn.spawn.yaw, DuelsSpawn.spawn.pitch);
-        victim.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
+        //attacker.teleportTo(DuelsSpawn.duelWorld, DuelsSpawn.spawn.x, DuelsSpawn.spawn.y, DuelsSpawn.spawn.z, DuelsSpawn.spawn.yaw, DuelsSpawn.spawn.pitch);
+        //attacker.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
+
+        //victim.teleportTo(DuelsSpawn.duelWorld, DuelsSpawn.spawn.x, DuelsSpawn.spawn.y, DuelsSpawn.spawn.z, DuelsSpawn.spawn.yaw, DuelsSpawn.spawn.pitch);
+        //victim.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
 
         PlayerUtil.resetHealthStatus(attacker);
         PlayerUtil.resetHealthStatus(victim);
 
         // Fix command bug (/duel & /queue being red indicating you can't use them, but you actually still can)
-        LobbyUtil.sendGame(victim, "duels", false);
-        LobbyUtil.sendGame(attacker, "duels", false);
+        LobbyUtil.sendGame(victim, "duels", false, false);
+        LobbyUtil.sendGame(attacker, "duels", false, false);
 
         attacker.inventory.clearContent();
         victim.inventory.clearContent();

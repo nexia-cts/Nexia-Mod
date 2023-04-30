@@ -83,9 +83,7 @@ public class PlayGUI extends SimpleGui {
     }
 
     private void setMinigamesLayout(){
-
-        PlayGUI shop = new PlayGUI(MenuType.GENERIC_9x4, player, false);
-        shop.setTitle(minigamesTitle);
+        this.setTitle(minigamesTitle);
 
         ItemStack unknown = new ItemStack(Items.BARRIER, 1);
         unknown.setHoverName(new TextComponent("§7§l???"));
@@ -110,8 +108,6 @@ public class PlayGUI extends SimpleGui {
         duels.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
         duels.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
-
-
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
 
@@ -119,8 +115,6 @@ public class PlayGUI extends SimpleGui {
         this.setSlot(11, duels);
         this.setSlot(13, bedwars);
         this.setSlot(15, oitc);
-        this.close();
-        shop.open();
     }
 
     public boolean click(int index, ClickType clickType, net.minecraft.world.inventory.ClickType action){
@@ -129,7 +123,7 @@ public class PlayGUI extends SimpleGui {
             ItemStack itemStack = element.getItemStack();
             Component name = itemStack.getHoverName();
             if(name.getString().equalsIgnoreCase("§7§lClassic")){
-                LobbyUtil.sendGame(this.player, "classic ffa", true);
+                LobbyUtil.sendGame(this.player, "classic ffa", true, true);
                 this.close();
             }
             if(name.getString().equalsIgnoreCase("§7§lFFA")){
@@ -139,16 +133,16 @@ public class PlayGUI extends SimpleGui {
                 this.setMinigamesLayout();
             }
             if(name.getString().equalsIgnoreCase("§c§lBedwars")){
-                LobbyUtil.sendGame(this.player, "bedwars", true);
+                LobbyUtil.sendGame(this.player, "bedwars", true, true);
                 this.close();
             }
             if(name.getString().equalsIgnoreCase("§f§lOITC")){
-                LobbyUtil.sendGame(this.player, "oitc", true);
+                LobbyUtil.sendGame(this.player, "oitc", true, true);
                 this.close();
             }
 
             if(name.getString().equalsIgnoreCase("§b§lDuels")){
-                LobbyUtil.sendGame(this.player, "duels", true);
+                LobbyUtil.sendGame(this.player, "duels", true, true);
                 this.close();
             }
 

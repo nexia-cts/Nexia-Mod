@@ -170,7 +170,7 @@ public class OitcGame {
             for(ServerPlayer player : OitcGame.alive){
                 OitcScoreboard.removeScoreboardFor(player);
                 player.removeTag("in_oitc_game");
-                LobbyUtil.sendGame(player, "oitc", false);
+                LobbyUtil.sendGame(player, "oitc", false, true);
             }
 
             OitcGame.alive.clear();

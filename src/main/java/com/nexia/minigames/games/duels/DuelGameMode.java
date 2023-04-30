@@ -10,7 +10,6 @@ public class DuelGameMode {
     String id;
 
     public static ArrayList<ItemStack> duelsMaps = new ArrayList<>();
-
     public static ArrayList<ItemStack> duelsItems = new ArrayList<>();
     public static String[] duels = {"AXE", "SWORD_ONLY", "SHIELD", "POT", "NETH_POT", "OG_VANILLA", "SMP", "TRIDENT_ONLY", "HOE_ONLY", "FFA", "BOW_ONLY", "UHC", "VANILLA", "UHC_SHIELD"};
 
@@ -62,9 +61,7 @@ public class DuelGameMode {
 
         duelsMaps.add(new ItemStack(Items.SMOOTH_STONE)); // City
         duelsMaps.add(new ItemStack(Items.NETHERITE_BLOCK)); // Neth Flat
-        duelsMaps.add(new ItemStack(Items.GRASS_BLOCK)); // Plains
-        duelsMaps.add(new ItemStack(Items.SAND)); // Desert
-        duelsMaps.add(new ItemStack(Items.COBWEB)); // Sky
+        //duelsMaps.add(new ItemStack(Items.GRASS_BLOCK)); // Plains
 
         duelsItems.add(new ItemStack(Items.DIAMOND_AXE)); // AXE
         duelsItems.add(new ItemStack(Items.DIAMOND_SWORD)); // SWORD_ONLY
