@@ -1,10 +1,11 @@
 package com.nexia.core.loader;
 
+import com.combatreforged.factory.builder.command.FactoryCommand;
 import com.nexia.core.commands.player.*;
 import com.nexia.core.commands.player.duels.*;
-import com.nexia.core.commands.player.oitc.*;
 import com.nexia.core.commands.staff.*;
 import com.nexia.core.commands.staff.dev.*;
+import com.nexia.core.utilities.time.ServerTime;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 
 public class CommandLoader {
@@ -19,6 +20,12 @@ public class CommandLoader {
         });
 
          */
+
+
+
+        CommandRegistrationCallback.EVENT.register(DiscordCommand::register);
+        CommandRegistrationCallback.EVENT.register(LeaveCommand::register);
+
 
         CommandRegistrationCallback.EVENT.register(DefaultGameRulesCommand::register);
         CommandRegistrationCallback.EVENT.register(ProtectionMapCommand::register);
@@ -35,19 +42,16 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(QueueCommand::register);
         CommandRegistrationCallback.EVENT.register(MapCommand::register);
 
-        CommandRegistrationCallback.EVENT.register(OitcCommand::register);
-
         CommandRegistrationCallback.EVENT.register(MuteCommand::register);
         CommandRegistrationCallback.EVENT.register(UnMuteCommand::register);
 
         CommandRegistrationCallback.EVENT.register(PlayCommand::register);
-        CommandRegistrationCallback.EVENT.register(LeaveCommand::register);
+
 
         CommandRegistrationCallback.EVENT.register(BanCommand::register);
         CommandRegistrationCallback.EVENT.register(UnBanCommand::register);
         CommandRegistrationCallback.EVENT.register(StatsCommand::register);
         CommandRegistrationCallback.EVENT.register(RulesCommand::register);
-        CommandRegistrationCallback.EVENT.register(DiscordCommand::register);
         CommandRegistrationCallback.EVENT.register(HelpCommand::register);
         CommandRegistrationCallback.EVENT.register(ReportCommand::register);
 

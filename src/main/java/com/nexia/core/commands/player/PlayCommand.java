@@ -37,25 +37,25 @@ public class PlayCommand {
 
     private static int playNormalFFA(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        LobbyUtil.sendGame(player, "classic ffa", true);
+        LobbyUtil.sendGame(player, "classic ffa", true, true);
         return 1;
     }
 
     private static int playBedWars(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        LobbyUtil.sendGame(player, "bedwars", true);
+        LobbyUtil.sendGame(player, "bedwars", true, true);
         return 1;
     }
 
     private static int playDuels(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        LobbyUtil.sendGame(player, "duels", true);
+        LobbyUtil.sendGame(player, "duels", true, true);
         return 1;
     }
 
     private static int playOITC(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        LobbyUtil.sendGame(player, "oitc", true);
+        LobbyUtil.sendGame(player, "oitc", true, true);
         return 1;
     }
 

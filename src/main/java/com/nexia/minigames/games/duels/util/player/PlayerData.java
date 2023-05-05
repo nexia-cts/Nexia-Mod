@@ -1,6 +1,7 @@
 package com.nexia.minigames.games.duels.util.player;
 
 import com.nexia.minigames.games.duels.DuelGameMode;
+import com.nexia.minigames.games.duels.DuelsGame;
 import net.minecraft.server.level.ServerPlayer;
 
 public class PlayerData {
@@ -22,6 +23,10 @@ public class PlayerData {
 
     public String inviteMap;
 
+    public DuelsGame duelsGame;
+
+    public String inviteKit;
+
     public ServerPlayer duelPlayer;
 
     public PlayerData(SavedPlayerData savedData) {
@@ -34,6 +39,8 @@ public class PlayerData {
         this.isDead = false;
         this.duelPlayer = null;
         this.inviteMap = "";
+        this.inviteKit = "";
+        this.duelsGame = null;
     }
 
 }

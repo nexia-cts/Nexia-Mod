@@ -125,7 +125,7 @@ public class PlayGUI extends SimpleGui {
             ItemStack itemStack = element.getItemStack();
             Component name = itemStack.getHoverName();
             if(name.getString().equalsIgnoreCase("§7§lClassic")){
-                LobbyUtil.sendGame(this.player, "classic ffa", true);
+                LobbyUtil.sendGame(this.player, "classic ffa", true, true);
                 this.close();
             }
             if(name.getString().equalsIgnoreCase("§7§lFFA")){
@@ -135,16 +135,16 @@ public class PlayGUI extends SimpleGui {
                 this.setMinigamesLayout();
             }
             if(name.getString().equalsIgnoreCase("§c§lBedwars")){
-                LobbyUtil.sendGame(this.player, "bedwars", true);
+                LobbyUtil.sendGame(this.player, "bedwars", true, true);
                 this.close();
             }
             if(name.getString().equalsIgnoreCase("§f§lOITC")){
-                LobbyUtil.sendGame(this.player, "oitc", true);
+                LobbyUtil.sendGame(this.player, "oitc", true, true);
                 this.close();
             }
 
             if(name.getString().equalsIgnoreCase("§b§lDuels")){
-                LobbyUtil.sendGame(this.player, "duels", true);
+                LobbyUtil.sendGame(this.player, "duels", true, true);
                 this.close();
             }
 

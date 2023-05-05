@@ -1,9 +1,7 @@
 package com.nexia.core.utilities.item;
 
 import net.minecraft.nbt.*;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
 public class ItemDisplayUtil {
 

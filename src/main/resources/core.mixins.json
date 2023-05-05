@@ -23,7 +23,6 @@
     "item.EnderPearlItemMixin",
     "item.BlockItemMixin",
     "item.CompassItemMixin",
-    "item.UseItemMixin",
     "item.CraftingMixin",
     "item.EggItemMixin",
     "item.PotionItemMixin",
@@ -36,11 +35,9 @@
     "misc.MsgCommandMixin",
     "misc.BanCommandMixin",
     "player.FoodDataMixin",
-    "player.PlayerListMixin",
     "player.PlayerMixin",
     "player.ServerGamePacketListenerMixin",
     "player.ServerLoginPacketListenerMixin",
-    "player.ServerPlayerGameModeMixin",
     "player.ServerPlayerMixin"
   ],
   "injectors": {

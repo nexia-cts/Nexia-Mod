@@ -2,6 +2,7 @@ package com.nexia.minigames.games.bedwars.util;
 
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
@@ -230,7 +231,8 @@ public class BwUtil {
             if (resistance < 3F) resistance = 3F;
 
         } else if (blockState.getBlock() == Blocks.END_STONE) {
-            if (source instanceof LargeFireball || source instanceof BwExplosiveSlime) resistance = 1200F;
+            //if (source instanceof LargeFireball || source instanceof BwExplosiveSlime) resistance = 1200F;
+            if (!(source instanceof LargeFireball) && !(source instanceof BwExplosiveSlime)) resistance = 1200F;
             else resistance *= 0.75F;
 
         } else if (BlockUtil.blockToText(blockState).endsWith("_wool")) {
@@ -244,7 +246,8 @@ public class BwUtil {
     }
 
     public static boolean shouldExplode(BlockPos blockPos, BlockState blockState) {
-        return !(BwAreas.isImmuneBlock(blockPos) || blockState.getBlock() instanceof BedBlock);
+        //return !(BwAreas.isImmuneBlock(blockPos) || blockState.getBlock() instanceof BedBlock);
+        return !BwAreas.isImmuneBlock(blockPos) && !(blockState.getBlock() instanceof BedBlock);
     }
 
     public static float getExplosionDamage(float original) {
@@ -322,7 +325,7 @@ public class BwUtil {
     }
 
     public static void announceDeath(ServerPlayer player) {
-        String mainColor = ChatFormat.chatColor2;
+        String mainColor = LegacyChatFormat.chatColor2;
         String message = mainColor + player.getCombatTracker().getDeathMessage().getString();
 
         message = replaceDisplayName(message, mainColor, player);

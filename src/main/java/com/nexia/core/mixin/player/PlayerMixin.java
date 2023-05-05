@@ -14,13 +14,11 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -72,11 +70,11 @@ public abstract class PlayerMixin extends LivingEntity {
     private void beforeHurt(DamageSource damageSource, float damage, CallbackInfoReturnable<Boolean> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
 
-        if (PlayerUtil.hasTag(player, LobbyUtil.NO_DAMAGE_TAG)) {
+        if (player.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
             cir.setReturnValue(false);
         }
 
-        if (damageSource.getEntity() instanceof ServerPlayer && PlayerUtil.hasTag((ServerPlayer) damageSource.getEntity(), LobbyUtil.NO_DAMAGE_TAG)) {
+        if (damageSource.getEntity() instanceof ServerPlayer attacker && attacker.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
             cir.setReturnValue(false);
         }
     }

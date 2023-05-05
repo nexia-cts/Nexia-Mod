@@ -7,6 +7,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.bedwars.shop.BwLoadShop;
+import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
@@ -25,7 +26,7 @@ public class DuelsDeleteWorldsCommand {
         for(ServerLevel level : ServerTime.minecraftServer.getAllLevels()){
             String[] split = level.dimension().toString().replaceAll("]", "").split(":");
             if(split[1].toLowerCase().contains("duels") && !split[2].toLowerCase().contains("hub")){
-                GamemodeHandler.deleteWorld(split[2]);
+                DuelGameHandler.deleteWorld(split[2]);
             }
         }
 

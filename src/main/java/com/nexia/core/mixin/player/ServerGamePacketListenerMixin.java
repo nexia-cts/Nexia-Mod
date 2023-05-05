@@ -1,5 +1,6 @@
 package com.nexia.core.mixin.player;
 
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.item.ItemStackUtil;
@@ -128,7 +129,7 @@ public class ServerGamePacketListenerMixin {
             }
         }
 
-        if(PlayerDataManager.get(player).gameMode == PlayerGameMode.DUELS){
+        if(PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY){
             ci.cancel();
             return;
         }

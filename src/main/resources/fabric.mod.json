@@ -28,8 +28,7 @@
     ]
   },
   "mixins": [
-    "core.mixins.json",
-    "ffa.mixins.json"
+    "core.mixins.json"
   ],
 
   "depends": {

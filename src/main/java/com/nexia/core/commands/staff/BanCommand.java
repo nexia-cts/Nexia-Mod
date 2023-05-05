@@ -6,7 +6,9 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
+import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.GameProfileArgument;
@@ -35,6 +37,12 @@ public class BanCommand {
         UserBanList userBanList = Main.server.getPlayerList().getBans();
         int i = 0;
 
+        ServerPlayer player = null;
+
+        try {
+            player = context.getPlayerOrException();
+        } catch (Exception ignored){ }
+
         for (GameProfile gameProfile : collection) {
             if (!userBanList.isBanned(gameProfile)) {
                 ServerPlayer serverPlayer = Main.server.getPlayerList().getPlayer(gameProfile.getId());
@@ -42,7 +50,20 @@ public class BanCommand {
                 UserBanListEntry userBanListEntry = new UserBanListEntry(gameProfile, (Date) null, context.getTextName(), (Date) null, reason);
                 userBanList.add(userBanListEntry);
                 ++i;
-                context.sendSuccess(ChatFormat.format("{b1}You have banned {b2}{} {b1}for {b2}{}{b1}.", ComponentUtils.getDisplayName(gameProfile).getString(), reason), true);
+                if(player != null){
+
+                    PlayerUtil.getFactoryPlayer(player).sendMessage(ChatFormat.returnAppendedComponent(
+                            ChatFormat.nexiaMessage(),
+                            Component.text("You have banned ").color(ChatFormat.normalColor),
+                            Component.text(ComponentUtils.getDisplayName(gameProfile).getString()).color(ChatFormat.brandColor2),
+                            Component.text(" for ").color(ChatFormat.normalColor),
+                            Component.text(reason).color(ChatFormat.brandColor2)
+                    ));
+
+                } else {
+                    context.sendSuccess(LegacyChatFormat.format("{b1}You have banned {b2}{} {b1}for {b2}{}", ComponentUtils.getDisplayName(gameProfile).getString(), reason), true);
+                }
+
                 if (serverPlayer != null) {
                     serverPlayer.connection.disconnect(new TextComponent("§c§lYou have been banned.\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + Main.config.discordLink));
                 }
@@ -50,7 +71,15 @@ public class BanCommand {
         }
 
         if (i == 0) {
-            context.sendFailure(ChatFormat.formatFail("That player is already banned."));
+            if(player != null){
+                PlayerUtil.getFactoryPlayer(player).sendMessage(ChatFormat.returnAppendedComponent(
+                        ChatFormat.nexiaMessage(),
+                        Component.text("That player is already banned.").color(ChatFormat.failColor)
+                ));
+            } else {
+                context.sendFailure(LegacyChatFormat.formatFail("That player is already banned."));
+            }
+
         } else {
             return i;
         }

@@ -1,34 +1,20 @@
 package com.nexia.minigames.games.duels.gamemodes;
 
-import com.nexia.core.Main;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.DuelsGame;
-import com.nexia.minigames.games.duels.DuelsSpawn;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
-import net.minecraft.Util;
-import net.minecraft.core.Registry;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Difficulty;
-import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.Nullable;
-import xyz.nucleoid.fantasy.RuntimeWorldConfig;
-import xyz.nucleoid.fantasy.RuntimeWorldHandle;
-
-import java.util.UUID;
 
 public class GamemodeHandler {
 
@@ -55,6 +41,10 @@ public class GamemodeHandler {
 
         if(gameMode.equalsIgnoreCase("og_vanilla")){
             return DuelGameMode.OG_VANILLA;
+        }
+
+        if(gameMode.equalsIgnoreCase("uhc_shield")){
+            return DuelGameMode.UHC_SHIELD;
         }
 
         if(gameMode.equalsIgnoreCase("vanilla")){
@@ -88,17 +78,19 @@ public class GamemodeHandler {
         return null;
     }
 
-    public static void joinQueue(ServerPlayer player, String stringGameMode, boolean silent){
+    public static void joinQueue(ServerPlayer minecraftPlayer, String stringGameMode, boolean silent){
         if(stringGameMode.equalsIgnoreCase("lobby") || stringGameMode.equalsIgnoreCase("leave")){
-            LobbyUtil.sendGame(player, "duels", false);
+            LobbyUtil.sendGame(minecraftPlayer, "duels", false, false);
             return;
         }
 
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
 
+        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+
         if(gameMode == null){
             if(!silent){
-                player.sendMessage(ChatFormat.formatFail("Invalid gamemode!"), Util.NIL_UUID);
+                player.sendMessage(Component.text("Invalid gamemode!").color(ChatFormat.failColor));
             }
             return;
         }
@@ -106,207 +98,248 @@ public class GamemodeHandler {
 
 
         if(!silent){
-            player.sendMessage(ChatFormat.format("{b1}You have queued up for {b2}{}{b1}.", stringGameMode.toUpperCase()), Util.NIL_UUID);
+            player.sendMessage(ChatFormat.returnAppendedComponent(
+                    Component.text("You have queued up for")
+                            .color(ChatFormat.brandColor1),
+                    Component.text(stringGameMode.toUpperCase())
+                            .color(ChatFormat.brandColor2),
+                    Component.text("."))
+            );
+
         }
 
-        removeQueue(player, stringGameMode, true);
+        removeQueue(minecraftPlayer, stringGameMode, true);
 
 
         if(gameMode == DuelGameMode.AXE){
-            DuelGameMode.AXE_QUEUE.add(player);
+            DuelGameMode.AXE_QUEUE.add(minecraftPlayer);
             if(DuelGameMode.AXE_QUEUE.size() >= 2){
-                GamemodeHandler.joinGamemode(player, DuelGameMode.AXE_QUEUE.get(0), stringGameMode, null,false);
+                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.AXE_QUEUE.get(0), stringGameMode, null,false);
             }
         }
 
         if(gameMode == DuelGameMode.SWORD_ONLY){
-            DuelGameMode.SWORD_ONLY_QUEUE.add(player);
+            DuelGameMode.SWORD_ONLY_QUEUE.add(minecraftPlayer);
             if(DuelGameMode.SWORD_ONLY_QUEUE.size() >= 2){
-                GamemodeHandler.joinGamemode(player, DuelGameMode.SWORD_ONLY_QUEUE.get(0), stringGameMode, null,false);
+                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.SWORD_ONLY_QUEUE.get(0), stringGameMode, null,false);
             }
         }
 
         if(gameMode == DuelGameMode.TRIDENT_ONLY){
-            DuelGameMode.TRIDENT_ONLY_QUEUE.add(player);
+            DuelGameMode.TRIDENT_ONLY_QUEUE.add(minecraftPlayer);
             if(DuelGameMode.TRIDENT_ONLY_QUEUE.size() >= 2){
-                GamemodeHandler.joinGamemode(player, DuelGameMode.TRIDENT_ONLY_QUEUE.get(0), stringGameMode, null,false);
+                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.TRIDENT_ONLY_QUEUE.get(0), stringGameMode, null,false);
             }
         }
 
         if(gameMode == DuelGameMode.HOE_ONLY){
-            DuelGameMode.HOE_ONLY_QUEUE.add(player);
+            DuelGameMode.HOE_ONLY_QUEUE.add(minecraftPlayer);
             if(DuelGameMode.HOE_ONLY_QUEUE.size() >= 2){
-                GamemodeHandler.joinGamemode(player, DuelGameMode.HOE_ONLY_QUEUE.get(0), stringGameMode, null,false);
+                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.HOE_ONLY_QUEUE.get(0), stringGameMode, null,false);
             }
         }
 
         if(gameMode == DuelGameMode.BOW_ONLY){
-            DuelGameMode.BOW_ONLY_QUEUE.add(player);
+            DuelGameMode.BOW_ONLY_QUEUE.add(minecraftPlayer);
             if(DuelGameMode.BOW_ONLY_QUEUE.size() >= 2){
-                GamemodeHandler.joinGamemode(player, DuelGameMode.BOW_ONLY_QUEUE.get(0), stringGameMode, null,false);
+                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.BOW_ONLY_QUEUE.get(0), stringGameMode, null,false);
             }
         }
 
         if(gameMode == DuelGameMode.SHIELD){
-            DuelGameMode.SHIELD_QUEUE.add(player);
+            DuelGameMode.SHIELD_QUEUE.add(minecraftPlayer);
             if(DuelGameMode.SHIELD_QUEUE.size() >= 2){
-                GamemodeHandler.joinGamemode(player, DuelGameMode.SHIELD_QUEUE.get(0), stringGameMode, null,false);
+                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.SHIELD_QUEUE.get(0), stringGameMode, null,false);
             }
         }
 
         if(gameMode == DuelGameMode.POT){
-            DuelGameMode.POT_QUEUE.add(player);
+            DuelGameMode.POT_QUEUE.add(minecraftPlayer);
             if(DuelGameMode.POT_QUEUE.size() >= 2){
-                GamemodeHandler.joinGamemode(player, DuelGameMode.POT_QUEUE.get(0), stringGameMode, null,false);
+                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.POT_QUEUE.get(0), stringGameMode, null,false);
             }
         }
 
         if(gameMode == DuelGameMode.NETH_POT){
-            DuelGameMode.NETH_POT_QUEUE.add(player);
+            DuelGameMode.NETH_POT_QUEUE.add(minecraftPlayer);
             if(DuelGameMode.NETH_POT_QUEUE.size() >= 2){
-                GamemodeHandler.joinGamemode(player, DuelGameMode.NETH_POT_QUEUE.get(0), stringGameMode, null,false);
+                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.NETH_POT_QUEUE.get(0), stringGameMode, null,false);
             }
         }
 
         if(gameMode == DuelGameMode.OG_VANILLA){
-            DuelGameMode.OG_VANILLA_QUEUE.add(player);
+            DuelGameMode.OG_VANILLA_QUEUE.add(minecraftPlayer);
             if(DuelGameMode.OG_VANILLA_QUEUE.size() >= 2){
-                GamemodeHandler.joinGamemode(player, DuelGameMode.OG_VANILLA_QUEUE.get(0), stringGameMode, null,false);
+                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.OG_VANILLA_QUEUE.get(0), stringGameMode, null,false);
             }
         }
 
         if(gameMode == DuelGameMode.SMP){
-            DuelGameMode.SMP_QUEUE.add(player);
+            DuelGameMode.SMP_QUEUE.add(minecraftPlayer);
             if(DuelGameMode.SMP_QUEUE.size() >= 2){
-                GamemodeHandler.joinGamemode(player, DuelGameMode.SMP_QUEUE.get(0), stringGameMode, null,false);
+                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.SMP_QUEUE.get(0), stringGameMode, null,false);
+            }
+        }
+
+        if(gameMode == DuelGameMode.UHC_SHIELD){
+            DuelGameMode.UHC_SHIELD_QUEUE.add(minecraftPlayer);
+            if(DuelGameMode.UHC_SHIELD_QUEUE.size() >= 2){
+                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.UHC_SHIELD_QUEUE.get(0), stringGameMode, null,false);
             }
         }
 
         if(gameMode == DuelGameMode.VANILLA){
-            DuelGameMode.VANILLA_QUEUE.add(player);
+            DuelGameMode.VANILLA_QUEUE.add(minecraftPlayer);
             if(DuelGameMode.VANILLA_QUEUE.size() >= 2){
-                GamemodeHandler.joinGamemode(player, DuelGameMode.VANILLA_QUEUE.get(0), stringGameMode, null,false);
+                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.VANILLA_QUEUE.get(0), stringGameMode, null,false);
             }
         }
 
         if(gameMode == DuelGameMode.UHC){
-            DuelGameMode.UHC_QUEUE.add(player);
+            DuelGameMode.UHC_QUEUE.add(minecraftPlayer);
             if(DuelGameMode.UHC_QUEUE.size() >= 2){
-                GamemodeHandler.joinGamemode(player, DuelGameMode.UHC_QUEUE.get(0), stringGameMode, null,false);
+                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.UHC_QUEUE.get(0), stringGameMode, null,false);
             }
         }
 
         if(gameMode == DuelGameMode.FFA){
-            DuelGameMode.FFA_QUEUE.add(player);
+            DuelGameMode.FFA_QUEUE.add(minecraftPlayer);
             if(DuelGameMode.FFA_QUEUE.size() >= 2){
-                GamemodeHandler.joinGamemode(player, DuelGameMode.FFA_QUEUE.get(0), stringGameMode, null,false);
+                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.FFA_QUEUE.get(0), stringGameMode, null,false);
             }
         }
     }
 
-    public static void removeQueue(ServerPlayer player, @Nullable String stringGameMode, boolean silent){
+    public static void removeQueue(ServerPlayer minecraftPlayer, @Nullable String stringGameMode, boolean silent){
+        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
         if(stringGameMode != null) {
             DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
             if(gameMode == null){
                 if(!silent){
-                    player.sendMessage(ChatFormat.formatFail("Invalid gamemode!"), Util.NIL_UUID);
+                    player.sendMessage(Component.text("Invalid gamemode!").color(ChatFormat.failColor));
                 }
                 return;
             }
             if(gameMode == DuelGameMode.AXE){
-                DuelGameMode.AXE_QUEUE.remove(player);
+                DuelGameMode.AXE_QUEUE.remove(minecraftPlayer);
             }
 
             if(gameMode == DuelGameMode.BOW_ONLY) {
-                DuelGameMode.BOW_ONLY_QUEUE.remove(player);
+                DuelGameMode.BOW_ONLY_QUEUE.remove(minecraftPlayer);
             }
 
             if(gameMode == DuelGameMode.SHIELD) {
-                DuelGameMode.SHIELD_QUEUE.remove(player);
+                DuelGameMode.SHIELD_QUEUE.remove(minecraftPlayer);
             }
 
             if(gameMode == DuelGameMode.POT) {
-                DuelGameMode.POT_QUEUE.remove(player);
+                DuelGameMode.POT_QUEUE.remove(minecraftPlayer);
             }
 
             if(gameMode == DuelGameMode.NETH_POT) {
-                DuelGameMode.NETH_POT_QUEUE.remove(player);
+                DuelGameMode.NETH_POT_QUEUE.remove(minecraftPlayer);
             }
 
             if(gameMode == DuelGameMode.OG_VANILLA) {
-                DuelGameMode.OG_VANILLA_QUEUE.remove(player);
+                DuelGameMode.OG_VANILLA_QUEUE.remove(minecraftPlayer);
             }
 
             if(gameMode == DuelGameMode.SMP) {
-                DuelGameMode.SMP_QUEUE.remove(player);
+                DuelGameMode.SMP_QUEUE.remove(minecraftPlayer);
+            }
+
+            if(gameMode == DuelGameMode.UHC_SHIELD) {
+                DuelGameMode.UHC_SHIELD_QUEUE.remove(minecraftPlayer);
             }
 
             if(gameMode == DuelGameMode.VANILLA) {
-                DuelGameMode.VANILLA_QUEUE.remove(player);
+                DuelGameMode.VANILLA_QUEUE.remove(minecraftPlayer);
             }
 
             if(gameMode == DuelGameMode.SWORD_ONLY){
-                DuelGameMode.SWORD_ONLY_QUEUE.remove(player);
+                DuelGameMode.SWORD_ONLY_QUEUE.remove(minecraftPlayer);
             }
 
             if(gameMode == DuelGameMode.FFA){
-                DuelGameMode.FFA_QUEUE.remove(player);
+                DuelGameMode.FFA_QUEUE.remove(minecraftPlayer);
             }
 
             if(gameMode == DuelGameMode.UHC){
-                DuelGameMode.UHC_QUEUE.remove(player);
+                DuelGameMode.UHC_QUEUE.remove(minecraftPlayer);
             }
 
             if(gameMode == DuelGameMode.TRIDENT_ONLY){
-                DuelGameMode.TRIDENT_ONLY_QUEUE.remove(player);
+                DuelGameMode.TRIDENT_ONLY_QUEUE.remove(minecraftPlayer);
             }
 
             if(gameMode == DuelGameMode.HOE_ONLY){
-                DuelGameMode.HOE_ONLY_QUEUE.remove(player);
+                DuelGameMode.HOE_ONLY_QUEUE.remove(minecraftPlayer);
             }
             if(!silent){
-                player.sendMessage(ChatFormat.format("{b1}You have left the queue for {b2}{}{b1}.", stringGameMode.toUpperCase()), Util.NIL_UUID);
+                player.sendMessage(ChatFormat.returnAppendedComponent(
+                        ChatFormat.nexiaMessage(),
+                        Component.text("You have left the queue for ").color(ChatFormat.normalColor),
+                        Component.text(stringGameMode.toUpperCase()).color(ChatFormat.brandColor2),
+                        Component.text(".").color(ChatFormat.normalColor)
+                ));
             }
         } else {
-            DuelGameMode.AXE_QUEUE.remove(player);
-            DuelGameMode.BOW_ONLY_QUEUE.remove(player);
-            DuelGameMode.SHIELD_QUEUE.remove(player);
-            DuelGameMode.POT_QUEUE.remove(player);
-            DuelGameMode.NETH_POT_QUEUE.remove(player);
-            DuelGameMode.OG_VANILLA_QUEUE.remove(player);
-            DuelGameMode.SMP_QUEUE.remove(player);
-            DuelGameMode.VANILLA_QUEUE.remove(player);
-            DuelGameMode.SWORD_ONLY_QUEUE.remove(player);
-            DuelGameMode.FFA_QUEUE.remove(player);
-            DuelGameMode.UHC_QUEUE.remove(player);
-            DuelGameMode.TRIDENT_ONLY_QUEUE.remove(player);
-            DuelGameMode.HOE_ONLY_QUEUE.remove(player);
+            DuelGameMode.AXE_QUEUE.remove(minecraftPlayer);
+            DuelGameMode.BOW_ONLY_QUEUE.remove(minecraftPlayer);
+            DuelGameMode.SHIELD_QUEUE.remove(minecraftPlayer);
+            DuelGameMode.POT_QUEUE.remove(minecraftPlayer);
+            DuelGameMode.NETH_POT_QUEUE.remove(minecraftPlayer);
+            DuelGameMode.OG_VANILLA_QUEUE.remove(minecraftPlayer);
+            DuelGameMode.SMP_QUEUE.remove(minecraftPlayer);
+            DuelGameMode.UHC_SHIELD_QUEUE.remove(minecraftPlayer);
+            DuelGameMode.VANILLA_QUEUE.remove(minecraftPlayer);
+            DuelGameMode.SWORD_ONLY_QUEUE.remove(minecraftPlayer);
+            DuelGameMode.FFA_QUEUE.remove(minecraftPlayer);
+            DuelGameMode.UHC_QUEUE.remove(minecraftPlayer);
+            DuelGameMode.TRIDENT_ONLY_QUEUE.remove(minecraftPlayer);
+            DuelGameMode.HOE_ONLY_QUEUE.remove(minecraftPlayer);
         }
 
 
     }
 
-    public static void challengePlayer(ServerPlayer executor, ServerPlayer player, String stringGameMode, @Nullable String selectedmap){
+    public static void joinGamemode(ServerPlayer invitor, ServerPlayer player, String stringGameMode, @Nullable String selectedmap, boolean silent){
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
         if(gameMode == null){
-            executor.sendMessage(ChatFormat.formatFail("Invalid gamemode!"), Util.NIL_UUID);
+            if(!silent){
+                PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("Invalid gamemode!").color(ChatFormat.failColor));
+            }
             return;
         }
-        if(executor == player) {
-            executor.sendMessage(ChatFormat.formatFail("You cannot duel yourself!"), Util.NIL_UUID);
+        DuelsGame.startGame(invitor, player, stringGameMode, selectedmap);
+    }
+
+    public static void challengePlayer(ServerPlayer minecraftExecutor, ServerPlayer minecraftPlayer, String stringGameMode, @Nullable String selectedmap){
+
+        Player executor = PlayerUtil.getFactoryPlayer(minecraftExecutor);
+
+        DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
+        if(gameMode == null){
+            executor.sendMessage(Component.text("Invalid gamemode!").color(ChatFormat.failColor));
+            return;
+        }
+        if(minecraftExecutor == minecraftPlayer) {
+            executor.sendMessage(Component.text("You cannot duel yourself!").color(ChatFormat.failColor));
             return;
         }
 
-        PlayerData executorData = PlayerDataManager.get(executor);
-        PlayerData playerData = PlayerDataManager.get(player);
+        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+
+        PlayerData executorData = PlayerDataManager.get(minecraftExecutor);
+        PlayerData playerData = PlayerDataManager.get(minecraftPlayer);
 
         if(executorData.inDuel || playerData.inDuel) {
-            executor.sendMessage(ChatFormat.formatFail("The player is currently dueling someone."), Util.NIL_UUID);
+            executor.sendMessage(Component.text("That player is currently dueling someone.").color(ChatFormat.failColor));
             return;
         }
 
-        if(com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode != PlayerGameMode.DUELS){
-            executor.sendMessage(ChatFormat.formatFail("That player is not in duels!"), Util.NIL_UUID);
+        if(com.nexia.core.utilities.player.PlayerDataManager.get(minecraftPlayer).gameMode != PlayerGameMode.LOBBY){
+            executor.sendMessage(Component.text("That player is not in duels!").color(ChatFormat.failColor));
             return;
         }
 
@@ -316,137 +349,80 @@ public class GamemodeHandler {
         } else {
             map = selectedmap;
             if (!com.nexia.minigames.Main.config.duelsMaps.contains(map.toLowerCase())) {
-                executor.sendMessage(ChatFormat.formatFail("Invalid map!"), Util.NIL_UUID);
+                executor.sendMessage(Component.text("Invalid map!").color(ChatFormat.failColor));
                 return;
             }
         }
 
-        executorData.inviteMap = map;
-        executorData.inviting = true;
-        executorData.invitingPlayer = player;
-
-        if(playerData.inviting && playerData.invitingPlayer != null && playerData.invitingPlayer == executor && executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap)){
-            GamemodeHandler.joinGamemode(executor, player, stringGameMode, map, true);
-        } else if(!executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) && (playerData.invitingPlayer == null || !playerData.invitingPlayer.getStringUUID().equalsIgnoreCase(executor.getStringUUID())) && playerData.gameMode == DuelGameMode.LOBBY){
-            executor.sendMessage(ChatFormat.format("{b1}Sending a duel request to {b2}{} {b1}on map {b2}{} {b1}with kit {b2}{}{b1}.", player.getScoreboardName(), map, stringGameMode), Util.NIL_UUID);
-            TextComponent message = new TextComponent(ChatFormat.brandColor2 + executor.getScoreboardName() + ChatFormat.brandColor1 + " has challenged you to a duel!");
-
-            TextComponent kit = new TextComponent(ChatFormat.brandColor2 + "Kit: " + ChatFormat.brandColor1 + stringGameMode.toUpperCase());
-            TextComponent mapName = new TextComponent(ChatFormat.brandColor2 + "Map: " + ChatFormat.brandColor1 + map.toUpperCase());
-
-            TextComponent yes = new TextComponent("§8[§aACCEPT§8]  ");
-            String finalMap = map;
-            yes.withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/duel " + executor.getScoreboardName() + " " + stringGameMode + " " + finalMap)));
-
-            TextComponent no = new TextComponent("§8[§cIGNORE§8]");
-
-            TextComponent option = new TextComponent("");
-
-            option.append(yes);
-            option.append(no);
-
-            player.sendMessage(message, Util.NIL_UUID);
-            player.sendMessage(kit, Util.NIL_UUID);
-            player.sendMessage(mapName, Util.NIL_UUID);
-            player.sendMessage(option, Util.NIL_UUID);
-        }
-    }
-    public static void joinGamemode(ServerPlayer invitor, ServerPlayer player, String stringGameMode, @Nullable String selectedmap, boolean silent){
-        DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
-        if(gameMode == null){
-            if(!silent){
-                invitor.sendMessage(ChatFormat.formatFail("Invalid gamemode!"), Util.NIL_UUID);
-            }
-            return;
+        if(!executorData.inviteMap.equalsIgnoreCase(map)) {
+            executorData.inviteMap = map;
         }
 
-        ServerLevel duelLevel = createWorld();
-        String map = selectedmap;
-        if(map == null){
-            map = com.nexia.minigames.Main.config.duelsMaps.get(RandomUtil.randomInt(0, com.nexia.minigames.Main.config.duelsMaps.size()-1));
+        if(!executorData.inviteKit.equalsIgnoreCase(stringGameMode.toUpperCase())) {
+            executorData.inviteKit = stringGameMode.toUpperCase();
         }
-        String name = duelLevel.dimension().toString().replaceAll("]", "").split(":")[2];
 
-        Main.server.getCommands().performCommand(Main.server.createCommandSourceStack(), "/execute in duels:" + name + " run forceload add 0 0");
-        Main.server.getCommands().performCommand(Main.server.createCommandSourceStack(), "/execute in duels:" + name + " run " + DuelsGame.returnCommandMap(map));
-        Main.server.getCommands().performCommand(Main.server.createCommandSourceStack(), "/execute in duels:" + name + " run setblock 1 80 0 minecraft:redstone_block");
+        if(!executorData.inviting) {
+            executorData.inviting = true;
+        }
 
-        Main.server.getCommands().performCommand(Main.server.createCommandSourceStack(), "/execute in duels:" + name + " if block 0 80 0 minecraft:structure_block run setblock 0 80 0 air");
-        Main.server.getCommands().performCommand(Main.server.createCommandSourceStack(), "/execute in duels:" + name + " if block 1 80 0 minecraft:redstone_block run setblock 1 80 0 air");
+        if(executorData.invitingPlayer != minecraftPlayer) {
+            executorData.invitingPlayer = minecraftPlayer;
+        }
+
+        if(playerData.inviting && playerData.invitingPlayer != null && playerData.invitingPlayer == minecraftExecutor && executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) && executorData.inviteKit.equalsIgnoreCase(playerData.inviteKit)){
+            GamemodeHandler.joinGamemode(minecraftExecutor, minecraftPlayer, stringGameMode, map, true);
+        } else if((!executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) || !executorData.inviteKit.equalsIgnoreCase(playerData.inviteKit)) && (playerData.invitingPlayer == null || !playerData.invitingPlayer.getStringUUID().equalsIgnoreCase(minecraftExecutor.getStringUUID())) && playerData.gameMode == DuelGameMode.LOBBY){
+            executor.sendMessage(ChatFormat.nexiaMessage().append(Component.text("Sending a duel request to ").append(Component.text(player.getRawName()).color(ChatFormat.brandColor2)).append(Component.text(" on map ")).append(Component.text(map)).color(ChatFormat.brandColor2).append(Component.text(" with kit ")).append(Component.text(stringGameMode)).append(Component.text("."))));
+
+            Component message = ChatFormat.returnAppendedComponent(
+                    Component.text(executor.getRawName())
+                            .color(ChatFormat.brandColor2),
+                    Component.text("has challenged you to a duel!")
+                            .color(ChatFormat.normalColor)
+            );
 
 
-        PlayerData invitorData = PlayerDataManager.get(invitor);
-        PlayerData playerData = PlayerDataManager.get(player);
+            Component kit = ChatFormat.returnAppendedComponent(
+                    Component.text("Kit: ")
+                            .color(ChatFormat.brandColor2),
+                    Component.text(stringGameMode.toUpperCase())
+                            .color(ChatFormat.normalColor)
+            );
 
-        player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-        player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
+            Component mapName = ChatFormat.returnAppendedComponent(
+                    Component.text("Map: ")
+                            .color(ChatFormat.brandColor2),
+                    Component.text(map.toUpperCase())
+                            .color(ChatFormat.normalColor)
+            );
 
-        invitor.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-        invitor.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
+            Component yes = ChatFormat.returnAppendedComponent(
+                    Component.text("[")
+                            .color(NamedTextColor.DARK_GRAY),
+                    Component.text("ACCEPT")
+                            .color(TextColor.fromHexString("#ffffff"))
+                            .decorate(ChatFormat.bold)
+                            .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor1)))
+                            .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/duel " + executor.getRawName() + " " + stringGameMode + " " + map)),
+                    Component.text("]   ")
+                            .color(NamedTextColor.DARK_GRAY)
+            );
 
-        PlayerUtil.resetHealthStatus(player);
-        PlayerUtil.resetHealthStatus(invitor);
+            Component no = ChatFormat.returnAppendedComponent(
+                    Component.text("[")
+                            .color(NamedTextColor.DARK_GRAY),
+                    Component.text("IGNORE")
+                            .color(ChatFormat.failColor),
+                    Component.text("]")
+                            .color(NamedTextColor.DARK_GRAY)
+            );
 
-        player.teleportTo(duelLevel, 30, 85, 0, 0, 0);
-        EntityPos playerPos = new EntityPos(0, 85, 0, 0, 0);
-        player.setRespawnPosition(duelLevel.dimension(), playerPos.toBlockPos(), playerPos.yaw, true, false);
-        playerData.inviting = false;
-        playerData.invitingPlayer = null;
-        playerData.inDuel = true;
-        playerData.duelPlayer = invitor;
 
-        invitor.teleportTo(duelLevel, -30, 85, 0, 0, 0);
-        EntityPos invitorPos = new EntityPos(0, 85, 0, 0, 0);
-        invitor.setRespawnPosition(duelLevel.dimension(), invitorPos.toBlockPos(), invitorPos.yaw, true, false);
-        invitorData.inviting = false;
-        invitorData.invitingPlayer = null;
-        invitorData.inDuel = true;
-        invitorData.duelPlayer = player;
-
-        player.setGameMode(GameType.SURVIVAL);
-        invitor.setGameMode(GameType.SURVIVAL);
-
-        removeQueue(player, null, true);
-        removeQueue(invitor, null, true);
-
-        /*
-        InventoryUtil.setInventory(player, stringGameMode.toLowerCase(), "/duels", true);
-        InventoryUtil.setInventory(invitor, stringGameMode.toLowerCase(), "/duels", true);
-         */
-
-        player.sendMessage(ChatFormat.format("{b1}Your opponent: {b2}{}", invitor.getScoreboardName()), Util.NIL_UUID);
-        invitor.sendMessage(ChatFormat.format("{b1}Your opponent: {b2}{}", player.getScoreboardName()), Util.NIL_UUID);
-
-        ServerTime.minecraftServer.getCommands().performCommand(ServerTime.minecraftServer.createCommandSourceStack(), "/execute as " + player.getScoreboardName() + " run loadinventory " + stringGameMode.toLowerCase() + " " + player.getScoreboardName());
-        ServerTime.minecraftServer.getCommands().performCommand(ServerTime.minecraftServer.createCommandSourceStack(), "/execute as " + invitor.getScoreboardName() + " run loadinventory " + stringGameMode.toLowerCase() + " " + invitor.getScoreboardName());
-
-        playerData.gameMode = gameMode;
-        invitorData.gameMode = gameMode;
+            player.sendMessage(message);
+            player.sendMessage(kit);
+            player.sendMessage(mapName);
+            player.sendMessage(yes.append(no));
+        }
     }
-
-    public static ServerLevel createWorld(){
-        RuntimeWorldConfig config = new RuntimeWorldConfig()
-                .setDimensionType(DuelsSpawn.duelWorld.dimensionType())
-                .setGenerator(DuelsSpawn.duelWorld.getChunkSource().getGenerator())
-                .setDifficulty(Difficulty.HARD)
-                .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
-                .setGameRule(GameRules.RULE_MOBGRIEFING, false)
-                .setGameRule(GameRules.RULE_WEATHER_CYCLE, false)
-                .setGameRule(GameRules.RULE_DAYLIGHT, false)
-                .setGameRule(GameRules.RULE_DO_IMMEDIATE_RESPAWN, false)
-                .setGameRule(GameRules.RULE_DOMOBSPAWNING, false)
-                .setGameRule(GameRules.RULE_SHOWDEATHMESSAGES, false)
-                .setGameRule(GameRules.RULE_SPAWN_RADIUS, 0)
-                .setGameRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS, false)
-                .setTimeOfDay(6000);
-
-        return ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", UUID.randomUUID().toString().replaceAll("-", ""))).location(), config).asWorld();
-    }
-
-    public static void deleteWorld(String id) {
-        try {
-            ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", id)).location(), null).delete();
-        } catch(Exception ignored) { }
-    }
-
 }

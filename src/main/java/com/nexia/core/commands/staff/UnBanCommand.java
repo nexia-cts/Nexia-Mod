@@ -2,14 +2,16 @@ package com.nexia.core.commands.staff;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
+import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.GameProfileArgument;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.UserBanList;
 
 import java.util.Collection;
@@ -32,20 +34,43 @@ public class UnBanCommand {
         );
     }
 
-    public static int unban(CommandSourceStack context, Collection<GameProfile> collection) throws CommandSyntaxException {
+    public static int unban(CommandSourceStack context, Collection<GameProfile> collection) {
         UserBanList userBanList = Main.server.getPlayerList().getBans();
         int i = 0;
+
+        ServerPlayer player = null;
+
+        try {
+            player = context.getPlayerOrException();
+        } catch (Exception ignored){ }
 
         for (GameProfile gameProfile : collection) {
             if (userBanList.isBanned(gameProfile)) {
                 userBanList.remove(gameProfile);
                 ++i;
-                context.sendSuccess(ChatFormat.format("{b1}You have unbanned {b2}{}{b1}.", gameProfile.getName()), true);
+                if(player != null){
+                    PlayerUtil.getFactoryPlayer(player).sendMessage(ChatFormat.returnAppendedComponent(
+                            ChatFormat.nexiaMessage(),
+                            Component.text("You have unbanned ").color(ChatFormat.normalColor),
+                            Component.text(gameProfile.getName()).color(ChatFormat.brandColor2)
+                    ));
+                } else {
+                    context.sendSuccess(LegacyChatFormat.format("{b1}You have unbanned {b2}{}{b1}.", gameProfile.getName()), true);
+                }
+
             }
         }
 
         if (i == 0) {
-            context.sendSuccess(ChatFormat.formatFail("That player is not banned."), false);
+            if(player != null){
+                PlayerUtil.getFactoryPlayer(player).sendMessage(ChatFormat.returnAppendedComponent(
+                        ChatFormat.nexiaMessage(),
+                        Component.text("That player is not banned.").color(ChatFormat.failColor)
+                ));
+            } else {
+                context.sendSuccess(LegacyChatFormat.formatFail("That player is not banned."), false);
+            }
+
         } else {
             return i;
         }

@@ -6,8 +6,10 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.player.PlayerUtil;
+import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -39,11 +41,23 @@ public class MuteCommand {
         CommandSourceStack sender = context.getSource();
         ServerPlayer muted = EntityArgument.getPlayer(context, "player");
 
+        ServerPlayer player;
+
         int durationInSeconds;
         try {
             durationInSeconds = parseTimeArg(durationArg);
         } catch (Exception e) {
-            sender.sendFailure(ChatFormat.format("{f}Invalid duration. Examples: 1s / 2m / 3h"));
+            try {
+                player = sender.getPlayerOrException();
+                PlayerUtil.getFactoryPlayer(player).sendMessage(ChatFormat.returnAppendedComponent(
+                        ChatFormat.nexiaMessage(),
+                        Component.text("Invalid duration. Examples: ").color(ChatFormat.normalColor),
+                        Component.text("1s / 2m / 3h").color(ChatFormat.failColor)
+                ));
+            } catch(Exception ignored) {
+                sender.sendFailure(LegacyChatFormat.format("{f}Invalid duration. Examples: 1s / 2m / 3h"));
+            }
+
             return 1;
         }
 

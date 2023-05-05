@@ -44,7 +44,7 @@ public class BwPlayers {
         BwAreas.queueSpawn.teleportPlayer(BwAreas.bedWarsWorld, player);
         player.setRespawnPosition(BwAreas.bedWarsWorld.dimension(),
                 BwAreas.queueSpawn.toBlockPos(), BwAreas.queueSpawn.yaw, true, false);
-        PlayerUtil.resetHealthStatus(player);
+        PlayerUtil.resetHealthStatus(PlayerUtil.getFactoryPlayer(player));
         player.setGameMode(GameType.ADVENTURE);
         player.setInvulnerable(true);
 
@@ -109,7 +109,7 @@ public class BwPlayers {
     }
 
     public static void sendToSpawn(ServerPlayer player) {
-        PlayerUtil.resetHealthStatus(player);
+        PlayerUtil.resetHealthStatus(PlayerUtil.getFactoryPlayer(player));
         player.setGameMode(GameType.SURVIVAL);
         giveSpawnItems(player);
         player.setInvulnerable(true);
