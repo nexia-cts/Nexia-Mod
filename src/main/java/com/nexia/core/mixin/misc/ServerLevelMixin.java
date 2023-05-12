@@ -23,5 +23,6 @@ public abstract class ServerLevelMixin {
         this.removeFromChunk(entity);
         this.entitiesById.remove(entity.getId());
         this.onEntityRemoved(entity);
+        ci.cancel();
     }
 }
