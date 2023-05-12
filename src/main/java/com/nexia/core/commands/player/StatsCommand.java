@@ -68,8 +68,7 @@ public class StatsCommand {
 
             player.sendMessage(start
                     .append(Component.text(" KDR: ").color(ChatFormat.brandColor2))
-                            .append(Component.text(Float.parseFloat(new DecimalFormat("#.##").format(data.kills / data.deaths))).color(ChatFormat.greenColor))
-
+                            .append(Component.text(calculateKDR(data.kills, data.deaths)).color(ChatFormat.greenColor))
             );
 
             player.sendMessage(start
@@ -134,12 +133,17 @@ public class StatsCommand {
         return 1;
     }
 
+    public static float calculateKDR(int kills, int deaths){
+
+        if(deaths == 0 || kills == 0) { return 0; }
+        return Float.parseFloat(new DecimalFormat("#.##").format((float) kills / deaths));
+    }
+
     public static int other(CommandContext<CommandSourceStack> context, ServerPlayer otherPlayer, String gamemode) throws CommandSyntaxException {
         ServerPlayer mcPlayer = context.getSource().getPlayerOrException();
-        PlayerData executerData = com.nexia.core.utilities.player.PlayerDataManager.get(otherPlayer);
         Player player = PlayerUtil.getFactoryPlayer(mcPlayer);
 
-        Component start = Component.text("  »").color(NamedTextColor.GRAY);
+        Component start = Component.text("  »").color(ChatFormat.arrowColor);
 
         Component user = start
                 .append(Component.text(" User: ").color(ChatFormat.brandColor2))
@@ -152,7 +156,7 @@ public class StatsCommand {
 
         if(gamemode.equalsIgnoreCase("ffa")){
             message = ChatFormat.separatorLine("FFA Stats");
-            SavedPlayerData data = PlayerDataManager.get(mcPlayer).savedData;
+            SavedPlayerData data = PlayerDataManager.get(otherPlayer).savedData;
 
             player.sendMessage(message);
             player.sendMessage(user);
@@ -167,8 +171,7 @@ public class StatsCommand {
 
             player.sendMessage(start
                     .append(Component.text(" KDR: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(Float.parseFloat(new DecimalFormat("#.##").format(data.kills / data.deaths))).color(ChatFormat.greenColor))
-
+                    .append(Component.text(calculateKDR(data.kills, data.deaths)).color(ChatFormat.greenColor))
             );
 
             player.sendMessage(start
@@ -181,7 +184,7 @@ public class StatsCommand {
 
         if(gamemode.equalsIgnoreCase("duels")){
             message = ChatFormat.separatorLine("Duels Stats");
-            com.nexia.minigames.games.duels.util.player.SavedPlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(mcPlayer).savedData;
+            com.nexia.minigames.games.duels.util.player.SavedPlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(otherPlayer).savedData;
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
@@ -197,7 +200,7 @@ public class StatsCommand {
 
         if(gamemode.equalsIgnoreCase("bedwars")){
             message = ChatFormat.separatorLine("Bedwars Stats");
-            com.nexia.minigames.games.duels.util.player.SavedPlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(mcPlayer).savedData;
+            com.nexia.minigames.games.duels.util.player.SavedPlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(otherPlayer).savedData;
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
@@ -212,7 +215,7 @@ public class StatsCommand {
 
         if(gamemode.equalsIgnoreCase("oitc")){
             message = ChatFormat.separatorLine("OITC Stats");
-            com.nexia.minigames.games.oitc.util.player.SavedPlayerData data = com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(mcPlayer).savedData;
+            com.nexia.minigames.games.oitc.util.player.SavedPlayerData data = com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(otherPlayer).savedData;
 
             player.sendMessage(message);
             player.sendMessage(user);
