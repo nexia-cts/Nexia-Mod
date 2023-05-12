@@ -68,7 +68,7 @@ public class DuelGameHandler {
             } else if (mapname.equalsIgnoreCase("nethflat") || mapname.equalsIgnoreCase(("netheriteflat"))) {
                 pos[0] = 0;
                 pos[1] = 80;
-                pos[2] = 0;
+                pos[2] = -41;
             } else if (mapname.equalsIgnoreCase("plains")) {
                 pos[0] = -71;
                 pos[1] = 81;

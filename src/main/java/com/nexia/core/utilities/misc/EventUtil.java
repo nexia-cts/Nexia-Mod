@@ -38,7 +38,6 @@ public class EventUtil {
                 p.swing(InteractionHand.MAIN_HAND);
                 SpawnGUI.openSpawnGUI(p);
             }
-
             ci.cancel();
         }
     }
