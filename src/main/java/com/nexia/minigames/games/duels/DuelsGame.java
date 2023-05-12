@@ -224,14 +224,11 @@ public class DuelsGame { //implements Runnable{
         PlayerUtil.resetHealthStatus(victim);
 
         // Fix command bug (/duel & /queue being red indicating you can't use them, but you actually still can)
-        LobbyUtil.sendGame(minecraftVictim, "duels", false, false);
-
-
+        //LobbyUtil.sendGame(minecraftVictim, "duels", false, false);
 
         victim.getInventory().clear();
 
         minecraftVictim.setGameMode(GameType.ADVENTURE);
-
 
         DuelGameHandler.deleteWorld(duelLevel.dimension().toString().replaceAll("]", "").split(":")[2]);
 
