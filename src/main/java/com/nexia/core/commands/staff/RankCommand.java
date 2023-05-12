@@ -43,27 +43,27 @@ public class RankCommand {
         for(int i = 0; i < 9; i++){
             if(rank.equalsIgnoreCase(Main.config.ranks[i])){
                 if(factoryExecutor != null){
-                    factoryExecutor.sendMessage(ChatFormat.returnAppendedComponent(
-                            ChatFormat.nexiaMessage(),
-                            Component.text("You have set the rank of ").color(ChatFormat.normalColor),
-                            Component.text(otherFactoryPlayer.getRawName()).color(ChatFormat.brandColor2),
-                            Component.text(" to ").color(ChatFormat.normalColor),
-                            Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true),
-                            Component.text(".").color(ChatFormat.brandColor2)
-                    ));
+                    factoryExecutor.sendMessage(
+                            ChatFormat.nexiaMessage()
+                                            .append(Component.text("You have set the rank of ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                    .append(Component.text(otherFactoryPlayer.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                                            .append(Component.text(" to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                                    .append(Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true).decoration(ChatFormat.bold, false))
+                                                                            .append(Component.text(".").color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false).decoration(ChatFormat.bold, false))
+                    );
                 } else {
                     executer.sendSuccess(LegacyChatFormat.format("{b1}You have set the rank of {b2}{} {b1}to: {b2}{b}{}{b1}.", otherFactoryPlayer.getRawName(), Main.config.ranks[i]), false);
                 }
 
 
-                otherFactoryPlayer.sendMessage(ChatFormat.returnAppendedComponent(
-                        ChatFormat.nexiaMessage(),
-                        Component.text("Your rank has been set to: ").color(ChatFormat.normalColor),
-                        Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true),
-                        Component.text(".").color(ChatFormat.normalColor)
-                ));
+                otherFactoryPlayer.sendMessage(
+                        ChatFormat.nexiaMessage()
+                                        .append(Component.text("Your rank has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                .append(Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                                                        .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                );
 
-                for (int i2 = 0; i2 < 8; i2++) {
+                for (int i2 = 0; i2 < 9; i2++) {
                     otherFactoryPlayer.removeTag(Main.config.ranks[i2]);
                 }
 

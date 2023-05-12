@@ -23,7 +23,7 @@ public class SpawnGUI extends SimpleGui {
         super(type, player, includePlayer);
     }
 
-    static HashMap<String, int[]> mapLocations = new HashMap<>();
+    public static HashMap<String, int[]> mapLocations = new HashMap<>();
 
     private void fillEmptySlots(ItemStack itemStack){
         for(int i = 0; i < 45; i++){
@@ -36,67 +36,91 @@ public class SpawnGUI extends SimpleGui {
 
         fillEmptySlots(emptySlot);
 
-        ItemStack crimson = new ItemStack(Items.CRIMSON_NYLIUM);
-        crimson.setHoverName(new TextComponent("§c§lNether"));
-        ItemDisplayUtil.addLore(crimson, "§cExplore the crimson area of the nether, containing volcanos and more!", 0);
+        ItemStack purple = new ItemStack(Items.PURPLE_STAINED_GLASS_PANE);
+        purple.setHoverName(new TextComponent(""));
 
-        ItemStack blackstone = new ItemStack(Items.BLACKSTONE);
-        blackstone.setHoverName(new TextComponent("§8§lBlackstone"));
-        ItemDisplayUtil.addLore(blackstone, "§8Explore the blackstone area of the nether.", 0);
+        ItemStack magenta = new ItemStack(Items.MAGENTA_STAINED_GLASS_PANE);
+        magenta.setHoverName(new TextComponent(""));
+
+        ItemStack nether = new ItemStack(Items.SHROOMLIGHT);
+        nether.setHoverName(new TextComponent("§c§lNether Forest"));
 
         ItemStack mesa = new ItemStack(Items.RED_SANDSTONE);
         mesa.setHoverName(new TextComponent("§6§lMesa"));
-        ItemDisplayUtil.addLore(mesa, "§6Explore the mesa with interesting structures and paths.", 0);
+
+        ItemStack blackstone = new ItemStack(Items.BLACKSTONE);
+        blackstone.setHoverName(new TextComponent("§8§lBlackstone"));
 
         ItemStack savanna = new ItemStack(Items.COARSE_DIRT);
         savanna.setHoverName(new TextComponent("§6§lSavanna"));
-        ItemDisplayUtil.addLore(savanna, "§6Placeholder.", 0);
 
         ItemStack plains = new ItemStack(Items.GRASS_BLOCK);
         plains.setHoverName(new TextComponent("§a§lPlains"));
-        ItemDisplayUtil.addLore(plains, "§aThe center of the map, usually where the most players are.", 0);
         ItemDisplayUtil.addGlint(plains);
 
-        ItemStack snow = new ItemStack(Items.BLUE_ICE);
-        snow.setHoverName(new TextComponent("§9§lIce"));
-        ItemDisplayUtil.addLore(snow, "§aExplore the snowy, cold area.", 0);
+        ItemStack snow = new ItemStack(Items.SNOW_BLOCK);
+        snow.setHoverName(new TextComponent("§f§lSnow"));
 
         ItemStack mushroom = new ItemStack(Items.MYCELIUM);
         mushroom.setHoverName(new TextComponent("§7§lMushrooms"));
-        ItemDisplayUtil.addLore(mushroom, "§aPlaceholder", 0);
 
         ItemStack forest = new ItemStack(Items.OAK_LEAVES);
-        plains.setHoverName(new TextComponent("§2§lForest"));
-        ItemDisplayUtil.addLore(plains, "§2Big trees.", 0);
+        forest.setHoverName(new TextComponent("§2§lForest"));
 
         ItemStack desert = new ItemStack(Items.SAND);
-        plains.setHoverName(new TextComponent("§e§lDesert"));
-        ItemDisplayUtil.addLore(plains, "§eExplore the hot area.", 0);
+        desert.setHoverName(new TextComponent("§e§lDesert"));
 
-        this.setSlot(12, mesa);
-        this.setSlot(13, desert);
-        this.setSlot(14, mushroom);
-        this.setSlot(21, blackstone);
+        this.setSlot(11, mesa);
+        this.setSlot(3, desert);
+        this.setSlot(41, mushroom);
         this.setSlot(22, plains);
-        this.setSlot(23, savanna);
-        this.setSlot(30, crimson);
-        this.setSlot(31, forest);
-        this.setSlot(32, snow);
+        this.setSlot(5, savanna);
+        this.setSlot(39, nether);
+        this.setSlot(29, blackstone);
+        this.setSlot(15, forest);
+        this.setSlot(33, snow);
+
+
+        this.setSlot(4, purple);
+        this.setSlot(12, purple);
+        this.setSlot(13, purple);
+        this.setSlot(14, purple);
+
+        this.setSlot(21, purple);
+        this.setSlot(23, purple);
+        this.setSlot(30, purple);
+        this.setSlot(31, purple);
+        this.setSlot(32, purple);
+        this.setSlot(40, purple);
+
+
+        this.setSlot(10, magenta);
+        this.setSlot(16, magenta);
+        this.setSlot(18, magenta);
+        this.setSlot(19, magenta);
+        this.setSlot(20, magenta);
+        this.setSlot(24, magenta);
+        this.setSlot(25, magenta);
+        this.setSlot(26, magenta);
+        this.setSlot(28, magenta);
+        this.setSlot(34, magenta);
+
 
     }
 
-    private void teleportPlayer(ServerPlayer minecraftPlayer, String name) {
+    public static void teleportPlayer(ServerPlayer minecraftPlayer, String name) {
         int[] pos = mapLocations.get(name);
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
         if(pos != null){
             minecraftPlayer.teleportTo(FfaAreas.ffaWorld, pos[0], pos[1], pos[2], pos[3], pos[4]);
-            player.sendMessage(ChatFormat.returnAppendedComponent(
-                    ChatFormat.nexiaMessage(),
-                    Component.text("You have been teleported to: ").color(ChatFormat.normalColor),
-                    Component.text(name).color(ChatFormat.brandColor2)
-            ));
+            player.sendMessage(
+                    ChatFormat.nexiaMessage()
+                                    .append(Component.text("You have been teleported to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                            .append(Component.text(name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                            .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+            );
         } else {
-            player.sendMessage(Component.text("An error has occurred. Please try again.").color(ChatFormat.failColor));
+            player.sendMessage(Component.text("Invalid biome!").color(ChatFormat.failColor));
         }
     }
 
@@ -106,7 +130,7 @@ public class SpawnGUI extends SimpleGui {
             ItemStack itemStack = element.getItemStack();
             net.minecraft.network.chat.Component name = itemStack.getHoverName();
 
-            if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
+            if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.MAGENTA_STAINED_GLASS_PANE && itemStack.getItem() != Items.PURPLE_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
                 String modifiedName = name.getString().substring(4).toLowerCase();
                 teleportPlayer(this.player, modifiedName);
                 this.close();
@@ -134,15 +158,15 @@ public class SpawnGUI extends SimpleGui {
         // 115 40 -151 | Mushrooms
         // 0 40 0 | Plains (Center)
 
-        mapLocations.put("crimson", new int[]{174, 48, -30, -127, -2});
-        mapLocations.put("blackstone", new int[]{118, 48, 86, -111, -6});
-        mapLocations.put("mesa", new int[]{74, 47, 169, 130, -1});
-        mapLocations.put("savanna", new int[]{-166, 42, 50, 156, -3});
-        mapLocations.put("snow", new int[]{-35, 46, -206, 51, 1});
-        mapLocations.put("forest", new int[]{-174, 41, -38, 132, -2});
-        mapLocations.put("desert", new int[]{-73, 40, 181, 121, -2});
-        mapLocations.put("mushrooms", new int[]{115, 40, -151, -136, -1});
-        mapLocations.put("plains", new int[]{0, 40, 0, 0, 0});
+        mapLocations.put("nether forest", new int[]{186, 49, -71, -133, -5});
+        mapLocations.put("blackstone", new int[]{118, 49, 86, -111, -6});
+        mapLocations.put("mesa", new int[]{74, 48, 169, 130, -1});
+        mapLocations.put("savanna", new int[]{-166, 43, 50, 156, -3});
+        mapLocations.put("snow", new int[]{-35, 47, -206, 51, 1});
+        mapLocations.put("forest", new int[]{-174, 42, -38, 132, -2});
+        mapLocations.put("desert", new int[]{-73, 41, 181, 121, -2});
+        mapLocations.put("mushrooms", new int[]{115, 41, -151, -136, -1});
+        mapLocations.put("plains", new int[]{0, 41, 0, 0, 0});
 
     }
 }

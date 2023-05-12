@@ -46,7 +46,9 @@ public class BwPlayers {
                 BwAreas.queueSpawn.toBlockPos(), BwAreas.queueSpawn.yaw, true, false);
         PlayerUtil.resetHealthStatus(PlayerUtil.getFactoryPlayer(player));
         player.setGameMode(GameType.ADVENTURE);
-        player.setInvulnerable(true);
+
+        //player.setInvulnerable(true);
+        player.addTag(LobbyUtil.NO_DAMAGE_TAG);
 
         BwGame.queueList.add(player);
         if (!BwGame.isQueueCountdownActive && BwGame.queueList.size() >= BwGame.requiredPlayers) {

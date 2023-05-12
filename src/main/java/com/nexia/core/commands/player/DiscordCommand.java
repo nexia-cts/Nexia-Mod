@@ -21,12 +21,12 @@ public class DiscordCommand {
     }
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        PlayerUtil.getFactoryPlayer(context.getSource().getPlayerOrException()).sendMessage(ChatFormat.returnAppendedComponent(
-                ChatFormat.nexiaMessage(),
-                Component.text("Link to discord: ").color(ChatFormat.normalColor),
-                Component.text(Main.config.discordLink).color(ChatFormat.brandColor2)
-                        .hoverEvent(HoverEvent.showText(Component.text("Click me").color(ChatFormat.greenColor)))
-                        .clickEvent(ClickEvent.openUrl(Main.config.discordLink))
+        PlayerUtil.getFactoryPlayer(context.getSource().getPlayerOrException()).sendMessage(
+                ChatFormat.nexiaMessage()
+                                .append(Component.text("Link to discord: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
+                                        .append(Component.text(Main.config.discordLink).color(ChatFormat.brandColor2)
+                                                .hoverEvent(HoverEvent.showText(Component.text("Click me").color(ChatFormat.greenColor)))
+                                                .clickEvent(ClickEvent.openUrl(Main.config.discordLink)))
         ));
 
         return 1;

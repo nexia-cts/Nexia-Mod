@@ -48,21 +48,13 @@ public class ChatFormat {
         if (title != null) {
             int lineLength = spaces.length() - Math.round((float)title.length() * 1.33F) - 4;
             return Component.text(spaces.substring(0, lineLength / 2)).color(lineColor).decorate(strikeThrough)
-                    .append(Component.text("[ ").color(lineColor))
-                    .append(Component.text(title).color(lineTitleColor))
-                    .append(Component.text(" ]").color(lineColor))
+                    .append(Component.text("[ ").color(lineColor).decoration(strikeThrough, false))
+                    .append(Component.text(title).color(lineTitleColor).decoration(strikeThrough, false))
+                    .append(Component.text(" ]").color(lineColor).decoration(strikeThrough, false))
                     .append(Component.text(spaces.substring(0, (lineLength + 1) / 2))).color(lineColor).decorate(strikeThrough);
         } else {
             return Component.text(spaces).color(lineColor).decorate(strikeThrough);
         }
-    }
-
-    public static Component returnAppendedComponent(Component... components){
-        Component finalComponent = Component.text("");
-        for(Component component : components){
-            finalComponent.append(component);
-        }
-        return finalComponent;
     }
 
     public static boolean hasWhiteSpacesOrSpaces(@Nullable String[] strings, @Nullable String string){
@@ -81,39 +73,19 @@ public class ChatFormat {
    public static Component nexiaMessage(){
         return Component.text("N")
                 .color(TextColor.fromHexString("#9e00f5"))
-                .decorate(bold)
+                .decoration(bold, true)
                 .append(Component.text("e")
                         .color(TextColor.fromHexString("#aa00f3"))
-                        .decorate(bold)
                         .append(Component.text("x")
                                 .color(TextColor.fromHexString("#b600f2"))
-                                .decorate(bold)
                                 .append(Component.text("i")
                                         .color(TextColor.fromHexString("#c300f0"))
-                                        .decorate(bold)
                                         .append(Component.text("a")
                                                 .color(TextColor.fromHexString("#cf00ee"))
-                                                .decorate(bold)
                                         )
                                 )
                         )
                 )
-                .append(Component.text(" » ").color(arrowColor));
+                .append(Component.text(" » ").color(arrowColor).decoration(bold, false));
    }
-
-    public static String removeColors(String string) {
-        StringBuilder stringBuilder = new StringBuilder(string);
-
-        for (int i = 0; i < stringBuilder.length(); i++) {
-            if (stringBuilder.charAt(i) == '§') {
-                stringBuilder.deleteCharAt(i);
-                if (stringBuilder.length() > i) {
-                    stringBuilder.deleteCharAt(i);
-                }
-                i--;
-            }
-        }
-        return stringBuilder.toString();
-    }
-
 }

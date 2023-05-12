@@ -20,7 +20,7 @@ import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQu
 public class DuelGameHandler {
     public static void leave(ServerPlayer player) {
         if (player.getLastDamageSource() != null) {
-            DuelsGame.death(player, null, player.getLastDamageSource());
+            DuelsGame.death(player, player.getLastDamageSource());
             return;
         }
         PlayerData data = PlayerDataManager.get(player);
@@ -61,45 +61,34 @@ public class DuelGameHandler {
         float[] pos = new float[]{0, 83, 0, 0, 0};
 
         if(player1){
-            if (mapname.equalsIgnoreCase("desert")) {
-                pos[0] = -30;
-            } else if (mapname.equalsIgnoreCase("city")) {
-                pos[0] = 36;
-                pos[1] = 80;
-                pos[3] = 90;
+            if (mapname.equalsIgnoreCase("city")) {
+                pos[0] = -55;
+                pos[1] = 81;
+                pos[3] = -4;
             } else if (mapname.equalsIgnoreCase("nethflat") || mapname.equalsIgnoreCase(("netheriteflat"))) {
                 pos[0] = 0;
                 pos[1] = 80;
-                pos[2] = -41;
+                pos[2] = 0;
             } else if (mapname.equalsIgnoreCase("plains")) {
-                pos[0] = 0;
-                pos[1] = 80;
-                pos[2] = 25;
-            } else if (mapname.equalsIgnoreCase("sky")) {
-                pos[0] = 31;
-                pos[2] = -2;
-                pos[3] = 90;
+                pos[0] = -71;
+                pos[1] = 81;
+                pos[2] = -16;
             }
         } else {
-            if (mapname.equalsIgnoreCase("desert")) {
-                pos[0] = 30;
-            } else if (mapname.equalsIgnoreCase("city")) {
-                pos[0] = -35;
+            if (mapname.equalsIgnoreCase("city")) {
+                pos[0] = 17;
                 pos[1] = 80;
+                pos[2] = -4;
                 pos[3] = -90;
             } else if (mapname.equalsIgnoreCase("nethflat") || mapname.equalsIgnoreCase(("netheriteflat"))) {
                 pos[0] = 0;
                 pos[1] = 80;
                 pos[2] = 41;
             } else if (mapname.equalsIgnoreCase("plains")) {
-                pos[0] = 0;
-                pos[1] = 80;
-                pos[2] = 25;
+                pos[0] = -71;
+                pos[1] = 81;
+                pos[2] = 34;
                 pos[3] = 180;
-            } else if (mapname.equalsIgnoreCase("sky")) {
-                pos[0] = -31;
-                pos[2] = 2;
-                pos[3] = -90;
             }
         }
 
@@ -110,27 +99,19 @@ public class DuelGameHandler {
         int[] pos = new int[]{0, 0, 0};
 
         String rotation = "";
-        if (mapname.equalsIgnoreCase("desert")) {
-            pos[0] = -80;
-            pos[1] = -45;
-            pos[2] = -80;
-        } else if (mapname.equalsIgnoreCase("city")) {
-            pos[0] = -45;
-            pos[1] = -13;
-            pos[2] = -30;
+        if (mapname.equalsIgnoreCase("city")) {
+            pos[0] = -65;
+            pos[1] = -11;
+            pos[2] = -31;
         } else if (mapname.equalsIgnoreCase("nethflat") || mapname.equalsIgnoreCase(("netheriteflat"))) {
-            pos[0] = -35;
+            pos[0] = -36;
             pos[1] = -3;
-            pos[2] = -50;
+            pos[2] = -51;
         } else if (mapname.equalsIgnoreCase("plains")) {
-            pos[0] = 39;
+            pos[0] = -40;
             pos[1] = -20;
-            pos[2] = -39;
+            pos[2] = -31;
             rotation = "CLOCKWISE_90";
-        } else if (mapname.equalsIgnoreCase("sky")) {
-            pos[0] = -33;
-            pos[1] = -6;
-            pos[2] = -19;
         }
 
         if(rotation.trim().length() != 0){

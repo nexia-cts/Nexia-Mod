@@ -49,11 +49,11 @@ public class MuteCommand {
         } catch (Exception e) {
             try {
                 player = sender.getPlayerOrException();
-                PlayerUtil.getFactoryPlayer(player).sendMessage(ChatFormat.returnAppendedComponent(
-                        ChatFormat.nexiaMessage(),
-                        Component.text("Invalid duration. Examples: ").color(ChatFormat.normalColor),
-                        Component.text("1s / 2m / 3h").color(ChatFormat.failColor)
-                ));
+                PlayerUtil.getFactoryPlayer(player).sendMessage(
+                        ChatFormat.nexiaMessage()
+                                        .append(Component.text("Invalid duration. Examples: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                        .append(Component.text("1s / 2m / 3h").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
+                );
             } catch(Exception ignored) {
                 sender.sendFailure(LegacyChatFormat.format("{f}Invalid duration. Examples: 1s / 2m / 3h"));
             }

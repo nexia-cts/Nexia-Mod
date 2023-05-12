@@ -62,7 +62,7 @@ public class DuelGameMode {
 
         duelsMaps.add(new ItemStack(Items.SMOOTH_STONE)); // City
         duelsMaps.add(new ItemStack(Items.NETHERITE_BLOCK)); // Neth Flat
-        //duelsMaps.add(new ItemStack(Items.GRASS_BLOCK)); // Plains
+        duelsMaps.add(new ItemStack(Items.GRASS_BLOCK)); // Plains
         //duelsMaps.add(new ItemStack(Items.SAND)); // Desert
         //duelsMaps.add(new ItemStack(Items.COBWEB)); // Sky
 

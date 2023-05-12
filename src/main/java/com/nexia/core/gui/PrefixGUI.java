@@ -48,7 +48,7 @@ public class PrefixGUI extends SimpleGui {
             this.setSlot(airSlots, new ItemStack(Items.AIR));
             airSlots++;
         }
-        for(int i = 0; i < 8; i++){
+        for(int i = 0; i < 9; i++){
             if(slot == 17) {
                 slot = 19;
             }
@@ -86,14 +86,14 @@ public class PrefixGUI extends SimpleGui {
 
                 Player player = PlayerUtil.getFactoryPlayer(this.player);
 
-                player.sendMessage(ChatFormat.returnAppendedComponent(
-                        ChatFormat.nexiaMessage(),
-                        net.kyori.adventure.text.Component.text("Your prefix has been set to: "),
-                        net.kyori.adventure.text.Component.text(name.getString()).color(ChatFormat.brandColor2),
-                        net.kyori.adventure.text.Component.text(".")
-                ));
+                player.sendMessage(
+                        ChatFormat.nexiaMessage()
+                                        .append(net.kyori.adventure.text.Component.text("Your prefix has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                .append(net.kyori.adventure.text.Component.text(name.getString()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                                        .append(net.kyori.adventure.text.Component.text(".").decoration(ChatFormat.bold, false))
+                );
 
-                for(int i = 0; i < 8; i++){
+                for(int i = 0; i < 9; i++){
                     player.removeTag(Main.config.ranks[i]);
                 }
 

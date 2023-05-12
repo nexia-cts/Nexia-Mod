@@ -24,11 +24,13 @@ public class UseItemListener {
 
             PlayerGameMode gameMode = PlayerDataManager.get(minecraftPlayer).gameMode;
 
-            if(name.contains(Component.text("Gamemode Selector")) && gameMode == PlayerGameMode.LOBBY){
+            String sName = name.toString().toLowerCase();
+
+            if(sName.contains("gamemode selector") && gameMode == PlayerGameMode.LOBBY){
                 PlayGUI.openMainGUI(minecraftPlayer);
             }
 
-            if(name.contains(Component.text("Prefix Selector")) && gameMode == PlayerGameMode.LOBBY){
+            if(sName.contains("prefix selector") && gameMode == PlayerGameMode.LOBBY){
                 PrefixGUI.openRankGUI(minecraftPlayer);
             }
 

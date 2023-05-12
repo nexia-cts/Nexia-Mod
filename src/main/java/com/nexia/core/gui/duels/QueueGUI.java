@@ -65,10 +65,11 @@ public class QueueGUI extends SimpleGui {
         }
         return super.click(index, clickType, action);
     }
-    public static void openQueueGUI(ServerPlayer player) {
+    public static int openQueueGUI(ServerPlayer player) {
         QueueGUI shop = new QueueGUI(MenuType.GENERIC_9x4, player, false);
         shop.setTitle(title);
         shop.setMainLayout();
         shop.open();
+        return 1;
     }
 }

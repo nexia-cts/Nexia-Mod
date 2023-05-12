@@ -51,34 +51,35 @@ public class ReportCommand {
         ServerPlayer mcExecutor = context.getSource().getPlayerOrException();
         Player executor = PlayerUtil.getFactoryPlayer(mcExecutor);
         if(mcExecutor == player){
-            executor.sendMessage(ChatFormat.returnAppendedComponent(
-                    ChatFormat.nexiaMessage(),
-                    Component.text("You cannot report yourself!").color(ChatFormat.failColor)
-            ));
+            executor.sendMessage(
+                    ChatFormat.nexiaMessage()
+                                    .append(Component.text("You cannot report yourself!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
+
+            );
             return 1;
         }
 
-        executor.sendMessage(ChatFormat.returnAppendedComponent(
-                ChatFormat.nexiaMessage(),
-                Component.text("You have reported ").color(ChatFormat.normalColor),
-                Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2),
-                Component.text(" for ").color(ChatFormat.normalColor),
-                Component.text(reason).color(ChatFormat.brandColor2)
-        ));
+        executor.sendMessage(
+                ChatFormat.nexiaMessage()
+                                .append(Component.text("You have reported ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                        .append(Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2))
+                                                .append(Component.text(" for ").color(ChatFormat.normalColor))
+                                                        .append(Component.text(reason).color(ChatFormat.brandColor2))
+        );
 
         ServerPlayer staffPlayer;
         sendWebhook(executor.getRawName(), player.getScoreboardName(), reason);
         for (int i = 0; i != Main.server.getPlayerCount(); i++){
             staffPlayer = PlayerUtil.getMinecraftPlayerFromName(Main.server.getPlayerNames()[i]);
             if(Permissions.check(staffPlayer, "nexia.staff.report", 1)) {
-                PlayerUtil.getFactoryPlayer(staffPlayer).sendMessage(ChatFormat.returnAppendedComponent(
-                        ChatFormat.nexiaMessage(),
-                        Component.text(executor.getRawName()).color(ChatFormat.brandColor2),
-                        Component.text(" has reported ").color(ChatFormat.normalColor),
-                        Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2),
-                        Component.text(" for ").color(ChatFormat.normalColor),
-                        Component.text(reason).color(ChatFormat.brandColor2)
-                ));
+                PlayerUtil.getFactoryPlayer(staffPlayer).sendMessage(
+                        ChatFormat.nexiaMessage()
+                                        .append(Component.text(executor.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                                .append(Component.text(" has reported ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                        .append(Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                                                .append(Component.text(" for ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                                        .append(Component.text(reason).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                );
             }
         }
 

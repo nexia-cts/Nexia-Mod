@@ -27,10 +27,10 @@ public class HealCommand {
         executer.heal(executer.getMaxHealth());
 
 
-        PlayerUtil.getFactoryPlayer(executer).sendMessage(ChatFormat.returnAppendedComponent(
-                ChatFormat.nexiaMessage(),
-                Component.text("You have been healed.").color(ChatFormat.normalColor)
-        ));
+        PlayerUtil.getFactoryPlayer(executer).sendMessage(
+                ChatFormat.nexiaMessage()
+                                .append(Component.text("You have been healed.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+        );
 
         return 1;
     }
@@ -47,21 +47,21 @@ public class HealCommand {
 
 
         if(player != null){
-            PlayerUtil.getFactoryPlayer(player).sendMessage(ChatFormat.returnAppendedComponent(
-                    ChatFormat.nexiaMessage(),
-                    Component.text("You have healed ").color(ChatFormat.normalColor),
-                    Component.text(otherPlayer.getScoreboardName()).color(ChatFormat.brandColor2),
-                    Component.text(".").color(ChatFormat.normalColor)
-            ));
+            PlayerUtil.getFactoryPlayer(player).sendMessage(
+                    ChatFormat.nexiaMessage()
+                                    .append(Component.text("You have healed ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                            .append(Component.text(otherPlayer.getScoreboardName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                                    .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+            );
         } else {
             executer.sendSuccess(LegacyChatFormat.format("{b1}You have healed {b2}{}{b1}.", otherPlayer.getScoreboardName()), false);
         }
 
 
-        PlayerUtil.getFactoryPlayer(otherPlayer).sendMessage(ChatFormat.returnAppendedComponent(
-                ChatFormat.nexiaMessage(),
-                Component.text("You have been healed.").color(ChatFormat.normalColor)
-        ));
+        PlayerUtil.getFactoryPlayer(otherPlayer).sendMessage(
+                ChatFormat.nexiaMessage()
+                        .append(Component.text("You have been healed.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+        );
 
         return 1;
     }

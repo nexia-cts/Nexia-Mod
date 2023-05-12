@@ -102,10 +102,11 @@ public class DuelGUI extends SimpleGui {
         }
         return super.click(index, clickType, action);
     }
-    public static void openDuelGui(ServerPlayer player, ServerPlayer other) {
+    public static int openDuelGui(ServerPlayer player, ServerPlayer other) {
         DuelGUI shop = new DuelGUI(MenuType.GENERIC_9x4, player, false);
         shop.setTitle(title);
         shop.setMainLayout(other);
         shop.open();
+        return 1;
     }
 }

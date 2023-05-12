@@ -77,17 +77,19 @@ public class MessageCommand {
     private static void sendMessage(ServerPlayer sender, ServerPlayer receiver, String message) {
         if (PlayerMutes.muted(sender) || sender == receiver) return;
 
-        PlayerUtil.getFactoryPlayer(sender).sendMessage(ChatFormat.returnAppendedComponent(
-                Component.text(String.format("To %s", receiver.getScoreboardName())).color(ChatFormat.brandColor1),
-                Component.text(" » ").color(ChatFormat.systemColor),
-                Component.text(message).color(ChatFormat.brandColor1)
+        PlayerUtil.getFactoryPlayer(sender).sendMessage(
+                Component.text(String.format("To %s", receiver.getScoreboardName())).color(ChatFormat.brandColor2)
+                                .append(Component.text(" » ").color(ChatFormat.arrowColor)
+                                                .append(Component.text(message).color(ChatFormat.brandColor2))
+
         ));
 
-        PlayerUtil.getFactoryPlayer(receiver).sendMessage(ChatFormat.returnAppendedComponent(
-                Component.text(String.format("To %s", receiver.getScoreboardName())).color(ChatFormat.brandColor1),
-                Component.text(" » ").color(ChatFormat.systemColor),
-                Component.text(message).color(ChatFormat.brandColor1)
-        ));
+        PlayerUtil.getFactoryPlayer(receiver).sendMessage(
+                Component.text(String.format("From %s", sender.getScoreboardName())).color(ChatFormat.brandColor2)
+                        .append(Component.text(" » ").color(ChatFormat.arrowColor)
+                                .append(Component.text(message).color(ChatFormat.brandColor2))
+
+                        ));
 
         /*
         sender.sendMessage(LegacyChatFormat.format("{b1}To {} {s}» {b1}{}", receiver.getScoreboardName(), message),

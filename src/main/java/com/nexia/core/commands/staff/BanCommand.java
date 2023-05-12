@@ -33,7 +33,7 @@ public class BanCommand {
         );
     }
 
-    public static int ban(CommandSourceStack context, Collection<GameProfile> collection, String reason) throws CommandSyntaxException {
+    public static int ban(CommandSourceStack context, Collection<GameProfile> collection, String reason) {
         UserBanList userBanList = Main.server.getPlayerList().getBans();
         int i = 0;
 
@@ -52,13 +52,13 @@ public class BanCommand {
                 ++i;
                 if(player != null){
 
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(ChatFormat.returnAppendedComponent(
-                            ChatFormat.nexiaMessage(),
-                            Component.text("You have banned ").color(ChatFormat.normalColor),
-                            Component.text(ComponentUtils.getDisplayName(gameProfile).getString()).color(ChatFormat.brandColor2),
-                            Component.text(" for ").color(ChatFormat.normalColor),
-                            Component.text(reason).color(ChatFormat.brandColor2)
-                    ));
+                    PlayerUtil.getFactoryPlayer(player).sendMessage(
+                            ChatFormat.nexiaMessage()
+                                            .append(Component.text("You have banned ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                    .append(Component.text(ComponentUtils.getDisplayName(gameProfile).getString()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                                            .append(Component.text(" for ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                                    .append(Component.text(reason).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                    );
 
                 } else {
                     context.sendSuccess(LegacyChatFormat.format("{b1}You have banned {b2}{} {b1}for {b2}{}", ComponentUtils.getDisplayName(gameProfile).getString(), reason), true);
@@ -72,10 +72,9 @@ public class BanCommand {
 
         if (i == 0) {
             if(player != null){
-                PlayerUtil.getFactoryPlayer(player).sendMessage(ChatFormat.returnAppendedComponent(
-                        ChatFormat.nexiaMessage(),
-                        Component.text("That player is already banned.").color(ChatFormat.failColor)
-                ));
+                PlayerUtil.getFactoryPlayer(player).sendMessage(
+                        ChatFormat.nexiaMessage().append(Component.text("That player is already banned.").color(ChatFormat.failColor))
+                );
             } else {
                 context.sendFailure(LegacyChatFormat.formatFail("That player is already banned."));
             }

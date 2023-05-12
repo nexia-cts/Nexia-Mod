@@ -2,11 +2,9 @@ package com.nexia.core.utilities.time;
 
 import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.FactoryServer;
+import com.combatreforged.factory.api.scheduler.TaskScheduler;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.loader.CommandLoader;
-import com.nexia.core.loader.ListenerLoader;
-import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.ffa.utilities.FfaUtil;
@@ -15,7 +13,6 @@ import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.areas.BwDimension;
 import com.nexia.minigames.games.bedwars.shop.BwLoadShop;
 import com.nexia.minigames.games.duels.DuelGameHandler;
-import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.DuelsSpawn;
 import com.nexia.minigames.games.oitc.OitcGame;
 import net.minecraft.server.MinecraftServer;
@@ -29,11 +26,15 @@ public class ServerTime {
 
     public static MinecraftServer minecraftServer = null;
 
+    public static ServerPlayer joinPlayer = null;
+
+    public static ServerPlayer leavePlayer = null;
+
     public static FactoryServer factoryServer = null;
 
     public static FactoryAPI factoryAPI = null;
 
-
+    public static TaskScheduler scheduler = null;
 
     public static Fantasy fantasy = null;
 
@@ -41,17 +42,12 @@ public class ServerTime {
         minecraftServer = server;
         Main.server = server;
 
-        factoryAPI = FactoryAPI.getInstance();
-        factoryServer = factoryAPI.getServer();
-
         fantasy = Fantasy.get(minecraftServer);
         LobbyUtil.setLobbyWorld(minecraftServer);
         DuelsSpawn.setDuelWorld(minecraftServer);
         FfaAreas.setFfaWorld(minecraftServer);
         OitcGame.firstTick(minecraftServer);
 
-        CommandLoader.registerCommands();
-        ListenerLoader.registerListeners();
         BwLoadShop.loadBedWarsShop(true);
         BwDimension.register();
         BwGame.firstTick();

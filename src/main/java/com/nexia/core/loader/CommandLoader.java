@@ -1,11 +1,10 @@
 package com.nexia.core.loader;
 
-import com.combatreforged.factory.builder.command.FactoryCommand;
 import com.nexia.core.commands.player.*;
 import com.nexia.core.commands.player.duels.*;
+import com.nexia.core.commands.player.ffa.*;
 import com.nexia.core.commands.staff.*;
 import com.nexia.core.commands.staff.dev.*;
-import com.nexia.core.utilities.time.ServerTime;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 
 public class CommandLoader {
@@ -35,12 +34,18 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(PingCommand::register);
         CommandRegistrationCallback.EVENT.register(DuelsDeleteWorldsCommand::register);
 
-        CommandRegistrationCallback.EVENT.register(StaffPrefixCommand::register);
 
+        CommandRegistrationCallback.EVENT.register(TempBanCommand::register);
+        CommandRegistrationCallback.EVENT.register(UnTempBanCommand::register);
+
+        CommandRegistrationCallback.EVENT.register(StaffPrefixCommand::register);
+        CommandRegistrationCallback.EVENT.register(DevExperimentalMapCommand::register);
 
         CommandRegistrationCallback.EVENT.register(DuelCommand::register);
         CommandRegistrationCallback.EVENT.register(QueueCommand::register);
         CommandRegistrationCallback.EVENT.register(MapCommand::register);
+
+        CommandRegistrationCallback.EVENT.register(BiomeCommand::register);
 
         CommandRegistrationCallback.EVENT.register(MuteCommand::register);
         CommandRegistrationCallback.EVENT.register(UnMuteCommand::register);

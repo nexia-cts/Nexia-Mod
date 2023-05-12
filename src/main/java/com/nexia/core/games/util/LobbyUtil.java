@@ -2,6 +2,7 @@ package com.nexia.core.games.util;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.Main;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.PlayerDataManager;
@@ -73,7 +74,7 @@ public class LobbyUtil {
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
         if (BwUtil.isInBedWars(minecraftPlayer)) BwPlayerEvents.leaveInBedWars(minecraftPlayer);
         else if (FfaUtil.isFfaPlayer(minecraftPlayer)) {
-            FfaUtil.leaveOrDie(minecraftPlayer, null, minecraftPlayer.getLastDamageSource());
+            FfaUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
         }
         else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(minecraftPlayer);
         else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.OITC) OitcGame.leave(minecraftPlayer);
@@ -97,6 +98,8 @@ public class LobbyUtil {
             }
         }
 
+        minecraftPlayer.setInvulnerable(false);
+
         PlayerUtil.resetHealthStatus(player);
         minecraftPlayer.setGameMode(GameType.ADVENTURE);
 
@@ -107,7 +110,7 @@ public class LobbyUtil {
         // Duels shit
         player.addTag("duels");
         GamemodeHandler.removeQueue(minecraftPlayer, null, true);
-        DuelsGame.death(minecraftPlayer, null, minecraftPlayer.getLastDamageSource());
+        DuelsGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
         com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(minecraftPlayer);
         data.gameMode = DuelGameMode.LOBBY;
         data.inDuel = false;
@@ -148,7 +151,8 @@ public class LobbyUtil {
 
     public static void sendGame(ServerPlayer minecraftPlayer, String game, boolean message, boolean tp){
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
-        if (!LobbyUtil.isLobbyWorld(minecraftPlayer.getLevel()) || PlayerDataManager.get(minecraftPlayer).gameMode != PlayerGameMode.LOBBY) {
+        minecraftPlayer.setInvulnerable(false);
+        if (!LobbyUtil.isLobbyWorld(minecraftPlayer.getLevel())) {
             LobbyUtil.leaveAllGames(minecraftPlayer, false);
         } else{
             PlayerUtil.resetHealthStatus(player);
@@ -162,6 +166,7 @@ public class LobbyUtil {
 
             player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
             player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+            player.removeTag("duels");
             player.removeTag(LobbyUtil.NO_SATURATION_TAG);
         }
         if(game.equalsIgnoreCase("classic ffa")){
@@ -182,32 +187,18 @@ public class LobbyUtil {
             BwPlayerEvents.tryToJoin(minecraftPlayer, false);
         }
 
-        /*
+
         if(game.equalsIgnoreCase("duels")){
-            player.addTag("duels");
-            PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.DUELS;
-            GamemodeHandler.removeQueue(minecraftPlayer, null, true);
-            DuelsGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
-            com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(minecraftPlayer);
-            data.gameMode = DuelGameMode.LOBBY;
-            data.inDuel = false;
-            data.inviteKit = "";
-            data.inviteMap = "";
-            data.isDead = false;
-            data.invitingPlayer = null;
-            data.inviting = false;
-            if(tp){
-                //minecraftPlayer.teleportTo(DuelsSpawn.duelWorld, DuelsSpawn.spawn.x, DuelsSpawn.spawn.y, DuelsSpawn.spawn.z, DuelsSpawn.spawn.yaw, DuelsSpawn.spawn.pitch);
-                //minecraftPlayer.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
-
-                minecraftPlayer.setRespawnPosition(lobbyWorld.dimension(), lobbySpawn.toBlockPos(), lobbySpawn.yaw, true, false);
-                minecraftPlayer.teleportTo(lobbyWorld, lobbySpawn.x, lobbySpawn.y, lobbySpawn.z, lobbySpawn.pitch, lobbySpawn.yaw);
+            LobbyUtil.leaveAllGames(minecraftPlayer, true);
+            if(message){
+                player.sendActionBarMessage(Component.text("You have joined §f☯ §c§lDuels §7\uD83E\uDE93"));
+                player.sendMessage(
+                        ChatFormat.nexiaMessage()
+                                .append(Component.text("Duels has now moved here. (main hub)").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                );
+                player.sendMessage(Component.text("Meaning you can now use /duel and /queue inside of the normal hub WITHOUT going to duels!").decoration(ChatFormat.bold, false));
             }
-
-            if(message){player.sendActionBarMessage(Component.text("You have joined §f☯ §c§lDuels §7\uD83E\uDE93"));}
         }
-
-         */
 
         if(game.equalsIgnoreCase("oitc")){
             player.addTag("oitc");

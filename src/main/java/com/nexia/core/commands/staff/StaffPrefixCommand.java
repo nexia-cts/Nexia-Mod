@@ -50,26 +50,26 @@ public class StaffPrefixCommand {
 
 
                                                         if(factoryExecutor != null){
-                                                            factoryExecutor.sendMessage(ChatFormat.returnAppendedComponent(
-                                                                    ChatFormat.nexiaMessage(),
-                                                                    Component.text("You have set the prefix of ").color(ChatFormat.normalColor),
-                                                                    Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor2),
-                                                                    Component.text(" to: ").color(ChatFormat.normalColor),
-                                                                    Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true),
-                                                                    Component.text(".").color(ChatFormat.normalColor)
-                                                            ));
+                                                            factoryExecutor.sendMessage(
+                                                                    ChatFormat.nexiaMessage()
+                                                                                    .append(Component.text("You have set the prefix of ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                                                            .append(Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor2))
+                                                                                                    .append(Component.text(" to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                                                                            .append(Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                                                                                                                    .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold,false).decoration(ChatFormat.bold, false))
+                                                            );
                                                         } else {
                                                             executor.sendSuccess(LegacyChatFormat.format("{b1}You have set the prefix of {b2}{} {b1}to: {b2}{b}{}{b1}.", otherPlayer.getRawName(), Main.config.ranks[i]), false);
                                                         }
 
-                                                        otherPlayer.sendMessage(ChatFormat.returnAppendedComponent(
-                                                                ChatFormat.nexiaMessage(),
-                                                                Component.text("Your prefix has been set to: ").color(ChatFormat.normalColor),
-                                                                Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true),
-                                                                Component.text(".").color(ChatFormat.normalColor)
-                                                        ));
+                                                        otherPlayer.sendMessage(
+                                                                ChatFormat.nexiaMessage()
+                                                                                .append(Component.text("Your prefix has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                                                        .append(Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                                                                                                .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                        );
 
-                                                        for (int i2 = 0; i2 < 8; i2++) {
+                                                        for (int i2 = 0; i2 < 9; i2++) {
                                                             otherPlayer.removeTag(Main.config.ranks[i2]);
                                                         }
 
@@ -79,16 +79,18 @@ public class StaffPrefixCommand {
                                             }
 
                                             if(type.equalsIgnoreCase("remove")){
-                                                for(int i = 0; i < 8; i++){
+                                                for(int i = 0; i < 9; i++){
                                                     if(prefix.equalsIgnoreCase(Main.config.ranks[i])){
 
                                                         if(factoryExecutor != null){
-                                                            otherPlayer.sendMessage(ChatFormat.returnAppendedComponent(
-                                                                    Component.text("You have removed the prefix ").color(ChatFormat.normalColor),
-                                                                    Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true),
-                                                                    Component.text(" from ").color(ChatFormat.normalColor),
-                                                                    Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor2)
-                                                            ));
+                                                            factoryExecutor.sendMessage(
+                                                                    ChatFormat.nexiaMessage()
+                                                                            .append(Component.text("You have removed the prefix ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                                            .append(Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true).decoration(ChatFormat.bold, false))
+                                                                            .append(Component.text(" from: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                                            .append(Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                                                            .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold,false))
+                                                            );
                                                         } else {
                                                             executor.sendSuccess(LegacyChatFormat.format("{b1}You have removed the prefix {b2}{b}{} {b1}from {b2}{}{b1}.", Main.config.ranks[i], otherPlayer.getRawName()), false);
                                                         }
@@ -100,15 +102,17 @@ public class StaffPrefixCommand {
                                             }
 
                                             if(type.equalsIgnoreCase("add")){
-                                                for(int i = 0; i < 8; i++){
+                                                for(int i = 0; i < 9; i++){
                                                     if(prefix.equalsIgnoreCase(Main.config.ranks[i])){
                                                         if(factoryExecutor != null){
-                                                            otherPlayer.sendMessage(ChatFormat.returnAppendedComponent(
-                                                                    Component.text("You have added the prefix ").color(ChatFormat.normalColor),
-                                                                    Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true),
-                                                                    Component.text(" to ").color(ChatFormat.normalColor),
-                                                                    Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor2)
-                                                            ));
+                                                            factoryExecutor.sendMessage(
+                                                                    ChatFormat.nexiaMessage()
+                                                                            .append(Component.text("You have added the prefix ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                                            .append(Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                                                                            .append(Component.text(" to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                                            .append(Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                                                            .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold,false))
+                                                            );
                                                         } else {
                                                             executor.sendSuccess(LegacyChatFormat.format("{b1}You have added the prefix {b2}{b}{} {b1}to {b2}{}{b1}.", Main.config.ranks[i], otherPlayer.getRawName()), false);
                                                         }

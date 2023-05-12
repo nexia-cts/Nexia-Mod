@@ -49,10 +49,10 @@ public class MapCommand {
         String map = StringArgumentType.getString(context, "map");
 
         if((ChatFormat.hasWhiteSpacesOrSpaces(null, map) || ChatFormat.hasWhiteSpacesOrSpaces(null, type)) || (type == null || map == null)) {
-            player.sendMessage(ChatFormat.returnAppendedComponent(
-                    ChatFormat.nexiaMessage(),
-                    Component.text("Invalid name!").color(ChatFormat.failColor)
-            ));
+            player.sendMessage(
+                    ChatFormat.nexiaMessage()
+                                    .append(Component.text("Invalid name!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
+            );
 
             return 1;
         }
@@ -77,22 +77,22 @@ public class MapCommand {
 
             mcPlayer.teleportTo(level, 0, 80, 0, 0, 0);
 
-            player.sendMessage(ChatFormat.returnAppendedComponent(
-                    ChatFormat.nexiaMessage(),
-                    Component.text("Created map called: ").color(ChatFormat.normalColor),
-                    Component.text(map).color(ChatFormat.brandColor2)
-            ));
+            player.sendMessage(
+                    ChatFormat.nexiaMessage()
+                                    .append(Component.text("Created map called: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                            .append(Component.text(map).color(ChatFormat.brandColor2))
+            );
 
             return 1;
         }
 
         if (type.equalsIgnoreCase("delete")) {
             ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), null).delete();
-            player.sendMessage(ChatFormat.returnAppendedComponent(
-                    ChatFormat.nexiaMessage(),
-                    Component.text("Deleted map called: ").color(ChatFormat.normalColor),
-                    Component.text(map).color(ChatFormat.brandColor2)
-            ));
+            player.sendMessage(
+                    ChatFormat.nexiaMessage()
+                            .append(Component.text("Deleted map called: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                            .append(Component.text(map).color(ChatFormat.brandColor2))
+            );
             return 1;
         }
 
@@ -100,11 +100,11 @@ public class MapCommand {
             ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), null).asWorld();
             mcPlayer.teleportTo(level, 0, 80, 0, 0, 0);
 
-            player.sendMessage(ChatFormat.returnAppendedComponent(
-                    ChatFormat.nexiaMessage(),
-                    Component.text("Teleported to map called: ").color(ChatFormat.normalColor),
-                    Component.text(map).color(ChatFormat.brandColor2)
-            ));
+            player.sendMessage(
+                    ChatFormat.nexiaMessage()
+                            .append(Component.text("Teleported to map called: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                            .append(Component.text(map).color(ChatFormat.brandColor2))
+            );
             return 1;
         }
         return 1;

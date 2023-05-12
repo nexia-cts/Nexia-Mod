@@ -35,6 +35,7 @@
     "misc.MsgCommandMixin",
     "misc.BanCommandMixin",
     "player.FoodDataMixin",
+    "player.PlayerListMixin",
     "player.PlayerMixin",
     "player.ServerGamePacketListenerMixin",
     "player.ServerLoginPacketListenerMixin",

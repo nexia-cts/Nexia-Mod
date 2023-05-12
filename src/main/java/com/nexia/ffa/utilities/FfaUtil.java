@@ -30,6 +30,7 @@ import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -62,7 +63,7 @@ public class FfaUtil {
                 wasInSpawn.remove(minecraftPlayer.getUUID());
                 Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
                 saveInventory(minecraftPlayer);
-                player.sendActionBarMessage(Component.text("Your inventory layout was saved.").color(ChatFormat.brandColor2));
+                player.sendActionBarMessage(ChatFormat.nexiaMessage().append(Component.text("Your inventory layout was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
             }
         }
     }
@@ -93,6 +94,24 @@ public class FfaUtil {
         }
     }
 
+    public static float calculateHealth(float health){
+        float fixedHealth = Float.parseFloat(new DecimalFormat("#.#").format(health / 2));
+
+        if(fixedHealth < 0.5){
+            return 0.5f;
+        }
+        if(fixedHealth >= 10){
+            return 10f;
+        }
+
+        if(fixedHealth % 1 == 0){ return fixedHealth; }
+
+        if(Float.parseFloat(new DecimalFormat("0.#").format(fixedHealth)) >= 0.5){
+            return Float.parseFloat(new DecimalFormat("#.5").format(fixedHealth));
+        }
+        return Float.parseFloat(new DecimalFormat("#.0").format(fixedHealth));
+    }
+
     public static void calculateDeath(ServerPlayer player){
         SavedPlayerData data = PlayerDataManager.get(player).savedData;
         data.deaths++;
@@ -110,24 +129,50 @@ public class FfaUtil {
         data.killstreak = 0;
     }
 
-    public static void setDeathMessage(@NotNull ServerPlayer minecraftPlayer, @Nullable ServerPlayer minecraftAttacker, @NotNull PlayerDeathEvent event){
+    public static void setDeathMessage(@NotNull ServerPlayer minecraftPlayer, @Nullable DamageSource source){
+        boolean attackerNull = source == null || !(source.getEntity() instanceof ServerPlayer);
         boolean victimTag = FfaUtil.isFfaPlayer(minecraftPlayer);
 
-        if(victimTag && minecraftAttacker != minecraftPlayer){
+        if((attackerNull && victimTag) || (!attackerNull && source.getEntity() == minecraftPlayer && victimTag)){
             for(int i = 0; i < Main.server.getPlayerCount(); i++){
                 if(FfaUtil.isFfaPlayer(PlayerUtil.getMinecraftPlayerFromName(Main.server.getPlayerNames()[i]))){
-                    PlayerUtil.getMinecraftPlayerFromName(Main.server.getPlayerNames()[i]).sendMessage(new TextComponent("§7Wow, §c☠ " + minecraftPlayer.getScoreboardName() + " §7somehow killed themselves."), Util.NIL_UUID);
+
+                    TextComponent msg = LegacyChatFormat.format("§7Wow, §c☠ {} §7somehow killed themselves.", minecraftPlayer.getScoreboardName());
+
+                    if(source == DamageSource.OUT_OF_WORLD) {
+                        msg = LegacyChatFormat.format("§c⚐ {} §7took a ride to the void.", minecraftPlayer.getScoreboardName());
+                    }
+
+                    if(source == DamageSource.IN_FIRE || source == DamageSource.ON_FIRE) {
+                        msg = LegacyChatFormat.format("§c\uD83D\uDD25 {} §7was deepfried in lava.", minecraftPlayer.getScoreboardName());
+                    }
+
+                    if(source == DamageSource.DROWN) {
+                        msg = LegacyChatFormat.format("§c\uD83C\uDF0A {} §7forgot to breathe air.", minecraftPlayer.getScoreboardName());
+                    }
+
+                    if(source == DamageSource.HOT_FLOOR) {
+                        msg = LegacyChatFormat.format("§c\uD83D\uDD25 {} §7stepped on hot legos.", minecraftPlayer.getScoreboardName());
+                    }
+
+                    if(source == DamageSource.CACTUS) {
+                        msg = LegacyChatFormat.format("§7ʕっ·ᴥ·ʔっ §c☠ {} §7hugged a cactus.", minecraftPlayer.getScoreboardName());
+                    }
+
+                    PlayerUtil.getMinecraftPlayerFromName(Main.server.getPlayerNames()[i]).sendMessage(msg, Util.NIL_UUID);
                 }
             }
             return;
         }
-
         if(victimTag){
             calculateDeath(minecraftPlayer);
         }
-        boolean attackerTag = false;
-        if(minecraftAttacker != null){
-            attackerTag = FfaUtil.isFfaPlayer(minecraftAttacker);
+        if(attackerNull) { return; }
+        ServerPlayer minecraftAttacker = (ServerPlayer) source.getEntity();
+        boolean attackerTag = FfaUtil.isFfaPlayer(minecraftAttacker);
+
+        if(victimTag){
+            calculateDeath(minecraftPlayer);
         }
 
         if(attackerTag && victimTag){
@@ -143,7 +188,7 @@ public class FfaUtil {
             }
             for(int i = 0; i < Main.server.getPlayerCount(); i++){
                 if(FfaUtil.isFfaPlayer(PlayerUtil.getMinecraftPlayerFromName(Main.server.getPlayerNames()[i]))){
-                    PlayerUtil.getMinecraftPlayerFromName(Main.server.getPlayerNames()[i]).sendMessage(new TextComponent("§c☠ " + minecraftPlayer.getScoreboardName() + " §7was killed by §a" + symbol + " " +  minecraftAttacker.getScoreboardName() + " §7with §c" + minecraftAttacker.getHealth() + "❤ §7left."), Util.NIL_UUID);
+                    PlayerUtil.getMinecraftPlayerFromName(Main.server.getPlayerNames()[i]).sendMessage(new TextComponent("§c☠ " + minecraftPlayer.getScoreboardName() + " §7was killed by §a" + symbol + " " +  minecraftAttacker.getScoreboardName() + " §7with §c" + calculateHealth(minecraftAttacker.getHealth()) + "❤ §7left."), Util.NIL_UUID);
                 }
             }
         }
@@ -154,16 +199,14 @@ public class FfaUtil {
     }
 
 
-    public static void leaveOrDie(@NotNull ServerPlayer player, @Nullable PlayerDeathEvent event, @Nullable DamageSource legacy) {
+    public static void leaveOrDie(@NotNull ServerPlayer player, @Nullable DamageSource source, boolean leaving) {
         player.inventory.setCarried(ItemStack.EMPTY);
         clearThrownTridents(player);
 
         ServerPlayer attacker = null;
 
-        if(event != null && event.getPlayer() != null){
-            attacker = PlayerUtil.getMinecraftPlayer(event.getPlayer());
-        } else if (legacy != null && legacy.getEntity() != null) {
-            attacker = PlayerUtil.getPlayerAttacker(legacy.getEntity());
+        if (source != null && source.getEntity() != null && source.getEntity() instanceof net.minecraft.world.entity.player.Player) {
+            attacker = PlayerUtil.getPlayerAttacker(source.getEntity());
         }
 
         if (attacker != null) {
@@ -171,8 +214,8 @@ public class FfaUtil {
             setInventory(attacker);
         }
 
-        if(event != null){
-            setDeathMessage(player, attacker, event);
+        if(!leaving){
+            setDeathMessage(player, source);
         }
 
         FfaUtil.setInventory(player);

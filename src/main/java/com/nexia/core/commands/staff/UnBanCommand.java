@@ -49,11 +49,14 @@ public class UnBanCommand {
                 userBanList.remove(gameProfile);
                 ++i;
                 if(player != null){
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(ChatFormat.returnAppendedComponent(
-                            ChatFormat.nexiaMessage(),
-                            Component.text("You have unbanned ").color(ChatFormat.normalColor),
-                            Component.text(gameProfile.getName()).color(ChatFormat.brandColor2)
-                    ));
+                    PlayerUtil.getFactoryPlayer(player).sendMessage(
+                            ChatFormat.nexiaMessage()
+                                    .append(Component.text("You have unbanned ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                            .append(Component.text(gameProfile.getName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                                    .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+
+
+                    );
                 } else {
                     context.sendSuccess(LegacyChatFormat.format("{b1}You have unbanned {b2}{}{b1}.", gameProfile.getName()), true);
                 }
@@ -63,10 +66,10 @@ public class UnBanCommand {
 
         if (i == 0) {
             if(player != null){
-                PlayerUtil.getFactoryPlayer(player).sendMessage(ChatFormat.returnAppendedComponent(
-                        ChatFormat.nexiaMessage(),
-                        Component.text("That player is not banned.").color(ChatFormat.failColor)
-                ));
+                PlayerUtil.getFactoryPlayer(player).sendMessage(
+                        ChatFormat.nexiaMessage()
+                                .append(Component.text("That player is not banned.").color(ChatFormat.failColor))
+                );
             } else {
                 context.sendSuccess(LegacyChatFormat.formatFail("That player is not banned."), false);
             }

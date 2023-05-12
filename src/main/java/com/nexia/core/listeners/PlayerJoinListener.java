@@ -23,24 +23,31 @@ public class PlayerJoinListener {
             Player player = playerJoinEvent.getPlayer();
             ServerPlayer minecraftPlayer = PlayerUtil.getMinecraftPlayer(player);
 
-            // Set join message
+            processJoin(player, minecraftPlayer);
+
+            /*
+            if(!Main.config.events.statusMessages) { return; }
+
+
             if(minecraftPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) <= 1) {
-                playerJoinEvent.setJoinMessage(ChatFormat.returnAppendedComponent(
-                        Component.text("[").color(ChatFormat.lineColor),
-                        Component.text("!").color(TextColor.fromHexString("#ff9940")),
-                        Component.text("] ").color(ChatFormat.lineColor),
-                        Component.text(player.getRawName()).color(ChatFormat.normalColor)
-                ));
+                playerJoinEvent.setJoinMessage(
+                        Component.text("[").color(ChatFormat.lineColor)
+                                .append(Component.text("!").color(TextColor.fromHexString("#ff9940")))
+                                                        .append(Component.text("] ").color(ChatFormat.lineColor))
+                                                                .append(Component.text(player.getRawName()).color(TextColor.fromHexString("#ff9940")))
+
+
+                );
             } else {
-                playerJoinEvent.setJoinMessage(ChatFormat.returnAppendedComponent(
-                        Component.text("[").color(ChatFormat.lineColor),
-                        Component.text("+").color(TextColor.fromHexString("#73ff54")),
-                        Component.text("] ").color(ChatFormat.lineColor),
-                        Component.text(player.getRawName()).color(ChatFormat.normalColor)
-                ));
+                playerJoinEvent.setJoinMessage(
+                        Component.text("[").color(ChatFormat.lineColor)
+                                        .append(Component.text("+").color(ChatFormat.greenColor))
+                                                .append(Component.text("] ").color(ChatFormat.lineColor))
+                                                        .append(Component.text(player.getRawName()).color(ChatFormat.greenColor))
+                );
             }
 
-            processJoin(player, minecraftPlayer);
+             */
         });
     }
 
@@ -74,38 +81,35 @@ public class PlayerJoinListener {
 
     private static void sendJoinMessage(Player player){
         player.sendMessage(ChatFormat.separatorLine("Welcome"));
-        player.sendMessage(ChatFormat.returnAppendedComponent(
-                Component.text(" » ").color(ChatFormat.lineColor),
-                Component.text("Welcome ").color(ChatFormat.normalColor),
-                Component.text(player.getRawName()).color(ChatFormat.brandColor2),
-                Component.text(" to ").color(ChatFormat.normalColor),
-                Component.text("Nexia").color(ChatFormat.brandColor2),
-                Component.text("!").color(ChatFormat.normalColor)
-        ));
-        player.sendMessage(ChatFormat.returnAppendedComponent(
-                Component.text(" » ").color(ChatFormat.lineColor),
-                Component.text("Players online: ").color(ChatFormat.normalColor),
-                Component.text(ServerTime.minecraftServer.getPlayerCount()).color(ChatFormat.brandColor2),
-                Component.text("/").color(ChatFormat.lineColor),
-                Component.text(ServerTime.factoryServer.getMaxPlayerCount()).color(ChatFormat.brandColor2)
-        ));
-        player.sendMessage(ChatFormat.returnAppendedComponent(
-                Component.text(" » ").color(ChatFormat.lineColor),
-                Component.text("Read the rules: ").color(ChatFormat.normalColor),
-                Component.text("/rules")
-                        .color(ChatFormat.brandColor2)
-                        .hoverEvent(HoverEvent.showText(Component.text("Click me").color(TextColor.fromHexString("#73ff54"))))
-                        .clickEvent(ClickEvent.suggestCommand("/rules"))
-                )
+        player.sendMessage(
+                Component.text(" » ").color(ChatFormat.brandColor2)
+                                .append(Component.text("Welcome ").color(ChatFormat.normalColor))
+                                        .append(Component.text(player.getRawName()).color(ChatFormat.brandColor2))
+                                                .append(Component.text(" to ").color(ChatFormat.normalColor))
+                                                        .append(Component.text("Nexia").color(ChatFormat.brandColor2))
+                                                                .append(Component.text("!").color(ChatFormat.normalColor))
         );
-        player.sendMessage(ChatFormat.returnAppendedComponent(
-                Component.text(" » ").color(ChatFormat.lineColor),
-                Component.text("Join our discord: ").color(ChatFormat.normalColor),
-                Component.text(Main.config.discordLink)
-                        .color(ChatFormat.brandColor2)
-                        .hoverEvent(HoverEvent.showText(Component.text("Click me").color(TextColor.fromHexString("#73ff54"))))
-                        .clickEvent(ClickEvent.openUrl(Main.config.discordLink))
-                )
+        player.sendMessage(
+                Component.text(" » ").color(ChatFormat.brandColor2)
+                                .append(Component.text("Players online: ").color(ChatFormat.normalColor))
+                                        .append(Component.text(ServerTime.minecraftServer.getPlayerCount()).color(ChatFormat.brandColor2))
+                                                .append(Component.text("/").color(ChatFormat.lineColor))
+                                                        .append(Component.text(ServerTime.factoryServer.getMaxPlayerCount()).color(ChatFormat.brandColor2))
+        );
+        player.sendMessage(
+                Component.text(" » ").color(ChatFormat.brandColor2)
+                                .append(Component.text("Read the rules: ").color(ChatFormat.normalColor))
+                                        .append(Component.text("/rules")).color(ChatFormat.brandColor2).hoverEvent(HoverEvent.showText(Component.text("Click me").color(TextColor.fromHexString("#73ff54"))))
+                        .clickEvent(ClickEvent.suggestCommand("/rules"))
+        );
+        player.sendMessage(
+                Component.text(" » ").color(ChatFormat.brandColor2)
+                                .append(Component.text("Join our discord: ").color(ChatFormat.normalColor))
+                                        .append(Component.text(Main.config.discordLink)
+                                                .color(ChatFormat.brandColor2)
+                                                .hoverEvent(HoverEvent.showText(Component.text("Click me").color(TextColor.fromHexString("#73ff54"))))
+                                                .clickEvent(ClickEvent.openUrl(Main.config.discordLink))
+                                        )
         );
         player.sendMessage(ChatFormat.separatorLine(null));
     }

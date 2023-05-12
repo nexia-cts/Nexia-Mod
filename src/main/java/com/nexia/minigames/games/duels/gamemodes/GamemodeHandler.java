@@ -98,12 +98,10 @@ public class GamemodeHandler {
 
 
         if(!silent){
-            player.sendMessage(ChatFormat.returnAppendedComponent(
-                    Component.text("You have queued up for")
-                            .color(ChatFormat.brandColor1),
-                    Component.text(stringGameMode.toUpperCase())
-                            .color(ChatFormat.brandColor2),
-                    Component.text("."))
+            player.sendMessage(
+                    Component.text("You have queued up for ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
+                                    .append(Component.text(stringGameMode.toUpperCase()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                            .append(Component.text(".").decoration(ChatFormat.bold, false))
             );
 
         }
@@ -276,11 +274,11 @@ public class GamemodeHandler {
                 DuelGameMode.HOE_ONLY_QUEUE.remove(minecraftPlayer);
             }
             if(!silent){
-                player.sendMessage(ChatFormat.returnAppendedComponent(
-                        ChatFormat.nexiaMessage(),
-                        Component.text("You have left the queue for ").color(ChatFormat.normalColor),
-                        Component.text(stringGameMode.toUpperCase()).color(ChatFormat.brandColor2),
-                        Component.text(".").color(ChatFormat.normalColor)
+                player.sendMessage(
+                        ChatFormat.nexiaMessage()
+                                        .append(Component.text("You have left the queue for ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
+                                                                .append(Component.text(stringGameMode.toUpperCase()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                                                        .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                 ));
             }
         } else {
@@ -373,49 +371,39 @@ public class GamemodeHandler {
         if(playerData.inviting && playerData.invitingPlayer != null && playerData.invitingPlayer == minecraftExecutor && executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) && executorData.inviteKit.equalsIgnoreCase(playerData.inviteKit)){
             GamemodeHandler.joinGamemode(minecraftExecutor, minecraftPlayer, stringGameMode, map, true);
         } else if((!executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) || !executorData.inviteKit.equalsIgnoreCase(playerData.inviteKit)) && (playerData.invitingPlayer == null || !playerData.invitingPlayer.getStringUUID().equalsIgnoreCase(minecraftExecutor.getStringUUID())) && playerData.gameMode == DuelGameMode.LOBBY){
-            executor.sendMessage(ChatFormat.nexiaMessage().append(Component.text("Sending a duel request to ").append(Component.text(player.getRawName()).color(ChatFormat.brandColor2)).append(Component.text(" on map ")).append(Component.text(map)).color(ChatFormat.brandColor2).append(Component.text(" with kit ")).append(Component.text(stringGameMode)).append(Component.text("."))));
+            executor.sendMessage(ChatFormat.nexiaMessage()
+                    .append(Component.text("Sending a duel request to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
+                            .append(Component.text(player.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                            .append(Component.text(" on map ")).append(Component.text(map)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false)
+                            .append(Component.text(" with kit ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                            .append(Component.text(stringGameMode).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                            .append(Component.text(".")).color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
 
-            Component message = ChatFormat.returnAppendedComponent(
-                    Component.text(executor.getRawName())
-                            .color(ChatFormat.brandColor2),
-                    Component.text("has challenged you to a duel!")
-                            .color(ChatFormat.normalColor)
+            Component message = Component.text(executor.getRawName()).color(ChatFormat.brandColor1)
+                            .append(Component.text(" has challenged you to a duel!").color(ChatFormat.normalColor)
             );
 
 
-            Component kit = ChatFormat.returnAppendedComponent(
-                    Component.text("Kit: ")
-                            .color(ChatFormat.brandColor2),
-                    Component.text(stringGameMode.toUpperCase())
-                            .color(ChatFormat.normalColor)
+            Component kit = Component.text("Kit: ").color(ChatFormat.brandColor1)
+                            .append(Component.text(stringGameMode.toUpperCase()).color(ChatFormat.normalColor)
             );
 
-            Component mapName = ChatFormat.returnAppendedComponent(
-                    Component.text("Map: ")
-                            .color(ChatFormat.brandColor2),
-                    Component.text(map.toUpperCase())
-                            .color(ChatFormat.normalColor)
+            Component mapName = Component.text("Map: ").color(ChatFormat.brandColor1)
+                    .append(Component.text(map.toUpperCase()).color(ChatFormat.normalColor)
             );
 
-            Component yes = ChatFormat.returnAppendedComponent(
-                    Component.text("[")
-                            .color(NamedTextColor.DARK_GRAY),
-                    Component.text("ACCEPT")
-                            .color(TextColor.fromHexString("#ffffff"))
-                            .decorate(ChatFormat.bold)
-                            .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor1)))
-                            .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/duel " + executor.getRawName() + " " + stringGameMode + " " + map)),
-                    Component.text("]   ")
-                            .color(NamedTextColor.DARK_GRAY)
+            Component yes = Component.text("[").color(NamedTextColor.DARK_GRAY)
+                            .append(Component.text("ACCEPT")
+                                    .color(ChatFormat.greenColor)
+                                    .decorate(ChatFormat.bold)
+                                    .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor2)))
+                                    .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/duel " + executor.getRawName() + " " + stringGameMode + " " + map)))
+                                    .append(Component.text("]  ").color(NamedTextColor.DARK_GRAY)
             );
 
-            Component no = ChatFormat.returnAppendedComponent(
-                    Component.text("[")
-                            .color(NamedTextColor.DARK_GRAY),
-                    Component.text("IGNORE")
-                            .color(ChatFormat.failColor),
-                    Component.text("]")
-                            .color(NamedTextColor.DARK_GRAY)
+            Component no = Component.text("[").color(NamedTextColor.DARK_GRAY)
+                            .append(Component.text("IGNORE").color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
+                                    .append(Component.text("]").color(NamedTextColor.DARK_GRAY)
             );
 
 

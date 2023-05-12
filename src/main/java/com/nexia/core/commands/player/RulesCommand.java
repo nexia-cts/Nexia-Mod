@@ -26,19 +26,26 @@ public class RulesCommand {
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 
         Component message = ChatFormat.separatorLine("Rules");
+
         for (int i = 0; i < rules.length; i++) {
-            message.append(Component.text("\n" + (i+1) + ". "))
+
+            message = message.append(Component.text("\n" + (i+1) + ". ")
                     .color(ChatFormat.brandColor1)
-                    .decorate(ChatFormat.bold)
-                    .append(Component.text("»")
+                    .decoration(ChatFormat.bold, true))
+                    .decoration(ChatFormat.strikeThrough, false)
+                    .append(Component.text("» ")
                             .color(ChatFormat.arrowColor)
+                            .decoration(ChatFormat.bold, false)
+                            .decoration(ChatFormat.strikeThrough, false)
                             .append(Component.text(rules[i])
+                                    .decoration(ChatFormat.bold, false)
+                                    .decoration(ChatFormat.strikeThrough, false)
                                     .color(ChatFormat.normalColor)
                             )
                     );
         }
 
-        message.append(Component.text("\n").append(ChatFormat.separatorLine(null)));
+        message = message.append(Component.text("\n").append(ChatFormat.separatorLine(null)));
 
         PlayerUtil.getFactoryPlayer(context.getSource().getPlayerOrException()).sendMessage(message);
 

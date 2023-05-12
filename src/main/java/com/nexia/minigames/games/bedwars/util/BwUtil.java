@@ -1,5 +1,7 @@
 package com.nexia.minigames.games.bedwars.util;
 
+import com.combatreforged.factory.api.world.item.ItemType;
+import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
@@ -181,6 +183,17 @@ public class BwUtil {
             return false;
         }
         if (BwUtil.isDefaultSword(itemStack)) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean canDropItem(com.combatreforged.factory.api.world.item.ItemStack itemStack) {
+        String item = itemStack.getDisplayName().toString().toLowerCase();
+        if (item.contains("pickaxe") || item.contains("axe")|| item.contains("shears")) {
+            return false;
+        }
+        if (item.contains("stone sword")) {
             return false;
         }
         return true;

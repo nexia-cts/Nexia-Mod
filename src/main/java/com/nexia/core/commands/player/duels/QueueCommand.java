@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.core.gui.duels.QueueGUI;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.minigames.games.duels.DuelGameMode;
@@ -25,6 +26,7 @@ public class QueueCommand {
                     } catch (Exception ignored) {}
                     return false;
                 })
+                .executes(context -> QueueGUI.openQueueGUI(context.getSource().getPlayerOrException()))
                 .then(Commands.argument("gamemode", StringArgumentType.string())
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest((DuelGameMode.duels), builder)))
                         .executes(context -> QueueCommand.queue(context, StringArgumentType.getString(context, "gamemode"))))
