@@ -42,6 +42,7 @@ public class Main implements ModInitializer, FactoryPlugin {
 	public static final String MOD_NAME_SHORT = "Nx";
 	public static Logger logger = LogManager.getLogger(MOD_NAME);
 	public static final String modConfigDir = NxFileUtil.makeDir(FabricLoader.getInstance().getConfigDir().toString() + "/nexia");
+
 	@Override
 	public void onInitialize() {
 		AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
