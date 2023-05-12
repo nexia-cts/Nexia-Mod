@@ -33,9 +33,9 @@ public class EventUtil {
                 new BlockPos(6, 81, 0)
         ));
 
+        p.swing(InteractionHand.MAIN_HAND);
         if(level.equals(FfaAreas.ffaWorld)) {
             if(bp.contains(signPos)) {
-                p.swing(InteractionHand.MAIN_HAND);
                 SpawnGUI.openSpawnGUI(p);
             }
             ci.cancel();

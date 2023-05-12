@@ -35,6 +35,7 @@
     "misc.MinecraftServerMixin",
     "misc.MsgCommandMixin",
     "misc.PardonCommandMixin",
+    "misc.ServerLevelMixin",
     "player.FoodDataMixin",
     "player.PlayerListMixin",
     "player.PlayerMixin",
