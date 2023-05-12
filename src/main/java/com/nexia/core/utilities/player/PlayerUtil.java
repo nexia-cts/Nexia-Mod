@@ -1,8 +1,7 @@
 package com.nexia.core.utilities.player;
 
-import com.nexia.core.Main;
-import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.item.ItemStackUtil;
+import com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import net.minecraft.Util;
@@ -17,11 +16,9 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 
 public class PlayerUtil {
@@ -30,23 +27,10 @@ public class PlayerUtil {
         broadcast(players, new TextComponent(string));
     }
 
-    public static void sendActionbar(ServerPlayer player, String string){
-        player.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.ACTIONBAR,
-                ChatFormat.format(string)));
-    }
-
     public static void broadcast(List<ServerPlayer> players, Component component) {
         for (ServerPlayer player : players) {
             player.sendMessage(component, Util.NIL_UUID);
         }
-    }
-
-    public static void sendTitle(ServerPlayer player, String title, String sub, int in, int stay, int out) {
-        player.connection.send(new ClientboundSetTitlesPacket(in, stay, out));
-        player.connection.send(new ClientboundSetTitlesPacket(
-                ClientboundSetTitlesPacket.Type.TITLE, new TextComponent(title)));
-        player.connection.send(new ClientboundSetTitlesPacket(
-                ClientboundSetTitlesPacket.Type.SUBTITLE, new TextComponent(sub)));
     }
 
     public static void broadcastTitle(List<ServerPlayer> players, String title, String subtitle, int in, int stay, int out) {
@@ -62,19 +46,6 @@ public class PlayerUtil {
         }
     }
 
-    public static void broadcastTitle(List<ServerPlayer> players, String title, String subtitle) {
-        ClientboundSetTitlesPacket titlePacket = new ClientboundSetTitlesPacket(
-                ClientboundSetTitlesPacket.Type.TITLE, new TextComponent(title));
-        ClientboundSetTitlesPacket subtitlePacket = new ClientboundSetTitlesPacket(
-                ClientboundSetTitlesPacket.Type.SUBTITLE, new TextComponent(subtitle));
-
-        for (ServerPlayer player : players) {
-            sendDefaultTitleLength(player);
-            player.connection.send(titlePacket);
-            player.connection.send(subtitlePacket);
-        }
-    }
-
     private static void sendDefaultTitleLength(ServerPlayer player) {
         player.connection.send(new ClientboundSetTitlesPacket(10, 60, 20));
     }
@@ -85,72 +56,54 @@ public class PlayerUtil {
         }
     }
 
-    public static void sendSound(ServerPlayer player, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch) {
-        sendSound(player, new EntityPos(player), soundEvent, soundSource, volume, pitch);
+    public static Player getFactoryPlayer(@NotNull net.minecraft.world.entity.player.Player minecraftPlayer) {
+        return getFactoryPlayerFromName(minecraftPlayer.getScoreboardName());
     }
 
-    public static void sendSound(ServerPlayer player, EntityPos position, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch) {
-        player.connection.send(new ClientboundSoundPacket(soundEvent, soundSource,
-                position.x, position.y, position.z, 16f * volume, pitch));
+    public static Player getFactoryPlayerFromName(@NotNull String player) {
+        if(player.trim().length() == 0) return null;
+        return ServerTime.factoryServer.getPlayer(player);
     }
 
-    public static ServerPlayer getFixedPlayer(ServerPlayer serverPlayer) {
-        if (serverPlayer == null) return null;
-        return ServerTime.minecraftServer.getPlayerList().getPlayer(serverPlayer.getUUID());
+    public static ServerPlayer getMinecraftPlayer(@NotNull Player player){
+        return getMinecraftPlayerFromName(player.getRawName());
     }
 
-    public static void resetHealthStatus(ServerPlayer player) {
-        player.setInvulnerable(false);
-        player.removeAllEffects();
-        player.setHealth(player.getMaxHealth());
-        player.getFoodData().setFoodLevel(20);
+    public static ServerPlayer getMinecraftPlayerFromName(@NotNull String player){
+        return ServerTime.minecraftServer.getPlayerList().getPlayerByName(player);
     }
 
-    public static Object[] getTags(@NotNull ServerPlayer player){
-        return player.getTags().toArray();
+    public static void resetHealthStatus(@NotNull Player player) {
+        player.setInvulnerabilityTime(0);
+        player.clearEffects();
+        player.setHealth(20);
+        player.setFoodLevel(20);
     }
 
-    public static boolean hasTag(@NotNull ServerPlayer player, @NotNull String tag){
-        Object[] result = getTags(player);
-        if(result.length > 0) {
-            for (Object s : result) {
-                if (String.valueOf(s).equalsIgnoreCase(tag)) {
-                    return true;
-                }
-            }
-            return String.valueOf(result[0]).equalsIgnoreCase(tag);
-        } else {
-            return false;
-        }
+    public static void sendActionbar(ServerPlayer player, String string){
+        player.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.ACTIONBAR,
+                LegacyChatFormat.format(string)));
     }
+
+    public static void sendTitle(ServerPlayer player, String title, String sub, int in, int stay, int out) {
+        player.connection.send(new ClientboundSetTitlesPacket(in, stay, out));
+        player.connection.send(new ClientboundSetTitlesPacket(
+                ClientboundSetTitlesPacket.Type.TITLE, new TextComponent(title)));
+        player.connection.send(new ClientboundSetTitlesPacket(
+                ClientboundSetTitlesPacket.Type.SUBTITLE, new TextComponent(sub)));
+    }
+
 
     public static boolean doesPlayerExist(String player){
-        return (getPlayerFromName(player) != null);
+        return getFactoryPlayerFromName(player) != null;
     }
 
-    public static ServerPlayer getPlayerFromName(String player){
-        return Main.server.getPlayerList().getPlayerByName(player);
+    public static String returnSetPlayer(Player player, String message){
+        return message.replaceAll("%player%", String.valueOf(player.getRawName()));
     }
 
-    public static String returnSetPlayer(ServerPlayer player, String command){
-        return command.replaceAll("%player%", String.valueOf(player.getScoreboardName()));
-    }
 
-    public static void executeServerCommand(String command, ServerPlayer player){
-        if(player != null){
-            Main.server.getCommands().performCommand(Main.server.createCommandSourceStack(), returnSetPlayer(player, command));
-        } else {
-            Main.server.getCommands().performCommand(Main.server.createCommandSourceStack(), command);
-        }
-    }
-
-    public static void executePlayerCommand(ServerPlayer player, String command) {
-        if(player != null){
-            Main.server.getCommands().performCommand(player.createCommandSourceStack(), returnSetPlayer(player, command));
-        }
-    }
-
-    public static boolean hasPermission(@NotNull CommandSourceStack permission, @Nullable String command, @Nullable int level) {
+    public static boolean hasPermission(@NotNull CommandSourceStack permission, @NotNull String command, int level) {
         return me.lucko.fabric.api.permissions.v0.Permissions.check(permission, command, level);
     }
 
@@ -173,22 +126,35 @@ public class PlayerUtil {
                 && !player.onClimbable() && !player.isInWater() && !player.isPassenger();
     }
 
-    public static void removeItem(ServerPlayer player, Item item, int count) {
-        for (ItemStack itemStack : ItemStackUtil.getInvItems(player)) {
-            if (itemStack.getItem() != item) continue;
+    public static void broadcastTitle(List<ServerPlayer> players, String title, String subtitle) {
+        ClientboundSetTitlesPacket titlePacket = new ClientboundSetTitlesPacket(
+                ClientboundSetTitlesPacket.Type.TITLE, new TextComponent(title));
+        ClientboundSetTitlesPacket subtitlePacket = new ClientboundSetTitlesPacket(
+                ClientboundSetTitlesPacket.Type.SUBTITLE, new TextComponent(subtitle));
 
-            if (itemStack.getCount() >= count) {
-                itemStack.shrink(count);
-                break;
-            } else {
-                count -= itemStack.getCount();
-                itemStack.shrink(itemStack.getCount());
-            }
+        for (ServerPlayer player : players) {
+            sendDefaultTitleLength(player);
+            player.connection.send(titlePacket);
+            player.connection.send(subtitlePacket);
         }
     }
 
-    public static boolean containsUuid(List<ServerPlayer> playerList, ServerPlayer player) {
-        for (ServerPlayer listPlayer : playerList) {
+    public static void sendSound(ServerPlayer player, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch) {
+        sendSound(player, new EntityPos(player), soundEvent, soundSource, volume, pitch);
+    }
+
+    public static ServerPlayer getFixedPlayer(ServerPlayer serverPlayer) {
+        if (serverPlayer == null) return null;
+        return ServerTime.minecraftServer.getPlayerList().getPlayer(serverPlayer.getUUID());
+    }
+
+    public static void sendSound(ServerPlayer player, EntityPos position, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch) {
+        player.connection.send(new ClientboundSoundPacket(soundEvent, soundSource,
+                position.x, position.y, position.z, 16f * volume, pitch));
+    }
+
+    public static boolean containsUuid(Collection<Player> playerList, Player player) {
+        for (Player listPlayer : playerList) {
             if (listPlayer.getUUID().equals(player.getUUID())) return true;
         }
         return false;

@@ -1,13 +1,15 @@
 package com.nexia.core.commands.staff;
 
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.nexia.core.Main;
-import com.nexia.core.commands.player.PrefixCommand;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
-import net.minecraft.Util;
+import com.nexia.core.utilities.time.ServerTime;
+import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -29,40 +31,93 @@ public class StaffPrefixCommand {
                                             CommandSourceStack executor = context.getSource();
 
                                             String type = StringArgumentType.getString(context, "type");
-                                            ServerPlayer player = EntityArgument.getPlayer(context, "player");
+                                            ServerPlayer mcOtherPlayer = EntityArgument.getPlayer(context, "player");
+                                            Player otherPlayer = PlayerUtil.getFactoryPlayer(mcOtherPlayer);
                                             String prefix = StringArgumentType.getString(context, "prefix");
 
-                                            if(type.equalsIgnoreCase("set")){
-                                                for(int i = 0; i < 8; i++){
-                                                    if(prefix.equalsIgnoreCase(Main.config.ranks[i])){
-                                                        executor.sendSuccess(ChatFormat.format("{b1}You have set the prefix of {b2}{} {b1}to: {b2}{b}{}{b1}.", player.getScoreboardName(), Main.config.ranks[i]), false);
-                                                        player.sendMessage(ChatFormat.format("{b1}Your prefix has been set to: {b2}{b}{}{b1}.", Main.config.ranks[i]), Util.NIL_UUID);
+                                            ServerPlayer mcExecutor = null;
+                                            Player factoryExecutor = null;
 
-                                                        for (int i2 = 0; i2 < 8; i2++) {
-                                                            player.removeTag(Main.config.ranks[i2]);
+                                            try {
+                                                mcExecutor = executor.getPlayerOrException();
+                                                factoryExecutor = PlayerUtil.getFactoryPlayer(mcExecutor);
+                                            } catch(Exception ignored){ }
+
+
+                                            if(type.equalsIgnoreCase("set")){
+                                                for(int i = 0; i < 9; i++){
+                                                    if(prefix.equalsIgnoreCase(Main.config.ranks[i])){
+
+
+                                                        if(factoryExecutor != null){
+                                                            factoryExecutor.sendMessage(
+                                                                    ChatFormat.nexiaMessage()
+                                                                                    .append(Component.text("You have set the prefix of ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                                                            .append(Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor2))
+                                                                                                    .append(Component.text(" to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                                                                            .append(Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                                                                                                                    .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold,false).decoration(ChatFormat.bold, false))
+                                                            );
+                                                        } else {
+                                                            executor.sendSuccess(LegacyChatFormat.format("{b1}You have set the prefix of {b2}{} {b1}to: {b2}{b}{}{b1}.", otherPlayer.getRawName(), Main.config.ranks[i]), false);
                                                         }
 
-                                                        player.addTag(Main.config.ranks[i]);
+                                                        otherPlayer.sendMessage(
+                                                                ChatFormat.nexiaMessage()
+                                                                                .append(Component.text("Your prefix has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                                                        .append(Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                                                                                                .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                        );
+
+                                                        for (int i2 = 0; i2 < 9; i2++) {
+                                                            otherPlayer.removeTag(Main.config.ranks[i2]);
+                                                        }
+
+                                                        otherPlayer.addTag(Main.config.ranks[i]);
                                                     }
                                                 }
                                             }
 
                                             if(type.equalsIgnoreCase("remove")){
-                                                for(int i = 0; i < 8; i++){
+                                                for(int i = 0; i < 9; i++){
                                                     if(prefix.equalsIgnoreCase(Main.config.ranks[i])){
-                                                        executor.sendSuccess(ChatFormat.format("{b1}You have removed the prefix {b2}{b}{} {b1}from {b2}{}{b1}.", Main.config.ranks[i], player.getScoreboardName()), false);
 
-                                                        PlayerUtil.executeServerCommand("/lp user %player% permission unset nexia.prefix." + Main.config.ranks[i], player);
+                                                        if(factoryExecutor != null){
+                                                            factoryExecutor.sendMessage(
+                                                                    ChatFormat.nexiaMessage()
+                                                                            .append(Component.text("You have removed the prefix ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                                            .append(Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true).decoration(ChatFormat.bold, false))
+                                                                            .append(Component.text(" from: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                                            .append(Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                                                            .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold,false))
+                                                            );
+                                                        } else {
+                                                            executor.sendSuccess(LegacyChatFormat.format("{b1}You have removed the prefix {b2}{b}{} {b1}from {b2}{}{b1}.", Main.config.ranks[i], otherPlayer.getRawName()), false);
+                                                        }
+
+
+                                                        ServerTime.factoryServer.runCommand(String.format("/lp user %s permission unset nexia.prefix.%s", otherPlayer.getRawName(), Main.config.ranks[i]));
                                                     }
                                                 }
                                             }
 
                                             if(type.equalsIgnoreCase("add")){
-                                                for(int i = 0; i < 8; i++){
+                                                for(int i = 0; i < 9; i++){
                                                     if(prefix.equalsIgnoreCase(Main.config.ranks[i])){
-                                                        executor.sendSuccess(ChatFormat.format("{b1}You have added the prefix {b2}{b}{} {b1}to {b2}{}{b1}.", Main.config.ranks[i], player.getScoreboardName()), false);
+                                                        if(factoryExecutor != null){
+                                                            factoryExecutor.sendMessage(
+                                                                    ChatFormat.nexiaMessage()
+                                                                            .append(Component.text("You have added the prefix ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                                            .append(Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                                                                            .append(Component.text(" to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                                            .append(Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                                                            .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold,false))
+                                                            );
+                                                        } else {
+                                                            executor.sendSuccess(LegacyChatFormat.format("{b1}You have added the prefix {b2}{b}{} {b1}to {b2}{}{b1}.", Main.config.ranks[i], otherPlayer.getRawName()), false);
+                                                        }
 
-                                                        PlayerUtil.executeServerCommand("/lp user %player% permission set nexia.prefix." + Main.config.ranks[i] + " true", player);
+                                                        ServerTime.factoryServer.runCommand(String.format("/lp user %s permission set nexia.prefix.%s true", otherPlayer.getRawName(), Main.config.ranks[i]));
                                                     }
                                                 }
                                             }

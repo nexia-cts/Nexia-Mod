@@ -2,10 +2,12 @@ package com.nexia.core.commands.player;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.player.PlayerUtil;
+import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.TextComponent;
 
 public class RulesCommand {
 
@@ -14,22 +16,43 @@ public class RulesCommand {
     }
 
     private static final String[] rules = {
-            "No cheats or other unfair advantages",
-            "No racism, excessive spamming or hate speech",
-            "Don't abuse any bugs and glitches",
-            "Keep it G, PG and PG-13",
-            "No interrupting",
+            "No hacking, cheating, griefing or exploiting bugs.",
+            "Be respectful. No toxicity and/or annoying behaviour.",
+            "No advertising.",
+            "No encouraging of illegal activity.",
+            "No interrupting other player's fights.",
     };
 
-    public static int run(CommandContext<CommandSourceStack> context) {
+    public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 
-        String message = ChatFormat.separatorLine("Rules");
+        Component message = Component.text("")
+                .append(Component.text("                          ").color(ChatFormat.lineColor).decoration(ChatFormat.strikeThrough, true))
+                .append(Component.text("[ ").color(ChatFormat.lineColor).decoration(ChatFormat.strikeThrough, false)
+                .append(Component.text("Rules").color(ChatFormat.brandColor1).decoration(ChatFormat.strikeThrough, false))
+                .append(Component.text(" ]").color(ChatFormat.lineColor).decoration(ChatFormat.strikeThrough, false))
+                        .append(Component.text("                           ").color(ChatFormat.lineColor).decoration(ChatFormat.strikeThrough, true)));
+
         for (int i = 0; i < rules.length; i++) {
-            message += "\n" + "\247d" + ChatFormat.bold + (i+1) + ". §8» " + ChatFormat.normalColor + rules[i];
-        }
-        message += "\n" + ChatFormat.separatorLine(null);
 
-        context.getSource().sendSuccess(new TextComponent(message), false);
+            message = message.append(Component.text("\n" + (i+1) + ". ")
+                    .color(ChatFormat.brandColor1)
+                    .decoration(ChatFormat.bold, true))
+                    .decoration(ChatFormat.strikeThrough, false)
+                    .append(Component.text("» ")
+                            .color(ChatFormat.arrowColor)
+                            .decoration(ChatFormat.bold, false)
+                            .decoration(ChatFormat.strikeThrough, false)
+                            .append(Component.text(rules[i])
+                                    .decoration(ChatFormat.bold, false)
+                                    .decoration(ChatFormat.strikeThrough, false)
+                                    .color(ChatFormat.normalColor)
+                            )
+                    );
+        }
+
+        message = message.append(Component.text("\n").append(ChatFormat.separatorLine(null)));
+
+        PlayerUtil.getFactoryPlayer(context.getSource().getPlayerOrException()).sendMessage(message);
 
         return 1;
     }

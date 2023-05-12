@@ -1,14 +1,7 @@
 package com.nexia.core.mixin.player;
 
 import com.mojang.authlib.GameProfile;
-import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.ffa.utilities.FfaUtil;
-import com.nexia.minigames.games.bedwars.areas.BwAreas;
-import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
-import com.nexia.minigames.games.duels.DuelGameMode;
-import com.nexia.minigames.games.duels.DuelsGame;
-import com.nexia.minigames.games.oitc.OitcGame;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -42,30 +35,9 @@ public abstract class ServerPlayerMixin extends Player {
         ServerPlayer player = (ServerPlayer)(Object)this;
 
         if (FfaUtil.isFfaPlayer(player)) {
-            FfaUtil.leaveOrDie(player, damageSource);
-
-        } else if (BwAreas.isBedWarsWorld(getLevel())) {
-            BwPlayerEvents.death(player);
-        }
-        else if(PlayerDataManager.get(player).gameMode == PlayerGameMode.OITC){
-            OitcGame.death(player, damageSource);
-        }
-        else if(PlayerDataManager.get(player).gameMode == PlayerGameMode.DUELS){
-            DuelsGame.death(player, damageSource);
+            FfaUtil.leaveOrDie(player, damageSource, false);
         }
     }
-
-    /*
-    @Inject(method = "die", at = @At("RETURN"))
-    private void dieReturn(DamageSource damageSource, CallbackInfo ci){
-        ServerPlayer player = (ServerPlayer)(Object)this;
-
-        if(PlayerDataManager.get(player).gameMode == PlayerGameMode.DUELS){
-            DuelsGame.death(player, damageSource);
-        }
-    }
-
-     */
 
     @Redirect(method = "doCloseContainer", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/AbstractContainerMenu;removed(Lnet/minecraft/world/entity/player/Player;)V"))
     private void removed(AbstractContainerMenu instance, Player player) {

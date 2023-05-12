@@ -26,14 +26,6 @@ public class ModConfig implements ConfigData {
 
         @Comment("Toggles if the join and leave messages show.")
         public boolean statusMessages = true;
-
-        @Comment("The message that gets announced when the player joins the server for the first time.")
-        public String firstJoinMessage = "WELCOME %player%";
-        @Comment("The message that gets announced when the player joins the server.")
-        public String joinMessage = "JOIN %player%";
-
-        @Comment("The message that gets announced when the player leaves the server.")
-        public String leaveMessage = "LEAVE %player%";
     }
 
 
@@ -51,16 +43,10 @@ public class ModConfig implements ConfigData {
 
     public Enhancements enhancements = new Enhancements();
     public static class Enhancements {
-        @Comment("Toggles if the modified knockback is enabled.")
-        public boolean modifiedKnockback = false;
-
-        @Comment("Toggles if the modified fishing rods are enabled.")
-        public boolean modifiedRods = false;
-
         @Comment("Toggles if the better shields are enabled.")
         public boolean betterShields = false;
 
-        @Comment("Modifies the pearl cooldown.")
-        public int enderpearlCooldown = 1;
+        @Comment("Modifies the pearl cooldown in ticks (20 ticks = 1 second).")
+        public int enderpearlCooldown = 20;
     }
 }

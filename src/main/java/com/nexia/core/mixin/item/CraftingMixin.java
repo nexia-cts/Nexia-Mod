@@ -1,7 +1,7 @@
 package com.nexia.core.mixin.item;
 
 import com.nexia.core.utilities.item.ItemStackUtil;
-import com.nexia.minigames.games.bedwars.util.BwUtil;
+import com.nexia.ffa.utilities.FfaUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -19,9 +19,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CraftingMenu.class)
 public class CraftingMixin {
-
-    @Shadow @Final private Player player;
-    // Set crafter to player
     private static ServerPlayer crafter;
     @Inject(method = "slotChangedCraftingGrid", at = @At("HEAD"))
     private static void craft(int i, Level level, Player player, CraftingContainer craftingContainer, ResultContainer resultContainer, CallbackInfo ci) {
@@ -30,12 +27,12 @@ public class CraftingMixin {
         }
     }
 
-    // Disable crafting for bedwars players
+    // Disable crafting for ffa players
     @ModifyArg(method = "slotChangedCraftingGrid", index = 1, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/ResultContainer;setItem(ILnet/minecraft/world/item/ItemStack;)V"))
     private static ItemStack setCraftResult(ItemStack itemStack) {
         if (crafter == null) return itemStack;
 
-        if (BwUtil.isInBedWars(crafter)) {
+        if (FfaUtil.isFfaPlayer(crafter)) {
             ItemStackUtil.sendInventoryRefreshPacket(crafter);
             return ItemStack.EMPTY;
         }
@@ -46,7 +43,7 @@ public class CraftingMixin {
     private static ItemStack setCraftResultPacketItem(ItemStack itemStack) {
         if (crafter == null) return itemStack;
 
-        if (BwUtil.isInBedWars(crafter)) {
+        if (FfaUtil.isFfaPlayer(crafter)) {
             return ItemStack.EMPTY;
         }
         return itemStack;
