@@ -1,19 +1,20 @@
-package com.nexia.core.mixin.misc;
+package com.nexia.core.mixin.misc.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.server.commands.BanPlayerCommands;
-import net.minecraft.server.commands.PardonCommand;
+import net.minecraft.server.commands.MsgCommand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(PardonCommand.class)
-public class PardonCommandMixin {
+@Mixin(MsgCommand.class)
+public class MsgCommandMixin {
+
     @Inject(method = "register", cancellable = true, at = @At("HEAD"))
     private static void register(CommandDispatcher<CommandSourceStack> commandDispatcher, CallbackInfo ci) {
-        // Fuck you v2.1
+        // Fuck you v1.0
         ci.cancel();
     }
+
 }

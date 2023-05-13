@@ -1,4 +1,4 @@
-package com.nexia.core.mixin.misc;
+package com.nexia.core.mixin.misc.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class BanCommandMixin {
     @Inject(method = "register", cancellable = true, at = @At("HEAD"))
     private static void register(CommandDispatcher<CommandSourceStack> commandDispatcher, CallbackInfo ci) {
-        // Fuck you v2.0
+        // Fuck you v1.1
         ci.cancel();
     }
 }

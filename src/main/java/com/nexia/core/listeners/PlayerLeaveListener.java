@@ -22,6 +22,7 @@ public class PlayerLeaveListener {
 
             processDisconnect(player, minecraftPlayer);
 
+            /*
             if(Main.config.events.statusMessages){
                 playerDisconnectEvent.setLeaveMessage(
                         Component.text("[").color(ChatFormat.lineColor)
@@ -30,6 +31,8 @@ public class PlayerLeaveListener {
                                 .append(Component.text(player.getRawName()).color(ChatFormat.failColor)))
                 );
             }
+
+             */
         });
     }
 

@@ -23,7 +23,9 @@ public class RankCommand {
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.argument("rank", StringArgumentType.string())
                                 .suggests(((context, builder) -> SharedSuggestionProvider.suggest((Main.config.ranks), builder)))
-                                .executes(context -> RankCommand.give(context, EntityArgument.getPlayer(context, "player"), StringArgumentType.getString(context, "rank")))))
+                                .executes(context -> RankCommand.give(context, EntityArgument.getPlayer(context, "player"), StringArgumentType.getString(context, "rank")))
+                        )
+                )
         );
     }
 
