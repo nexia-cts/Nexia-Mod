@@ -30,9 +30,9 @@ public class DevExperimentalMapCommand {
                             }
                         })
                         .then(Commands.argument("argument", StringArgumentType.string())
-                                .suggests(((context, builder) -> SharedSuggestionProvider.suggest((new String[]{"cffa"}), builder))))
-                        .executes(DevExperimentalMapCommand::run)
-                )
+                                .suggests(((context, builder) -> SharedSuggestionProvider.suggest((new String[]{"cffa"}), builder)))
+                                .executes(DevExperimentalMapCommand::run)
+                ))
         );
     }
 

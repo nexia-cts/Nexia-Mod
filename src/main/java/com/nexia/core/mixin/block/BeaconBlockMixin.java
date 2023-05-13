@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BeaconBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,6 +23,6 @@ public class BeaconBlockMixin {
         if(!(player instanceof ServerPlayer))
             return;
 
-        if(FfaUtil.isFfaPlayer(player)) { cir.setReturnValue(InteractionResult.FAIL); }
+        if(FfaUtil.isFfaPlayer(player) && ((ServerPlayer) player).gameMode.getGameModeForPlayer() == GameType.ADVENTURE) { cir.setReturnValue(InteractionResult.FAIL); }
     }
 }

@@ -53,15 +53,18 @@ public class PlayerLeaveListener {
 
     private static void processDisconnect(Player player, ServerPlayer minecraftPlayer){
 
+        /*
         if (FfaUtil.isFfaPlayer(minecraftPlayer)) {
             FfaUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
         }
+
+         */
 
         PlayerDataManager.removePlayerData(minecraftPlayer);
         com.nexia.ffa.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer);
 
 
-        LobbyUtil.leaveAllGames(minecraftPlayer, true);
+        //LobbyUtil.leaveAllGames(minecraftPlayer, true);
 
 
         runCommands(player);
