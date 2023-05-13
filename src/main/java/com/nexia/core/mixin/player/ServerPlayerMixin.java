@@ -2,7 +2,9 @@ package com.nexia.core.mixin.player;
 
 import com.mojang.authlib.GameProfile;
 import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.core.listeners.PlayerRespawnListener;
 import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
@@ -42,7 +44,6 @@ public abstract class ServerPlayerMixin extends Player {
 
         if (FfaUtil.isFfaPlayer(player)) {
             FfaUtil.leaveOrDie(player, damageSource, false);
-
         } else if (BwAreas.isBedWarsWorld(getLevel())) {
             BwPlayerEvents.death(player);
         }
@@ -52,6 +53,8 @@ public abstract class ServerPlayerMixin extends Player {
         else if(PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY){
             DuelsGame.death(player, damageSource);
         }
+
+        PlayerRespawnListener.registerListener(player);
     }
 
     @Redirect(method = "doCloseContainer", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/AbstractContainerMenu;removed(Lnet/minecraft/world/entity/player/Player;)V"))
@@ -65,5 +68,4 @@ public abstract class ServerPlayerMixin extends Player {
 
         player.containerMenu.removed(player);
     }
-
 }

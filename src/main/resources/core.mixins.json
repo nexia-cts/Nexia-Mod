@@ -5,8 +5,8 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "block.AnvilBlockMixin",
-    "block.BlockMixin",
     "block.BeaconBlockMixin",
+    "block.BlockMixin",
     "block.SignBlockMixin",
     "entity.AbstractArrowMixin",
     "entity.AbstractHurtingProjectileMixin",

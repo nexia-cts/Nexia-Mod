@@ -43,7 +43,7 @@ public class DuelsGame { //implements Runnable{
     public static DuelsGame startGame(ServerPlayer mcP1, ServerPlayer mcP2, String stringGameMode, @Nullable String selectedMap){
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
         if(gameMode == null){
-            gameMode = DuelGameMode.FFA; // fallback gamemode incase somehow
+            gameMode = DuelGameMode.FFA;
             System.out.printf("[ERROR] Nexia: Invalid duel gamemode ({0}) selected! Using fallback one.%n", stringGameMode);
         }
 
@@ -64,7 +64,6 @@ public class DuelsGame { //implements Runnable{
 
         ServerTime.factoryServer.runCommand( "/execute in " + mapid + ":" + name + " if block 0 80 0 minecraft:structure_block run setblock 0 80 0 air");
         ServerTime.factoryServer.runCommand( "/execute in " + mapid + ":" + name + " if block 1 80 0 minecraft:redstone_block run setblock 1 80 0 air");
-
 
         PlayerData invitorData = PlayerDataManager.get(mcP1);
         PlayerData playerData = PlayerDataManager.get(mcP2);
@@ -208,63 +207,21 @@ public class DuelsGame { //implements Runnable{
 
             attacker.getInventory().clear();
             minecraftAttacker.setGameMode(GameType.ADVENTURE);
+
+            LobbyUtil.giveItems(minecraftAttacker);
         }
 
         victim.sendMessage(win);
         PlayerUtil.resetHealthStatus(victim);
         victim.getInventory().clear();
+
+        LobbyUtil.giveItems(minecraftVictim);
+
         minecraftVictim.setGameMode(GameType.ADVENTURE);
         DuelGameHandler.duelsGames.remove(victimData.duelsGame);
         victimData.duelsGame = null;
 
         DuelGameHandler.deleteWorld(duelLevel.dimension().toString().replaceAll("]", "").split(":")[2]);
-
-
-
-
-
-
-        //minecraftAttacker.teleportTo(DuelsSpawn.duelWorld, DuelsSpawn.spawn.x, DuelsSpawn.spawn.y, DuelsSpawn.spawn.z, DuelsSpawn.spawn.yaw, DuelsSpawn.spawn.pitch)
-        //minecraftAttacker.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
-
-        //minecraftVictim.teleportTo(DuelsSpawn.duelWorld, DuelsSpawn.spawn.x, DuelsSpawn.spawn.y, DuelsSpawn.spawn.z, DuelsSpawn.spawn.yaw, DuelsSpawn.spawn.pitch);
-        //minecraftVictim.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
-
-
-
-
-
-
-        // Fix command bug (/duel & /queue being red indicating you can't use them, but you actually still can)
-        //LobbyUtil.sendGame(minecraftVictim, "duels", false, false);
-
-
-
-
-
-        /*
-        ServerTime.scheduler.schedule(() -> {
-            attacker.kill();
-
-            PlayerUtil.resetHealthStatus(attacker);
-            PlayerUtil.resetHealthStatus(victim);
-
-            // Fix command bug (/duel & /queue being red indicating you can't use them, but you actually still can)
-            LobbyUtil.sendGame(minecraftVictim, "duels", false, false);
-            LobbyUtil.sendGame(minecraftAttacker, "duels", false, false);
-
-            attacker.getInventory().clear();
-            victim.getInventory().clear();
-
-            minecraftAttacker.setGameMode(GameType.ADVENTURE);
-            minecraftVictim.setGameMode(GameType.ADVENTURE);
-
-            DuelGameHandler.deleteWorld(duelLevel.dimension().toString().replaceAll("]", "").split(":")[2]);
-        }, 20);
-
-         */
-
-
     }
 
     public static void death(@NotNull ServerPlayer victim, @Nullable DamageSource source){

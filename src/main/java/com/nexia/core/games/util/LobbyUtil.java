@@ -125,19 +125,7 @@ public class LobbyUtil {
             minecraftPlayer.setRespawnPosition(lobbyWorld.dimension(), lobbySpawn.toBlockPos(), lobbySpawn.yaw, true, false);
             minecraftPlayer.teleportTo(lobbyWorld, lobbySpawn.x, lobbySpawn.y, lobbySpawn.z, lobbySpawn.pitch, lobbySpawn.yaw);
 
-            ItemStack compass = new ItemStack(Items.COMPASS);
-            compass.setHoverName(new TextComponent("§eGamemode Selector"));
-            ItemDisplayUtil.addGlint(compass);
-            ItemDisplayUtil.addLore(compass, "§7Right click to open the menu.", 0);
-
-            ItemStack nametag = new ItemStack(Items.NAME_TAG);
-            nametag.setHoverName(new TextComponent("§ePrefix Selector"));
-            ItemDisplayUtil.addGlint(nametag);
-            ItemDisplayUtil.addLore(nametag, "§7Right click to open the menu.", 0);
-
-            minecraftPlayer.setSlot(4, compass);
-            minecraftPlayer.setSlot(3, nametag);
-            ItemStackUtil.sendInventoryRefreshPacket(minecraftPlayer);
+            LobbyUtil.giveItems(minecraftPlayer);
         }
 
         minecraftPlayer.connection.send(new ClientboundStopSoundPacket());
@@ -147,6 +135,22 @@ public class LobbyUtil {
         player.removeTag(LobbyUtil.NO_RANK_DISPLAY_TAG);
         player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
         player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+    }
+
+    public static void giveItems(ServerPlayer minecraftPlayer) {
+        ItemStack compass = new ItemStack(Items.COMPASS);
+        compass.setHoverName(new TextComponent("§eGamemode Selector"));
+        ItemDisplayUtil.addGlint(compass);
+        ItemDisplayUtil.addLore(compass, "§7Right click to open the menu.", 0);
+
+        ItemStack nametag = new ItemStack(Items.NAME_TAG);
+        nametag.setHoverName(new TextComponent("§ePrefix Selector"));
+        ItemDisplayUtil.addGlint(nametag);
+        ItemDisplayUtil.addLore(nametag, "§7Right click to open the menu.", 0);
+
+        minecraftPlayer.setSlot(4, compass);
+        minecraftPlayer.setSlot(3, nametag);
+        ItemStackUtil.sendInventoryRefreshPacket(minecraftPlayer);
     }
 
     public static void sendGame(ServerPlayer minecraftPlayer, String game, boolean message, boolean tp){
