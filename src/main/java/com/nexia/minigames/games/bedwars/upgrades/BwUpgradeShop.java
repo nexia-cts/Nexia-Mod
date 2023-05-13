@@ -1,7 +1,5 @@
 package com.nexia.minigames.games.bedwars.upgrades;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
-import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.chat.RomanNumbers;
 import com.nexia.core.utilities.item.ItemDisplayUtil;

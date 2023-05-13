@@ -6,7 +6,8 @@
   "mixins": [
     "block.AnvilBlockMixin",
     "block.BlockMixin",
-    "block.SignMixin",
+    "block.BeaconBlockMixin",
+    "block.SignBlockMixin",
     "entity.AbstractArrowMixin",
     "entity.AbstractHurtingProjectileMixin",
     "entity.AbstractLivingEntityMixin",

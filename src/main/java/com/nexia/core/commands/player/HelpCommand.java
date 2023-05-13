@@ -47,7 +47,7 @@ public class HelpCommand {
             //message += "\n" + ChatFormat.brandColor1 + "/" + commandInfo[0] + ChatFormat.lineColor + " | " + ChatFormat.brandColor2 + commandInfo[1];
         }
 
-        message = message.append(ChatFormat.separatorLine(null));
+        message = message.append(Component.text("\n").append(ChatFormat.separatorLine(null)));
 
         PlayerUtil.getFactoryPlayer(context.getSource().getPlayerOrException()).sendMessage(message);
 

@@ -1,6 +1,7 @@
 package com.nexia.minigames.games.bedwars.util;
 
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.minigames.games.bedwars.BwGame;
@@ -100,8 +101,8 @@ public class BwGen {
                 // Change timer number
                 if (gen.timerDisplay != null && nextItemIn % 20 == 0) {
                     gen.timerDisplay.setCustomName(new TextComponent(
-                            ChatFormat.brandColor1 + "Spawns in " +
-                            ChatFormat.brandColor2 + nextItemIn / 20 + ChatFormat.brandColor1 + " seconds"));
+                            LegacyChatFormat.brandColor1 + "Spawns in " +
+                                    LegacyChatFormat.brandColor2 + nextItemIn / 20 + LegacyChatFormat.brandColor1 + " seconds"));
                 }
             }
         }

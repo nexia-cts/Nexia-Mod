@@ -6,6 +6,7 @@ import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
@@ -125,9 +126,10 @@ public class DuelsGame { //implements Runnable{
         invitorData.gameMode = gameMode;
 
         DuelsGame game = new DuelsGame(mcP1, mcP2, gameMode, selectedMap, duelLevel);
-
         invitorData.duelsGame = game;
         playerData.duelsGame = game;
+
+        DuelGameHandler.duelsGames.add(game);
 
         return game;
     }
@@ -139,13 +141,13 @@ public class DuelsGame { //implements Runnable{
 
         PlayerData attackerData = null;
 
-        if(!attackerNull) {
+        if (!attackerNull) {
             attackerData = PlayerDataManager.get(minecraftAttacker);
         }
 
         ServerLevel duelLevel;
 
-        if(!attackerNull){
+        if (!attackerNull) {
             duelLevel = minecraftAttacker.getLevel();
         } else {
             duelLevel = minecraftVictim.getLevel();
@@ -153,7 +155,7 @@ public class DuelsGame { //implements Runnable{
 
         Player victim = PlayerUtil.getFactoryPlayer(minecraftVictim);
         Player attacker = null;
-        if(!attackerNull){
+        if (!attackerNull) {
             attacker = PlayerUtil.getFactoryPlayer(minecraftAttacker);
         }
 
@@ -165,9 +167,8 @@ public class DuelsGame { //implements Runnable{
         victimData.inviteKit = "";
         removeQueue(minecraftVictim, victimData.gameMode.id, true);
         victimData.gameMode = DuelGameMode.LOBBY;
-        victimData.duelsGame = null;
 
-        if(!attackerNull){
+        if (!attackerNull) {
             attackerData.inviting = false;
             attackerData.inDuel = false;
             attackerData.duelPlayer = null;
@@ -181,8 +182,6 @@ public class DuelsGame { //implements Runnable{
         }
 
 
-
-
         //minecraftVictim.setGameMode(GameType.SPECTATOR);
         //victim.teleport(attacker.getLocation());
 
@@ -193,24 +192,37 @@ public class DuelsGame { //implements Runnable{
                 );
 
 
-        if(!attackerNull){
+        if (!attackerNull) {
             win = Component.text(attacker.getRawName()).color(ChatFormat.brandColor2)
                     .append(Component.text(" has won the duel!").color(ChatFormat.normalColor)
-            );
+                    );
         }
 
-        if(!attackerNull){
+
+        if (!attackerNull) {
             attacker.sendMessage(win);
             minecraftAttacker.die(DamageSource.GENERIC);
             PlayerUtil.resetHealthStatus(attacker);
 
-            LobbyUtil.sendGame(minecraftAttacker, "duels", false, false);
+            //LobbyUtil.sendGame(minecraftAttacker, "duels", false, false);
 
             attacker.getInventory().clear();
             minecraftAttacker.setGameMode(GameType.ADVENTURE);
         }
 
         victim.sendMessage(win);
+        PlayerUtil.resetHealthStatus(victim);
+        victim.getInventory().clear();
+        minecraftVictim.setGameMode(GameType.ADVENTURE);
+        DuelGameHandler.duelsGames.remove(victimData.duelsGame);
+        victimData.duelsGame = null;
+
+        DuelGameHandler.deleteWorld(duelLevel.dimension().toString().replaceAll("]", "").split(":")[2]);
+
+
+
+
+
 
         //minecraftAttacker.teleportTo(DuelsSpawn.duelWorld, DuelsSpawn.spawn.x, DuelsSpawn.spawn.y, DuelsSpawn.spawn.z, DuelsSpawn.spawn.yaw, DuelsSpawn.spawn.pitch)
         //minecraftAttacker.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
@@ -221,16 +233,14 @@ public class DuelsGame { //implements Runnable{
 
 
 
-        PlayerUtil.resetHealthStatus(victim);
+
 
         // Fix command bug (/duel & /queue being red indicating you can't use them, but you actually still can)
         //LobbyUtil.sendGame(minecraftVictim, "duels", false, false);
 
-        victim.getInventory().clear();
 
-        minecraftVictim.setGameMode(GameType.ADVENTURE);
 
-        DuelGameHandler.deleteWorld(duelLevel.dimension().toString().replaceAll("]", "").split(":")[2]);
+
 
         /*
         ServerTime.scheduler.schedule(() -> {
@@ -263,7 +273,7 @@ public class DuelsGame { //implements Runnable{
             PlayerData attackerData = PlayerDataManager.get(attacker);
 
             if((victimData.inDuel && attackerData.inDuel) && victimData.duelsGame == attackerData.duelsGame){
-                DuelsGame.endGame(victim, attacker, true);
+                endGame(victim, attacker, true);
             }
             return;
         }
@@ -272,12 +282,12 @@ public class DuelsGame { //implements Runnable{
             PlayerData attackerData = PlayerDataManager.get(attacker);
 
             if ((victimData.inDuel && attackerData.inDuel) && (victimData.duelPlayer.getStringUUID().equalsIgnoreCase(attacker.getStringUUID())) && attackerData.duelPlayer.getStringUUID().equalsIgnoreCase(victim.getStringUUID())) {
-                DuelsGame.endGame(victim, attacker, true);
+                endGame(victim, attacker, true);
             }
             return;
         }
         if(victimData.inDuel) {
-            DuelsGame.endGame(victim, null, false);
+            endGame(victim, null, false);
         }
 
     }

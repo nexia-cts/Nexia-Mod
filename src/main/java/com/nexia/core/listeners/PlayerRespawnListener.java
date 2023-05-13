@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 public class PlayerRespawnListener {
     public static void registerListener(){
         PlayerRespawnEvent.BACKEND.register(playerRespawnEvent -> {
+            if(playerRespawnEvent.getPlayer() == null) { return; }
             Player player = playerRespawnEvent.getPlayer();
             ServerPlayer minecraftPlayer = PlayerUtil.getMinecraftPlayer(player);
 

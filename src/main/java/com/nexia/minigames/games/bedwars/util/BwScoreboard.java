@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.bedwars.util;
 
-import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.time.TickUtil;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
 public class BwScoreboard {
 
     private static final String objectiveName = "bedwars_sidebar";
-    private static final TextComponent title = new TextComponent(ChatFormat.brandColor1 + "\247l    Bedwars    ");
+    private static final TextComponent title = new TextComponent(LegacyChatFormat.brandColor1 + "\247l    Bedwars    ");
 
     public static final int timerLine = 1;
 
@@ -79,7 +79,7 @@ public class BwScoreboard {
     public static void updateTimer() {
         int ticksLeft = BwGame.gameLength * 20 - BwGame.gameTicks - 1;
         String[] timer = TickUtil.minuteTimeStamp(ticksLeft);
-        String line = "Time left: " + ChatFormat.brandColor2 + timer[0] + ":" + timer[1];
+        String line = "Time left: " + LegacyChatFormat.brandColor2 + timer[0] + ":" + timer[1];
         BwScoreboard.replaceLine(BwScoreboard.timerLine, line);
     }
 

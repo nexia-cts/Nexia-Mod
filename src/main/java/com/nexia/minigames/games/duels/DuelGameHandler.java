@@ -1,23 +1,37 @@
 package com.nexia.minigames.games.duels;
 
+import com.nexia.core.Main;
+import com.nexia.core.utilities.chat.LegacyChatFormat;
+import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import net.minecraft.Util;
 import net.minecraft.core.Registry;
+import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.entity.projectile.FireworkRocketEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
+import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 
 public class DuelGameHandler {
+
+    public static List<DuelsGame> duelsGames = new ArrayList<>();
     public static void leave(ServerPlayer player) {
         if (player.getLastDamageSource() != null) {
             DuelsGame.death(player, player.getLastDamageSource());
@@ -30,6 +44,21 @@ public class DuelGameHandler {
         removeQueue(player, data.gameMode.id, true);
         data.gameMode = DuelGameMode.LOBBY;
         data.duelsGame = null;
+    }
+
+    public static void winnerRockets(@NotNull ServerPlayer winner, @NotNull ServerLevel level, @NotNull Integer winnerColor) {
+
+        Random random = level.getRandom();
+        EntityPos pos = new EntityPos(winner).add(random.nextInt(9) - 4, 2, random.nextInt(9) - 4);
+
+        ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET);
+        try {
+            itemStack.setTag(TagParser.parseTag("{Fireworks:{Explosions:[{Type:0,Flicker:1b,Trail:1b,Colors:[I;" +
+                    winnerColor + "]}]}}"));
+        } catch (Exception ignored) {}
+
+        FireworkRocketEntity rocket = new FireworkRocketEntity(level, pos.x, pos.y, pos.z, itemStack);
+        level.addFreshEntity(rocket);
     }
 
     public static void starting() {
@@ -48,6 +77,7 @@ public class DuelGameHandler {
         DuelGameMode.SMP_QUEUE.clear();
         DuelGameMode.UHC_SHIELD_QUEUE.clear();
 
+        DuelGameHandler.duelsGames.clear();
 
         for (ServerLevel level : ServerTime.minecraftServer.getAllLevels()) {
             String[] split = level.dimension().toString().replaceAll("]", "").split(":");
