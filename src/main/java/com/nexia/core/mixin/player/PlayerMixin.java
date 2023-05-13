@@ -1,9 +1,7 @@
 package com.nexia.core.mixin.player;
 
-import com.combatreforged.factory.api.event.player.PlayerRespawnEvent;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.listeners.PlayerRespawnListener;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
@@ -11,8 +9,6 @@ import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.oitc.OitcGame;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;

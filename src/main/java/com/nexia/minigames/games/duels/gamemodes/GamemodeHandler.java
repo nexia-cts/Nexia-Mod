@@ -374,7 +374,7 @@ public class GamemodeHandler {
             executor.sendMessage(ChatFormat.nexiaMessage()
                     .append(Component.text("Sending a duel request to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                             .append(Component.text(player.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                            .append(Component.text(" on map ")).append(Component.text(map)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false)
+                            .append(Component.text(" on map ")).append(Component.text(map).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                             .append(Component.text(" with kit ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                             .append(Component.text(stringGameMode).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                             .append(Component.text(".")).color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));

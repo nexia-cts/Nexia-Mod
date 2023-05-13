@@ -6,7 +6,6 @@ import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
@@ -58,12 +57,14 @@ public class DuelsGame { //implements Runnable{
 
         String mapid = "duels";
 
-        ServerTime.factoryServer.runCommand("/execute in " + mapid + ":" + name + " run forceload add 0 0");
-        ServerTime.factoryServer.runCommand( "/execute in " + mapid + ":" + name + " run " + DuelGameHandler.returnCommandMap(selectedMap));
-        ServerTime.factoryServer.runCommand( "/execute in " + mapid + ":" + name + " run setblock 1 80 0 minecraft:redstone_block");
+        String start = "/execute in " + mapid + ":" + name;
 
-        ServerTime.factoryServer.runCommand( "/execute in " + mapid + ":" + name + " if block 0 80 0 minecraft:structure_block run setblock 0 80 0 air");
-        ServerTime.factoryServer.runCommand( "/execute in " + mapid + ":" + name + " if block 1 80 0 minecraft:redstone_block run setblock 1 80 0 air");
+        ServerTime.factoryServer.runCommand(start + " run forceload add 0 0");
+        ServerTime.factoryServer.runCommand(start + " run" + DuelGameHandler.returnCommandMap(selectedMap));
+        ServerTime.factoryServer.runCommand(start + " run setblock 1 80 0 minecraft:redstone_block");
+
+        ServerTime.factoryServer.runCommand(start + " if block 0 80 0 minecraft:structure_block run setblock 0 80 0 air");
+        ServerTime.factoryServer.runCommand(start + " if block 1 80 0 minecraft:redstone_block run setblock 1 80 0 air");
 
         PlayerData invitorData = PlayerDataManager.get(mcP1);
         PlayerData playerData = PlayerDataManager.get(mcP2);

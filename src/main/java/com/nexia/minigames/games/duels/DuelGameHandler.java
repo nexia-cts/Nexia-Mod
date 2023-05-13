@@ -1,12 +1,10 @@
 package com.nexia.minigames.games.duels;
 
-import com.nexia.core.Main;
-import com.nexia.core.utilities.chat.LegacyChatFormat;
+
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
-import net.minecraft.Util;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceKey;
