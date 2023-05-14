@@ -23,6 +23,6 @@ public class DispenserBlockMixin {
         if(!(player instanceof ServerPlayer))
             return;
 
-        if(FfaUtil.isFfaPlayer(player) && ((ServerPlayer) player).gameMode.getGameModeForPlayer() == GameType.ADVENTURE) { cir.cancel(); }
+        if(FfaUtil.isFfaPlayer(player) && ((ServerPlayer) player).gameMode.getGameModeForPlayer() == GameType.ADVENTURE) { cir.setReturnValue(InteractionResult.FAIL); }
     }
 }
