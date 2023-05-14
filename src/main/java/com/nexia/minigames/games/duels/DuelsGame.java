@@ -8,15 +8,20 @@ import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
+import com.nexia.minigames.games.duels.util.SavedDuelsData;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 
@@ -177,12 +182,6 @@ public class DuelsGame { //implements Runnable{
 
             attackerData.savedData.wins++;
             victimData.savedData.loss++;
-
-            ServerTime.factoryServer.runCommand("execute as " + attackerData.duelPlayer.getName() + " run hub");
-            ServerTime.factoryServer.runCommand("execute as " + victimData.duelPlayer.getName() + " run hub");
-
-            attackerData.duelPlayer = null;
-            victimData.duelPlayer = null;
         }
 
 
@@ -218,7 +217,22 @@ public class DuelsGame { //implements Runnable{
         PlayerUtil.resetHealthStatus(victim);
         victim.getInventory().clear();
 
+        SavedDuelsData data =
+                new SavedDuelsData(
+                        attackerData.duelPlayer, victimData.duelPlayer
+                );
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                ServerPlayer player = data.getLoser();
+                ServerLevel level = player.getLevel();
+                level.getServer().getCommands().performCommand(player.createCommandSourceStack(), "/hub");
 
+                player = data.getWinner();
+                level = player.getLevel();
+                level.getServer().getCommands().performCommand(player.createCommandSourceStack(), "/hub");
+            }
+        }, 100L);
 
         minecraftVictim.setGameMode(GameType.ADVENTURE);
         DuelGameHandler.duelsGames.remove(victimData.duelsGame);
