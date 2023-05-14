@@ -13,7 +13,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.CombatRules;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -23,6 +27,8 @@ import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.BlockHitResult;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -39,6 +45,8 @@ public abstract class PlayerMixin extends LivingEntity {
     @Shadow @Final public Inventory inventory;
 
     @Shadow public abstract ItemCooldowns getCooldowns();
+
+    @Shadow public abstract InteractionResult interactOn(Entity entity, InteractionHand interactionHand);
 
     protected PlayerMixin(EntityType<? extends LivingEntity> entityType, Level level) {
         super(entityType, level);
@@ -137,7 +145,7 @@ public abstract class PlayerMixin extends LivingEntity {
 
     }
 
-    @Inject(method = "getAttackDelay", cancellable = true, at = @At("HEAD"))
+    @Inject(method = "getAttackDelay", at = @At("HEAD"))
     private void getAttackDelay(CallbackInfoReturnable<Integer> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
 

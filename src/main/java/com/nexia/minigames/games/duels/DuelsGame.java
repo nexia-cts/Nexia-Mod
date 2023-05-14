@@ -162,7 +162,6 @@ public class DuelsGame { //implements Runnable{
 
         victimData.inviting = false;
         victimData.inDuel = false;
-        victimData.duelPlayer = null;
         victimData.inviteMap = "";
         victimData.inviteKit = "";
         removeQueue(minecraftVictim, victimData.gameMode.id, true);
@@ -171,7 +170,6 @@ public class DuelsGame { //implements Runnable{
         if (!attackerNull) {
             attackerData.inviting = false;
             attackerData.inDuel = false;
-            attackerData.duelPlayer = null;
             attackerData.inviteKit = "";
             attackerData.inviteMap = "";
             attackerData.gameMode = DuelGameMode.LOBBY;
@@ -179,6 +177,12 @@ public class DuelsGame { //implements Runnable{
 
             attackerData.savedData.wins++;
             victimData.savedData.loss++;
+
+            ServerTime.factoryServer.runCommand("execute as " + attackerData.duelPlayer.getName() + " run hub");
+            ServerTime.factoryServer.runCommand("execute as " + victimData.duelPlayer.getName() + " run hub");
+
+            attackerData.duelPlayer = null;
+            victimData.duelPlayer = null;
         }
 
 
@@ -208,15 +212,13 @@ public class DuelsGame { //implements Runnable{
 
             attacker.getInventory().clear();
             minecraftAttacker.setGameMode(GameType.ADVENTURE);
-
-            LobbyUtil.giveItems(minecraftAttacker);
         }
 
         victim.sendMessage(win);
         PlayerUtil.resetHealthStatus(victim);
         victim.getInventory().clear();
 
-        LobbyUtil.giveItems(minecraftVictim);
+
 
         minecraftVictim.setGameMode(GameType.ADVENTURE);
         DuelGameHandler.duelsGames.remove(victimData.duelsGame);
