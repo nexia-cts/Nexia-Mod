@@ -48,7 +48,7 @@ public class DuelGUI extends SimpleGui {
         }
         int i1 = 0;
         for(String map : Main.config.duelsMaps){
-            this.setSlot(slot, DuelGameMode.duelsMaps.get(i1).setHoverName(new TextComponent(map.toLowerCase())));
+            this.setSlot(slot, DuelGameMode.duelsMaps.get(i1).setHoverName(new TextComponent("§f§l" + map.toLowerCase())));
             i1++;
             slot++;
         }
@@ -77,7 +77,7 @@ public class DuelGUI extends SimpleGui {
                 slot = 19;
             }
 
-            this.setSlot(slot, DuelGameMode.duelsItems.get(i1).setHoverName(new TextComponent(duel.toUpperCase().replaceAll("_", " "))));
+            this.setSlot(slot, DuelGameMode.duelsItems.get(i1).setHoverName(new TextComponent("§f" + duel.toUpperCase().replaceAll("_", " "))));
             slot++;
             i1++;
         }
@@ -91,10 +91,10 @@ public class DuelGUI extends SimpleGui {
 
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
                 if(Arrays.stream(DuelGameMode.duels).toList().contains(name.getString().replaceAll(" ", "_"))){
-                    kit = name.getString().replaceAll(" ", "_");
+                    kit = name.getString().substring(2).replaceAll(" ", "_");
                     setMapLayout();
                 } else {
-                    GamemodeHandler.challengePlayer(this.player, other, kit, name.getString());
+                    GamemodeHandler.challengePlayer(this.player, other, kit, name.getString().substring(4));
                     this.close();
                 }
 
