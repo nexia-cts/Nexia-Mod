@@ -93,6 +93,7 @@ public class FfaUtil {
         }
     }
 
+    /*
     public static float calculateHealth(float health){
         float fixedHealth = Float.parseFloat(new DecimalFormat("#.#").format(health / 2));
 
@@ -106,6 +107,29 @@ public class FfaUtil {
         if(fixedHealth % 1 == 0){ return fixedHealth; }
 
         if(Float.parseFloat(new DecimalFormat("0.#").format(fixedHealth)) >= 0.5){
+            return Float.parseFloat(new DecimalFormat("#.5").format(fixedHealth));
+        }
+        return Float.parseFloat(new DecimalFormat("#.0").format(fixedHealth));
+    }
+
+     */
+
+    public static float calculateHealth(float health){
+        float fixedHealth = Float.parseFloat(new DecimalFormat("#.#").format(health / 2));
+
+        if(fixedHealth <= 0){
+            return 0.5f;
+        }
+        if(fixedHealth >= 10){
+            return 10f;
+        }
+
+        if(!(fixedHealth % 1 == 0)){ return fixedHealth; }
+
+        if(Float.parseFloat(new DecimalFormat("#.5").format(fixedHealth)) >= 10.5){
+            return 10f;
+        }
+        if(((fixedHealth / 2) % 1) >= .5){
             return Float.parseFloat(new DecimalFormat("#.5").format(fixedHealth));
         }
         return Float.parseFloat(new DecimalFormat("#.0").format(fixedHealth));
@@ -169,10 +193,6 @@ public class FfaUtil {
         if(attackerNull) { return; }
         ServerPlayer minecraftAttacker = (ServerPlayer) source.getEntity();
         boolean attackerTag = FfaUtil.isFfaPlayer(minecraftAttacker);
-
-        if(victimTag){
-            calculateDeath(minecraftPlayer);
-        }
 
         if(attackerTag && victimTag){
             String symbol = "◆";
