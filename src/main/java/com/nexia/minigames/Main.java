@@ -4,7 +4,6 @@ import com.nexia.minigames.config.ModConfig;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1u.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.server.level.ServerPlayer;
 
 public class Main implements ModInitializer {
 

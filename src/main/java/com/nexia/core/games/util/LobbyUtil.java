@@ -28,7 +28,7 @@ import net.minecraft.world.level.Level;
 
 public class LobbyUtil {
 
-    public static String[] statsGameModes = {"FFA", "BEDWARS", "OITC", "DUELS"};
+    public static String[] statsGameModes = {"FFA", "DUELS"};
 
     public static ServerLevel lobbyWorld = null;
     public static EntityPos lobbySpawn = new EntityPos(Main.config.lobbyPos[0], Main.config.lobbyPos[1], Main.config.lobbyPos[2], 0, 0);
@@ -59,11 +59,8 @@ public class LobbyUtil {
     public static final String NO_SATURATION_TAG = "no_saturation";
 
     public static String[] removedTags = {
-            "in_bedwars",
             "ffa",
             "duels",
-            "oitc",
-            "in_oitc_game",
             NO_RANK_DISPLAY_TAG,
             NO_SATURATION_TAG,
             NO_FALL_DAMAGE_TAG
