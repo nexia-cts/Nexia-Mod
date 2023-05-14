@@ -1,6 +1,5 @@
 package com.nexia.core.gui.duels;
 
-import com.natamus.collective_fabric.functions.HeadFunctions;
 import com.nexia.minigames.Main;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
@@ -48,7 +47,7 @@ public class DuelGUI extends SimpleGui {
         }
         int i1 = 0;
         for(String map : Main.config.duelsMaps){
-            this.setSlot(slot, DuelGameMode.duelsMaps.get(i1).setHoverName(new TextComponent("§f§l" + map.toLowerCase())));
+            this.setSlot(slot, DuelGameMode.duelsMaps.get(i1).setHoverName(new TextComponent("§f" + map.toLowerCase())));
             i1++;
             slot++;
         }
