@@ -48,7 +48,7 @@ public class DuelGUI extends SimpleGui {
         }
         int i1 = 0;
         for(String map : Main.config.duelsMaps){
-            this.setSlot(slot, DuelGameMode.duelsMaps.get(i1).setHoverName(new TextComponent(map.toLowerCase())));
+            this.setSlot(slot, DuelGameMode.duelsMaps.get(i1).setHoverName(new TextComponent("§f" + map.toLowerCase())));
             i1++;
             slot++;
         }
@@ -94,7 +94,7 @@ public class DuelGUI extends SimpleGui {
                     kit = name.getString().substring(2).replaceAll(" ", "_");
                     setMapLayout();
                 } else {
-                    GamemodeHandler.challengePlayer(this.player, other, kit, name.getString());
+                    GamemodeHandler.challengePlayer(this.player, other, kit, name.getString().substring(2));
                     this.close();
                 }
 
