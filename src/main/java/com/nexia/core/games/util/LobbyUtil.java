@@ -143,13 +143,20 @@ public class LobbyUtil {
         ItemDisplayUtil.addGlint(compass);
         ItemDisplayUtil.addLore(compass, "§7Right click to open the menu.", 0);
 
-        ItemStack nametag = new ItemStack(Items.NAME_TAG);
-        nametag.setHoverName(new TextComponent("§ePrefix Selector"));
-        ItemDisplayUtil.addGlint(nametag);
-        ItemDisplayUtil.addLore(nametag, "§7Right click to open the menu.", 0);
+        ItemStack nameTag = new ItemStack(Items.NAME_TAG);
+        nameTag.setHoverName(new TextComponent("§ePrefix Selector"));
+        ItemDisplayUtil.addGlint(nameTag);
+        ItemDisplayUtil.addLore(nameTag, "§7Right click to open the menu.", 0);
 
-        minecraftPlayer.setSlot(4, compass);
-        minecraftPlayer.setSlot(3, nametag);
+        ItemStack queueSword = new ItemStack(Items.NAME_TAG);
+        queueSword.setHoverName(new TextComponent("§eQueue Sword"));
+        ItemDisplayUtil.addGlint(queueSword);
+        ItemDisplayUtil.addLore(queueSword, "§7Right click to queue menu.", 0);
+
+        minecraftPlayer.setSlot(4, compass); //middle slot
+
+        minecraftPlayer.setSlot(3, nameTag); //left
+        minecraftPlayer.setSlot(5, queueSword); //right
         ItemStackUtil.sendInventoryRefreshPacket(minecraftPlayer);
     }
 
