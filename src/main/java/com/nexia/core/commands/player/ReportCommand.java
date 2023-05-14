@@ -62,9 +62,9 @@ public class ReportCommand {
         executor.sendMessage(
                 ChatFormat.nexiaMessage()
                                 .append(Component.text("You have reported ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                        .append(Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                                                .append(Component.text(" for ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                                        .append(Component.text(reason).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                        .append(Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2))
+                                                .append(Component.text(" for ").color(ChatFormat.normalColor))
+                                                        .append(Component.text(reason).color(ChatFormat.brandColor2))
         );
 
         ServerPlayer staffPlayer;

@@ -6,6 +6,7 @@ import com.combatreforged.factory.api.world.item.ItemStack;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.PlayGUI;
 import com.nexia.core.gui.PrefixGUI;
+import com.nexia.core.gui.duels.QueueGUI;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import net.kyori.adventure.text.Component;
@@ -34,6 +35,9 @@ public class UseItemListener {
                 PrefixGUI.openRankGUI(minecraftPlayer);
             }
 
+            if(sName.contains("queue sword") && gameMode == PlayerGameMode.LOBBY) {
+                QueueGUI.openQueueGUI(minecraftPlayer);
+            }
         });
     }
 }

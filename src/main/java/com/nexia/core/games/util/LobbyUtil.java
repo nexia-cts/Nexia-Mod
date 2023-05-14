@@ -2,6 +2,7 @@ package com.nexia.core.games.util;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.Main;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.PlayerDataManager;
@@ -10,6 +11,10 @@ import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.ffa.utilities.FfaUtil;
+import com.nexia.minigames.games.duels.DuelGameHandler;
+import com.nexia.minigames.games.duels.DuelGameMode;
+import com.nexia.minigames.games.duels.DuelsGame;
+import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import net.kyori.adventure.text.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
@@ -23,10 +28,14 @@ import net.minecraft.world.level.Level;
 
 public class LobbyUtil {
 
-    public static String[] statsGameModes = {"FFA"};
+    public static String[] statsGameModes = {"FFA", "BEDWARS", "OITC", "DUELS"};
 
     public static ServerLevel lobbyWorld = null;
     public static EntityPos lobbySpawn = new EntityPos(Main.config.lobbyPos[0], Main.config.lobbyPos[1], Main.config.lobbyPos[2], 0, 0);
+
+    public static ItemStack compass;
+    public static ItemStack nameTag;
+    public static ItemStack queueSword;
 
     public static boolean isLobbyWorld(Level level) {
         return level.dimension() == Level.OVERWORLD;
@@ -50,11 +59,14 @@ public class LobbyUtil {
     public static final String NO_SATURATION_TAG = "no_saturation";
 
     public static String[] removedTags = {
+            "in_bedwars",
             "ffa",
+            "duels",
+            "oitc",
+            "in_oitc_game",
             NO_RANK_DISPLAY_TAG,
             NO_SATURATION_TAG,
-            NO_FALL_DAMAGE_TAG,
-            NO_DAMAGE_TAG
+            NO_FALL_DAMAGE_TAG
     };
 
     public static void leaveAllGames(ServerPlayer minecraftPlayer, boolean tp) {
@@ -62,6 +74,7 @@ public class LobbyUtil {
         if (FfaUtil.isFfaPlayer(minecraftPlayer)) {
             FfaUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
         }
+        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(minecraftPlayer);
 
         for(int i = 0; i < LobbyUtil.removedTags.length; i++){
             if(player.hasTag(LobbyUtil.removedTags[i])){
@@ -89,24 +102,25 @@ public class LobbyUtil {
         minecraftPlayer.inventory.setCarried(ItemStack.EMPTY);
         minecraftPlayer.getEnderChestInventory().clearContent();
 
+        // Duels shit
+        player.addTag("duels");
+        GamemodeHandler.removeQueue(minecraftPlayer, null, true);
+        DuelsGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
+        com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(minecraftPlayer);
+        data.gameMode = DuelGameMode.LOBBY;
+        data.inDuel = false;
+        data.inviteKit = "";
+        data.inviteMap = "";
+        data.isDead = false;
+        data.invitingPlayer = null;
+        data.inviting = false;
+
 
         if (tp) {
             minecraftPlayer.setRespawnPosition(lobbyWorld.dimension(), lobbySpawn.toBlockPos(), lobbySpawn.yaw, true, false);
             minecraftPlayer.teleportTo(lobbyWorld, lobbySpawn.x, lobbySpawn.y, lobbySpawn.z, lobbySpawn.pitch, lobbySpawn.yaw);
 
-            ItemStack compass = new ItemStack(Items.COMPASS);
-            compass.setHoverName(new TextComponent("§eGamemode Selector"));
-            ItemDisplayUtil.addGlint(compass);
-            ItemDisplayUtil.addLore(compass, "§7Right click to open the menu.", 0);
-
-            ItemStack nametag = new ItemStack(Items.NAME_TAG);
-            nametag.setHoverName(new TextComponent("§ePrefix Selector"));
-            ItemDisplayUtil.addGlint(nametag);
-            ItemDisplayUtil.addLore(nametag, "§7Right click to open the menu.", 0);
-
-            minecraftPlayer.setSlot(4, compass);
-            minecraftPlayer.setSlot(3, nametag);
-            ItemStackUtil.sendInventoryRefreshPacket(minecraftPlayer);
+            LobbyUtil.giveItems(minecraftPlayer);
         }
 
         minecraftPlayer.connection.send(new ClientboundStopSoundPacket());
@@ -116,6 +130,25 @@ public class LobbyUtil {
         player.removeTag(LobbyUtil.NO_RANK_DISPLAY_TAG);
         player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
         player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+    }
+
+    public static ItemStack getCompass() {
+        return compass;
+    }
+
+    public static ItemStack getPrefix() {
+        return nameTag;
+    }
+
+    public static ItemStack getDuels() {
+        return queueSword;
+    }
+
+    public static void giveItems(ServerPlayer minecraftPlayer) {
+        minecraftPlayer.setSlot(4, getCompass()); //middle slot
+        minecraftPlayer.setSlot(3, getPrefix()); //left
+        minecraftPlayer.setSlot(5, getDuels()); //right
+        ItemStackUtil.sendInventoryRefreshPacket(minecraftPlayer);
     }
 
     public static void sendGame(ServerPlayer minecraftPlayer, String game, boolean message, boolean tp){
@@ -135,6 +168,7 @@ public class LobbyUtil {
 
             player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
             player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+            player.removeTag("duels");
             player.removeTag(LobbyUtil.NO_SATURATION_TAG);
         }
         if(game.equalsIgnoreCase("classic ffa")){
@@ -150,6 +184,36 @@ public class LobbyUtil {
             if(message){ player.sendActionBarMessage(Component.text("You have joined §8🗡 §7§lFFA §b🔱")); }
             FfaUtil.setInventory(minecraftPlayer);
         }
+
+
+        if(game.equalsIgnoreCase("duels")){
+            LobbyUtil.leaveAllGames(minecraftPlayer, true);
+            if(message){
+                player.sendActionBarMessage(Component.text("You have joined §f☯ §c§lDuels §7\uD83E\uDE93"));
+                player.sendMessage(
+                        ChatFormat.nexiaMessage()
+                                .append(Component.text("Duels has now moved here. (main hub)").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                );
+                player.sendMessage(Component.text("Meaning you can now use /duel and /queue inside of the normal hub WITHOUT going to duels!").decoration(ChatFormat.bold, false));
+            }
+        }
+    }
+
+    static {
+        compass = new ItemStack(Items.COMPASS);
+        compass.setHoverName(new TextComponent("§eGamemode Selector"));
+        ItemDisplayUtil.addGlint(compass);
+        ItemDisplayUtil.addLore(compass, "§7Right click to open the menu.", 0);
+
+        nameTag = new ItemStack(Items.NAME_TAG);
+        nameTag.setHoverName(new TextComponent("§ePrefix Selector"));
+        ItemDisplayUtil.addGlint(nameTag);
+        ItemDisplayUtil.addLore(nameTag, "§7Right click to open the menu.", 0);
+
+        queueSword = new ItemStack(Items.IRON_SWORD);
+        queueSword.setHoverName(new TextComponent("§eQueue Sword"));
+        ItemDisplayUtil.addGlint(queueSword);
+        ItemDisplayUtil.addLore(queueSword, "§7Right click to queue menu.", 0);
     }
 
 }

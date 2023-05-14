@@ -2,10 +2,12 @@ package com.nexia.core.mixin.player;
 
 import com.mojang.authlib.GameProfile;
 import com.nexia.core.Main;
+import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.player.BanHandler;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.ChatFormatting;
@@ -15,9 +17,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.stats.Stats;
+import net.minecraft.world.level.GameType;
 import org.json.simple.JSONObject;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -29,6 +33,7 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.net.SocketAddress;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static com.nexia.core.utilities.player.BanHandler.banTimeToText;
 import static com.nexia.core.utilities.time.ServerTime.joinPlayer;
@@ -63,6 +68,18 @@ public class PlayerListMixin {
             }
 
         } catch (Exception ignored) {}
+    }
+
+    @Inject(at = @At("RETURN"), method = "respawn")
+    private void respawned(ServerPlayer oldPlayer, boolean bl, CallbackInfoReturnable<ServerPlayer> cir) {
+        ServerPlayer player = PlayerUtil.getFixedPlayer(oldPlayer);
+
+        ServerLevel respawn = Main.server.getLevel(player.getRespawnDimension());
+
+        if(LobbyUtil.isLobbyWorld(respawn)) {
+            LobbyUtil.giveItems(player);
+            player.setGameMode(GameType.ADVENTURE);
+        }
     }
 
     private static Component joinFormat(Component original, ServerPlayer joinPlayer) {
@@ -119,7 +136,7 @@ public class PlayerListMixin {
         } catch(Exception ignored) { }
     }
 
-    @Inject(method = "placeNewPlayer", at = @At("INVOKE"))
+    @Inject(method = "placeNewPlayer", at = @At("HEAD"))
     private void setJoinMessage(Connection connection, ServerPlayer serverPlayer, CallbackInfo ci){
         joinPlayer = serverPlayer;
     }

@@ -158,7 +158,6 @@ public class SpawnGUI extends SimpleGui {
         // 115 40 -151 | Mushrooms
         // 0 40 0 | Plains (Center)
 
-
         mapLocations.put("nether forest", new int[]{186, 49, -71, -133, -5});
         mapLocations.put("blackstone", new int[]{161, 57, 82, -130, -11});
         mapLocations.put("mesa", new int[]{74, 48, 169, 130, -1});

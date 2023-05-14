@@ -43,6 +43,12 @@ public class ModConfig implements ConfigData {
 
     public Enhancements enhancements = new Enhancements();
     public static class Enhancements {
+        @Comment("Toggles if the modified knockback is enabled.")
+        public boolean modifiedKnockback = false;
+
+        @Comment("Toggles if the modified fishing rods are enabled.")
+        public boolean modifiedRods = false;
+
         @Comment("Toggles if the better shields are enabled.")
         public boolean betterShields = false;
 

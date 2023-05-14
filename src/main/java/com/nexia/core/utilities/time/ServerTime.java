@@ -8,6 +8,8 @@ import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.ffa.utilities.FfaUtil;
+import com.nexia.minigames.games.duels.DuelGameHandler;
+import com.nexia.minigames.games.duels.DuelsSpawn;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import xyz.nucleoid.fantasy.Fantasy;
@@ -37,7 +39,9 @@ public class ServerTime {
 
         fantasy = Fantasy.get(minecraftServer);
         LobbyUtil.setLobbyWorld(minecraftServer);
+        DuelsSpawn.setDuelWorld(minecraftServer);
         FfaAreas.setFfaWorld(minecraftServer);
+        DuelGameHandler.starting();
     }
 
     public static void stopServer() {
@@ -53,6 +57,7 @@ public class ServerTime {
     public static void everyTick() {
         totalTickCount++;
 
+
         if (totalTickCount % 5 == 0) {
             FfaUtil.fiveTick();
         }
@@ -61,6 +66,7 @@ public class ServerTime {
         switch (totalTickCount % 20) {
             case 0 -> everySecond();
             case 2 -> FfaUtil.ffaSecond();
+            case 4 -> {}
         }
 
     }
@@ -68,4 +74,5 @@ public class ServerTime {
     static void everySecond() {
         totalSecondCount++;
     }
+
 }

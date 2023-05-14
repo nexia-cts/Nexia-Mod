@@ -1,8 +1,6 @@
 package com.nexia.core.gui;
 
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
@@ -91,19 +89,34 @@ public class PlayGUI extends SimpleGui {
         unknown.setHoverName(new TextComponent("§7§l???"));
         unknown.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
+        ItemStack bedwars = new ItemStack(Items.RED_BED, 1);
+        bedwars.setHoverName(new TextComponent("§c§lBedwars"));
+        bedwars.enchant(Enchantments.SHARPNESS, 1);
+        bedwars.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
+        bedwars.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
+
+        ItemStack oitc = new ItemStack(Items.BOW, 1);
+        oitc.setHoverName(new TextComponent("§f§lOITC"));
+        oitc.enchant(Enchantments.SHARPNESS, 1);
+        oitc.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
+        oitc.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
+
+
         ItemStack duels = new ItemStack(Items.DIAMOND_SWORD, 1);
-        duels.setHoverName(new TextComponent("§c§lDuels"));
-        ItemDisplayUtil.addGlint(duels);
-        ItemDisplayUtil.addLore(duels, "§cComing soon!", 0);
+        duels.setHoverName(new TextComponent("§b§lDuels"));
+        duels.enchant(Enchantments.SHARPNESS, 1);
+        duels.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
         duels.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
+
+
 
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
 
         fillEmptySlots(emptySlot, 27);
-        this.setSlot(11, unknown);
-        this.setSlot(13, duels);
-        this.setSlot(15, unknown);
+        this.setSlot(11, duels);
+        this.setSlot(13, bedwars);
+        this.setSlot(15, oitc);
     }
 
     public boolean click(int index, ClickType clickType, net.minecraft.world.inventory.ClickType action){
@@ -121,11 +134,20 @@ public class PlayGUI extends SimpleGui {
             if(name.getString().equalsIgnoreCase("§f§lMinigames")){
                 this.setMinigamesLayout();
             }
-
-            if(name.getString().equalsIgnoreCase("§c§lDuels")){
-                PlayerUtil.getFactoryPlayer(this.player).sendMessage(net.kyori.adventure.text.Component.text("Coming soon!").color(ChatFormat.failColor));
+            if(name.getString().equalsIgnoreCase("§c§lBedwars")){
+                LobbyUtil.sendGame(this.player, "bedwars", true, true);
                 this.close();
             }
+            if(name.getString().equalsIgnoreCase("§f§lOITC")){
+                LobbyUtil.sendGame(this.player, "oitc", true, true);
+                this.close();
+            }
+
+            if(name.getString().equalsIgnoreCase("§b§lDuels")){
+                LobbyUtil.sendGame(this.player, "duels", true, true);
+                this.close();
+            }
+
 
             if(name.getString().toLowerCase().contains("hub")){
                 LobbyUtil.leaveAllGames(this.player, true);

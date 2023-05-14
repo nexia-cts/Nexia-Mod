@@ -25,11 +25,18 @@ public class RulesCommand {
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 
+        /*
+        Apparently this just doesn't work.....
+        Component message = ChatFormat.separatorLine("Rules");
+         */
+
+
+        // Doing it the manual way 😎
         Component message = Component.text("")
                 .append(Component.text("                          ").color(ChatFormat.lineColor).decoration(ChatFormat.strikeThrough, true))
                 .append(Component.text("[ ").color(ChatFormat.lineColor).decoration(ChatFormat.strikeThrough, false)
-                .append(Component.text("Rules").color(ChatFormat.brandColor1).decoration(ChatFormat.strikeThrough, false))
-                .append(Component.text(" ]").color(ChatFormat.lineColor).decoration(ChatFormat.strikeThrough, false))
+                        .append(Component.text("Rules").color(ChatFormat.brandColor1).decoration(ChatFormat.strikeThrough, false))
+                        .append(Component.text(" ]").color(ChatFormat.lineColor).decoration(ChatFormat.strikeThrough, false))
                         .append(Component.text("                           ").color(ChatFormat.lineColor).decoration(ChatFormat.strikeThrough, true)));
 
         for (int i = 0; i < rules.length; i++) {

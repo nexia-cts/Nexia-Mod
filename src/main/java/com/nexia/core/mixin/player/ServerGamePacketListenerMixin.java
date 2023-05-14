@@ -1,12 +1,16 @@
 package com.nexia.core.mixin.player;
 
+import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.misc.EventUtil;
+import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaUtil;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.*;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.player.Inventory;
@@ -55,12 +59,6 @@ public class ServerGamePacketListenerMixin {
 
     }
 
-
-    @Inject(at = @At("INVOKE"), method = "onDisconnect")
-    private void getLeavePlayer(Component component, CallbackInfo ci) {
-        ServerTime.leavePlayer = player;
-    }
-
     @Inject(method = "handlePlayerAction", cancellable = true, at = @At("HEAD"))
     private void handlePlayerAction(ServerboundPlayerActionPacket actionPacket, CallbackInfo ci) {
         ServerboundPlayerActionPacket.Action action = actionPacket.getAction();
@@ -70,6 +68,15 @@ public class ServerGamePacketListenerMixin {
                 action == ServerboundPlayerActionPacket.Action.DROP_ALL_ITEMS) &&
                     !EventUtil.dropItem(player, inv.getItem(player.inventory.selected))) {
             player.connection.send(new ClientboundContainerSetSlotPacket(0, 36 + inv.selected, inv.getSelected()));
+            ci.cancel();
+            return;
+        }
+    }
+
+    @Inject(method = "handleTeleportToEntityPacket", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;teleportTo(Lnet/minecraft/server/level/ServerLevel;DDDFF)V"))
+    private void handleSpectatorTeleport(ServerboundTeleportToEntityPacket packet, CallbackInfo ci) {
+
+        if(PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY){
             ci.cancel();
             return;
         }

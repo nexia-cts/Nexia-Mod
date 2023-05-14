@@ -117,6 +117,7 @@ public class PlayerJoinListener {
     private static void processJoin(Player player, ServerPlayer minecraftPlayer){
         PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.ffa.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
+        com.nexia.minigames.games.duels.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         LobbyUtil.leaveAllGames(minecraftPlayer, true);
         runCommands(player, minecraftPlayer);
         sendJoinMessage(player);

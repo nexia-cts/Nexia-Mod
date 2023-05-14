@@ -4,11 +4,18 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.minecraft.network.chat.TextComponent;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ChatFormat {
 
     // Colors
+
+    public static TextColor chatColor2 = NamedTextColor.GRAY;
 
     public static TextColor normalColor = NamedTextColor.WHITE;
     public static TextColor systemColor = NamedTextColor.DARK_GRAY;

@@ -1,8 +1,9 @@
 package com.nexia.ffa.utilities;
 
+import com.combatreforged.factory.api.event.player.PlayerDeathEvent;
+import com.combatreforged.factory.api.world.damage.DamageData;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.Main;
-import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
@@ -49,9 +50,9 @@ public class FfaUtil {
             if (!isFfaPlayer(player)) continue;
 
             if (FfaAreas.isInFfaSpawn(player)) {
-                player.addTag(LobbyUtil.NO_DAMAGE_TAG);
+                player.addTag("no_damage");
             } else {
-                player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                player.removeTag("no_damage");
             }
         }
     }

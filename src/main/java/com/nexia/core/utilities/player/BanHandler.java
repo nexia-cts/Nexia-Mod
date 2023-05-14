@@ -1,5 +1,6 @@
 package com.nexia.core.utilities.player;
 
+import com.google.gson.*;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
 import com.nexia.core.Main;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 public class BanHandler {
 
     static String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/tempbans";
+    static String playerDataDirectory = dataDirectory + "/playerdata";
 
     public static int parseTimeArg(String durationArg) throws Exception {
         StringReader stringReader = new StringReader(durationArg);
@@ -87,7 +89,7 @@ public class BanHandler {
         JSONObject BanJSON = getBanList(profile.getId().toString());
 
         if (BanJSON != null) {
-            if((long) BanJSON.get("duration") - System.currentTimeMillis() > 0) {
+            if((long) BanJSON.get("duration") > 0) {
                 removeBanFromList(profile);
             } else {
                 sender.sendSuccess(LegacyChatFormat.format("{s}This player has already been banned for {f}{}{s}." +

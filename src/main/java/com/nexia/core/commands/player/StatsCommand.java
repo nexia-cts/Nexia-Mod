@@ -13,6 +13,7 @@ import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.utilities.player.PlayerDataManager;
 import com.nexia.ffa.utilities.player.SavedPlayerData;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -32,21 +33,14 @@ public class StatsCommand {
         );
     }
 
-    public static float calculateKDR(int kills, int deaths){
-
-        if(deaths == 0 || kills == 0) { return 0; }
-        return Float.parseFloat(new DecimalFormat("#.##").format((float) kills / deaths));
-    }
-
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 
         ServerPlayer mcPlayer = context.getSource().getPlayerOrException();
         PlayerData executerData = com.nexia.core.utilities.player.PlayerDataManager.get(mcPlayer);
-        if(executerData.gameMode != PlayerGameMode.FFA) { return 1; }
         Player player = PlayerUtil.getFactoryPlayer(mcPlayer);
 
 
-        Component start = Component.text("  »").color(ChatFormat.arrowColor);
+        Component start = Component.text("  »").color(NamedTextColor.GRAY);
 
         Component user = start
                 .append(Component.text(" User: ").color(ChatFormat.brandColor2))
@@ -74,7 +68,7 @@ public class StatsCommand {
 
             player.sendMessage(start
                     .append(Component.text(" KDR: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(calculateKDR(data.kills, data.deaths)).color(ChatFormat.greenColor))
+                            .append(Component.text(calculateKDR(data.kills, data.deaths)).color(ChatFormat.greenColor))
             );
 
             player.sendMessage(start
@@ -84,8 +78,29 @@ public class StatsCommand {
                                                     .append(Component.text(data.bestKillstreak).color(TextColor.fromHexString("#f5bc42")))
             );
         }
+
+        if(executerData.gameMode == PlayerGameMode.LOBBY){
+            message = ChatFormat.separatorLine("Duels Stats");
+            com.nexia.minigames.games.duels.util.player.SavedPlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(mcPlayer).savedData;
+            player.sendMessage(message);
+            player.sendMessage(user);
+            player.sendMessage(start
+                    .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(data.wins).color(ChatFormat.greenColor))
+            );
+            player.sendMessage(start
+                    .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(data.loss).color(ChatFormat.failColor))
+            );
+        }
         player.sendMessage(ChatFormat.separatorLine(null));
         return 1;
+    }
+
+    public static float calculateKDR(int kills, int deaths){
+
+        if(deaths == 0 || kills == 0) { return 0; }
+        return Float.parseFloat(new DecimalFormat("#.##").format((float) kills / deaths));
     }
 
     public static int other(CommandContext<CommandSourceStack> context, ServerPlayer otherPlayer, String gamemode) throws CommandSyntaxException {
@@ -93,8 +108,6 @@ public class StatsCommand {
         Player player = PlayerUtil.getFactoryPlayer(mcPlayer);
 
         Component start = Component.text("  »").color(ChatFormat.arrowColor);
-
-        if(!gamemode.equalsIgnoreCase("ffa")) { player.sendMessage(Component.text("Invalid gamemode!").color(ChatFormat.failColor)); return 1; }
 
         Component user = start
                 .append(Component.text(" User: ").color(ChatFormat.brandColor2))
@@ -122,8 +135,7 @@ public class StatsCommand {
 
             player.sendMessage(start
                     .append(Component.text(" KDR: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(Float.parseFloat(new DecimalFormat("#.##").format(data.kills / data.deaths))).color(ChatFormat.greenColor))
-
+                    .append(Component.text(calculateKDR(data.kills, data.deaths)).color(ChatFormat.greenColor))
             );
 
             player.sendMessage(start
@@ -131,6 +143,21 @@ public class StatsCommand {
                     .append(Component.text(data.killstreak).color(TextColor.fromHexString("#f5bc42")))
                     .append(Component.text("/").color(ChatFormat.arrowColor))
                     .append(Component.text(data.bestKillstreak).color(TextColor.fromHexString("#f5bc42")))
+            );
+        }
+
+        if(gamemode.equalsIgnoreCase("duels")){
+            message = ChatFormat.separatorLine("Duels Stats");
+            com.nexia.minigames.games.duels.util.player.SavedPlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(otherPlayer).savedData;
+            player.sendMessage(message);
+            player.sendMessage(user);
+            player.sendMessage(start
+                    .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(data.wins).color(ChatFormat.greenColor))
+            );
+            player.sendMessage(start
+                    .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(data.loss).color(ChatFormat.failColor))
             );
         }
 

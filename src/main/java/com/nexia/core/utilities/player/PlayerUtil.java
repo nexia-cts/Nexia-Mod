@@ -2,6 +2,7 @@ package com.nexia.core.utilities.player;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
+import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import net.minecraft.Util;
@@ -16,6 +17,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -124,6 +127,20 @@ public class PlayerUtil {
     public static boolean couldCrit(ServerPlayer player) {
         return !player.isOnGround() && player.fallDistance > 0.0f && !player.hasEffect(MobEffects.BLINDNESS)
                 && !player.onClimbable() && !player.isInWater() && !player.isPassenger();
+    }
+
+    public static void removeItem(ServerPlayer player, Item item, int count) {
+        for (ItemStack itemStack : ItemStackUtil.getInvItems(player)) {
+            if (itemStack.getItem() != item) continue;
+
+            if (itemStack.getCount() >= count) {
+                itemStack.shrink(count);
+                break;
+            } else {
+                count -= itemStack.getCount();
+                itemStack.shrink(itemStack.getCount());
+            }
+        }
     }
 
     public static void broadcastTitle(List<ServerPlayer> players, String title, String subtitle) {
