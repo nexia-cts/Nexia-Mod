@@ -90,11 +90,11 @@ public class DuelGUI extends SimpleGui {
             Component name = itemStack.getHoverName();
 
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
-                if(Arrays.stream(DuelGameMode.duels).toList().contains(name.getString().replaceAll(" ", "_"))){
+                if(Arrays.stream(DuelGameMode.duels).toList().contains(name.getString().substring(2).replaceAll(" ", "_"))){
                     kit = name.getString().substring(2).replaceAll(" ", "_");
                     setMapLayout();
                 } else {
-                    GamemodeHandler.challengePlayer(this.player, other, kit, name.getString().substring(4));
+                    GamemodeHandler.challengePlayer(this.player, other, kit, name.getString().substring(2));
                     this.close();
                 }
 
