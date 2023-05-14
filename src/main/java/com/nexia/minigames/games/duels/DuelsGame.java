@@ -60,7 +60,7 @@ public class DuelsGame { //implements Runnable{
         String start = "/execute in " + mapid + ":" + name;
 
         ServerTime.factoryServer.runCommand(start + " run forceload add 0 0");
-        ServerTime.factoryServer.runCommand(start + " run" + DuelGameHandler.returnCommandMap(selectedMap));
+        ServerTime.factoryServer.runCommand(start + " run " + DuelGameHandler.returnCommandMap(selectedMap));
         ServerTime.factoryServer.runCommand(start + " run setblock 1 80 0 minecraft:redstone_block");
 
         ServerTime.factoryServer.runCommand(start + " if block 0 80 0 minecraft:structure_block run setblock 0 80 0 air");
