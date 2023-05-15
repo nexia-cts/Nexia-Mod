@@ -24,30 +24,6 @@ public class PlayerJoinListener {
             ServerPlayer minecraftPlayer = PlayerUtil.getMinecraftPlayer(player);
 
             processJoin(player, minecraftPlayer);
-
-            /*
-            if(!Main.config.events.statusMessages) { return; }
-
-
-            if(minecraftPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) <= 1) {
-                playerJoinEvent.setJoinMessage(
-                        Component.text("[").color(ChatFormat.lineColor)
-                                .append(Component.text("!").color(TextColor.fromHexString("#ff9940")))
-                                                        .append(Component.text("] ").color(ChatFormat.lineColor))
-                                                                .append(Component.text(player.getRawName()).color(TextColor.fromHexString("#ff9940")))
-
-
-                );
-            } else {
-                playerJoinEvent.setJoinMessage(
-                        Component.text("[").color(ChatFormat.lineColor)
-                                        .append(Component.text("+").color(ChatFormat.greenColor))
-                                                .append(Component.text("] ").color(ChatFormat.lineColor))
-                                                        .append(Component.text(player.getRawName()).color(ChatFormat.greenColor))
-                );
-            }
-
-             */
         });
     }
 

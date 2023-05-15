@@ -41,6 +41,7 @@ public class ServerTime {
         LobbyUtil.setLobbyWorld(minecraftServer);
         DuelsSpawn.setDuelWorld(minecraftServer);
         FfaAreas.setFfaWorld(minecraftServer);
+
         DuelGameHandler.starting();
     }
 
@@ -56,7 +57,6 @@ public class ServerTime {
 
     public static void everyTick() {
         totalTickCount++;
-
 
         if (totalTickCount % 5 == 0) {
             FfaUtil.fiveTick();

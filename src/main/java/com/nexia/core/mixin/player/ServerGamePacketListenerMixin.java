@@ -34,6 +34,7 @@ public class ServerGamePacketListenerMixin {
         }
     }
 
+
     @Inject(method = "handleContainerClick", cancellable = true, at = @At("HEAD"))
     private void handleContainerClick(ServerboundContainerClickPacket clickPacket, CallbackInfo ci) {
         int containerId = clickPacket.getContainerId();
@@ -59,6 +60,12 @@ public class ServerGamePacketListenerMixin {
 
     }
 
+
+    @Inject(at = @At("INVOKE"), method = "onDisconnect") //coded you did dis so dis is your bromlem now!!!
+    private void getLeavePlayer(Component component, CallbackInfo ci) {
+        ServerTime.leavePlayer = player;
+    }
+
     @Inject(method = "handlePlayerAction", cancellable = true, at = @At("HEAD"))
     private void handlePlayerAction(ServerboundPlayerActionPacket actionPacket, CallbackInfo ci) {
         ServerboundPlayerActionPacket.Action action = actionPacket.getAction();
@@ -75,10 +82,8 @@ public class ServerGamePacketListenerMixin {
 
     @Inject(method = "handleTeleportToEntityPacket", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;teleportTo(Lnet/minecraft/server/level/ServerLevel;DDDFF)V"))
     private void handleSpectatorTeleport(ServerboundTeleportToEntityPacket packet, CallbackInfo ci) {
-
         if(PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY){
             ci.cancel();
-            return;
         }
     }
 }

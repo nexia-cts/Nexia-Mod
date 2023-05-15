@@ -1,7 +1,6 @@
 package com.nexia.core.listeners;
 
 import com.combatreforged.factory.api.event.player.PlayerDisconnectEvent;
-import com.combatreforged.factory.api.event.player.PlayerJoinEvent;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.Main;
@@ -60,6 +59,10 @@ public class PlayerLeaveListener {
         PlayerDataManager.removePlayerData(minecraftPlayer);
         com.nexia.ffa.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer);
         com.nexia.minigames.games.duels.util.player.PlayerDataManager.removePlayerData(minecraftPlayer);
+
+
+        //LobbyUtil.leaveAllGames(minecraftPlayer, true);
+
 
         runCommands(player);
 

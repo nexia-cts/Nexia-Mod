@@ -44,7 +44,7 @@ public class QueueGUI extends SimpleGui {
                 slot = 19;
             }
 
-            this.setSlot(slot, DuelGameMode.duelsItems.get(i1).setHoverName(new TextComponent("§f" + duel.toUpperCase().replaceAll("_", " "))));
+            this.setSlot(slot, DuelGameMode.duelsItems.get(i1).setHoverName(new TextComponent(duel.toUpperCase().replaceAll("_", " "))));
             slot++;
             i1++;
         }
@@ -57,7 +57,7 @@ public class QueueGUI extends SimpleGui {
             Component name = itemStack.getHoverName();
 
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
-                String modifiedName = name.getString().substring(2).replaceAll(" ", "_");
+                String modifiedName = name.getString().replaceAll(" ", "_");
                 GamemodeHandler.joinQueue(this.player, modifiedName, false);
                 this.close();
             }

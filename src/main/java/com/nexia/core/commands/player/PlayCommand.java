@@ -16,7 +16,6 @@ public class PlayCommand {
                 .then(Commands.literal("ffa").executes(PlayCommand::openGUI)
                         .then(Commands.literal("classic").executes(PlayCommand::playNormalFFA)))
                 .then(Commands.literal("duels").executes(PlayCommand::playDuels)));
-
         dispatcher.register(Commands.literal("join").executes(PlayCommand::openGUI)
                 .then(Commands.literal("ffa").executes(PlayCommand::openGUI)
                         .then(Commands.literal("classic").executes(PlayCommand::playNormalFFA)))

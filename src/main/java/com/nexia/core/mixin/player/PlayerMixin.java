@@ -12,6 +12,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.CombatRules;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -23,6 +24,8 @@ import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.BlockHitResult;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -81,6 +84,12 @@ public abstract class PlayerMixin extends LivingEntity {
         }
     }
 
+    @Redirect(method = "actuallyHurt",at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;getDamageAfterArmorAbsorb(Lnet/minecraft/world/damagesource/DamageSource;F)F"))
+    private float modifyArmorCalculation(Player instance, DamageSource damageSource, float damage) {
+        hurtArmor(damageSource, damage);
+        return vanillaArmorCalculation(damageSource, damage);
+    }
+
     public float vanillaArmorCalculation(DamageSource damageSource, float damage) {
         if (!damageSource.isBypassArmor()) {
             damage = CombatRules.getDamageAfterAbsorb(damage, this.getArmorValue(), (float)this.getAttributeValue(Attributes.ARMOR_TOUGHNESS));
@@ -101,7 +110,6 @@ public abstract class PlayerMixin extends LivingEntity {
         }
          if(LobbyUtil.isLobbyWorld(player.getLevel())){
              cir.setReturnValue(false);
-             return;
          }
 
     }

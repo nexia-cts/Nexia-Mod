@@ -93,6 +93,7 @@ public class StatsCommand {
                     .append(Component.text(data.loss).color(ChatFormat.failColor))
             );
         }
+
         player.sendMessage(ChatFormat.separatorLine(null));
         return 1;
     }

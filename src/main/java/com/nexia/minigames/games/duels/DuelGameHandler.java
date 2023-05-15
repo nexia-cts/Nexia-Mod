@@ -1,10 +1,14 @@
 package com.nexia.minigames.games.duels;
 
 
+import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.ffa.utilities.FfaAreas;
+import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import net.minecraft.client.gui.screens.CreateFlatWorldScreen;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceKey;
@@ -16,6 +20,9 @@ import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.levelgen.flat.FlatLayerInfo;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
@@ -150,8 +157,10 @@ public class DuelGameHandler {
     }
 
     public static ServerLevel createWorld(){
+        DuelsSpawn.duelWorld = FfaAreas.ffaWorld;
+
         RuntimeWorldConfig config = new RuntimeWorldConfig()
-                .setDimensionType(DuelsSpawn.duelWorld.dimensionType())
+                .setDimensionType(FfaAreas.ffaWorld.dimensionType())
                 .setGenerator(DuelsSpawn.duelWorld.getChunkSource().getGenerator())
                 .setDifficulty(Difficulty.HARD)
                 .setGameRule(GameRules.RULE_KEEPINVENTORY, false)

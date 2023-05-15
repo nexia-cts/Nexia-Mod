@@ -25,8 +25,11 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(DiscordCommand::register);
         CommandRegistrationCallback.EVENT.register(LeaveCommand::register);
 
+
+        CommandRegistrationCallback.EVENT.register(DefaultGameRulesCommand::register);
         CommandRegistrationCallback.EVENT.register(PrefixCommand::register);
         CommandRegistrationCallback.EVENT.register(RankCommand::register);
+        CommandRegistrationCallback.EVENT.register(RoundPosCommand::register);
         CommandRegistrationCallback.EVENT.register(PingCommand::register);
         CommandRegistrationCallback.EVENT.register(DuelsDeleteWorldsCommand::register);
 
@@ -35,6 +38,7 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(UnTempBanCommand::register);
 
         CommandRegistrationCallback.EVENT.register(StaffPrefixCommand::register);
+        CommandRegistrationCallback.EVENT.register(DevExperimentalMapCommand::register);
 
         CommandRegistrationCallback.EVENT.register(DuelCommand::register);
         CommandRegistrationCallback.EVENT.register(QueueCommand::register);
@@ -57,6 +61,8 @@ public class CommandLoader {
 
         CommandRegistrationCallback.EVENT.register(MessageCommand::registerMsg);
         CommandRegistrationCallback.EVENT.register(MessageCommand::registerReply);
+
+        CommandRegistrationCallback.EVENT.register(RandomCommand::register);
 
         CommandRegistrationCallback.EVENT.register(HealCommand::register);
     }

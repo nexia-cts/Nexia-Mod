@@ -18,7 +18,7 @@ public class PlayGUI extends SimpleGui {
     static final TextComponent title = new TextComponent("Game Menu");
     static final TextComponent ffaTitle = new TextComponent("FFA Menu");
 
-    //static final TextComponent minigamesTitle = new TextComponent("Minigames Menu");
+    static final TextComponent minigamesTitle = new TextComponent("Minigames Menu");
     public PlayGUI(MenuType<?> type, ServerPlayer player, boolean includePlayer) {
         super(type, player, includePlayer);
     }
@@ -45,11 +45,11 @@ public class PlayGUI extends SimpleGui {
         enchanted_barrier.setHoverName(new TextComponent("§c§lHub"));
         enchanted_barrier.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
-        ItemStack enchanted_iron_sword = new ItemStack(Items.IRON_SWORD, 1);
-        enchanted_iron_sword.setHoverName(new TextComponent("§c§lDuels"));
-        enchanted_iron_sword.enchant(Enchantments.SHARPNESS, 1);
-        enchanted_iron_sword.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
-        enchanted_iron_sword.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
+        ItemStack enchanted_compass = new ItemStack(Items.COMPASS, 1);
+        enchanted_compass.setHoverName(new TextComponent("§f§lMinigames"));
+        enchanted_compass.enchant(Enchantments.SHARPNESS, 1);
+        enchanted_compass.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
+        enchanted_compass.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
@@ -57,7 +57,7 @@ public class PlayGUI extends SimpleGui {
         fillEmptySlots(emptySlot, 27);
         this.setSlot(11, enchanted_sword);
         this.setSlot(13, enchanted_barrier);
-        this.setSlot(15, enchanted_iron_sword);
+        this.setSlot(15, enchanted_compass);
     }
 
     private void setFFALayout(){
@@ -83,26 +83,11 @@ public class PlayGUI extends SimpleGui {
         this.setSlot(15, unknown);
     }
 
-
-    /*
     private void setMinigamesLayout(){
         this.setTitle(minigamesTitle);
         ItemStack unknown = new ItemStack(Items.BARRIER, 1);
         unknown.setHoverName(new TextComponent("§7§l???"));
         unknown.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
-
-        ItemStack bedwars = new ItemStack(Items.RED_BED, 1);
-        bedwars.setHoverName(new TextComponent("§c§lBedwars"));
-        bedwars.enchant(Enchantments.SHARPNESS, 1);
-        bedwars.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
-        bedwars.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
-
-        ItemStack oitc = new ItemStack(Items.BOW, 1);
-        oitc.setHoverName(new TextComponent("§f§lOITC"));
-        oitc.enchant(Enchantments.SHARPNESS, 1);
-        oitc.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
-        oitc.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
-
 
         ItemStack duels = new ItemStack(Items.DIAMOND_SWORD, 1);
         duels.setHoverName(new TextComponent("§b§lDuels"));
@@ -110,18 +95,14 @@ public class PlayGUI extends SimpleGui {
         duels.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
         duels.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
-
-
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
 
         fillEmptySlots(emptySlot, 27);
         this.setSlot(11, duels);
-        this.setSlot(13, bedwars);
-        this.setSlot(15, oitc);
+        this.setSlot(13, unknown);
+        this.setSlot(15, unknown);
     }
-
-     */
 
     public boolean click(int index, ClickType clickType, net.minecraft.world.inventory.ClickType action){
         GuiElementInterface element = this.getSlot(index);
@@ -135,11 +116,14 @@ public class PlayGUI extends SimpleGui {
             if(name.getString().equalsIgnoreCase("§7§lFFA")){
                 this.setFFALayout();
             }
-
-            if(name.getString().equalsIgnoreCase("§c§lDuels")){
-                LobbyUtil.sendGame(this.player, "duels", true, true);
+            if(name.getString().equalsIgnoreCase("§f§lMinigames")){
+                this.setMinigamesLayout();
+            }
+            if(name.getString().equalsIgnoreCase("§b§lDuels")){
                 this.close();
             }
+
+
             if(name.getString().toLowerCase().contains("hub")){
                 LobbyUtil.leaveAllGames(this.player, true);
             }

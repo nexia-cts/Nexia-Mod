@@ -9,7 +9,8 @@
     "NotCoded"
   ],
   "contributors": [
-    "Shinkume"
+    "Shinkume",
+    "betterclient"
   ],
   "contact": {
     "homepage": "https://nexia.fun/",
@@ -23,7 +24,8 @@
   "entrypoints": {
     "main": [
       "com.nexia.core.Main",
-      "com.nexia.ffa.Main"
+      "com.nexia.ffa.Main",
+      "com.nexia.minigames.Main"
     ],
     "factory": [
       "com.nexia.core.Main"

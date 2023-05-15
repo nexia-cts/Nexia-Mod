@@ -3,13 +3,11 @@ package com.nexia.core.mixin.entity;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin {
@@ -26,11 +24,6 @@ public class LivingEntityMixin {
         }
         if (damageSource == DamageSource.OUT_OF_WORLD) return 1000000.0F;
         return value;
-    }
-
-    @Redirect(method = "getDamageAfterMagicAbsorb", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/CombatRules;getDamageAfterMagicAbsorb(FF)F"))
-    private float redirectArmorProtCalculation(float damage, float protection) {
-        return CombatRules.getDamageAfterMagicAbsorb(damage, protection);
     }
 
 }
