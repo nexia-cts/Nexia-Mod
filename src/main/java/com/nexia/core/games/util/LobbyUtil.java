@@ -33,10 +33,6 @@ public class LobbyUtil {
     public static ServerLevel lobbyWorld = null;
     public static EntityPos lobbySpawn = new EntityPos(Main.config.lobbyPos[0], Main.config.lobbyPos[1], Main.config.lobbyPos[2], 0, 0);
 
-    public static ItemStack compass;
-    public static ItemStack nameTag;
-    public static ItemStack queueSword;
-
     public static boolean isLobbyWorld(Level level) {
         return level.dimension() == Level.OVERWORLD;
     }
@@ -129,39 +125,25 @@ public class LobbyUtil {
         player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
     }
 
-    public static ItemStack getCompass() {
-        return compass;
-    }
-
-    public static ItemStack getPrefix() {
-        return nameTag;
-    }
-
-    public static ItemStack getDuels() {
-        return queueSword;
-    }
-
     public static void giveItems(ServerPlayer minecraftPlayer) {
-        if(compass == null) {
-            compass = new ItemStack(Items.COMPASS);
-            compass.setHoverName(new TextComponent("§eGamemode Selector"));
-            ItemDisplayUtil.addGlint(compass);
-            ItemDisplayUtil.addLore(compass, "§7Right click to open the menu.", 0);
+        ItemStack compass = new ItemStack(Items.COMPASS);
+        compass.setHoverName(new TextComponent("§eGamemode Selector"));
+        ItemDisplayUtil.addGlint(compass);
+        ItemDisplayUtil.addLore(compass, "§7Right click to open the menu.", 0);
 
-            nameTag = new ItemStack(Items.NAME_TAG);
-            nameTag.setHoverName(new TextComponent("§ePrefix Selector"));
-            ItemDisplayUtil.addGlint(nameTag);
-            ItemDisplayUtil.addLore(nameTag, "§7Right click to open the menu.", 0);
+        ItemStack nameTag = new ItemStack(Items.NAME_TAG);
+        nameTag.setHoverName(new TextComponent("§ePrefix Selector"));
+        ItemDisplayUtil.addGlint(nameTag);
+        ItemDisplayUtil.addLore(nameTag, "§7Right click to open the menu.", 0);
 
-            queueSword = new ItemStack(Items.IRON_SWORD);
-            queueSword.setHoverName(new TextComponent("§eQueue Sword"));
-            ItemDisplayUtil.addGlint(queueSword);
-            ItemDisplayUtil.addLore(queueSword, "§7Right click to queue menu.", 0);
-        }
+        ItemStack queueSword = new ItemStack(Items.IRON_SWORD);
+        queueSword.setHoverName(new TextComponent("§eQueue Sword"));
+        ItemDisplayUtil.addGlint(queueSword);
+        ItemDisplayUtil.addLore(queueSword, "§7Right click to queue menu.", 0);
 
-        minecraftPlayer.setSlot(4, getCompass()); //middle slot
-        minecraftPlayer.setSlot(3, getPrefix()); //left
-        minecraftPlayer.setSlot(5, getDuels()); //right
+        minecraftPlayer.setSlot(4, compass); //middle slot
+        minecraftPlayer.setSlot(3, nameTag); //left
+        minecraftPlayer.setSlot(5, queueSword); //right
         ItemStackUtil.sendInventoryRefreshPacket(minecraftPlayer);
     }
 

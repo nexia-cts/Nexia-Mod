@@ -1,4 +1,5 @@
 package com.nexia.core.commands.player;
+
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -20,6 +21,7 @@ public class LeaveCommand {
     }
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+
         LobbyUtil.leaveAllGames(context.getSource().getPlayerOrException(), true);
         return 1;
     }
