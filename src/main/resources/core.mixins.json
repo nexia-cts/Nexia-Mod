@@ -26,6 +26,7 @@
     "misc.AbstractContainerMenuMixin",
     "misc.CommandSourceStackMixin",
     "misc.ExplosionMixin",
+    "misc.ItemCombinerMenuMixin",
     "misc.MinecraftServerMixin",
     "misc.ServerLevelMixin",
     "misc.commands.BanCommandMixin",
