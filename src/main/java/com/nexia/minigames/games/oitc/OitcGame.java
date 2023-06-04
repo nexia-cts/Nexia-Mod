@@ -1,8 +1,10 @@
 package com.nexia.minigames.games.oitc;
 
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
@@ -45,28 +47,29 @@ public class OitcGame {
     public static boolean isStarted = false;
 
 
-    public static void leave(ServerPlayer player) {
-        death(player, player.getLastDamageSource());
+    public static void leave(ServerPlayer minecraftPlayer) {
+        death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
+        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
 
-        PlayerData data = PlayerDataManager.get(player);
-        OitcGame.spectator.remove(player);
+        PlayerData data = PlayerDataManager.get(minecraftPlayer);
+        OitcGame.spectator.remove(minecraftPlayer);
         data.isSpectating = false;
-        OitcScoreboard.removeScoreboardFor(player);
+        OitcScoreboard.removeScoreboardFor(minecraftPlayer);
         data.kills = 0;
 
         player.removeTag("in_oitc_game");
 
         PlayerUtil.resetHealthStatus(player);
-        player.setGameMode(GameType.ADVENTURE);
+        minecraftPlayer.setGameMode(GameType.ADVENTURE);
 
-        player.inventory.clearContent();
-        player.inventory.setCarried(ItemStack.EMPTY);
-        player.getEnderChestInventory().clearContent();
+        player.getInventory().clear();
+        minecraftPlayer.inventory.setCarried(ItemStack.EMPTY);
+        minecraftPlayer.getEnderChestInventory().clearContent();
 
         player.removeTag("oitc");
-        OitcGame.death(player, player.getLastDamageSource());
+        OitcGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
 
-        PlayerDataManager.get(player).gameMode = OitcGameMode.LOBBY;
+        data.gameMode = OitcGameMode.LOBBY;
     }
 
     public static void second() {
@@ -114,7 +117,7 @@ public class OitcGame {
         } else {
             OitcGame.queue.add(player);
             data.isSpectating = false;
-            PlayerUtil.broadcast(OitcGame.queue, ChatFormat.format("{b2}{} {b1}has joined the game.", player.getScoreboardName()));
+            PlayerUtil.broadcast(OitcGame.queue, LegacyChatFormat.format("{b2}{} {b1}has joined the game.", player.getScoreboardName()));
         }
 
         ServerLevel world = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("oitc", OitcGame.mapName), null).asWorld();

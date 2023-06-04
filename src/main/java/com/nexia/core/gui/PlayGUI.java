@@ -1,6 +1,7 @@
 package com.nexia.core.gui;
 
 import com.nexia.core.games.util.LobbyUtil;
+import com.nexia.core.utilities.player.PlayerUtil;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
@@ -84,7 +85,6 @@ public class PlayGUI extends SimpleGui {
 
     private void setMinigamesLayout(){
         this.setTitle(minigamesTitle);
-
         ItemStack unknown = new ItemStack(Items.BARRIER, 1);
         unknown.setHoverName(new TextComponent("§7§l???"));
         unknown.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
@@ -108,10 +108,12 @@ public class PlayGUI extends SimpleGui {
         duels.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
         duels.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
+
+
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
 
-        fillEmptySlots(emptySlot, 36);
+        fillEmptySlots(emptySlot, 27);
         this.setSlot(11, duels);
         this.setSlot(13, bedwars);
         this.setSlot(15, oitc);

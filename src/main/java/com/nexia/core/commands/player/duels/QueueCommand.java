@@ -17,17 +17,17 @@ import net.minecraft.server.level.ServerPlayer;
 
 public class QueueCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
-        dispatcher.register(Commands.literal("queue").executes(context -> {
-            QueueGUI.openQueueGUI(context.getSource().getPlayerOrException());
-            return 1;
-        }).requires(commandSourceStack -> {
+        dispatcher.register(Commands.literal("queue")
+                .requires(commandSourceStack -> {
                     try {
                         com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException());
                         PlayerData playerData1 = PlayerDataManager.get(commandSourceStack.getPlayerOrException());
-                        return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.DUELS;
+                        return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
                     } catch (Exception ignored) {}
                     return false;
-                }).then(Commands.argument("gamemode", StringArgumentType.string())
+                })
+                .executes(context -> QueueGUI.openQueueGUI(context.getSource().getPlayerOrException()))
+                .then(Commands.argument("gamemode", StringArgumentType.string())
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest((DuelGameMode.duels), builder)))
                         .executes(context -> QueueCommand.queue(context, StringArgumentType.getString(context, "gamemode"))))
         );

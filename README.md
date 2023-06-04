@@ -1,4 +1,5 @@
 # Nexia DEV
+using CombatReforged's Factory
 
 ### Requirements
 - Java 17

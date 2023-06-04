@@ -1,12 +1,14 @@
 package com.nexia.minigames.games.bedwars.areas;
 
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.pos.ProtectionBlock;
 import com.nexia.core.utilities.pos.ProtectionMap;
 import com.nexia.minigames.games.bedwars.BwGame;
-import net.minecraft.Util;
+import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -86,16 +88,22 @@ public class BwAreas {
         BlockPos mapPos = blockPos.subtract(bedWarsCorner1);
         sendMessage = sendMessage && player != null;
 
+        Player factoryPlayer = null;
+
+        if(player != null) {
+            factoryPlayer = PlayerUtil.getFactoryPlayer(player);
+        }
+
         if (protectionMap == null) {
             if (sendMessage) {
-                player.sendMessage(ChatFormat.formatFail("An error occurred, please inform the admins."), Util.NIL_UUID);
+                factoryPlayer.sendMessage(Component.text("An error occurred, please inform the admins.").color(ChatFormat.failColor));
             }
             return false;
         }
 
         if ((player != null && !isBedWarsWorld(player.getLevel())) || !isInsideBorder(mapPos, protectionMap.map)) {
             if (sendMessage) {
-                player.sendMessage(ChatFormat.formatFail("You have reached the build limit."), Util.NIL_UUID);
+                factoryPlayer.sendMessage(Component.text("You have reached the built limit.").color(ChatFormat.failColor));
             }
             return false;
         }

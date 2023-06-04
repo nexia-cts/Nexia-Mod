@@ -18,15 +18,18 @@ public class PlayerData {
 
     public ServerPlayer invitingPlayer;
 
+    public ServerPlayer spectatingPlayer;
+
     public boolean isDead;
 
+
     public String inviteMap;
+
+    public DuelsGame duelsGame;
 
     public String inviteKit;
 
     public ServerPlayer duelPlayer;
-
-    public DuelsGame duelsGame;
 
     public PlayerData(SavedPlayerData savedData) {
         this.savedData = savedData;
@@ -37,8 +40,9 @@ public class PlayerData {
         this.invitingPlayer = null;
         this.isDead = false;
         this.duelPlayer = null;
-        this.inviteKit = "";
+        this.spectatingPlayer = null;
         this.inviteMap = "";
+        this.inviteKit = "";
         this.duelsGame = null;
     }
 

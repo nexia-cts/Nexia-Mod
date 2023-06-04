@@ -1,11 +1,14 @@
 package com.nexia.core.games.util;
 
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.Main;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
+import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
@@ -14,11 +17,10 @@ import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.DuelsGame;
-import com.nexia.minigames.games.duels.DuelsSpawn;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.oitc.OitcGameMode;
-import com.nexia.minigames.games.oitc.OitcSpawn;
+import net.kyori.adventure.text.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.server.MinecraftServer;
@@ -68,130 +70,172 @@ public class LobbyUtil {
             NO_FALL_DAMAGE_TAG
     };
 
-    public static void leaveAllGames(ServerPlayer player, boolean tp) {
-        if (BwUtil.isInBedWars(player)) BwPlayerEvents.leaveInBedWars(player);
-        else if (FfaUtil.isFfaPlayer(player)) FfaUtil.leaveOrDie(player, player.getLastDamageSource());
-        else if (PlayerDataManager.get(player).gameMode == PlayerGameMode.DUELS) DuelGameHandler.leave(player);
-        else if (PlayerDataManager.get(player).gameMode == PlayerGameMode.OITC) OitcGame.leave(player);
+    public static void leaveAllGames(ServerPlayer minecraftPlayer, boolean tp) {
+        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+        if (BwUtil.isInBedWars(minecraftPlayer)) BwPlayerEvents.leaveInBedWars(minecraftPlayer);
+        else if (FfaUtil.isFfaPlayer(minecraftPlayer)) {
+            FfaUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
+        }
+        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(minecraftPlayer);
+        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.OITC) OitcGame.leave(minecraftPlayer);
 
-        BwScoreboard.removeScoreboardFor(player);
+        BwScoreboard.removeScoreboardFor(minecraftPlayer);
 
         for(int i = 0; i < LobbyUtil.removedTags.length; i++){
-            if(PlayerUtil.hasTag(player, LobbyUtil.removedTags[i])){
+            if(player.hasTag(LobbyUtil.removedTags[i])){
                 player.removeTag(LobbyUtil.removedTags[i]);
             }
         }
 
-        returnToLobby(player, tp);
+        returnToLobby(minecraftPlayer, tp);
     }
 
-    public static void returnToLobby(ServerPlayer player, boolean tp) {
+    public static void returnToLobby(ServerPlayer minecraftPlayer, boolean tp) {
+        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
         for(int i = 0; i < LobbyUtil.removedTags.length; i++){
-            if(PlayerUtil.hasTag(player, LobbyUtil.removedTags[i])){
+            if(player.hasTag(LobbyUtil.removedTags[i])){
                 player.removeTag(LobbyUtil.removedTags[i]);
             }
         }
 
+        minecraftPlayer.setInvulnerable(false);
+
         PlayerUtil.resetHealthStatus(player);
-        player.setGameMode(GameType.ADVENTURE);
+        minecraftPlayer.setGameMode(GameType.ADVENTURE);
 
-        player.inventory.clearContent();
-        player.inventory.setCarried(ItemStack.EMPTY);
-        player.getEnderChestInventory().clearContent();
+        player.getInventory().clear();
+        minecraftPlayer.inventory.setCarried(ItemStack.EMPTY);
+        minecraftPlayer.getEnderChestInventory().clearContent();
 
-        if (tp) {
-            player.setRespawnPosition(lobbyWorld.dimension(), lobbySpawn.toBlockPos(), lobbySpawn.yaw, true, false);
-            lobbySpawn.teleportPlayer(lobbyWorld, player);
-
-            ItemStack compass = new ItemStack(Items.COMPASS);
-            compass.setHoverName(new TextComponent("§eGamemode Selector"));
-            ItemDisplayUtil.addGlint(compass);
-            ItemDisplayUtil.addLore(compass, "§7Right click to open the menu.", 0);
-
-            ItemStack nametag = new ItemStack(Items.NAME_TAG);
-            nametag.setHoverName(new TextComponent("§ePrefix Selector"));
-            ItemDisplayUtil.addGlint(nametag);
-            ItemDisplayUtil.addLore(nametag, "§7Right click to open the menu.", 0);
-
-            player.setSlot(4, compass);
-            player.setSlot(3, nametag);
-            ItemStackUtil.sendInventoryRefreshPacket(player);
+        // Duels shit
+        player.addTag("duels");
+        GamemodeHandler.removeQueue(minecraftPlayer, null, true);
+        com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(minecraftPlayer);
+        if(data.duelsGame != null) {
+            data.duelsGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
         }
 
-        player.connection.send(new ClientboundStopSoundPacket());
-        player.server.getPlayerList().sendPlayerPermissionLevel(player);
+        if(data.gameMode == DuelGameMode.SPECTATING){
+            GamemodeHandler.unspectatePlayer(minecraftPlayer, data.spectatingPlayer, false);
+        }
 
-        PlayerDataManager.get(player).gameMode = PlayerGameMode.LOBBY;
+        data.gameMode = DuelGameMode.LOBBY;
+        data.inDuel = false;
+        data.inviteKit = "";
+        data.inviteMap = "";
+        data.isDead = false;
+        data.spectatingPlayer = null;
+        data.invitingPlayer = null;
+        data.inviting = false;
+        data.duelsGame = null;
+
+
+
+        if (tp) {
+            minecraftPlayer.setRespawnPosition(lobbyWorld.dimension(), lobbySpawn.toBlockPos(), lobbySpawn.yaw, true, false);
+            minecraftPlayer.teleportTo(lobbyWorld, lobbySpawn.x, lobbySpawn.y, lobbySpawn.z, lobbySpawn.pitch, lobbySpawn.yaw);
+
+            LobbyUtil.giveItems(minecraftPlayer);
+        }
+
+        minecraftPlayer.connection.send(new ClientboundStopSoundPacket());
+        ServerTime.minecraftServer.getPlayerList().sendPlayerPermissionLevel(minecraftPlayer);
+
+        PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.LOBBY;
         player.removeTag(LobbyUtil.NO_RANK_DISPLAY_TAG);
         player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
         player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
     }
 
-    public static void sendGame(ServerPlayer player, String game, boolean message, boolean tp){
-        if (!LobbyUtil.isLobbyWorld(player.level) || PlayerDataManager.get(player).gameMode != PlayerGameMode.LOBBY) {
-            LobbyUtil.leaveAllGames(player, false);
+    public static void giveItems(ServerPlayer minecraftPlayer) {
+        ItemStack compass = new ItemStack(Items.COMPASS);
+        compass.setHoverName(new TextComponent("§eGamemode Selector"));
+        ItemDisplayUtil.addGlint(compass);
+        ItemDisplayUtil.addLore(compass, "§7Right click to open the menu.", 0);
+
+        ItemStack nameTag = new ItemStack(Items.NAME_TAG);
+        nameTag.setHoverName(new TextComponent("§ePrefix Selector"));
+        ItemDisplayUtil.addGlint(nameTag);
+        ItemDisplayUtil.addLore(nameTag, "§7Right click to open the menu.", 0);
+
+        ItemStack queueSword = new ItemStack(Items.IRON_SWORD);
+        queueSword.setHoverName(new TextComponent("§eQueue Sword"));
+        ItemDisplayUtil.addGlint(queueSword);
+        ItemDisplayUtil.addLore(queueSword, "§7Right click to queue menu.", 0);
+
+        minecraftPlayer.setSlot(4, compass); //middle slot
+        minecraftPlayer.setSlot(3, nameTag); //left
+        minecraftPlayer.setSlot(5, queueSword); //right
+        ItemStackUtil.sendInventoryRefreshPacket(minecraftPlayer);
+    }
+
+    public static void sendGame(ServerPlayer minecraftPlayer, String game, boolean message, boolean tp){
+        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+        minecraftPlayer.setInvulnerable(false);
+        if (!LobbyUtil.isLobbyWorld(minecraftPlayer.getLevel())) {
+            LobbyUtil.leaveAllGames(minecraftPlayer, false);
         } else{
             PlayerUtil.resetHealthStatus(player);
-            player.setGameMode(GameType.ADVENTURE);
+            minecraftPlayer.setGameMode(GameType.ADVENTURE);
 
-            player.inventory.clearContent();
-            player.inventory.setCarried(ItemStack.EMPTY);
-            player.getEnderChestInventory().clearContent();
+            player.getInventory().clear();
+            minecraftPlayer.inventory.setCarried(ItemStack.EMPTY);
+            minecraftPlayer.getEnderChestInventory().clearContent();
 
-            player.connection.send(new ClientboundStopSoundPacket());
+            minecraftPlayer.connection.send(new ClientboundStopSoundPacket());
 
             player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
             player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+            player.removeTag("duels");
             player.removeTag(LobbyUtil.NO_SATURATION_TAG);
         }
         if(game.equalsIgnoreCase("classic ffa")){
             player.addTag("ffa");
             FfaUtil.wasInSpawn.add(player.getUUID());
-            PlayerDataManager.get(player).gameMode = PlayerGameMode.FFA;
+            PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.FFA;
             if(tp){
-                player.teleportTo(FfaAreas.ffaWorld, FfaAreas.spawn.x, FfaAreas.spawn.y, FfaAreas.spawn.z, FfaAreas.spawn.yaw, FfaAreas.spawn.pitch);
-                player.setRespawnPosition(FfaAreas.ffaWorld.dimension(), FfaAreas.spawn.toBlockPos(), FfaAreas.spawn.yaw, true, false);
+                minecraftPlayer.teleportTo(FfaAreas.ffaWorld, FfaAreas.spawn.x, FfaAreas.spawn.y, FfaAreas.spawn.z, FfaAreas.spawn.yaw, FfaAreas.spawn.pitch);
+                minecraftPlayer.setRespawnPosition(FfaAreas.ffaWorld.dimension(), FfaAreas.spawn.toBlockPos(), FfaAreas.spawn.yaw, true, false);
             }
 
-            FfaUtil.clearThrownTridents(player);
-            if(message){PlayerUtil.sendActionbar(player, "You have joined §8🗡 §7§lFFA §b🔱");}
-            FfaUtil.setInventory(player);
+            FfaUtil.clearThrownTridents(minecraftPlayer);
+            if(message){ player.sendActionBarMessage(Component.text("You have joined §8🗡 §7§lFFA §b🔱")); }
+            FfaUtil.setInventory(minecraftPlayer);
         }
         if(game.equalsIgnoreCase("bedwars")){
-            if(message){PlayerUtil.sendActionbar(player, "You have joined §b\uD83E\uDE93 §c§lBedwars §e⚡");}
-            BwPlayerEvents.tryToJoin(player, false);
+            if(message){ player.sendActionBarMessage(Component.text("You have joined §b\uD83E\uDE93 §c§lBedwars §e⚡"));}
+            BwPlayerEvents.tryToJoin(minecraftPlayer, false);
         }
 
-        if(game.equalsIgnoreCase("duels")){
-            player.addTag("duels");
-            PlayerDataManager.get(player).gameMode = PlayerGameMode.DUELS;
-            GamemodeHandler.removeQueue(player, null, true);
-            DuelsGame.death(player, player.getLastDamageSource());
-            com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
-            data.gameMode = DuelGameMode.LOBBY;
-            data.inDuel = false;
-            data.inviteKit = "";
-            data.inviteMap = "";
-            data.duelsGame = null;
-            data.isDead = false;
-            data.invitingPlayer = null;
-            data.inviting = false;
-            if(tp){
-                player.teleportTo(DuelsSpawn.duelWorld, DuelsSpawn.spawn.x, DuelsSpawn.spawn.y, DuelsSpawn.spawn.z, DuelsSpawn.spawn.yaw, DuelsSpawn.spawn.pitch);
-                player.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
-            }
 
-            if(message){PlayerUtil.sendActionbar(player, "You have joined §f☯ §c§lDuels §7\uD83E\uDE93");}
+        if(game.equalsIgnoreCase("duels")){
+            LobbyUtil.leaveAllGames(minecraftPlayer, tp);
+            if(message){
+                player.sendActionBarMessage(Component.text("You have joined §f☯ §c§lDuels §7\uD83E\uDE93"));
+                player.sendMessage(
+                        ChatFormat.nexiaMessage()
+                                .append(Component.text("Duels has now moved here. (main hub)").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                );
+                player.sendMessage(Component.text("Meaning you can now use /duel, /queue and /spectate inside of the normal hub WITHOUT going to duels!").decoration(ChatFormat.bold, false));
+            }
         }
 
         if(game.equalsIgnoreCase("oitc")){
             player.addTag("oitc");
-            PlayerDataManager.get(player).gameMode = PlayerGameMode.OITC;
-            OitcGame.death(player, player.getLastDamageSource());
-            com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(player).gameMode = OitcGameMode.LOBBY;
-            player.teleportTo(OitcSpawn.oitcWorld, OitcSpawn.spawn.x, OitcSpawn.spawn.y, OitcSpawn.spawn.z, OitcSpawn.spawn.yaw, OitcSpawn.spawn.pitch);
-            player.setRespawnPosition(OitcSpawn.oitcWorld.dimension(), OitcSpawn.spawn.toBlockPos(), OitcSpawn.spawn.yaw, true, false);
-            if(message){PlayerUtil.sendActionbar(player, "You have joined §7\uD83D\uDDE1 §f§lOITC §7\uD83C\uDFF9");}
+            PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.OITC;
+            OitcGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
+            com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(minecraftPlayer).gameMode = OitcGameMode.LOBBY;
+            /*
+            if(tp){
+                minecraftPlayer.teleportTo(OitcSpawn.oitcWorld, OitcSpawn.spawn.x, OitcSpawn.spawn.y, OitcSpawn.spawn.z, OitcSpawn.spawn.yaw, OitcSpawn.spawn.pitch);
+                minecraftPlayer.setRespawnPosition(OitcSpawn.oitcWorld.dimension(), OitcSpawn.spawn.toBlockPos(), OitcSpawn.spawn.yaw, true, false);
+            }
+
+             */
+
+            OitcGame.joinQueue(minecraftPlayer);
+
+            if(message){player.sendActionBarMessage(Component.text("You have joined §7\uD83D\uDDE1 §f§lOITC §7\uD83C\uDFF9"));}
         }
     }
 

@@ -1,9 +1,11 @@
 package com.nexia.core.utilities.pos;
 
+import com.combatreforged.factory.api.world.World;
+import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.util.Location;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
@@ -80,8 +82,12 @@ public class EntityPos {
         return Math.sqrt(x*x + y*y + z*z);
     }
 
+    public void teleportPlayer(World world, Player player) {
+        player.teleport(new Location(this.x, this.y, this.z, this.yaw, this.pitch, world));
+    }
+
     public void teleportPlayer(ServerLevel level, ServerPlayer player) {
-        player.teleportTo(level, this.x, this.y, this.z, this.yaw, this.pitch);
+        player.teleportTo(level, this.x, this.y,this.z,this.yaw,this.pitch);
     }
 
     public String toString() {

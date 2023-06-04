@@ -1,14 +1,17 @@
 package com.nexia.core.utilities.pos;
 
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.google.gson.Gson;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
-import net.minecraft.Util;
+import com.nexia.core.utilities.player.PlayerUtil;
+import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.FileWriter;
 import java.nio.file.Files;
@@ -22,7 +25,7 @@ public class ProtectionMap {
     public byte notListedBlockId;
     public String outsideMessage;
 
-    public ProtectionMap(ServerPlayer player, BlockPos corner1, BlockPos corner2, String filePath, ProtectionBlock[] listedBlocks, ProtectionBlock notListedBlock, String outSideMessage) {
+    public ProtectionMap(net.minecraft.world.entity.player.Player player, BlockPos corner1, BlockPos corner2, String filePath, ProtectionBlock[] listedBlocks, ProtectionBlock notListedBlock, String outSideMessage) {
         this.blocksByIds = listedBlocks;
         this.notListedBlock = notListedBlock;
         this.notListedBlockId = (byte)blocksByIds.length;
@@ -43,8 +46,8 @@ public class ProtectionMap {
         this.outsideMessage = outsideMessage;
     }
 
-    private void createMap(ServerPlayer player, BlockPos corner1) {
-        ServerLevel world = player.getLevel();
+    private void createMap(net.minecraft.world.entity.player.Player player, BlockPos corner1) {
+        Level world = player.level;
         int blockCount = 0;
 
         for (int x = 0; x < this.map.length; x++) {
@@ -58,11 +61,16 @@ public class ProtectionMap {
             }
         }
 
-        player.sendMessage(new TextComponent("\2477Map created successfully with " +
-                ChatFormat.brandColor2 + blockCount + " \2477protected blocks"), Util.NIL_UUID);
+        PlayerUtil.getFactoryPlayer(player).sendMessage(ChatFormat.nexiaMessage()
+                .append(Component.text("Map created successfully with ").color(ChatFormat.normalColor)
+                        .append(Component.text(blockCount).color(ChatFormat.brandColor2)
+                                .append(Component.text(" protected blocks.").color(ChatFormat.normalColor))
+                        )
+        ));
     }
 
-    private void exportMap(ServerPlayer player, String filePath) {
+    private void exportMap(net.minecraft.world.entity.player.Player mcPlayer, String filePath) {
+        Player player = PlayerUtil.getFactoryPlayer(mcPlayer);
         try {
             Gson gson = new Gson();
             String json = gson.toJson(this.map);
@@ -71,11 +79,11 @@ public class ProtectionMap {
             fileWriter.write(json);
             fileWriter.close();
 
-            player.sendMessage(new TextComponent("\2477Successfully exported protection map."), Util.NIL_UUID);
+            player.sendMessage(ChatFormat.nexiaMessage().append(Component.text("Successfully exported protection map.").color(ChatFormat.normalColor)));
 
         } catch (Exception e) {
             e.printStackTrace();
-            player.sendMessage(new TextComponent("\2477Failed to export protection map."), Util.NIL_UUID);
+            player.sendMessage(ChatFormat.nexiaMessage().append(Component.text("Failed to export protection map.").color(ChatFormat.failColor)));
         }
     }
 
@@ -109,15 +117,20 @@ public class ProtectionMap {
         return this.canBuiltAt(mapCorner1, buildPos, null, false);
     }
 
-    public boolean canBuiltAt(BlockPos mapCorner1, BlockPos buildPos, ServerPlayer player, boolean sendMessage) {
-        sendMessage = sendMessage && player != null;
+    public boolean canBuiltAt(BlockPos mapCorner1, BlockPos buildPos, net.minecraft.world.entity.player.Player mcPlayer, boolean sendMessage) {
+        sendMessage = sendMessage && mcPlayer != null;
+
+        Player player = null;
+        if(sendMessage){
+            player = PlayerUtil.getFactoryPlayer(mcPlayer);
+        }
 
         BlockPos mapPos = buildPos.subtract(mapCorner1);
 
         if (mapPos.getX() < 0 || mapPos.getX() >= map.length ||
                 mapPos.getY() < 0 || mapPos.getY() >= map[0].length ||
                 mapPos.getZ() < 0 || mapPos.getZ() >= map[0][0].length) {
-            if (sendMessage) player.sendMessage(ChatFormat.formatFail(outsideMessage), Util.NIL_UUID);
+            if (sendMessage) player.sendMessage(Component.text(outsideMessage).color(ChatFormat.failColor));
             return false;
         }
 
@@ -125,7 +138,7 @@ public class ProtectionMap {
         ProtectionBlock protectionBlock = this.getMappingBlock(id);
 
         if (!protectionBlock.canBuild) {
-            if (sendMessage) player.sendMessage(ChatFormat.formatFail(protectionBlock.noBuildMessage), Util.NIL_UUID);
+            if (sendMessage) player.sendMessage(Component.text(protectionBlock.noBuildMessage).color(ChatFormat.failColor));
             return false;
         }
         return true;

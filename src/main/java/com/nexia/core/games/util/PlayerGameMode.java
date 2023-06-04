@@ -9,7 +9,7 @@ public class PlayerGameMode {
     public static final PlayerGameMode OITC = new PlayerGameMode("oitc");
     public static final PlayerGameMode FFA = new PlayerGameMode("ffa");
 
-    public static final PlayerGameMode DUELS = new PlayerGameMode("duels");
+    //public static final PlayerGameMode DUELS = new PlayerGameMode("duels");
 
     PlayerGameMode(String id) {
         this.id = id;

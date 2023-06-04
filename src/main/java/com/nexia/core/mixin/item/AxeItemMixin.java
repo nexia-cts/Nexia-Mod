@@ -24,7 +24,6 @@ public class AxeItemMixin {
         if (BwAreas.isBedWarsWorld(context.getLevel())) {
             if (!BwPlayerEvents.beforeStripWood(player, context)) {
                 cir.setReturnValue(InteractionResult.PASS);
-                return;
             }
         }
     }
