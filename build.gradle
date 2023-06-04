@@ -3,8 +3,8 @@ plugins {
 	id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
@@ -26,8 +26,15 @@ dependencies {
 	mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	modApiMapped('com.combatreforged.factory:factory-api:0.1.13-full')
-	modApiMapped('com.combatreforged.factory:factory-builder:0.1.13-1.16_combat-6')
+	modImplementation('com.combatreforged.factory:factory-api:0.1.13-full')
+	modImplementation('com.combatreforged.factory:factory-builder:0.1.13-1.16_combat-6')
+
+	implementation("com.combatreforged.factory:factory-api:0.1.13:javadoc@jar") {
+		exclude(group: "com.google.code.gson")
+		exclude(group: "org.apache.logging.log4j")
+	}
+	implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+	implementation("com.google.code.gson:gson:2.9.0")
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
@@ -40,6 +47,12 @@ dependencies {
 	include(modApi('me.sargunvohra.mcmods:autoconfig1u:3.3.1') { exclude(group: "net.fabricmc.fabric-api") })
 	include(implementation("com.googlecode.json-simple:json-simple:1.1.1"))
 	modApi('me.lucko:fabric-permissions-api:0.2-SNAPSHOT')
+
+
+	// discord shit
+	include(api('net.dv8tion:JDA:5.0.0-beta.6'))
+	include(api('club.minnced:discord-webhooks:0.8.2') { exclude(group: "org.json") })
+	include(api('org.json:json:20230227'))
 
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.

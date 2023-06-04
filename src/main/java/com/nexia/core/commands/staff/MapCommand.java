@@ -8,7 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.minigames.games.duels.DuelsSpawn;
+import com.nexia.ffa.utilities.FfaAreas;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -63,8 +63,8 @@ public class MapCommand {
 
             ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), (
                     new RuntimeWorldConfig()
-                    .setDimensionType(DuelsSpawn.duelWorld.dimensionType())
-                    .setGenerator(DuelsSpawn.duelWorld.getChunkSource().getGenerator())
+                    .setDimensionType(FfaAreas.ffaWorld.dimensionType())
+                    .setGenerator(FfaAreas.ffaWorld.getChunkSource().getGenerator())
                     .setDifficulty(Difficulty.HARD)
                     .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
                     .setGameRule(GameRules.RULE_MOBGRIEFING, false)

@@ -13,7 +13,6 @@ import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.areas.BwDimension;
 import com.nexia.minigames.games.bedwars.shop.BwLoadShop;
 import com.nexia.minigames.games.duels.DuelGameHandler;
-import com.nexia.minigames.games.duels.DuelsSpawn;
 import com.nexia.minigames.games.oitc.OitcGame;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -44,7 +43,6 @@ public class ServerTime {
 
         fantasy = Fantasy.get(minecraftServer);
         LobbyUtil.setLobbyWorld(minecraftServer);
-        DuelsSpawn.setDuelWorld(minecraftServer);
         FfaAreas.setFfaWorld(minecraftServer);
         OitcGame.firstTick(minecraftServer);
 

@@ -28,10 +28,6 @@ public class ModConfig implements ConfigData {
         public boolean statusMessages = true;
     }
 
-
-    @Comment("What the discord link should be.")
-    public String discordLink = "";
-
     @Comment("List of ranks.")
     public String[] ranks = {""};
     public double[] lobbyPos = {

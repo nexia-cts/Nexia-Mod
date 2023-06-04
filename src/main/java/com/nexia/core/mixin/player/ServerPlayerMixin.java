@@ -1,7 +1,9 @@
 package com.nexia.core.mixin.player;
 
 import com.mojang.authlib.GameProfile;
+import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.core.gui.duels.DuelGUI;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
@@ -16,6 +18,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
@@ -38,6 +41,14 @@ public abstract class ServerPlayerMixin extends Player {
 
     public ServerPlayerMixin(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
         super(level, blockPos, f, gameProfile);
+    }
+
+    @Inject(method = "attack", at = @At("HEAD"))
+    public void onAttack(Entity entity, CallbackInfo ci) {
+        if(level == LobbyUtil.lobbyWorld && entity instanceof ServerPlayer player &&
+                this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("queue sword")) {
+            DuelGUI.openDuelGui((ServerPlayer) (Object) this, player);
+        }
     }
 
     @Inject(method = "die", at = @At("HEAD"))

@@ -14,11 +14,14 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.level.ServerPlayer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
 
 public class GamemodeHandler {
 
-    public static DuelGameMode identifyGamemode(String gameMode){
+    public static DuelGameMode identifyGamemode(@NotNull String gameMode){
         if(gameMode.equalsIgnoreCase("axe")){
             return DuelGameMode.AXE;
         }
@@ -73,6 +76,72 @@ public class GamemodeHandler {
 
         if(gameMode.equalsIgnoreCase("trident_only")){
             return DuelGameMode.TRIDENT_ONLY;
+        }
+
+        return null;
+    }
+
+    public static boolean isInQueue(@NotNull ServerPlayer player, @NotNull DuelGameMode gameMode) {
+        ArrayList<ServerPlayer> queue = identifyQueue(gameMode);
+        return queue != null && queue.contains(player);
+    }
+
+    public static ArrayList<ServerPlayer> identifyQueue(@NotNull DuelGameMode gameMode) {
+
+        if(gameMode.equals(DuelGameMode.AXE)){
+            return DuelGameMode.AXE_QUEUE;
+        }
+
+        if(gameMode.equals(DuelGameMode.BOW_ONLY)){
+            return DuelGameMode.BOW_ONLY_QUEUE;
+        }
+
+        if(gameMode.equals(DuelGameMode.SHIELD)){
+            return DuelGameMode.SHIELD_QUEUE;
+        }
+
+        if(gameMode.equals(DuelGameMode.POT)){
+            return DuelGameMode.POT_QUEUE;
+        }
+
+        if(gameMode.equals(DuelGameMode.NETH_POT)){
+            return DuelGameMode.NETH_POT_QUEUE;
+        }
+
+        if(gameMode.equals(DuelGameMode.OG_VANILLA)){
+            return DuelGameMode.OG_VANILLA_QUEUE;
+        }
+
+        if(gameMode.equals(DuelGameMode.UHC_SHIELD)){
+            return DuelGameMode.UHC_SHIELD_QUEUE;
+        }
+
+        if(gameMode.equals(DuelGameMode.VANILLA)){
+            return DuelGameMode.VANILLA_QUEUE;
+        }
+
+        if(gameMode.equals(DuelGameMode.SMP)){
+            return DuelGameMode.SMP_QUEUE;
+        }
+
+        if(gameMode.equals(DuelGameMode.SWORD_ONLY)){
+            return DuelGameMode.SWORD_ONLY_QUEUE;
+        }
+
+        if(gameMode.equals(DuelGameMode.FFA)){
+            return DuelGameMode.FFA_QUEUE;
+        }
+
+        if(gameMode.equals(DuelGameMode.HOE_ONLY)){
+            return DuelGameMode.HOE_ONLY_QUEUE;
+        }
+
+        if(gameMode.equals(DuelGameMode.UHC)){
+            return DuelGameMode.UHC_QUEUE;
+        }
+
+        if(gameMode.equals(DuelGameMode.TRIDENT_ONLY)){
+            return DuelGameMode.TRIDENT_ONLY_QUEUE;
         }
 
         return null;
@@ -297,8 +366,6 @@ public class GamemodeHandler {
             DuelGameMode.TRIDENT_ONLY_QUEUE.remove(minecraftPlayer);
             DuelGameMode.HOE_ONLY_QUEUE.remove(minecraftPlayer);
         }
-
-
     }
 
     public static void joinGamemode(ServerPlayer invitor, ServerPlayer player, String stringGameMode, @Nullable String selectedmap, boolean silent){

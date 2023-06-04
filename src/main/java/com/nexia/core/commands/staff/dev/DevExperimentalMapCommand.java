@@ -4,8 +4,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.minigames.games.duels.DuelsSpawn;
+import com.nexia.ffa.utilities.FfaAreas;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -44,8 +45,8 @@ public class DevExperimentalMapCommand {
         if(argument.equalsIgnoreCase("cffa")){
             ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("ffa", "map")).location(), (
                     new RuntimeWorldConfig()
-                            .setDimensionType(DuelsSpawn.duelWorld.dimensionType())
-                            .setGenerator(DuelsSpawn.duelWorld.getChunkSource().getGenerator())
+                            .setDimensionType(LobbyUtil.lobbyWorld.dimensionType())
+                            .setGenerator(LobbyUtil.lobbyWorld.getChunkSource().getGenerator())
                             .setDifficulty(Difficulty.HARD)
                             .setGameRule(GameRules.RULE_KEEPINVENTORY, true)
                             .setGameRule(GameRules.RULE_MOBGRIEFING, false)

@@ -1,5 +1,9 @@
 package com.nexia.core.gui.duels;
 
+import com.nexia.core.games.util.LobbyUtil;
+import com.nexia.core.utilities.item.ItemDisplayUtil;
+import com.nexia.core.utilities.item.ItemStackUtil;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import eu.pb4.sgui.api.ClickType;
@@ -39,15 +43,31 @@ public class QueueGUI extends SimpleGui {
             airSlots++;
         }
         int i1 = 0;
+        ItemStack item;
         for(String duel : DuelGameMode.duels){
             if(slot == 17) {
                 slot = 19;
             }
 
-            this.setSlot(slot, DuelGameMode.duelsItems.get(i1).setHoverName(new TextComponent("§f" + duel.toUpperCase().replaceAll("_", " "))));
+            item = DuelGameMode.duelsItems.get(i1);
+            item.setHoverName(new TextComponent("§f" + duel.toUpperCase().replaceAll("_", " ")));
+
+            DuelGameMode gameMode = GamemodeHandler.identifyGamemode(duel);
+            ItemDisplayUtil.removeLore(item, 0);
+            ItemDisplayUtil.addLore(item, "§7There are §7§l" + GamemodeHandler.identifyQueue(gameMode).size() + " §7people queued up.", 0);
+
+            if(GamemodeHandler.isInQueue(player, gameMode)) {
+                ItemDisplayUtil.removeLore(item, 1);
+                ItemDisplayUtil.addLore(item, "§7Click to leave the queue.", 1);
+            } else {
+                ItemDisplayUtil.removeLore(item, 1);
+            }
+
+            this.setSlot(slot, item);
             slot++;
             i1++;
         }
+        this.setSlot(31, new ItemStack(Items.BARRIER).setHoverName(new TextComponent("§c§lLeave ALL Queues")));
     }
 
     public boolean click(int index, ClickType clickType, net.minecraft.world.inventory.ClickType action){
@@ -57,9 +77,24 @@ public class QueueGUI extends SimpleGui {
             Component name = itemStack.getHoverName();
 
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
+
+                if(name.getString().substring(4).equalsIgnoreCase("Leave ALL Queues")) {
+                    //PlayerUtil.getFactoryPlayer(player).runCommand("/queue LEAVE", 0, false);
+                    LobbyUtil.sendGame(this.player, "duels", false, false);
+                    this.close();
+                    return super.click(index, clickType, action);
+                }
+
                 String modifiedName = name.getString().substring(2).replaceAll(" ", "_");
-                GamemodeHandler.joinQueue(this.player, modifiedName, false);
-                this.close();
+
+                DuelGameMode gameMode = GamemodeHandler.identifyGamemode(modifiedName);
+                if(GamemodeHandler.isInQueue(player, gameMode)) {
+                    GamemodeHandler.removeQueue(this.player, modifiedName, false);
+                    this.close();
+                } else {
+                    GamemodeHandler.joinQueue(this.player, modifiedName, false);
+                    this.close();
+                }
             }
 
         }

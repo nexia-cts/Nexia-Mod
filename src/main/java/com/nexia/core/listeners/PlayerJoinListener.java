@@ -9,6 +9,12 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.discord.utilities.discord.DiscordData;
+import com.nexia.discord.utilities.discord.DiscordDataManager;
+import com.nexia.discord.utilities.player.PlayerData;
+import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -105,21 +111,37 @@ public class PlayerJoinListener {
         player.sendMessage(
                 Component.text(" » ").color(ChatFormat.brandColor2)
                                 .append(Component.text("Join our discord: ").color(ChatFormat.normalColor))
-                                        .append(Component.text(Main.config.discordLink)
+                                        .append(Component.text(com.nexia.discord.Main.config.discordLink)
                                                 .color(ChatFormat.brandColor2)
                                                 .hoverEvent(HoverEvent.showText(Component.text("Click me").color(TextColor.fromHexString("#73ff54"))))
-                                                .clickEvent(ClickEvent.openUrl(Main.config.discordLink))
+                                                .clickEvent(ClickEvent.openUrl(com.nexia.discord.Main.config.discordLink))
                                         )
         );
         player.sendMessage(ChatFormat.separatorLine(null));
     }
 
+    private static void checkBooster(ServerPlayer player) {
+        PlayerData playerData = com.nexia.discord.utilities.player.PlayerDataManager.get(player);
+        if(!playerData.savedData.isLinked ) { return; }
+        Member discordUser = com.nexia.discord.Main.jda.getGuildById(Long.parseLong(com.nexia.discord.Main.config.guildID)).getMemberById(playerData.savedData.discordID);
+        if(discordUser == null) { return; }
+
+        if(discordUser.isBoosting() && (!Permissions.check(player, "nexia.prefix.supporter") && !Permissions.check(player, "nexia.staff"))) {
+            ServerTime.factoryServer.runCommand("/rank " + player.getScoreboardName() + " supporter", 4, false);
+
+        } else if(!discordUser.isBoosting() && (Permissions.check(player, "nexia.prefix.supporter") && !Permissions.check(player, "nexia.staff"))) {
+            ServerTime.factoryServer.runCommand("/rank " + player.getScoreboardName() + " default", 4, false);
+        }
+    }
+
     private static void processJoin(Player player, ServerPlayer minecraftPlayer){
         PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.ffa.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
+        com.nexia.discord.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.minigames.games.duels.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         LobbyUtil.leaveAllGames(minecraftPlayer, true);
         runCommands(player, minecraftPlayer);
+        checkBooster(minecraftPlayer);
         sendJoinMessage(player);
     }
 }

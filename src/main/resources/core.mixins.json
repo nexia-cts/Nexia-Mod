@@ -33,6 +33,7 @@
     "item.TridentItemMixin",
     "misc.AbstractContainerMenuMixin",
     "misc.CommandSourceStackMixin",
+    "misc.ItemCombinerMenuMixin",
     "misc.ExplosionMixin",
     "misc.MinecraftServerMixin",
     "misc.ServerLevelMixin",

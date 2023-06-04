@@ -1,11 +1,11 @@
 package com.nexia.core.mixin.player;
 
-import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.player.SavedPlayerData;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.discord.Main;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;

@@ -124,7 +124,7 @@ public class PlayerListMixin {
             Main.server.sendMessage(new TextComponent(String.valueOf(banTime)), Util.NIL_UUID);
 
             if(banTime > 0){
-                cir.setReturnValue(new TextComponent("§c§lYou have been banned.\n§7Duration: §d" + textBanTime + "\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + Main.config.discordLink));
+                cir.setReturnValue(new TextComponent("§c§lYou have been banned.\n§7Duration: §d" + textBanTime + "\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + com.nexia.discord.Main.config.discordLink));
             } else {
                 BanHandler.removeBanFromList(gameProfile);
             }

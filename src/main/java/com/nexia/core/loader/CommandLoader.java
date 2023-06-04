@@ -5,6 +5,7 @@ import com.nexia.core.commands.player.duels.*;
 import com.nexia.core.commands.player.ffa.*;
 import com.nexia.core.commands.staff.*;
 import com.nexia.core.commands.staff.dev.*;
+import com.nexia.discord.commands.minecraft.*;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 
 public class CommandLoader {
@@ -31,6 +32,7 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(PrefixCommand::register);
         CommandRegistrationCallback.EVENT.register(RankCommand::register);
         CommandRegistrationCallback.EVENT.register(RoundPosCommand::register);
+        CommandRegistrationCallback.EVENT.register(LinkCommand::register);
         CommandRegistrationCallback.EVENT.register(PingCommand::register);
         CommandRegistrationCallback.EVENT.register(DuelsDeleteWorldsCommand::register);
 

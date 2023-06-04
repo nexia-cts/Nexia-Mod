@@ -1,8 +1,8 @@
 package com.nexia.minigames.games.duels;
 
-
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.minecraft.core.Registry;
@@ -124,6 +124,7 @@ public class DuelGameHandler {
     }
 
     public static String returnCommandMap(String mapname) {
+
         int[] pos = new int[]{0, 0, 0};
 
         String rotation = "";
@@ -149,10 +150,10 @@ public class DuelGameHandler {
         }
     }
 
-    public static ServerLevel createWorld(){
+    public static ServerLevel createWorld(boolean doRegeneration){
         RuntimeWorldConfig config = new RuntimeWorldConfig()
-                .setDimensionType(DuelsSpawn.duelWorld.dimensionType())
-                .setGenerator(DuelsSpawn.duelWorld.getChunkSource().getGenerator())
+                .setDimensionType(FfaAreas.ffaWorld.dimensionType())
+                .setGenerator(FfaAreas.ffaWorld.getChunkSource().getGenerator())
                 .setDifficulty(Difficulty.HARD)
                 .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
                 .setGameRule(GameRules.RULE_MOBGRIEFING, false)
@@ -160,6 +161,7 @@ public class DuelGameHandler {
                 .setGameRule(GameRules.RULE_DAYLIGHT, false)
                 .setGameRule(GameRules.RULE_DO_IMMEDIATE_RESPAWN, false)
                 .setGameRule(GameRules.RULE_DOMOBSPAWNING, false)
+                .setGameRule(GameRules.RULE_NATURAL_REGENERATION, doRegeneration)
                 .setGameRule(GameRules.RULE_SHOWDEATHMESSAGES, false)
                 .setGameRule(GameRules.RULE_SPAWN_RADIUS, 0)
                 .setGameRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS, false)

@@ -4,7 +4,6 @@ import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.gui.ffa.SpawnGUI;
 import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.ffa.utilities.FfaUtil;
-import com.nexia.minigames.games.duels.DuelsSpawn;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -22,7 +21,7 @@ public class EventUtil {
 
     public static boolean dropItem(Player player, ItemStack itemStack) {
 
-        return !FfaUtil.isFfaPlayer(player) || !DuelsSpawn.isInHub(player) || !LobbyUtil.isLobbyWorld(player.level);
+        return !FfaUtil.isFfaPlayer(player) || !LobbyUtil.isLobbyWorld(player.level);
     }
 
     public static void onSignClick(CallbackInfoReturnable<InteractionResult> ci, BlockPos signPos, Level level, ServerPlayer p) {

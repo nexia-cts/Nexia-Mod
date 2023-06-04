@@ -65,7 +65,7 @@ public class BanCommand {
                 }
 
                 if (serverPlayer != null) {
-                    serverPlayer.connection.disconnect(new TextComponent("§c§lYou have been banned.\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + Main.config.discordLink));
+                    serverPlayer.connection.disconnect(new TextComponent("§c§lYou have been banned.\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + com.nexia.discord.Main.config.discordLink));
                 }
             }
         }
