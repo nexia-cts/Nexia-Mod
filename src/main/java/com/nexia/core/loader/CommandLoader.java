@@ -36,6 +36,8 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(PingCommand::register);
         CommandRegistrationCallback.EVENT.register(DuelsDeleteWorldsCommand::register);
 
+        CommandRegistrationCallback.EVENT.register(SpectateCommand::register);
+
 
         CommandRegistrationCallback.EVENT.register(TempBanCommand::register);
         CommandRegistrationCallback.EVENT.register(UnTempBanCommand::register);

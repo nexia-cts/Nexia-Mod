@@ -39,6 +39,7 @@
     "misc.ServerLevelMixin",
     "misc.commands.BanCommandMixin",
     "misc.commands.EmoteCommandMixin",
+    "misc.commands.SpectateCommandMixin",
     "misc.commands.MsgCommandMixin",
     "misc.commands.PardonCommandMixin",
     "misc.commands.TeamMsgCommandMixin",

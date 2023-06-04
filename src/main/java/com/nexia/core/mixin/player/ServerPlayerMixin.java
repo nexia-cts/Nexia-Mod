@@ -9,6 +9,7 @@ import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.duels.DuelsGame;
+import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.oitc.OitcGame;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -54,17 +55,20 @@ public abstract class ServerPlayerMixin extends Player {
     @Inject(method = "die", at = @At("HEAD"))
     private void die(DamageSource damageSource, CallbackInfo ci) {
         ServerPlayer player = (ServerPlayer)(Object)this;
+        PlayerGameMode gameMode = PlayerDataManager.get(player).gameMode;
+        PlayerData duelsData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
+
 
         if (FfaUtil.isFfaPlayer(player)) {
             FfaUtil.leaveOrDie(player, damageSource, false);
         } else if (BwAreas.isBedWarsWorld(getLevel())) {
             BwPlayerEvents.death(player);
         }
-        else if(PlayerDataManager.get(player).gameMode == PlayerGameMode.OITC){
+        else if(gameMode == PlayerGameMode.OITC){
             OitcGame.death(player, damageSource);
         }
-        else if(PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY){
-            DuelsGame.death(player, damageSource);
+        else if(gameMode == PlayerGameMode.LOBBY && duelsData.duelsGame != null){
+            duelsData.duelsGame.death(player, damageSource);
         }
     }
 

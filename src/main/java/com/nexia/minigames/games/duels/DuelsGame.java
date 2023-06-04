@@ -21,6 +21,7 @@ import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -37,6 +38,8 @@ public class DuelsGame { //implements Runnable{
 
     public ServerLevel level;
 
+    public ArrayList<ServerPlayer> spectators = new ArrayList<>();
+
     public DuelsGame(ServerPlayer p1, ServerPlayer p2, DuelGameMode gameMode, String selectedMap, ServerLevel level){
         this.p1 = p1;
         this.p2 = p2;
@@ -51,6 +54,17 @@ public class DuelsGame { //implements Runnable{
             gameMode = DuelGameMode.FFA;
             System.out.printf("[ERROR] Nexia: Invalid duel gamemode ({0}) selected! Using fallback one.%n", stringGameMode);
         }
+
+        PlayerData invitorData = PlayerDataManager.get(mcP1);
+        PlayerData playerData = PlayerDataManager.get(mcP2);
+
+        if(invitorData.spectatingPlayer != null) {
+            GamemodeHandler.unspectatePlayer(mcP1, invitorData.spectatingPlayer, false);
+        }
+        if(playerData.spectatingPlayer != null) {
+            GamemodeHandler.unspectatePlayer(mcP2, playerData.spectatingPlayer, false);
+        }
+
 
         Player p1 = PlayerUtil.getFactoryPlayer(mcP1);
         Player p2 = PlayerUtil.getFactoryPlayer(mcP2);
@@ -72,8 +86,6 @@ public class DuelsGame { //implements Runnable{
         ServerTime.factoryServer.runCommand(start + " if block 0 80 0 minecraft:structure_block run setblock 0 80 0 air");
         ServerTime.factoryServer.runCommand(start + " if block 1 80 0 minecraft:redstone_block run setblock 1 80 0 air");
 
-        PlayerData invitorData = PlayerDataManager.get(mcP1);
-        PlayerData playerData = PlayerDataManager.get(mcP2);
 
         p1.removeTag(LobbyUtil.NO_DAMAGE_TAG);
         p1.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
@@ -94,6 +106,7 @@ public class DuelsGame { //implements Runnable{
         playerData.inviting = false;
         playerData.invitingPlayer = null;
         playerData.inDuel = true;
+        playerData.spectatingPlayer = null;
         playerData.duelPlayer = mcP1;
 
         mcP1.teleportTo(duelLevel, invitorpos[0], invitorpos[1], invitorpos[2], invitorpos[3], invitorpos[4]);
@@ -103,6 +116,7 @@ public class DuelsGame { //implements Runnable{
         invitorData.inviting = false;
         invitorData.invitingPlayer = null;
         invitorData.inDuel = true;
+        invitorData.spectatingPlayer = null;
         invitorData.duelPlayer = mcP2;
 
         mcP1.setGameMode(gameMode.gameMode);
@@ -140,7 +154,7 @@ public class DuelsGame { //implements Runnable{
         return game;
     }
 
-    public static void endGame(@NotNull ServerPlayer minecraftVictim, @Nullable ServerPlayer minecraftAttacker, boolean wait) {
+    public void endGame(@NotNull ServerPlayer minecraftVictim, @Nullable ServerPlayer minecraftAttacker, boolean wait) {
         PlayerData victimData = PlayerDataManager.get(minecraftVictim);
 
         boolean attackerNull = minecraftAttacker == null;
@@ -195,24 +209,38 @@ public class DuelsGame { //implements Runnable{
                 .append(Component.text("!").color(ChatFormat.normalColor)
                 );
 
-        Component title = Component.text("Draw")
+        Component titleLose = Component.text("Draw")
                 .color(ChatFormat.brandColor2);
-        Component subtitle = win;
+        Component subtitleLose = win;
+
+        Component titleWin = titleLose;
+        Component subtitleWin = win;
 
 
         if (!attackerNull) {
             win = Component.text(attacker.getRawName()).color(ChatFormat.brandColor2)
                     .append(Component.text(" has won the duel!").color(ChatFormat.normalColor)
                     );
-            title = Component.text("You won!").color(ChatFormat.brandColor2);
-            subtitle = Component.text("You have won against " + victim.getRawName())
-                    .color(ChatFormat.normalColor);
+
+            titleLose = Component.text("You lost!").color(ChatFormat.brandColor2);
+            subtitleLose = Component.text("You have lost against ")
+                    .color(ChatFormat.normalColor)
+                    .append(Component.text(attacker.getRawName())
+                            .color(ChatFormat.brandColor2)
+                    );
+
+            titleWin = Component.text("You won!").color(ChatFormat.brandColor2);
+            subtitleWin = Component.text("You have won against ")
+                    .color(ChatFormat.normalColor)
+                    .append(Component.text(victim.getRawName())
+                            .color(ChatFormat.brandColor2)
+                    );
         }
 
 
         if (!attackerNull) {
             attacker.sendMessage(win);
-            attacker.sendTitle(Title.title(title, subtitle));
+            attacker.sendTitle(Title.title(titleWin, subtitleWin));
             minecraftAttacker.die(DamageSource.GENERIC);
             PlayerUtil.resetHealthStatus(attacker);
 
@@ -223,6 +251,7 @@ public class DuelsGame { //implements Runnable{
         }
 
         victim.sendMessage(win);
+        victim.sendTitle(Title.title(titleLose, subtitleLose));
         PlayerUtil.resetHealthStatus(victim);
         victim.getInventory().clear();
 
@@ -234,12 +263,18 @@ public class DuelsGame { //implements Runnable{
             @Override
             public void run() {
                 ServerPlayer player = data.getLoser();
-                PlayerUtil.getFactoryPlayer(player).runCommand("/hub", 0, false);
+                ServerLevel level = player.getLevel();
+                level.getServer().getCommands().performCommand(player.createCommandSourceStack(), "/hub");
 
                 player = data.getWinner();
-                PlayerUtil.getFactoryPlayer(player).runCommand("/hub", 0, false);
+                level = player.getLevel();
+                level.getServer().getCommands().performCommand(player.createCommandSourceStack(), "/hub");
             }
         }, 100L);
+
+        for(ServerPlayer spectator : this.spectators) {
+            PlayerUtil.getFactoryPlayer(spectator).runCommand("/hub", 0, false);
+        }
 
         victim.setGameMode(Minecraft.GameMode.ADVENTURE);
         DuelGameHandler.duelsGames.remove(victimData.duelsGame);
@@ -248,7 +283,7 @@ public class DuelsGame { //implements Runnable{
         DuelGameHandler.deleteWorld(duelLevel.dimension().toString().replaceAll("]", "").split(":")[2]);
     }
 
-    public static void death(@NotNull ServerPlayer victim, @Nullable DamageSource source){
+    public void death(@NotNull ServerPlayer victim, @Nullable DamageSource source){
         PlayerData victimData = PlayerDataManager.get(victim);
         if(source != null && source.getEntity() instanceof ServerPlayer attacker){
             PlayerData attackerData = PlayerDataManager.get(attacker);

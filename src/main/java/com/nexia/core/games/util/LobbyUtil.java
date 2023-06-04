@@ -110,15 +110,25 @@ public class LobbyUtil {
         // Duels shit
         player.addTag("duels");
         GamemodeHandler.removeQueue(minecraftPlayer, null, true);
-        DuelsGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
         com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(minecraftPlayer);
+        if(data.duelsGame != null) {
+            data.duelsGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
+        }
+
+        if(data.gameMode == DuelGameMode.SPECTATING){
+            GamemodeHandler.unspectatePlayer(minecraftPlayer, data.spectatingPlayer, false);
+        }
+
         data.gameMode = DuelGameMode.LOBBY;
         data.inDuel = false;
         data.inviteKit = "";
         data.inviteMap = "";
         data.isDead = false;
+        data.spectatingPlayer = null;
         data.invitingPlayer = null;
         data.inviting = false;
+        data.duelsGame = null;
+
 
 
         if (tp) {
@@ -199,14 +209,14 @@ public class LobbyUtil {
 
 
         if(game.equalsIgnoreCase("duels")){
-            LobbyUtil.leaveAllGames(minecraftPlayer, true);
+            LobbyUtil.leaveAllGames(minecraftPlayer, tp);
             if(message){
                 player.sendActionBarMessage(Component.text("You have joined §f☯ §c§lDuels §7\uD83E\uDE93"));
                 player.sendMessage(
                         ChatFormat.nexiaMessage()
                                 .append(Component.text("Duels has now moved here. (main hub)").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                 );
-                player.sendMessage(Component.text("Meaning you can now use /duel and /queue inside of the normal hub WITHOUT going to duels!").decoration(ChatFormat.bold, false));
+                player.sendMessage(Component.text("Meaning you can now use /duel, /queue and /spectate inside of the normal hub WITHOUT going to duels!").decoration(ChatFormat.bold, false));
             }
         }
 

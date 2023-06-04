@@ -3,6 +3,7 @@ package com.nexia.minigames.games.duels;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaAreas;
+import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.minecraft.core.Registry;
@@ -31,16 +32,20 @@ public class DuelGameHandler {
 
     public static List<DuelsGame> duelsGames = new ArrayList<>();
     public static void leave(ServerPlayer player) {
-        if (player.getLastDamageSource() != null) {
-            DuelsGame.death(player, player.getLastDamageSource());
+        PlayerData data = PlayerDataManager.get(player);
+        if (player.getLastDamageSource() != null && data.duelsGame != null) {
+            data.duelsGame.death(player, player.getLastDamageSource());
             return;
         }
-        PlayerData data = PlayerDataManager.get(player);
+        if(data.gameMode == DuelGameMode.SPECTATING) {
+            GamemodeHandler.unspectatePlayer(player, data.spectatingPlayer, false);
+        }
         data.inviting = false;
         data.inDuel = false;
         data.duelPlayer = null;
         removeQueue(player, data.gameMode.id, true);
         data.gameMode = DuelGameMode.LOBBY;
+        data.spectatingPlayer = null;
         data.duelsGame = null;
     }
 

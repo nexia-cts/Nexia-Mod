@@ -1,6 +1,7 @@
 package com.nexia.minigames.games.duels.gamemodes;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -13,6 +14,8 @@ import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.minecraft.Util;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -367,6 +370,97 @@ public class GamemodeHandler {
             DuelGameMode.HOE_ONLY_QUEUE.remove(minecraftPlayer);
         }
     }
+
+
+    public static void spectatePlayer(@NotNull ServerPlayer executor, @NotNull ServerPlayer player) {
+        Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor);
+        if(executor == player) {
+            factoryExecutor.sendMessage(Component.text("You may not spectate yourself!").color(ChatFormat.failColor));
+            return;
+        }
+
+        PlayerData playerData = PlayerDataManager.get(player);
+
+        if(!playerData.inDuel || playerData.duelsGame == null) {
+            factoryExecutor.sendMessage(Component.text("That player is not in a duel!").color(ChatFormat.failColor));
+            return;
+        }
+
+
+
+        PlayerData executorData = PlayerDataManager.get(executor);
+
+        if(executorData.gameMode == DuelGameMode.SPECTATING) {
+            unspectatePlayer(executor, player, false);
+        }
+
+        executor.teleportTo(player.getLevel(), player.getX(), player.getY(), player.getZ(), 0, 0);
+        factoryExecutor.setGameMode(Minecraft.GameMode.SPECTATOR);
+
+        DuelsGame duelsGame = playerData.duelsGame;
+
+        duelsGame.spectators.add(executor);
+        factoryExecutor.sendMessage(
+                ChatFormat.nexiaMessage()
+                        .append(Component.text("You are now spectating ")
+                                .color(ChatFormat.normalColor)
+                                .decoration(ChatFormat.bold, false)
+                                .append(Component.text(player.getScoreboardName())
+                                        .color(ChatFormat.brandColor1)
+                                        .decoration(ChatFormat.bold, true)
+                                )
+                        )
+        );
+
+        TextComponent spectateMSG = new TextComponent("§7§o(" + factoryExecutor.getRawName() + " started spectating)");
+
+        duelsGame.p1.sendMessage(spectateMSG, Util.NIL_UUID);
+        duelsGame.p2.sendMessage(spectateMSG, Util.NIL_UUID);
+
+        executorData.spectatingPlayer = player;
+        executorData.gameMode = DuelGameMode.SPECTATING;
+    }
+
+    public static void unspectatePlayer(@NotNull ServerPlayer executor, @Nullable ServerPlayer player, boolean teleport) {
+        PlayerData playerData = null;
+
+        if(player != null) {
+            playerData = PlayerDataManager.get(player);
+        }
+
+        DuelsGame duelsGame = null;
+
+        if(player != null && playerData.inDuel && playerData.duelsGame != null) {
+            duelsGame = playerData.duelsGame;
+        }
+
+        PlayerData executorData = PlayerDataManager.get(executor);
+        Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor);
+
+        if(duelsGame != null) {
+            duelsGame.spectators.remove(executor);
+            factoryExecutor.sendMessage(
+                    ChatFormat.nexiaMessage()
+                            .append(Component.text("You have stopped spectating ")
+                                    .color(ChatFormat.normalColor)
+                                    .decoration(ChatFormat.bold, false)
+                                    .append(Component.text(player.getScoreboardName())
+                                            .color(ChatFormat.brandColor1)
+                                            .decoration(ChatFormat.bold, true)
+                                    )
+                            )
+            );
+
+            TextComponent spectateMSG = new TextComponent("§7§o(" + factoryExecutor.getRawName() + " has stopped spectating)");
+
+            duelsGame.p1.sendMessage(spectateMSG, Util.NIL_UUID);
+            duelsGame.p2.sendMessage(spectateMSG, Util.NIL_UUID);
+        }
+        executorData.gameMode = DuelGameMode.LOBBY;
+        executorData.spectatingPlayer = null;
+        LobbyUtil.sendGame(executor, "duels", false, teleport);
+    }
+
 
     public static void joinGamemode(ServerPlayer invitor, ServerPlayer player, String stringGameMode, @Nullable String selectedmap, boolean silent){
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);

@@ -80,7 +80,7 @@ public class QueueGUI extends SimpleGui {
 
                 if(name.getString().substring(4).equalsIgnoreCase("Leave ALL Queues")) {
                     //PlayerUtil.getFactoryPlayer(player).runCommand("/queue LEAVE", 0, false);
-                    LobbyUtil.sendGame(this.player, "duels", false, false);
+                    LobbyUtil.leaveAllGames(this.player, false);
                     this.close();
                     return super.click(index, clickType, action);
                 }

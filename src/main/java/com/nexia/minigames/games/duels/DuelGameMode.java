@@ -61,6 +61,8 @@ public class DuelGameMode {
     public static final DuelGameMode FFA = new DuelGameMode("ffa", true, GameType.ADVENTURE);
 
     public static final DuelGameMode LOBBY = new DuelGameMode("lobby", true, GameType.ADVENTURE);
+
+    public static final DuelGameMode SPECTATING = new DuelGameMode("spectating", true, GameType.SPECTATOR);
     public DuelGameMode(String id, boolean hasRegen, GameType gameMode) {
         this.id = id;
         this.hasRegen = hasRegen;
