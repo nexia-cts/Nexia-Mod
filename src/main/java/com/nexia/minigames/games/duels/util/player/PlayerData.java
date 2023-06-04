@@ -18,9 +18,13 @@ public class PlayerData {
 
     public ServerPlayer invitingPlayer;
 
+    public ServerPlayer spectatingPlayer;
+
     public boolean isDead;
 
     public String inviteMap;
+
+    public DuelsGame duelsGame;
 
     public String inviteKit;
 
@@ -37,8 +41,9 @@ public class PlayerData {
         this.invitingPlayer = null;
         this.isDead = false;
         this.duelPlayer = null;
-        this.inviteKit = "";
+        this.spectatingPlayer = null;
         this.inviteMap = "";
+        this.inviteKit = "";
         this.duelsGame = null;
     }
 

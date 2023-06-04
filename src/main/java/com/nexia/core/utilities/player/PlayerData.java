@@ -5,7 +5,6 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.pos.EntityPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.Level;
 
 import java.time.LocalDateTime;

@@ -6,6 +6,7 @@ import com.nexia.core.utilities.player.PlayerUtil;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import net.kyori.adventure.text.Component;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
@@ -127,7 +128,7 @@ public class BwShop extends SimpleGui {
     }
 
     public static void sendFail(ServerPlayer player, String text) {
-        player.sendMessage(ChatFormat.formatFail(text), player.getUUID());
+        PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text(text).color(ChatFormat.failColor));
         playPurchaseSound(player, true);
     }
 

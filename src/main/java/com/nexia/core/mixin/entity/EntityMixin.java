@@ -37,7 +37,6 @@ public abstract class EntityMixin implements Nameable, CommandSource {
         double voidY = -32;
 
         if (instance.level instanceof ServerLevel) {
-            ServerLevel serverLevel = (ServerLevel)instance.level;
         }
 
         return instance.getY() + -64 - voidY;

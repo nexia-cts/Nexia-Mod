@@ -1,5 +1,6 @@
 package com.nexia.core.gui;
 
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
@@ -47,12 +48,12 @@ public class PrefixGUI extends SimpleGui {
             this.setSlot(airSlots, new ItemStack(Items.AIR));
             airSlots++;
         }
-        for(int i = 0; i < 8; i++){
+        for(int i = 0; i < 9; i++){
             if(slot == 17) {
                 slot = 19;
             }
 
-            if(PlayerUtil.hasPermission(player.createCommandSourceStack(), "nexia.prefix." + Main.config.ranks[i], 4) && PlayerUtil.hasTag(player, Main.config.ranks[i])){
+            if(PlayerUtil.hasPermission(player.createCommandSourceStack(), "nexia.prefix." + Main.config.ranks[i], 4) && player.getTags().contains(Main.config.ranks[i])){
                 ItemStack enchantedItem = new ItemStack(Items.NAME_TAG, 1);
                 enchantedItem.enchant(Enchantments.SHARPNESS, 1);
                 enchantedItem.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
@@ -64,7 +65,7 @@ public class PrefixGUI extends SimpleGui {
                 changedItem.setHoverName(new TextComponent(Main.config.ranks[i]).withStyle(ChatFormatting.WHITE));
                 this.setSlot(slot, changedItem);
                 slot++;
-            } else if(PlayerUtil.hasTag(player, Main.config.ranks[i])) {
+            } else if(player.getTags().contains(Main.config.ranks[i])) {
                 ItemStack enchantedItem = new ItemStack(Items.NAME_TAG, 1);
                 enchantedItem.enchant(Enchantments.SHARPNESS, 1);
                 enchantedItem.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
@@ -82,13 +83,21 @@ public class PrefixGUI extends SimpleGui {
             Component name = itemStack.getHoverName();
 
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
-                this.player.sendMessage(ChatFormat.format("{b1}Your prefix has been set to: {b2}{b}{}", name.getString()), Util.NIL_UUID);
 
-                for(int i = 0; i < 8; i++){
-                    this.player.removeTag(Main.config.ranks[i]);
+                Player player = PlayerUtil.getFactoryPlayer(this.player);
+
+                player.sendMessage(
+                        ChatFormat.nexiaMessage()
+                                        .append(net.kyori.adventure.text.Component.text("Your prefix has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                .append(net.kyori.adventure.text.Component.text(name.getString()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                                        .append(net.kyori.adventure.text.Component.text(".").decoration(ChatFormat.bold, false))
+                );
+
+                for(int i = 0; i < 9; i++){
+                    player.removeTag(Main.config.ranks[i]);
                 }
 
-                this.player.addTag(name.getString().toLowerCase());
+                player.addTag(name.getString().toLowerCase());
                 this.setMainLayout(this.player);
             }
 

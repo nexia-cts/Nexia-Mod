@@ -17,11 +17,10 @@ import com.nexia.minigames.games.bedwars.shop.BwShopUpgradeables;
 import com.nexia.minigames.games.bedwars.upgrades.BwUpgradeShop;
 import com.nexia.minigames.games.bedwars.util.BwScoreboard;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
-import net.minecraft.Util;
+import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
 import net.minecraft.network.protocol.game.ServerboundInteractPacket;
 import net.minecraft.network.protocol.game.ServerboundTeleportToEntityPacket;
@@ -52,12 +51,14 @@ public class BwPlayerEvents {
 
     public static void tryToJoin(ServerPlayer player, boolean throughEvent) {
 
+        com.combatreforged.factory.api.world.entity.player.Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
+
         if (BwUtil.isInBedWars(player)) {
-            player.sendMessage(ChatFormat.formatFail("You are already in the game."), Util.NIL_UUID);
+            factoryPlayer.sendMessage(Component.text("You are already in the game.").color(ChatFormat.failColor));
             return;
         }
         if (BwGame.queueList.size() >= BwGame.maxPlayerCount) {
-            player.sendMessage(ChatFormat.formatFail("The game is full."), Util.NIL_UUID);
+            factoryPlayer.sendMessage(Component.text("The game is full.").color(ChatFormat.failColor));
             return;
         }
         if (BwGame.isGameActive) {
@@ -69,18 +70,20 @@ public class BwPlayerEvents {
     }
 
     public static boolean spectatorTeleport(ServerPlayer player, ServerboundTeleportToEntityPacket packet) {
+
+        com.combatreforged.factory.api.world.entity.player.Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
+
         if (BwUtil.isBedWarsPlayer(player)) {
-            player.sendMessage(ChatFormat.formatFail("You can't spectate others while in the game."), Util.NIL_UUID);
+            factoryPlayer.sendMessage(Component.text("You can't spectate others while in the game.").color(ChatFormat.failColor));
             return false;
         }
 
         for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
             Entity entity = packet.getEntity(serverLevel);
-            if (!(entity instanceof ServerPlayer)) continue;
-            ServerPlayer target = (ServerPlayer) entity;
+            if (!(entity instanceof ServerPlayer target)) continue;
 
             if (!BwUtil.isBedWarsPlayer(target)) {
-                player.sendMessage(ChatFormat.formatFail("You can't spectate players in other games."), Util.NIL_UUID);
+                factoryPlayer.sendMessage(Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
                 return false;
             }
         }

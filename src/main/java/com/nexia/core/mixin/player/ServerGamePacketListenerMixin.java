@@ -1,10 +1,12 @@
 package com.nexia.core.mixin.player;
 
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.misc.EventUtil;
 import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
@@ -12,6 +14,7 @@ import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.oitc.OitcGame;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -104,6 +107,12 @@ public class ServerGamePacketListenerMixin {
 
     }
 
+
+    @Inject(at = @At("INVOKE"), method = "onDisconnect")
+    private void getLeavePlayer(Component component, CallbackInfo ci) {
+        ServerTime.leavePlayer = player;
+    }
+
     @Inject(method = "handlePlayerAction", cancellable = true, at = @At("HEAD"))
     private void handlePlayerAction(ServerboundPlayerActionPacket actionPacket, CallbackInfo ci) {
         ServerboundPlayerActionPacket.Action action = actionPacket.getAction();
@@ -128,7 +137,7 @@ public class ServerGamePacketListenerMixin {
             }
         }
 
-        if(PlayerDataManager.get(player).gameMode == PlayerGameMode.DUELS){
+        if(PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY){
             ci.cancel();
             return;
         }
