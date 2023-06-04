@@ -24,63 +24,50 @@ public class DuelCommand {
         dispatcher.register(Commands.literal("duel")
                 .requires(commandSourceStack -> {
                     try {
-                        com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager
-                                .get(commandSourceStack.getPlayerOrException());
+                        com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException());
                         PlayerData playerData1 = PlayerDataManager.get(commandSourceStack.getPlayerOrException());
-                        return playerData.gameMode == DuelGameMode.LOBBY
-                                && playerData1.gameMode == PlayerGameMode.LOBBY;
+                        return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.DUELS;
                     } catch (Exception ignored) {
                     }
                     return false;
                 })
-                .then(Commands.argument("player", EntityArgument.player())
-                        .executes(context -> DuelGUI.openDuelGui(context.getSource().getPlayerOrException(),
-                                EntityArgument.getPlayer(context, "player")))
+                .then(Commands.argument("player", EntityArgument.player()).executes(context -> {
+                    ServerPlayer player = EntityArgument.getPlayer(context, "player");
+                    ServerPlayer executor = context.getSource().getPlayerOrException();
+                    if(player != executor){
+                        DuelGUI.openDuelGui(executor, player);
+                    } else {
+                        context.getSource().sendFailure(ChatFormat.formatFail("You cannot duel yourself!"));
+                    }
+                    return 1;
+                })
                         .then(Commands.argument("gamemode", StringArgumentType.string())
-                                .suggests(((context, builder) -> SharedSuggestionProvider.suggest((DuelGameMode.duels),
-                                        builder)))
-                                .executes(context -> DuelCommand.challenge(context,
-                                        EntityArgument.getPlayer(context, "player"),
-                                        StringArgumentType.getString(context, "gamemode"), null))
+                                .suggests(((context, builder) -> SharedSuggestionProvider.suggest((DuelGameMode.duels), builder)))
+                                .executes(context -> DuelCommand.challenge(context, EntityArgument.getPlayer(context, "player"), StringArgumentType.getString(context, "gamemode"), null))
                                 .then(Commands.argument("map", StringArgumentType.string())
-                                        .suggests(((context, builder) -> SharedSuggestionProvider
-                                                .suggest((Main.config.duelsMaps), builder)))
-                                        .executes(context -> DuelCommand.challenge(context,
-                                                EntityArgument.getPlayer(context, "player"),
-                                                StringArgumentType.getString(context, "gamemode"),
-                                                StringArgumentType.getString(context, "map")))))));
+                                        .suggests(((context, builder) -> SharedSuggestionProvider.suggest((Main.config.duelsMaps), builder)))
+                                        .executes(context -> DuelCommand.challenge(context, EntityArgument.getPlayer(context, "player"), StringArgumentType.getString(context, "gamemode"), StringArgumentType.getString(context, "map")))
+        ))));
         dispatcher.register(Commands.literal("challenge")
                 .requires(commandSourceStack -> {
                     try {
-                        com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager
-                                .get(commandSourceStack.getPlayerOrException());
+                        com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException());
                         PlayerData playerData1 = PlayerDataManager.get(commandSourceStack.getPlayerOrException());
-                        return playerData.gameMode == DuelGameMode.LOBBY
-                                && playerData1.gameMode == PlayerGameMode.LOBBY;
-                    } catch (Exception ignored) {
-                    }
+                        return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.DUELS;
+                    } catch (Exception ignored) {}
                     return false;
                 })
                 .then(Commands.argument("player", EntityArgument.player())
-                        .executes(context -> DuelGUI.openDuelGui(context.getSource().getPlayerOrException(),
-                                EntityArgument.getPlayer(context, "player")))
                         .then(Commands.argument("gamemode", StringArgumentType.string())
-                                .suggests(((context, builder) -> SharedSuggestionProvider.suggest((DuelGameMode.duels),
-                                        builder)))
-                                .executes(context -> DuelCommand.challenge(context,
-                                        EntityArgument.getPlayer(context, "player"),
-                                        StringArgumentType.getString(context, "gamemode"), null))
+                                .suggests(((context, builder) -> SharedSuggestionProvider.suggest((DuelGameMode.duels), builder)))
+                                .executes(context -> DuelCommand.challenge(context, EntityArgument.getPlayer(context, "player"), StringArgumentType.getString(context, "gamemode"), null))
                                 .then(Commands.argument("map", StringArgumentType.string())
-                                        .suggests(((context, builder) -> SharedSuggestionProvider
-                                                .suggest((Main.config.duelsMaps), builder)))
-                                        .executes(context -> DuelCommand.challenge(context,
-                                                EntityArgument.getPlayer(context, "player"),
-                                                StringArgumentType.getString(context, "gamemode"),
-                                                StringArgumentType.getString(context, "map")))))));
+                                        .suggests(((context, builder) -> SharedSuggestionProvider.suggest((Main.config.duelsMaps), builder)))
+                                        .executes(context -> DuelCommand.challenge(context, EntityArgument.getPlayer(context, "player"), StringArgumentType.getString(context, "gamemode"), StringArgumentType.getString(context, "map")))
+        ))));
     }
 
-    public static int challenge(CommandContext<CommandSourceStack> context, ServerPlayer player, String gameMode,
-            @Nullable String map) throws CommandSyntaxException {
+    public static int challenge(CommandContext<CommandSourceStack> context, ServerPlayer player, String gameMode, @Nullable String map) throws CommandSyntaxException {
         ServerPlayer executer = context.getSource().getPlayerOrException();
         GamemodeHandler.challengePlayer(executer, player, gameMode, map);
         return 1;

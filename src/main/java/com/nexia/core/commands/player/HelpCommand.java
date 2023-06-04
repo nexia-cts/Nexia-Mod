@@ -2,12 +2,10 @@ package com.nexia.core.commands.player;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.player.PlayerUtil;
-import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.TextComponent;
 
 public class HelpCommand {
 
@@ -29,27 +27,20 @@ public class HelpCommand {
             "stats" + commandSeparator + "shows you your stats"
     };
 
-    public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    public static int run(CommandContext<CommandSourceStack> context) {
 
-        Component message = ChatFormat.separatorLine("Commands");
+        String message = ChatFormat.separatorLine("Commands");
 
-        for (String command : commands) {
-            String[] commandInfo = command.split(commandSeparator);
+        for (int i = 0; i < commands.length; i++) {
+            String[] commandInfo = commands[i].split(commandSeparator);
             if (commandInfo.length < 2) continue;
-
-            message = message.append(Component.text("\n/" + commandInfo[0])
-                    .color(ChatFormat.brandColor1)
-                    .decoration(ChatFormat.bold, false)
-                    .decoration(ChatFormat.strikeThrough, false)
-                    .append(Component.text(" | ").color(ChatFormat.lineColor).decoration(ChatFormat.bold, false).decoration(ChatFormat.strikeThrough, false))
-                    .append(Component.text(commandInfo[1]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false).decoration(ChatFormat.strikeThrough, false)));
-
-            //message += "\n" + ChatFormat.brandColor1 + "/" + commandInfo[0] + ChatFormat.lineColor + " | " + ChatFormat.brandColor2 + commandInfo[1];
+            message += "\n" + ChatFormat.brandColor1 + "/" + commandInfo[0] + ChatFormat.lineColor + " | " + ChatFormat.brandColor2 + commandInfo[1];
         }
 
-        message = message.append(Component.text("\n").append(ChatFormat.separatorLine(null)));
+        message += "\n" + ChatFormat.separatorLine(null);
 
-        PlayerUtil.getFactoryPlayer(context.getSource().getPlayerOrException()).sendMessage(message);
+        CommandSourceStack player = context.getSource();
+        player.sendSuccess(new TextComponent(message), false);
 
         return 1;
     }

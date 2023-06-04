@@ -21,21 +21,16 @@ public class QueueCommand {
             QueueGUI.openQueueGUI(context.getSource().getPlayerOrException());
             return 1;
         }).requires(commandSourceStack -> {
-            try {
-                com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager
-                        .get(commandSourceStack.getPlayerOrException());
-                PlayerData playerData1 = PlayerDataManager.get(commandSourceStack.getPlayerOrException());
-                return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
-            } catch (Exception ignored) {
-            }
-            return false;
-        })
-                .executes(context -> QueueGUI.openQueueGUI(context.getSource().getPlayerOrException()))
-                .then(Commands.argument("gamemode", StringArgumentType.string())
-                        .suggests(
-                                ((context, builder) -> SharedSuggestionProvider.suggest((DuelGameMode.duels), builder)))
-                        .executes(context -> QueueCommand.queue(context,
-                                StringArgumentType.getString(context, "gamemode")))));
+                    try {
+                        com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException());
+                        PlayerData playerData1 = PlayerDataManager.get(commandSourceStack.getPlayerOrException());
+                        return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.DUELS;
+                    } catch (Exception ignored) {}
+                    return false;
+                }).then(Commands.argument("gamemode", StringArgumentType.string())
+                        .suggests(((context, builder) -> SharedSuggestionProvider.suggest((DuelGameMode.duels), builder)))
+                        .executes(context -> QueueCommand.queue(context, StringArgumentType.getString(context, "gamemode"))))
+        );
     }
 
     public static int queue(CommandContext<CommandSourceStack> context, String gameMode) throws CommandSyntaxException {

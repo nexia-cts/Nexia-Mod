@@ -9,15 +9,14 @@
     "NotCoded"
   ],
   "contributors": [
-    "Shinkume",
-    "betterclient"
+    "Shinkume"
   ],
   "contact": {
     "homepage": "https://nexia.fun/",
-    "sources": "https://github.com/nexia-cts/Nexia-Mod"
+    "sources": "https://github.com/not-coded/Nexia-Mod"
   },
 
-  "license": "LGPL-3.0",
+  "license": "CC0-1.0",
   "icon": "assets/nexia/icon.png",
 
   "environment": "server",
@@ -25,21 +24,17 @@
     "main": [
       "com.nexia.core.Main",
       "com.nexia.ffa.Main",
-      "com.nexia.minigames.Main",
-      "com.nexia.discord.Main"
-    ],
-    "factory": [
-      "com.nexia.core.Main"
+      "com.nexia.minigames.Main"
     ]
   },
   "mixins": [
-    "core.mixins.json"
+    "core.mixins.json",
+    "ffa.mixins.json"
   ],
 
   "depends": {
     "fabricloader": ">=0.7.4",
     "minecraft": "1.16.x",
-    "fabric": "*",
-    "factory-api": "*"
+    "fabric": "*"
   }
 }

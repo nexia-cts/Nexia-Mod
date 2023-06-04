@@ -2,7 +2,6 @@ package com.nexia.minigames.games.bedwars.players;
 
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
@@ -267,7 +266,7 @@ public class BwTeam {
         if (breakerTeam != null) breakerColor = breakerTeam.textColor;
 
         PlayerUtil.broadcast(BwPlayers.getViewers(), textColor + displayName + " bed" +
-                LegacyChatFormat.chatColor2 + " has been destroyed by " + breakerColor + breaker.getScoreboardName());
+                ChatFormat.chatColor2 + " has been destroyed by " + breakerColor + breaker.getScoreboardName());
         PlayerUtil.broadcastTitle(players, "\247cBed Destroyed", "");
 
         BwScoreboard.updateScoreboard();

@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.bedwars.upgrades;
 
-import com.nexia.core.utilities.chat.LegacyChatFormat;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.RomanNumbers;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
@@ -77,8 +77,8 @@ public class BwUpgradeShop extends SimpleGui {
         return super.click(index, clickType, action);
     }
 
-    private void purchaseUpgrade(ServerPlayer minecraftPlayer, ItemStack upgradeItem) {
-        BwTeam team = BwTeam.getPlayerTeam(minecraftPlayer);
+    private void purchaseUpgrade(ServerPlayer player, ItemStack upgradeItem) {
+        BwTeam team = BwTeam.getPlayerTeam(player);
         if (team == null) return;
 
         CompoundTag tag = upgradeItem.getOrCreateTag();
@@ -87,21 +87,21 @@ public class BwUpgradeShop extends SimpleGui {
         if (upgrade == null) return;
 
         if (upgrade.level >= upgrade.costs.length) {
-            BwShop.sendFail(minecraftPlayer, "You have reached the maximum level of this upgrade");
+            BwShop.sendFail(player, "You have reached the maximum level of this upgrade");
             return;
         }
-        if (minecraftPlayer.inventory.countItem(Items.DIAMOND) < upgrade.costs[upgrade.level]) {
-            BwShop.sendFail(minecraftPlayer, "You can't afford this upgrade");
+        if (player.inventory.countItem(Items.DIAMOND) < upgrade.costs[upgrade.level]) {
+            BwShop.sendFail(player, "You can't afford this upgrade");
             return;
         }
 
-        PlayerUtil.removeItem(minecraftPlayer, Items.DIAMOND, upgrade.costs[upgrade.level]);
+        PlayerUtil.removeItem(player, Items.DIAMOND, upgrade.costs[upgrade.level]);
         upgrade.level++;
         this.resetLayout(team);
-        BwShop.playPurchaseSound(minecraftPlayer, false);
-        PlayerUtil.broadcast(team.players, LegacyChatFormat.brandColor1 + minecraftPlayer.getScoreboardName() +
-                LegacyChatFormat.brandColor2 + " has purchased " +
-                LegacyChatFormat.brandColor1 + LegacyChatFormat.removeColors(upgradeItem.getHoverName().getString()) +
+        BwShop.playPurchaseSound(player, false);
+        PlayerUtil.broadcast(team.players, ChatFormat.brandColor1 + player.getScoreboardName() +
+                ChatFormat.brandColor2 + " has purchased " +
+                ChatFormat.brandColor1 + ChatFormat.removeColors(upgradeItem.getHoverName().getString()) +
                 " " + RomanNumbers.intToRoman(upgrade.level));
     }
 
@@ -128,9 +128,9 @@ public class BwUpgradeShop extends SimpleGui {
         trap.bought = true;
         this.resetLayout(team);
         BwShop.playPurchaseSound(player, false);
-        PlayerUtil.broadcast(team.players, LegacyChatFormat.brandColor1 + player.getScoreboardName() +
-                LegacyChatFormat.brandColor2 + " has purchased " +
-                LegacyChatFormat.brandColor1 + LegacyChatFormat.removeColors(trapItem.getHoverName().getString()));
+        PlayerUtil.broadcast(team.players, ChatFormat.brandColor1 + player.getScoreboardName() +
+                ChatFormat.brandColor2 + " has purchased " +
+                ChatFormat.brandColor1 + ChatFormat.removeColors(trapItem.getHoverName().getString()));
     }
 
     static int rowColumnToGuiSlot(int row, int column) {

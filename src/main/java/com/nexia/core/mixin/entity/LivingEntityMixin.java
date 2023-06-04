@@ -22,7 +22,7 @@ public class LivingEntityMixin {
         if((Object)this instanceof ServerPlayer){
             ServerPlayer player = (ServerPlayer)(Object)this;
 
-            if(PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) {
+            if(PlayerDataManager.get(player).gameMode == PlayerGameMode.DUELS) {
                 return value;
             }
         }

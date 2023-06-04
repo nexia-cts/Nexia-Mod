@@ -2,7 +2,6 @@ package com.nexia.minigames.games.bedwars;
 
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.misc.NxFileUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.BlockVec3;
@@ -97,8 +96,8 @@ public class BwGame {
 
             if (timeLeft % 20 == 0) {
                 PlayerUtil.sendTitle(player, "\247cYou died!",
-                        LegacyChatFormat.brandColor1 + "Respawning in " +
-                                LegacyChatFormat.brandColor2 + timeLeft / 20 + LegacyChatFormat.brandColor1 + "...",
+                        ChatFormat.brandColor1 + "Respawning in " +
+                                ChatFormat.brandColor2 + timeLeft / 20 + ChatFormat.brandColor1 + "...",
                         0, 20, 10);
             }
             respawningList.replace(player, timeLeft - 1);
@@ -140,8 +139,8 @@ public class BwGame {
             queueCountdown = queueWaitTime;
             startBedWars();
         } else if (announcedQueueSeconds.contains(queueCountdown)) {
-            PlayerUtil.broadcast(queueList, LegacyChatFormat.chatColor2 + "The game will start in " +
-                    LegacyChatFormat.brandColor2 + queueCountdown + LegacyChatFormat.chatColor2 + " seconds.");
+            PlayerUtil.broadcast(queueList, ChatFormat.chatColor2 + "The game will start in " +
+                    ChatFormat.brandColor2 + queueCountdown + ChatFormat.chatColor2 + " seconds.");
         }
         if (queueCountdown > 0 && queueCountdown <= 3) {
             PlayerUtil.broadcastSound(queueList, SoundEvents.NOTE_BLOCK_PLING, SoundSource.MASTER, 0.05f, 1f);
@@ -223,8 +222,8 @@ public class BwGame {
                 player.getEnderChestInventory().clearContent();
                 player.inventory.clearContent();
                 BwPlayers.sendToSpawn(player);
-                player.sendMessage(new TextComponent(LegacyChatFormat.chatColor2 + "The game has started. " +
-                        LegacyChatFormat.brandColor2 + "Good luck" + LegacyChatFormat.chatColor2 + "!"), Util.NIL_UUID);
+                player.sendMessage(new TextComponent(ChatFormat.chatColor2 + "The game has started. " +
+                        ChatFormat.brandColor2 + "Good luck" + ChatFormat.chatColor2 + "!"), Util.NIL_UUID);
                 PlayerUtil.sendTitle(player,
                         "You're " + team.textColor + team.displayName + "\247f!", "", 0, 60, 20);
                 player.removeTag(LobbyUtil.NO_DAMAGE_TAG);

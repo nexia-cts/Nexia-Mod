@@ -23,7 +23,8 @@ public class DuelsDeleteWorldsCommand {
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 
-        for (ServerLevel level : ServerTime.minecraftServer.getAllLevels()) {
+
+        for(ServerLevel level : ServerTime.minecraftServer.getAllLevels()) {
             String[] split = level.dimension().toString().replaceAll("]", "").split(":");
             if (split[1].toLowerCase().contains("duels") && !split[2].toLowerCase().contains("hub")) {
                 DuelGameHandler.deleteWorld(split[2]);
