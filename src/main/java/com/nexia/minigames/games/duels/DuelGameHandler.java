@@ -84,11 +84,17 @@ public class DuelGameHandler {
 
         DuelGameHandler.duelsGames.clear();
 
+        List<String> toDelete = new ArrayList<>();
+
         for (ServerLevel level : ServerTime.minecraftServer.getAllLevels()) {
             String[] split = level.dimension().toString().replaceAll("]", "").split(":");
             if (split[1].toLowerCase().contains("duels") && !split[2].toLowerCase().contains("hub")) {
-                DuelGameHandler.deleteWorld(split[2]);
+                toDelete.add(split[2]);
             }
+        }
+
+        for (String deletion : toDelete) {
+            deleteWorld(deletion);
         }
     }
 
@@ -179,7 +185,7 @@ public class DuelGameHandler {
     }
 
     public static void deleteWorld(String id) {
-        RuntimeWorldHandle worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", id)).location(), null);
+        RuntimeWorldHandle worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", id)).location(), new RuntimeWorldConfig());
         worldHandle.delete();
     }
 }
