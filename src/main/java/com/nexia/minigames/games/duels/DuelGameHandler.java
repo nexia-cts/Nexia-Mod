@@ -1,5 +1,6 @@
 package com.nexia.minigames.games.duels;
 
+import com.nexia.core.Main;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaAreas;
@@ -79,14 +80,24 @@ public class DuelGameHandler {
         DuelGameMode.OG_VANILLA_QUEUE.clear();
         DuelGameMode.SMP_QUEUE.clear();
         DuelGameMode.UHC_SHIELD_QUEUE.clear();
+        DuelGameMode.HSG_QUEUE.clear();
+        DuelGameMode.SKYWARS_QUEUE.clear();
+        DuelGameMode.CLASSIC_CRYSTAL_QUEUE.clear();
 
         DuelGameHandler.duelsGames.clear();
 
+
+        List<String> toDelete = new ArrayList<>();
+
         for (ServerLevel level : ServerTime.minecraftServer.getAllLevels()) {
             String[] split = level.dimension().toString().replaceAll("]", "").split(":");
-            if (split[1].toLowerCase().contains("duels") && !split[2].toLowerCase().contains("hub")) {
-                DuelGameHandler.deleteWorld(split[2]);
+            if (split[1].toLowerCase().contains("duels")) {
+                toDelete.add(split[2]);
             }
+        }
+
+        for (String deletion : toDelete) {
+            deleteWorld(deletion);
         }
     }
 
@@ -177,7 +188,13 @@ public class DuelGameHandler {
     }
 
     public static void deleteWorld(String id) {
-        RuntimeWorldHandle worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", id)).location(), null);
+        RuntimeWorldHandle worldHandle;
+        try {
+            worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", id)).location(), null);
+        } catch (Exception ignored) {
+            Main.logger.error("Error occurred while deleting world: duels:" + id);
+            return;
+        }
         worldHandle.delete();
     }
 }

@@ -16,7 +16,7 @@ public class DuelGameMode {
 
     public static ArrayList<ItemStack> duelsMaps = new ArrayList<>();
     public static ArrayList<ItemStack> duelsItems = new ArrayList<>();
-    public static String[] duels = {"AXE", "SWORD_ONLY", "SHIELD", "POT", "NETH_POT", "OG_VANILLA", "SMP", "TRIDENT_ONLY", "HOE_ONLY", "FFA", "BOW_ONLY", "UHC", "VANILLA", "UHC_SHIELD"};
+    public static String[] duels = {"AXE", "SWORD_ONLY", "SHIELD", "POT", "NETH_POT", "OG_VANILLA", "SMP", "TRIDENT_ONLY", "HOE_ONLY", "FFA", "BOW_ONLY", "UHC", "VANILLA", "UHC_SHIELD", "HSG", "SKYWARS", "CLASSIC_CRYSTAL"};
 
     public static ArrayList<ServerPlayer> AXE_QUEUE = new ArrayList<>();
     public static final DuelGameMode AXE = new DuelGameMode("axe", true, GameType.ADVENTURE);
@@ -51,6 +51,15 @@ public class DuelGameMode {
     public static ArrayList<ServerPlayer> UHC_SHIELD_QUEUE = new ArrayList<>();
     public static final DuelGameMode UHC_SHIELD = new DuelGameMode("uhc_shield", false, GameType.SURVIVAL);
 
+    public static ArrayList<ServerPlayer> HSG_QUEUE = new ArrayList<>();
+    public static final DuelGameMode HSG = new DuelGameMode("hsg", true, GameType.SURVIVAL);
+
+    public static ArrayList<ServerPlayer> SKYWARS_QUEUE = new ArrayList<>();
+    public static final DuelGameMode SKYWARS = new DuelGameMode("skywars", true, GameType.SURVIVAL);
+
+    public static ArrayList<ServerPlayer> CLASSIC_CRYSTAL_QUEUE = new ArrayList<>();
+    public static final DuelGameMode CLASSIC_CRYSTAL = new DuelGameMode("classic_crystal", true, GameType.SURVIVAL);
+
     public static ArrayList<ServerPlayer> SMP_QUEUE = new ArrayList<>();
     public static final DuelGameMode SMP = new DuelGameMode("smp", true, GameType.SURVIVAL);
 
@@ -74,7 +83,7 @@ public class DuelGameMode {
         duelsMaps.add(new ItemStack(Items.NETHERITE_BLOCK)); // Neth Flat
         duelsMaps.add(new ItemStack(Items.GRASS_BLOCK)); // Plains
 
-        duelsItems.add(new ItemStack(Items.DIAMOND_AXE)); // AXE
+        duelsItems.add(new ItemStack(Items.IRON_AXE)); // AXE
         duelsItems.add(new ItemStack(Items.DIAMOND_SWORD)); // SWORD_ONLY
         duelsItems.add(new ItemStack(Items.SHIELD)); // SHIELD
         duelsItems.add(new ItemStack(Items.SPLASH_POTION)); // POT
@@ -86,7 +95,10 @@ public class DuelGameMode {
         duelsItems.add(new ItemStack(Items.NETHERITE_SWORD)); // FFA
         duelsItems.add(new ItemStack(Items.BOW)); // BOW_ONLY
         duelsItems.add(new ItemStack(Items.GOLDEN_APPLE)); // UHC
-        duelsItems.add(new ItemStack(Items.END_CRYSTAL)); // VANILLA
+        duelsItems.add(new ItemStack(Items.RESPAWN_ANCHOR)); // VANILLA
         duelsItems.add(new ItemStack(Items.GOLDEN_AXE)); // UHC_SHIELD
+        duelsItems.add(new ItemStack(Items.TURTLE_HELMET)); // HSG
+        duelsItems.add(new ItemStack(Items.GRASS_BLOCK)); // SKYWARS
+        duelsItems.add(new ItemStack(Items.END_CRYSTAL)); // CLASSIC_CRYSTAL
     }
 }

@@ -24,7 +24,7 @@ public class QueueGUI extends SimpleGui {
     }
 
     private void fillEmptySlots(ItemStack itemStack){
-        for(int i = 0; i < 36; i++){
+        for(int i = 0; i < 45; i++){
             this.setSlot(i, itemStack);
         }
     }
@@ -35,9 +35,12 @@ public class QueueGUI extends SimpleGui {
         fillEmptySlots(emptySlot);
         int slot = 10;
         int airSlots = 10;
-        for(int air = 0; air < 14; air++){
+        for(int air = 0; air < 21; air++){
             if(airSlots == 17) {
                 airSlots = 19;
+            }
+            if(airSlots == 26) {
+                airSlots = 28;
             }
             this.setSlot(airSlots, new ItemStack(Items.AIR));
             airSlots++;
@@ -47,6 +50,9 @@ public class QueueGUI extends SimpleGui {
         for(String duel : DuelGameMode.duels){
             if(slot == 17) {
                 slot = 19;
+            }
+            if(slot == 26) {
+                slot = 28;
             }
 
             item = DuelGameMode.duelsItems.get(i1);
@@ -67,7 +73,7 @@ public class QueueGUI extends SimpleGui {
             slot++;
             i1++;
         }
-        this.setSlot(31, new ItemStack(Items.BARRIER).setHoverName(new TextComponent("§c§lLeave ALL Queues")));
+        this.setSlot(40, new ItemStack(Items.BARRIER).setHoverName(new TextComponent("§c§lLeave ALL Queues")));
     }
 
     public boolean click(int index, ClickType clickType, net.minecraft.world.inventory.ClickType action){
@@ -80,7 +86,7 @@ public class QueueGUI extends SimpleGui {
 
                 if(name.getString().substring(4).equalsIgnoreCase("Leave ALL Queues")) {
                     //PlayerUtil.getFactoryPlayer(player).runCommand("/queue LEAVE", 0, false);
-                    LobbyUtil.leaveAllGames(this.player, false);
+                    LobbyUtil.leaveAllGames(this.player, true);
                     this.close();
                     return super.click(index, clickType, action);
                 }
@@ -101,7 +107,7 @@ public class QueueGUI extends SimpleGui {
         return super.click(index, clickType, action);
     }
     public static int openQueueGUI(ServerPlayer player) {
-        QueueGUI shop = new QueueGUI(MenuType.GENERIC_9x4, player, false);
+        QueueGUI shop = new QueueGUI(MenuType.GENERIC_9x5, player, false);
         shop.setTitle(title);
         shop.setMainLayout();
         shop.open();

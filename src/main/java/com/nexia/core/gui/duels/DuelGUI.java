@@ -26,7 +26,7 @@ public class DuelGUI extends SimpleGui {
     }
 
     private void fillEmptySlots(ItemStack itemStack){
-        for(int i = 0; i < 36; i++){
+        for(int i = 0; i < 45; i++){
             this.setSlot(i, itemStack);
         }
     }
@@ -38,9 +38,12 @@ public class DuelGUI extends SimpleGui {
         fillEmptySlots(emptySlot);
         int slot = 10;
         int airSlots = 10;
-        for(int air = 0; air < 14; air++){
+        for(int air = 0; air < 17; air++){
             if(airSlots == 17) {
                 airSlots = 19;
+            }
+            if(airSlots == 26) {
+                airSlots = 28;
             }
             this.setSlot(airSlots, new ItemStack(Items.AIR));
             airSlots++;
@@ -62,7 +65,7 @@ public class DuelGUI extends SimpleGui {
         fillEmptySlots(emptySlot);
         int slot = 10;
         int airSlots = 10;
-        for(int air = 0; air < 14; air++){
+        for(int air = 0; air < 21; air++){
             if(airSlots == 17) {
                 airSlots = 19;
             }
@@ -74,6 +77,9 @@ public class DuelGUI extends SimpleGui {
         for(String duel : DuelGameMode.duels){
             if(slot == 17) {
                 slot = 19;
+            }
+            if(slot == 26) {
+                slot = 28;
             }
 
             this.setSlot(slot, DuelGameMode.duelsItems.get(i1).setHoverName(new TextComponent("§f" + duel.toUpperCase().replaceAll("_", " "))));
@@ -102,7 +108,7 @@ public class DuelGUI extends SimpleGui {
         return super.click(index, clickType, action);
     }
     public static int openDuelGui(ServerPlayer player, ServerPlayer other) {
-        DuelGUI shop = new DuelGUI(MenuType.GENERIC_9x4, player, false);
+        DuelGUI shop = new DuelGUI(MenuType.GENERIC_9x5, player, false);
         shop.setTitle(title);
         shop.setMainLayout(other);
         shop.open();

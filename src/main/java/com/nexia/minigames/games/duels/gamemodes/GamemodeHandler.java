@@ -53,6 +53,18 @@ public class GamemodeHandler {
             return DuelGameMode.UHC_SHIELD;
         }
 
+        if(gameMode.equalsIgnoreCase("hsg")){
+            return DuelGameMode.HSG;
+        }
+
+        if(gameMode.equalsIgnoreCase("skywars")){
+            return DuelGameMode.SKYWARS;
+        }
+
+        if(gameMode.equalsIgnoreCase("classic_crystal")){
+            return DuelGameMode.CLASSIC_CRYSTAL;
+        }
+
         if(gameMode.equalsIgnoreCase("vanilla")){
             return DuelGameMode.VANILLA;
         }
@@ -113,6 +125,18 @@ public class GamemodeHandler {
 
         if(gameMode.equals(DuelGameMode.OG_VANILLA)){
             return DuelGameMode.OG_VANILLA_QUEUE;
+        }
+
+        if(gameMode.equals(DuelGameMode.HSG)){
+            return DuelGameMode.HSG_QUEUE;
+        }
+
+        if(gameMode.equals(DuelGameMode.SKYWARS)){
+            return DuelGameMode.SKYWARS_QUEUE;
+        }
+
+        if(gameMode.equals(DuelGameMode.CLASSIC_CRYSTAL)){
+            return DuelGameMode.CLASSIC_CRYSTAL_QUEUE;
         }
 
         if(gameMode.equals(DuelGameMode.UHC_SHIELD)){
@@ -258,6 +282,27 @@ public class GamemodeHandler {
             }
         }
 
+        if(gameMode == DuelGameMode.HSG){
+            DuelGameMode.HSG_QUEUE.add(minecraftPlayer);
+            if(DuelGameMode.HSG_QUEUE.size() >= 2){
+                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.HSG_QUEUE.get(0), stringGameMode, null,false);
+            }
+        }
+
+        if(gameMode == DuelGameMode.SKYWARS){
+            DuelGameMode.SKYWARS_QUEUE.add(minecraftPlayer);
+            if(DuelGameMode.SKYWARS_QUEUE.size() >= 2){
+                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.SKYWARS_QUEUE.get(0), stringGameMode, null,false);
+            }
+        }
+
+        if(gameMode == DuelGameMode.CLASSIC_CRYSTAL){
+            DuelGameMode.CLASSIC_CRYSTAL_QUEUE.add(minecraftPlayer);
+            if(DuelGameMode.CLASSIC_CRYSTAL_QUEUE.size() >= 2){
+                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.CLASSIC_CRYSTAL_QUEUE.get(0), stringGameMode, null,false);
+            }
+        }
+
         if(gameMode == DuelGameMode.VANILLA){
             DuelGameMode.VANILLA_QUEUE.add(minecraftPlayer);
             if(DuelGameMode.VANILLA_QUEUE.size() >= 2){
@@ -322,6 +367,18 @@ public class GamemodeHandler {
                 DuelGameMode.UHC_SHIELD_QUEUE.remove(minecraftPlayer);
             }
 
+            if(gameMode == DuelGameMode.HSG) {
+                DuelGameMode.HSG_QUEUE.remove(minecraftPlayer);
+            }
+
+            if(gameMode == DuelGameMode.SKYWARS) {
+                DuelGameMode.SKYWARS_QUEUE.remove(minecraftPlayer);
+            }
+
+            if(gameMode == DuelGameMode.CLASSIC_CRYSTAL) {
+                DuelGameMode.CLASSIC_CRYSTAL_QUEUE.remove(minecraftPlayer);
+            }
+
             if(gameMode == DuelGameMode.VANILLA) {
                 DuelGameMode.VANILLA_QUEUE.remove(minecraftPlayer);
             }
@@ -360,6 +417,9 @@ public class GamemodeHandler {
             DuelGameMode.POT_QUEUE.remove(minecraftPlayer);
             DuelGameMode.NETH_POT_QUEUE.remove(minecraftPlayer);
             DuelGameMode.OG_VANILLA_QUEUE.remove(minecraftPlayer);
+            DuelGameMode.HSG_QUEUE.clear();
+            DuelGameMode.SKYWARS_QUEUE.clear();
+            DuelGameMode.CLASSIC_CRYSTAL_QUEUE.clear();
             DuelGameMode.SMP_QUEUE.remove(minecraftPlayer);
             DuelGameMode.UHC_SHIELD_QUEUE.remove(minecraftPlayer);
             DuelGameMode.VANILLA_QUEUE.remove(minecraftPlayer);
