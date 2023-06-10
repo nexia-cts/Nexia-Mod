@@ -23,6 +23,7 @@ public class Main implements ModInitializer {
                 .enableIntents(GatewayIntent.GUILD_MESSAGES)
                 .build();
 
+        jda.addEventListener(new Discord());
         Discord.registerCommands();
     }
 }

@@ -8,11 +8,11 @@ import net.minecraft.world.level.GameType;
 import java.util.ArrayList;
 
 public class DuelGameMode {
-    String id;
+    public String id;
 
-    boolean hasRegen;
+    public boolean hasRegen;
 
-    GameType gameMode;
+    public GameType gameMode;
 
     public static ArrayList<ItemStack> duelsMaps = new ArrayList<>();
     public static ArrayList<ItemStack> duelsItems = new ArrayList<>();

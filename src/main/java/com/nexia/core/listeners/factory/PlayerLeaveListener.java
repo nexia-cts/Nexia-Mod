@@ -1,4 +1,4 @@
-package com.nexia.core.listeners;
+package com.nexia.core.listeners.factory;
 
 import com.combatreforged.factory.api.event.player.PlayerDisconnectEvent;
 import com.combatreforged.factory.api.event.player.PlayerJoinEvent;

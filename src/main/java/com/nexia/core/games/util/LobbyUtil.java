@@ -98,7 +98,7 @@ public class LobbyUtil {
             }
         }
 
-        minecraftPlayer.setInvulnerable(false);
+        //minecraftPlayer.setInvulnerable(false);
 
         PlayerUtil.resetHealthStatus(player);
         minecraftPlayer.setGameMode(GameType.ADVENTURE);
@@ -109,27 +109,7 @@ public class LobbyUtil {
 
         // Duels shit
         player.addTag("duels");
-        GamemodeHandler.removeQueue(minecraftPlayer, null, true);
-        com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(minecraftPlayer);
-        if(data.duelsGame != null) {
-            data.duelsGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
-        }
-
-        if(data.gameMode == DuelGameMode.SPECTATING){
-            GamemodeHandler.unspectatePlayer(minecraftPlayer, data.spectatingPlayer, false);
-        }
-
-        data.gameMode = DuelGameMode.LOBBY;
-        data.inDuel = false;
-        data.inviteKit = "";
-        data.inviteMap = "";
-        data.isDead = false;
-        data.spectatingPlayer = null;
-        data.invitingPlayer = null;
-        data.inviting = false;
-        data.duelsGame = null;
-
-
+        DuelGameHandler.leave(minecraftPlayer);
 
         if (tp) {
             minecraftPlayer.setRespawnPosition(lobbyWorld.dimension(), lobbySpawn.toBlockPos(), lobbySpawn.yaw, true, false);

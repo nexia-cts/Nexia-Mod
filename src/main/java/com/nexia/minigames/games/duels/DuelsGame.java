@@ -1,48 +1,61 @@
 package com.nexia.minigames.games.duels;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
-import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
-import com.nexia.minigames.games.duels.util.SavedDuelsData;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
+import net.minecraft.Util;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
+import org.apache.logging.log4j.core.jmx.Server;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 
 public class DuelsGame { //implements Runnable{
     public ServerPlayer p1;
-
     public ServerPlayer p2;
 
     public DuelGameMode gameMode;
 
     public String selectedMap;
 
+    public boolean isEnding = false;
+
+    public int endTime;
+
+    private int currentEndTime = 0;
+
     public ServerLevel level;
 
     public ArrayList<ServerPlayer> spectators = new ArrayList<>();
 
-    public DuelsGame(ServerPlayer p1, ServerPlayer p2, DuelGameMode gameMode, String selectedMap, ServerLevel level){
+
+    // Winner thingie
+    public ServerPlayer winner = null;
+
+    public ServerPlayer loser = null;
+
+    private boolean shouldWait = false;
+
+    public DuelsGame(ServerPlayer p1, ServerPlayer p2, DuelGameMode gameMode, String selectedMap, ServerLevel level, int endTime){
         this.p1 = p1;
         this.p2 = p2;
         this.gameMode = gameMode;
         this.selectedMap = selectedMap;
+        this.endTime = endTime;
         this.level = level;
     }
 
@@ -144,7 +157,7 @@ public class DuelsGame { //implements Runnable{
         playerData.gameMode = gameMode;
         invitorData.gameMode = gameMode;
 
-        DuelsGame game = new DuelsGame(mcP1, mcP2, gameMode, selectedMap, duelLevel);
+        DuelsGame game = new DuelsGame(mcP1, mcP2, gameMode, selectedMap, duelLevel, 5);
         invitorData.duelsGame = game;
         playerData.duelsGame = game;
 
@@ -153,54 +166,71 @@ public class DuelsGame { //implements Runnable{
         return game;
     }
 
+    public void duelSecond() {
+        if(this.isEnding) {
+            this.currentEndTime++;
+            if(this.currentEndTime >= this.endTime || !this.shouldWait) {
+                ServerPlayer minecraftAttacker = this.winner;
+                ServerPlayer minecraftVictim = this.loser;
+                Player attacker = PlayerUtil.getFactoryPlayer(minecraftAttacker);
+
+                PlayerData victimData = PlayerDataManager.get(this.loser);
+                PlayerData attackerData = null;
+
+                if (minecraftAttacker != null) {
+                    attackerData = PlayerDataManager.get(minecraftAttacker);
+                }
+
+                PlayerUtil.resetHealthStatus(attacker);
+
+                for(ServerPlayer spectator : this.spectators) {
+                    LobbyUtil.leaveAllGames(spectator, true);
+                }
+
+                victimData.duelsGame = null;
+                victimData.inviting = false;
+                victimData.inDuel = false;
+                victimData.inviteMap = "";
+                victimData.inviteKit = "";
+                removeQueue(minecraftVictim, null, true);
+                victimData.gameMode = DuelGameMode.LOBBY;
+
+                if (minecraftAttacker != null) {
+                    attackerData.inviting = false;
+                    attackerData.inDuel = false;
+                    attackerData.inviteKit = "";
+                    attackerData.inviteMap = "";
+                    attackerData.gameMode = DuelGameMode.LOBBY;
+                    attackerData.duelsGame = null;
+
+                    attackerData.savedData.wins++;
+                    victimData.savedData.loss++;
+                }
+
+                LobbyUtil.leaveAllGames(minecraftAttacker, true);
+                LobbyUtil.leaveAllGames(minecraftVictim, true);
+
+                this.isEnding = false;
+                DuelGameHandler.duelsGames.remove(this);
+                DuelGameHandler.deleteWorld(this.level.dimension().toString().replaceAll("]", "").split(":")[2]);
+            }
+        }
+    }
+
     public void endGame(@NotNull ServerPlayer minecraftVictim, @Nullable ServerPlayer minecraftAttacker, boolean wait) {
-        PlayerData victimData = PlayerDataManager.get(minecraftVictim);
+
+        this.winner = minecraftAttacker;
+        this.loser = minecraftVictim;
+        this.shouldWait = wait;
+        this.isEnding = true;
 
         boolean attackerNull = minecraftAttacker == null;
-
-        PlayerData attackerData = null;
-
-        if (!attackerNull) {
-            attackerData = PlayerDataManager.get(minecraftAttacker);
-        }
-
-        ServerLevel duelLevel;
-
-        if (!attackerNull) {
-            duelLevel = minecraftAttacker.getLevel();
-        } else {
-            duelLevel = minecraftVictim.getLevel();
-        }
 
         Player victim = PlayerUtil.getFactoryPlayer(minecraftVictim);
         Player attacker = null;
         if (!attackerNull) {
             attacker = PlayerUtil.getFactoryPlayer(minecraftAttacker);
         }
-
-
-        victimData.inviting = false;
-        victimData.inDuel = false;
-        victimData.inviteMap = "";
-        victimData.inviteKit = "";
-        removeQueue(minecraftVictim, victimData.gameMode.id, true);
-        victimData.gameMode = DuelGameMode.LOBBY;
-
-        if (!attackerNull) {
-            attackerData.inviting = false;
-            attackerData.inDuel = false;
-            attackerData.inviteKit = "";
-            attackerData.inviteMap = "";
-            attackerData.gameMode = DuelGameMode.LOBBY;
-            attackerData.duelsGame = null;
-
-            attackerData.savedData.wins++;
-            victimData.savedData.loss++;
-        }
-
-
-        //minecraftVictim.setGameMode(GameType.SPECTATOR);
-        //victim.teleport(attacker.getLocation());
 
         Component win = Component.text("The game was a ")
                 .color(ChatFormat.normalColor)
@@ -212,8 +242,8 @@ public class DuelsGame { //implements Runnable{
                 .color(ChatFormat.brandColor2);
         Component subtitleLose = win;
 
-        Component titleWin = titleLose;
-        Component subtitleWin = win;
+        Component titleWin;
+        Component subtitleWin;
 
 
         if (!attackerNull) {
@@ -234,56 +264,19 @@ public class DuelsGame { //implements Runnable{
                     .append(Component.text(victim.getRawName())
                             .color(ChatFormat.brandColor2)
                     );
-        }
 
-
-        if (!attackerNull) {
             attacker.sendMessage(win);
             attacker.sendTitle(Title.title(titleWin, subtitleWin));
-            minecraftAttacker.die(DamageSource.GENERIC);
-            PlayerUtil.resetHealthStatus(attacker);
-
-            //LobbyUtil.sendGame(minecraftAttacker, "duels", false, false);
-
-            attacker.getInventory().clear();
-            attacker.setGameMode(Minecraft.GameMode.ADVENTURE);
         }
-
         victim.sendMessage(win);
         victim.sendTitle(Title.title(titleLose, subtitleLose));
-        PlayerUtil.resetHealthStatus(victim);
-        victim.getInventory().clear();
-
-        SavedDuelsData data =
-                new SavedDuelsData(
-                        attackerData.duelPlayer, victimData.duelPlayer
-                );
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                ServerPlayer player = data.getLoser();
-                ServerLevel level = player.getLevel();
-                level.getServer().getCommands().performCommand(player.createCommandSourceStack(), "/hub");
-
-                player = data.getWinner();
-                level = player.getLevel();
-                level.getServer().getCommands().performCommand(player.createCommandSourceStack(), "/hub");
-            }
-        }, 100L);
-
-        for(ServerPlayer spectator : this.spectators) {
-            PlayerUtil.getFactoryPlayer(spectator).runCommand("/hub", 0, false);
-        }
-
-        victim.setGameMode(Minecraft.GameMode.ADVENTURE);
-        DuelGameHandler.duelsGames.remove(victimData.duelsGame);
-        victimData.duelsGame = null;
-
-        DuelGameHandler.deleteWorld(duelLevel.dimension().toString().replaceAll("]", "").split(":")[2]);
     }
 
     public void death(@NotNull ServerPlayer victim, @Nullable DamageSource source){
         PlayerData victimData = PlayerDataManager.get(victim);
+        if(victimData.duelsGame == null) return;
+        if(victimData.duelsGame.isEnding) return;
+
         if(source != null && source.getEntity() instanceof ServerPlayer attacker){
             PlayerData attackerData = PlayerDataManager.get(attacker);
 

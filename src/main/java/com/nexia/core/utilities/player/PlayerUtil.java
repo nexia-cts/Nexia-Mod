@@ -69,7 +69,7 @@ public class PlayerUtil {
     }
 
     public static ServerPlayer getMinecraftPlayer(@NotNull Player player){
-        return getMinecraftPlayerFromName(player.getRawName());
+        return PlayerUtil.getMinecraftPlayerFromName(player.getRawName());
     }
 
     public static ServerPlayer getMinecraftPlayerFromName(@NotNull String player){

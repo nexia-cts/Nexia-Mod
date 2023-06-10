@@ -13,15 +13,20 @@ import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.areas.BwDimension;
 import com.nexia.minigames.games.bedwars.shop.BwLoadShop;
 import com.nexia.minigames.games.duels.DuelGameHandler;
+import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.oitc.OitcGame;
+import net.minecraft.Util;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import xyz.nucleoid.fantasy.Fantasy;
+
+import java.util.ConcurrentModificationException;
 
 public class ServerTime {
 
     public static int totalTickCount = -1;
     public static int totalSecondCount = -1;
+
 
     public static MinecraftServer minecraftServer = null;
 
@@ -85,6 +90,15 @@ public class ServerTime {
     static void everySecond() {
         totalSecondCount++;
         OitcGame.second();
+        try {
+            for (DuelsGame game : DuelGameHandler.duelsGames) {
+                if (game == null) return;
+                try {
+                    game.duelSecond();
+                } catch (Exception ignored) {
+                }
+            }
+        } catch (Exception ignored) { }
     }
 
 }

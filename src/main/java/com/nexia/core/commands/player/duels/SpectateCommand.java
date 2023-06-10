@@ -33,6 +33,7 @@ public class SpectateCommand {
 
     public static int spectate(CommandContext<CommandSourceStack> context, ServerPlayer player) throws CommandSyntaxException {
         ServerPlayer executor = context.getSource().getPlayerOrException();
+
         GamemodeHandler.spectatePlayer(executor, player);
         return 1;
     }

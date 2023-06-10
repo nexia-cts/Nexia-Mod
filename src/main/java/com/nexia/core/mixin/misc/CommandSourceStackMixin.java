@@ -5,6 +5,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,7 +25,7 @@ public class CommandSourceStackMixin {
     private void broadcastToAdmins(Component component, CallbackInfo ci) {
 
         // If sourced from datapack
-        if (source instanceof MinecraftServer && entity != null) {
+        if (source instanceof MinecraftServer && !(entity instanceof Player)) {
             ci.cancel();
             return;
         }

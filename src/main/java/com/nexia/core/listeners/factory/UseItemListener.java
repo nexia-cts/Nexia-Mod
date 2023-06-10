@@ -1,4 +1,4 @@
-package com.nexia.core.listeners;
+package com.nexia.core.listeners.factory;
 
 import com.combatreforged.factory.api.event.player.PlayerUseItemEvent;
 import com.combatreforged.factory.api.world.entity.player.Player;

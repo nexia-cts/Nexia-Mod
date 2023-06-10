@@ -5,8 +5,10 @@ import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
+import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceKey;
@@ -18,6 +20,7 @@ import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
@@ -32,11 +35,14 @@ import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQu
 public class DuelGameHandler {
 
     public static List<DuelsGame> duelsGames = new ArrayList<>();
+    public static List<TeamDuelsGame> teamDuelsGames = new ArrayList<>();
     public static void leave(ServerPlayer player) {
         PlayerData data = PlayerDataManager.get(player);
         if (player.getLastDamageSource() != null && data.duelsGame != null) {
             data.duelsGame.death(player, player.getLastDamageSource());
             return;
+        } else if(player.getLastDamageSource() != null && data.teamDuelsGame != null) {
+            data.teamDuelsGame.death(player, player.getLastDamageSource());
         }
         if(data.gameMode == DuelGameMode.SPECTATING) {
             GamemodeHandler.unspectatePlayer(player, data.spectatingPlayer, false);
@@ -44,9 +50,11 @@ public class DuelGameHandler {
         data.inviting = false;
         data.inDuel = false;
         data.duelPlayer = null;
-        removeQueue(player, data.gameMode.id, true);
+        removeQueue(player, null, true);
         data.gameMode = DuelGameMode.LOBBY;
         data.spectatingPlayer = null;
+        data.duelsTeam = null;
+        data.teamDuelsGame = null;
         data.duelsGame = null;
     }
 
@@ -85,7 +93,7 @@ public class DuelGameHandler {
         DuelGameMode.CLASSIC_CRYSTAL_QUEUE.clear();
 
         DuelGameHandler.duelsGames.clear();
-
+        DuelGameHandler.teamDuelsGames.clear();
 
         List<String> toDelete = new ArrayList<>();
 
@@ -184,6 +192,8 @@ public class DuelGameHandler {
                 .setTimeOfDay(6000);
 
         //return ServerTime.fantasy.openTemporaryWorld(config).asWorld();
+
+
         return ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", UUID.randomUUID().toString().replaceAll("-", ""))).location(), config).asWorld();
     }
 

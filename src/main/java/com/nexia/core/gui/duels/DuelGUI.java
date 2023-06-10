@@ -38,7 +38,7 @@ public class DuelGUI extends SimpleGui {
         fillEmptySlots(emptySlot);
         int slot = 10;
         int airSlots = 10;
-        for(int air = 0; air < 17; air++){
+        for(int air = 0; air < 21; air++){
             if(airSlots == 17) {
                 airSlots = 19;
             }
@@ -68,6 +68,9 @@ public class DuelGUI extends SimpleGui {
         for(int air = 0; air < 21; air++){
             if(airSlots == 17) {
                 airSlots = 19;
+            }
+            if(airSlots == 26) {
+                airSlots = 28;
             }
             this.setSlot(airSlots, new ItemStack(Items.AIR));
             airSlots++;
