@@ -21,6 +21,8 @@ public class RulesCommand {
             "No advertising.",
             "No encouraging of illegal activity.",
             "No interrupting other player's fights.",
+            "No spamming/filling up chat.",
+            "No stalling/combat logging."
     };
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

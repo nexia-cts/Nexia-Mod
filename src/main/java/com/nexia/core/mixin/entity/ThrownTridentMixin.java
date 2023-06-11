@@ -5,7 +5,7 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Overwrite;;
 
 @Mixin(ThrownTrident.class)
 public abstract class ThrownTridentMixin extends AbstractArrow {
@@ -23,5 +23,4 @@ public abstract class ThrownTridentMixin extends AbstractArrow {
             super.tickDespawn();
         }
     }
-
 }

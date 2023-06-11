@@ -1,9 +1,10 @@
-package com.nexia.core.listeners;
+package com.nexia.core.listeners.factory;
 
 import com.combatreforged.factory.api.event.player.PlayerDisconnectEvent;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.Main;
+import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerDataManager;
@@ -11,7 +12,6 @@ import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
-import net.kyori.adventure.text.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 public class PlayerLeaveListener {
@@ -23,6 +23,7 @@ public class PlayerLeaveListener {
 
             processDisconnect(player, minecraftPlayer);
 
+            /*
             if(Main.config.events.statusMessages){
                 playerDisconnectEvent.setLeaveMessage(
                         Component.text("[").color(ChatFormat.lineColor)
@@ -31,6 +32,8 @@ public class PlayerLeaveListener {
                                 .append(Component.text(player.getRawName()).color(ChatFormat.failColor)))
                 );
             }
+
+             */
         });
     }
 
@@ -53,15 +56,13 @@ public class PlayerLeaveListener {
 
         if (FfaUtil.isFfaPlayer(minecraftPlayer)) {
             FfaUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
-        }
-        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(minecraftPlayer);
-
+        } else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(minecraftPlayer);
         PlayerDataManager.removePlayerData(minecraftPlayer);
         com.nexia.ffa.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer);
         com.nexia.minigames.games.duels.util.player.PlayerDataManager.removePlayerData(minecraftPlayer);
 
 
-        //LobbyUtil.leaveAllGames(minecraftPlayer, true);
+        LobbyUtil.leaveAllGames(minecraftPlayer, true);
 
 
         runCommands(player);

@@ -1,6 +1,5 @@
 package com.nexia.core.utilities.player;
 
-import com.google.gson.*;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
 import com.nexia.core.Main;
@@ -89,7 +88,7 @@ public class BanHandler {
         JSONObject BanJSON = getBanList(profile.getId().toString());
 
         if (BanJSON != null) {
-            if((long) BanJSON.get("duration") > 0) {
+            if((long) BanJSON.get("duration") - System.currentTimeMillis() > 0) {
                 removeBanFromList(profile);
             } else {
                 sender.sendSuccess(LegacyChatFormat.format("{s}This player has already been banned for {f}{}{s}." +

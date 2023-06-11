@@ -26,7 +26,10 @@ public class HelpCommand {
             "prefix" + commandSeparator + "allows you to select your prefix",
             "report" + commandSeparator + "allows you to report other players",
             "msg" + commandSeparator + "allows you to message other players",
-            "stats" + commandSeparator + "shows you your stats"
+            "stats" + commandSeparator + "shows you your stats",
+            "duel" + commandSeparator + "duel a player that is in the hub (duels)",
+            "queue" + commandSeparator + "queue for a gamemode in duels",
+            "spectate" + commandSeparator + "spectate a player which is in duels"
     };
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

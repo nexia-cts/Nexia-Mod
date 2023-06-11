@@ -75,7 +75,7 @@ public class PlayerListMixin {
 
         ServerLevel respawn = Main.server.getLevel(player.getRespawnDimension());
 
-        if(LobbyUtil.isLobbyWorld(respawn)) {
+        if(respawn != null && LobbyUtil.isLobbyWorld(respawn)) {
             LobbyUtil.giveItems(player);
             player.setGameMode(GameType.ADVENTURE);
         }
@@ -135,7 +135,7 @@ public class PlayerListMixin {
         } catch(Exception ignored) { }
     }
 
-    @Inject(method = "placeNewPlayer", at = @At("INVOKE")) //coded this is your problem now
+    @Inject(method = "placeNewPlayer", at = @At("INVOKE"))
     private void setJoinMessage(Connection connection, ServerPlayer serverPlayer, CallbackInfo ci){
         joinPlayer = serverPlayer;
     }

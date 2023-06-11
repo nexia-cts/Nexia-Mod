@@ -12,9 +12,6 @@ import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
-import com.nexia.minigames.games.duels.DuelGameMode;
-import com.nexia.minigames.games.duels.DuelsGame;
-import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import net.kyori.adventure.text.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
@@ -28,7 +25,7 @@ import net.minecraft.world.level.Level;
 
 public class LobbyUtil {
 
-    public static String[] statsGameModes = {"FFA", "BEDWARS", "OITC", "DUELS"};
+    public static String[] statsGameModes = {"FFA", "DUELS"};
 
     public static ServerLevel lobbyWorld = null;
     public static EntityPos lobbySpawn = new EntityPos(Main.config.lobbyPos[0], Main.config.lobbyPos[1], Main.config.lobbyPos[2], 0, 0);
@@ -66,8 +63,7 @@ public class LobbyUtil {
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
         if (FfaUtil.isFfaPlayer(minecraftPlayer)) {
             FfaUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
-        }
-        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(minecraftPlayer);
+        } else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(minecraftPlayer);
 
         for(int i = 0; i < LobbyUtil.removedTags.length; i++){
             if(player.hasTag(LobbyUtil.removedTags[i])){
@@ -97,17 +93,7 @@ public class LobbyUtil {
 
         // Duels shit
         player.addTag("duels");
-        GamemodeHandler.removeQueue(minecraftPlayer, null, true);
-        DuelsGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
-        com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(minecraftPlayer);
-        data.gameMode = DuelGameMode.LOBBY;
-        data.inDuel = false;
-        data.inviteKit = "";
-        data.inviteMap = "";
-        data.isDead = false;
-        data.invitingPlayer = null;
-        data.inviting = false;
-
+        DuelGameHandler.leave(minecraftPlayer);
 
         if (tp) {
             minecraftPlayer.setRespawnPosition(lobbyWorld.dimension(), lobbySpawn.toBlockPos(), lobbySpawn.yaw, true, false);
@@ -183,14 +169,14 @@ public class LobbyUtil {
 
 
         if(game.equalsIgnoreCase("duels")){
-            LobbyUtil.leaveAllGames(minecraftPlayer, true);
+            LobbyUtil.leaveAllGames(minecraftPlayer, tp);
             if(message){
                 player.sendActionBarMessage(Component.text("You have joined §f☯ §c§lDuels §7\uD83E\uDE93"));
                 player.sendMessage(
                         ChatFormat.nexiaMessage()
                                 .append(Component.text("Duels has now moved here. (main hub)").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                 );
-                player.sendMessage(Component.text("Meaning you can now use /duel and /queue inside of the normal hub WITHOUT going to duels!").decoration(ChatFormat.bold, false));
+                player.sendMessage(Component.text("Meaning you can now use /duel, /queue and /spectate inside of the normal hub WITHOUT going to duels!").decoration(ChatFormat.bold, false));
             }
         }
     }

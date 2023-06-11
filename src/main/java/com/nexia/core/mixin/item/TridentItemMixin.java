@@ -1,6 +1,5 @@
 package com.nexia.core.mixin.item;
 
-
 import com.nexia.ffa.utilities.FfaAreas;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;

@@ -6,7 +6,7 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.duels.DuelGUI;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.ffa.utilities.FfaUtil;
-import com.nexia.minigames.games.duels.DuelsGame;
+import com.nexia.minigames.games.duels.util.player.PlayerData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,7 +25,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 @Mixin(ServerPlayer.class)
 public abstract class ServerPlayerMixin extends Player {
 
@@ -33,20 +32,29 @@ public abstract class ServerPlayerMixin extends Player {
 
     @Shadow public abstract void playNotifySound(SoundEvent soundEvent, SoundSource soundSource, float f, float g);
 
-    @Shadow public abstract void initMenu();
-
     public ServerPlayerMixin(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
         super(level, blockPos, f, gameProfile);
+    }
+
+    @Inject(method = "attack", at = @At("HEAD"))
+    public void onAttack(Entity entity, CallbackInfo ci) {
+        if(level == LobbyUtil.lobbyWorld && entity instanceof ServerPlayer player &&
+                this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("queue sword")) {
+            DuelGUI.openDuelGui((ServerPlayer) (Object) this, player);
+        }
     }
 
     @Inject(method = "die", at = @At("HEAD"))
     private void die(DamageSource damageSource, CallbackInfo ci) {
         ServerPlayer player = (ServerPlayer)(Object)this;
+        PlayerGameMode gameMode = PlayerDataManager.get(player).gameMode;
+        PlayerData duelsData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
+
 
         if (FfaUtil.isFfaPlayer(player)) {
             FfaUtil.leaveOrDie(player, damageSource, false);
-        } else if(PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY){
-            DuelsGame.death(player, damageSource);
+        } else if(gameMode == PlayerGameMode.LOBBY && duelsData.duelsGame != null){
+            duelsData.duelsGame.death(player, damageSource);
         }
     }
 
@@ -60,13 +68,5 @@ public abstract class ServerPlayerMixin extends Player {
         }
 
         player.containerMenu.removed(player);
-    }
-
-    @Inject(method = "attack", at = @At("HEAD"))
-    public void onAttack(Entity entity, CallbackInfo ci) {
-        if(level == LobbyUtil.lobbyWorld && entity instanceof ServerPlayer player &&
-                this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("queue sword")) {
-            DuelGUI.openDuelGui((ServerPlayer) (Object) this, player);
-        }
     }
 }

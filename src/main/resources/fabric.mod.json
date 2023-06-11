@@ -13,11 +13,11 @@
     "betterclient"
   ],
   "contact": {
-    "homepage": "https://nexia.fun/",
+    "homepage": "https://nexia.mcserver.us/",
     "sources": "https://github.com/nexia-cts/Nexia-Mod"
   },
 
-  "license": "CC0-1.0",
+  "license": "MIT",
   "icon": "assets/nexia/icon.png",
 
   "environment": "server",

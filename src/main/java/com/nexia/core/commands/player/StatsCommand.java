@@ -44,22 +44,20 @@ public class StatsCommand {
 
         Component user = start
                 .append(Component.text(" User: ").color(ChatFormat.brandColor2))
-                        .append(Component.text(player.getRawName()).color(ChatFormat.normalColor))
-                ;
-
+                .append(Component.text(player.getRawName()).color(ChatFormat.normalColor));
 
 
         Component message;
 
-        if(executerData.gameMode == PlayerGameMode.FFA){
+        if (executerData.gameMode == PlayerGameMode.FFA) {
             message = ChatFormat.separatorLine("FFA Stats");
             SavedPlayerData data = PlayerDataManager.get(mcPlayer).savedData;
 
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
-                            .append(Component.text(" Kills: ").color(ChatFormat.brandColor2))
-                                    .append(Component.text(data.kills).color(ChatFormat.greenColor))
+                    .append(Component.text(" Kills: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(data.kills).color(ChatFormat.greenColor))
             );
             player.sendMessage(start
                     .append(Component.text(" Deaths: ").color(ChatFormat.brandColor2))
@@ -68,18 +66,18 @@ public class StatsCommand {
 
             player.sendMessage(start
                     .append(Component.text(" KDR: ").color(ChatFormat.brandColor2))
-                            .append(Component.text(calculateKDR(data.kills, data.deaths)).color(ChatFormat.greenColor))
+                    .append(Component.text(calculateKDR(data.kills, data.deaths)).color(ChatFormat.greenColor))
             );
 
             player.sendMessage(start
-                            .append(Component.text(" Killstreak: ").color(ChatFormat.brandColor2))
-                                    .append(Component.text(data.killstreak).color(TextColor.fromHexString("#f5bc42")))
-                                            .append(Component.text("/").color(ChatFormat.arrowColor))
-                                                    .append(Component.text(data.bestKillstreak).color(TextColor.fromHexString("#f5bc42")))
+                    .append(Component.text(" Killstreak: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(data.killstreak).color(TextColor.fromHexString("#f5bc42")))
+                    .append(Component.text("/").color(ChatFormat.arrowColor))
+                    .append(Component.text(data.bestKillstreak).color(TextColor.fromHexString("#f5bc42")))
             );
         }
 
-        if(executerData.gameMode == PlayerGameMode.LOBBY){
+        if (executerData.gameMode == PlayerGameMode.LOBBY) {
             message = ChatFormat.separatorLine("Duels Stats");
             com.nexia.minigames.games.duels.util.player.SavedPlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(mcPlayer).savedData;
             player.sendMessage(message);
@@ -95,6 +93,7 @@ public class StatsCommand {
         }
 
         player.sendMessage(ChatFormat.separatorLine(null));
+
         return 1;
     }
 
@@ -161,7 +160,6 @@ public class StatsCommand {
                     .append(Component.text(data.loss).color(ChatFormat.failColor))
             );
         }
-
         player.sendMessage(ChatFormat.separatorLine(null));
 
         return 1;

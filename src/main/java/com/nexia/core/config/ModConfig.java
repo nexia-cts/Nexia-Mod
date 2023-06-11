@@ -28,10 +28,6 @@ public class ModConfig implements ConfigData {
         public boolean statusMessages = true;
     }
 
-
-    @Comment("What the discord link should be.")
-    public String discordLink = "";
-
     @Comment("List of ranks.")
     public String[] ranks = {""};
     public double[] lobbyPos = {
@@ -40,15 +36,11 @@ public class ModConfig implements ConfigData {
             0.5,
     };
 
+    public String discordLink = "";
+
 
     public Enhancements enhancements = new Enhancements();
     public static class Enhancements {
-        @Comment("Toggles if the modified knockback is enabled.")
-        public boolean modifiedKnockback = false;
-
-        @Comment("Toggles if the modified fishing rods are enabled.")
-        public boolean modifiedRods = false;
-
         @Comment("Toggles if the better shields are enabled.")
         public boolean betterShields = false;
 

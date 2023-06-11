@@ -51,7 +51,6 @@ public class BanCommand {
                 userBanList.add(userBanListEntry);
                 ++i;
                 if(player != null){
-
                     PlayerUtil.getFactoryPlayer(player).sendMessage(
                             ChatFormat.nexiaMessage()
                                             .append(Component.text("You have banned ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))

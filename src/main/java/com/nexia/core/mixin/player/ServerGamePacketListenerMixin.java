@@ -7,10 +7,8 @@ import com.nexia.core.utilities.misc.EventUtil;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaUtil;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.*;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.player.Inventory;
@@ -33,7 +31,6 @@ public class ServerGamePacketListenerMixin {
             ci.cancel();
         }
     }
-
 
     @Inject(method = "handleContainerClick", cancellable = true, at = @At("HEAD"))
     private void handleContainerClick(ServerboundContainerClickPacket clickPacket, CallbackInfo ci) {
@@ -61,7 +58,7 @@ public class ServerGamePacketListenerMixin {
     }
 
 
-    @Inject(at = @At("INVOKE"), method = "onDisconnect") //coded you did dis so dis is your bromlem now!!!
+    @Inject(at = @At("HEAD"), method = "onDisconnect")
     private void getLeavePlayer(Component component, CallbackInfo ci) {
         ServerTime.leavePlayer = player;
     }
@@ -84,6 +81,7 @@ public class ServerGamePacketListenerMixin {
     private void handleSpectatorTeleport(ServerboundTeleportToEntityPacket packet, CallbackInfo ci) {
         if(PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY){
             ci.cancel();
+            return;
         }
     }
 }

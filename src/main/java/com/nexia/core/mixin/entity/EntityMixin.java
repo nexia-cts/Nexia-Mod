@@ -2,7 +2,6 @@ package com.nexia.core.mixin.entity;
 
 import com.nexia.core.games.util.LobbyUtil;
 import net.minecraft.commands.CommandSource;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -30,9 +29,6 @@ public abstract class EntityMixin implements Nameable, CommandSource {
     @Redirect(method = "baseTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;getY()D"))
     private double modifyVoidY(Entity instance) {
         double voidY = -32;
-
-        if (instance.level instanceof ServerLevel) {
-        }
 
         return instance.getY() + -64 - voidY;
     }

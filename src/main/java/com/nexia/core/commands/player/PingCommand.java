@@ -20,6 +20,11 @@ public class PingCommand {
                         .executes(context -> PingCommand.ping(context, EntityArgument.getPlayer(context, "player")))
                 )
         );
+        dispatcher.register(Commands.literal("latency").executes(PingCommand::run)
+                .then(Commands.argument("player", EntityArgument.player())
+                        .executes(context -> PingCommand.ping(context, EntityArgument.getPlayer(context, "player")))
+                )
+        );
     }
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

@@ -27,7 +27,7 @@ public class MessageCommand {
                                 .executes(MessageCommand::msgCommand)
                         )
                 ));
-        commandDispatcher.register(Commands.literal("mesaage")
+        commandDispatcher.register(Commands.literal("message")
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.argument("message", StringArgumentType.greedyString())
                                 .executes(MessageCommand::msgCommand)

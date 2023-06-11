@@ -8,7 +8,6 @@ import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,22 +22,16 @@ public class PrefixGUI extends SimpleGui {
         super(type, player, includePlayer);
     }
 
-    private void fillEmptySlots(ItemStack itemStack, int slots){
-        for(int i = 0; i < slots; i++){
+    private void fillEmptySlots(ItemStack itemStack){
+        for(int i = 0; i < 36; i++){
             this.setSlot(i, itemStack);
-            /*
-            GuiElementInterface element = this.getSlot(i);
-            if(element != null && element.getItemStack().getItem() == null || element.getItemStack().getItem() == Items.AIR){
-                this.setSlot(i, itemStack);
-            }
-             */
         }
     }
     private void setMainLayout(ServerPlayer player){
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
 
-        fillEmptySlots(emptySlot, 36);
+        fillEmptySlots(emptySlot);
         int slot = 10;
         int airSlots = 10;
         for(int air = 0; air < 14; air++){

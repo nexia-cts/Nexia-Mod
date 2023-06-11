@@ -15,9 +15,8 @@ import net.minecraft.commands.Commands;
 public class DiscordCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
-        dispatcher.register(Commands.literal("discord")
-                .executes(DiscordCommand::run)
-        );
+        dispatcher.register(Commands.literal("discord").executes(DiscordCommand::run));
+        dispatcher.register(Commands.literal("dc").executes(DiscordCommand::run));
     }
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

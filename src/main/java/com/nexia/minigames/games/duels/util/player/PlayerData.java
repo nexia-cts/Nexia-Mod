@@ -10,24 +10,22 @@ public class PlayerData {
     public SavedPlayerData savedData;
 
     // Stuff not saved in files
+
+    // Global
     public DuelGameMode gameMode;
-
     public boolean inDuel;
-
     public boolean inviting;
-
     public ServerPlayer invitingPlayer;
-
+    public ServerPlayer spectatingPlayer;
     public boolean isDead;
-
-
     public String inviteMap;
-
-    public DuelsGame duelsGame;
-
     public String inviteKit;
 
+
+    // Duels
+    public DuelsGame duelsGame;
     public ServerPlayer duelPlayer;
+
 
     public PlayerData(SavedPlayerData savedData) {
         this.savedData = savedData;
@@ -38,6 +36,7 @@ public class PlayerData {
         this.invitingPlayer = null;
         this.isDead = false;
         this.duelPlayer = null;
+        this.spectatingPlayer = null;
         this.inviteMap = "";
         this.inviteKit = "";
         this.duelsGame = null;

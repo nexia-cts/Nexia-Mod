@@ -25,5 +25,4 @@ public class LivingEntityMixin {
         if (damageSource == DamageSource.OUT_OF_WORLD) return 1000000.0F;
         return value;
     }
-
 }

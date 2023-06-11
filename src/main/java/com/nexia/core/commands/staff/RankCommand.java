@@ -30,14 +30,12 @@ public class RankCommand {
     public static int give(CommandContext<CommandSourceStack> context, ServerPlayer player, String rank) {
         CommandSourceStack executer = context.getSource();
 
-        ServerPlayer mcExecutor = null;
         Player factoryExecutor = null;
 
         Player otherFactoryPlayer = PlayerUtil.getFactoryPlayer(player);
 
         try {
-            mcExecutor = context.getSource().getPlayerOrException();
-            factoryExecutor = PlayerUtil.getFactoryPlayer(mcExecutor);
+            factoryExecutor = PlayerUtil.getFactoryPlayer(context.getSource().getPlayerOrException());
         } catch(Exception ignored) { }
 
         for(int i = 0; i < 9; i++){
