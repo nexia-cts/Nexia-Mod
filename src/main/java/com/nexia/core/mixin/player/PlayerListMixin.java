@@ -9,6 +9,8 @@ import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.player.BanHandler;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.minigames.games.duels.DuelsGame;
+import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
@@ -17,13 +19,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.level.GameType;
 import org.json.simple.JSONObject;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
@@ -40,6 +45,8 @@ import static com.nexia.core.utilities.time.ServerTime.leavePlayer;
 
 @Mixin(PlayerList.class)
 public class PlayerListMixin {
+
+    @Shadow @Final private MinecraftServer server;
 
     @ModifyArgs(method = "broadcastMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ClientboundChatPacket;<init>(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
     private void handleChat(Args args) {
@@ -70,8 +77,8 @@ public class PlayerListMixin {
     }
 
     @Inject(at = @At("RETURN"), method = "respawn")
-    private void respawned(ServerPlayer oldPlayer, boolean bl, CallbackInfoReturnable<ServerPlayer> cir) {
-        ServerPlayer player = PlayerUtil.getFixedPlayer(oldPlayer);
+    private void respawned(ServerPlayer serverPlayer, boolean bl, CallbackInfoReturnable<ServerPlayer> cir) {
+        ServerPlayer player = PlayerUtil.getFixedPlayer(serverPlayer);
 
         ServerLevel respawn = Main.server.getLevel(player.getRespawnDimension());
 
