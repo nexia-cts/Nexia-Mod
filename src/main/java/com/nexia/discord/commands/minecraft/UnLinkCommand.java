@@ -11,9 +11,13 @@ import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.discord.Discord;
 import com.nexia.discord.Main;
+import com.nexia.discord.utilities.discord.DiscordData;
+import com.nexia.discord.utilities.discord.DiscordDataManager;
 import com.nexia.discord.utilities.player.PlayerData;
 import com.nexia.discord.utilities.player.PlayerDataManager;
 import com.nexia.minigames.games.duels.DuelGameMode;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -21,17 +25,19 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
 
-public class LinkCommand {
+import static com.nexia.discord.Main.jda;
+
+public class UnLinkCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
-        dispatcher.register(Commands.literal("link")
+        dispatcher.register(Commands.literal("unlink")
                 .requires(commandSourceStack -> {
                     try {
-                        return !PlayerDataManager.get(commandSourceStack.getPlayerOrException()).savedData.isLinked;
+                        return PlayerDataManager.get(commandSourceStack.getPlayerOrException()).savedData.isLinked;
                     } catch (Exception ignored) { }
                     return false;
                 })
-                .executes(LinkCommand::run)
+                .executes(UnLinkCommand::run)
         );
     }
 
@@ -39,22 +45,21 @@ public class LinkCommand {
         ServerPlayer player = context.getSource().getPlayerOrException();
         Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
 
-        int id = RandomUtil.randomInt(1000, 9999);
+        PlayerData data = PlayerDataManager.get(player);
+        Member user = jda.getGuildById(Main.config.guildID).retrieveMemberById(data.savedData.discordID).complete();
 
-        if(Discord.idMinecraft.containsKey(id)) {
-            id = RandomUtil.randomInt(1000, 9999);
+        data.savedData.isLinked = false;
+        data.savedData.discordID = 0;
+
+        if(user != null) {
+            DiscordData discordData = DiscordDataManager.get(user.getIdLong());
+            discordData.savedData.isLinked = false;
+            discordData.savedData.minecraftUUID = "";
         }
-
-        Discord.idMinecraft.put(id, player.getUUID());
 
         factoryPlayer.sendMessage(
                 ChatFormat.nexiaMessage()
-                        .append(Component.text("Your code is: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                .append(Component.text(id).color(ChatFormat.brandColor1)
-                                        .decoration(ChatFormat.bold, true)
-                                        .hoverEvent(HoverEvent.showText(Component.text("Click me to copy").color(ChatFormat.greenColor)))
-                                        .clickEvent(ClickEvent.copyToClipboard(String.valueOf(id)))
-                        ));
+                        .append(Component.text("You have successfully unlinked your discord account.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
 
         return Command.SINGLE_SUCCESS;
     }

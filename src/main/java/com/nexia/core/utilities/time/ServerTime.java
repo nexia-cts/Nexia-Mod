@@ -84,8 +84,9 @@ public class ServerTime {
             case 4 -> {}
             case 6 -> BwGame.bedWarsSecond();
         }
-
     }
+
+    public static ServerType serverType = ServerType.DEV;
 
     static void everySecond() {
         totalSecondCount++;

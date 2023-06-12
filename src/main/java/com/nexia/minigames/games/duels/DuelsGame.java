@@ -6,20 +6,28 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import net.minecraft.Util;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import org.apache.logging.log4j.core.jmx.Server;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
 import java.util.ArrayList;
 
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
@@ -33,6 +41,12 @@ public class DuelsGame { //implements Runnable{
     public String selectedMap;
 
     public boolean isEnding = false;
+
+    public boolean hasStarted = false;
+
+    public int startTime;
+
+    private int currentStartTime = 0;
 
     public int endTime;
 
@@ -50,12 +64,13 @@ public class DuelsGame { //implements Runnable{
 
     private boolean shouldWait = false;
 
-    public DuelsGame(ServerPlayer p1, ServerPlayer p2, DuelGameMode gameMode, String selectedMap, ServerLevel level, int endTime){
+    public DuelsGame(ServerPlayer p1, ServerPlayer p2, DuelGameMode gameMode, String selectedMap, ServerLevel level, int endTime, int startTime){
         this.p1 = p1;
         this.p2 = p2;
         this.gameMode = gameMode;
         this.selectedMap = selectedMap;
         this.endTime = endTime;
+        this.startTime = startTime;
         this.level = level;
     }
 
@@ -157,11 +172,16 @@ public class DuelsGame { //implements Runnable{
         playerData.gameMode = gameMode;
         invitorData.gameMode = gameMode;
 
-        DuelsGame game = new DuelsGame(mcP1, mcP2, gameMode, selectedMap, duelLevel, 5);
+        DuelsGame game = new DuelsGame(mcP1, mcP2, gameMode, selectedMap, duelLevel, 5, 5);
         invitorData.duelsGame = game;
         playerData.duelsGame = game;
 
         DuelGameHandler.duelsGames.add(game);
+
+        while(!game.hasStarted) {
+            mcP1.teleportTo(duelLevel, invitorpos[0], invitorpos[1], invitorpos[2], invitorpos[3], invitorpos[4]);
+            mcP2.teleportTo(duelLevel, playerpos[0], playerpos[1], playerpos[2], playerpos[3], playerpos[4]);
+        }
 
         return game;
     }
@@ -213,6 +233,31 @@ public class DuelsGame { //implements Runnable{
                 this.isEnding = false;
                 DuelGameHandler.duelsGames.remove(this);
                 DuelGameHandler.deleteWorld(this.level.dimension().toString().replaceAll("]", "").split(":")[2]);
+            }
+        }
+        if(!this.hasStarted) {
+            this.currentStartTime++;
+
+            TextColor color = NamedTextColor.GREEN;
+
+            if(this.currentStartTime <= 3 && this.currentStartTime > 1) {
+                color = NamedTextColor.YELLOW;
+            } else if(this.currentStartTime <= 1) {
+                color = NamedTextColor.RED;
+            }
+
+            Title title = Title.title(Component.text(this.currentStartTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(50), Duration.ofMillis(900), Duration.ofMillis(50)));
+
+            PlayerUtil.getFactoryPlayer(this.p1).sendTitle(title);
+            PlayerUtil.getFactoryPlayer(this.p2).sendTitle(title);
+
+            PlayerUtil.sendSound(this.p1, new EntityPos(this.p1), SoundEvents.NOTE_BLOCK_BASS, SoundSource.BLOCKS, 10, 1);
+            PlayerUtil.sendSound(this.p2, new EntityPos(this.p1), SoundEvents.NOTE_BLOCK_BASS, SoundSource.BLOCKS, 10, 1);
+
+            if (this.currentStartTime >= this.startTime || !this.shouldWait) {
+                PlayerUtil.sendSound(this.p1, new EntityPos(this.p1), SoundEvents.NOTE_BLOCK_BASS, SoundSource.BLOCKS, 10, 2);
+                PlayerUtil.sendSound(this.p2, new EntityPos(this.p2), SoundEvents.NOTE_BLOCK_BASS, SoundSource.BLOCKS, 10, 2);
+                this.hasStarted = true;
             }
         }
     }

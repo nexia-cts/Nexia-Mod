@@ -2,6 +2,7 @@ package com.nexia.discord.utilities.discord;
 
 import com.google.gson.Gson;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.world.entity.player.Player;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -27,6 +28,12 @@ public class DiscordDataManager {
         DiscordData DiscordData = new DiscordData(loadDiscordData(discordID));
         allDiscordData.put(discordID, DiscordData);
         saveDiscordData(discordID);
+    }
+
+    public static void removeDiscordData(long discordID) {
+        if (!allDiscordData.containsKey(discordID)) return;
+        saveDiscordData(discordID);
+        allDiscordData.remove(discordID);
     }
 
     private static void saveDiscordData(long discordID) {

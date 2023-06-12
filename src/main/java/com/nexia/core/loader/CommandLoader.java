@@ -41,6 +41,7 @@ public class CommandLoader {
 
         CommandRegistrationCallback.EVENT.register(TempBanCommand::register);
         CommandRegistrationCallback.EVENT.register(UnTempBanCommand::register);
+        CommandRegistrationCallback.EVENT.register(UnLinkCommand::register);
 
         CommandRegistrationCallback.EVENT.register(StaffPrefixCommand::register);
         CommandRegistrationCallback.EVENT.register(DevExperimentalMapCommand::register);

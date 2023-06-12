@@ -7,7 +7,7 @@ public class SavedDiscordData {
     public boolean isLinked;
 
     public SavedDiscordData() {
-        this.minecraftUUID = null;
+        this.minecraftUUID = "";
         this.isLinked = false;
     }
 }

@@ -1,5 +1,6 @@
 package com.nexia.discord;
 
+import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
@@ -11,71 +12,64 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.level.ServerPlayer;
-import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.UUID;
 
-import static com.nexia.discord.Main.jda;
-
 public class Discord extends ListenerAdapter {
-    public static HashMap<UUID, Integer> minecraftIDs = new HashMap<UUID, Integer>();
-    public static HashMap<Integer, UUID> idMinecraft = new HashMap<Integer, UUID>();
-
-    public static void registerCommands() {
-        jda.updateCommands().addCommands(
-                Commands.slash("link", "Link the minecraft player with the discord player.")
-                        .setGuildOnly(true)
-                        .addOption(OptionType.INTEGER, "code", "The code when you do /link in minecraft.", true)
-        ).queue();
-    }
+    public static HashMap<Integer, UUID> idMinecraft = new HashMap<>();
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         String command = event.getName();
-        com.nexia.core.Main.logger.log(Level.ALL, command);
 
-        if (command.equalsIgnoreCase("link")) {
-            event.deferReply().queue();
-            DiscordData discordData = DiscordDataManager.get(event.getIdLong());
-
-            if(discordData.savedData.isLinked) {
-                event.getHook().editOriginal("You already linked your account!");
-                return;
-            }
-
-
+        if (command.toLowerCase().contains("link")) {
+            event.deferReply(true).queue();
             User user = event.getUser();
             long discordID = user.getIdLong();
-            int code = event.getOption("code", OptionMapping::getAsInt);
+            DiscordData discordData = DiscordDataManager.get(discordID);
 
-            ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayer(idMinecraft.get(code));
-            if(player == null) {
-                event.getHook().editOriginal("Invalid code or player is not online!");
+            if (discordData.savedData.isLinked) {
+                event.getHook().editOriginal("You already linked your account!").queue();
                 return;
             }
+
+            int code = event.getOption("code", OptionMapping::getAsInt);
+
+            if(idMinecraft.get(code) == null) {
+                Main.logger.info("well thats null... discord edition");
+                event.getHook().editOriginal("Invalid code!").queue();
+                return;
+            }
+
+            ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayer(idMinecraft.get(code));
+            if (player == null) {
+                Main.logger.info("well thats null... minecraft edition");
+                event.getHook().editOriginal("Player is not online!").queue();
+                return;
+            }
+
             PlayerData playerData = PlayerDataManager.get(player);
 
-           playerData.savedData.isLinked = true;
-           playerData.savedData.discordID = discordID;
+            playerData.savedData.isLinked = true;
+            playerData.savedData.discordID = discordID;
 
-           discordData.savedData.isLinked = true;
-           discordData.savedData.minecraftUUID = player.getStringUUID();
+            discordData.savedData.isLinked = true;
+            discordData.savedData.minecraftUUID = player.getStringUUID();
+            DiscordDataManager.removeDiscordData(discordID);
 
-           minecraftIDs.remove(player.getUUID());
-           idMinecraft.remove(code);
+            idMinecraft.remove(code);
 
-            event.getHook().editOriginal("Your account has been linked with " + player.getScoreboardName());
+            event.getHook().editOriginal("Your account has been linked with " + player.getScoreboardName()).queue();
             PlayerUtil.getFactoryPlayer(player).sendMessage(
                     ChatFormat.nexiaMessage()
-                            .append(Component.text("Your account has been linked with the discord user id: ")
+                            .append(Component.text("Your account has been linked with the discord user: ")
                                     .decoration(ChatFormat.bold, false)
                                     .color(ChatFormat.normalColor)
-                                    .append(Component.text(discordID)
+                                    .append(Component.text(user.getAsTag())
                                             .color(ChatFormat.brandColor1)
                                             .decoration(ChatFormat.bold, true))
                             )
