@@ -178,10 +178,13 @@ public class DuelsGame { //implements Runnable{
 
         DuelGameHandler.duelsGames.add(game);
 
+        /*
         while(!game.hasStarted) {
             mcP1.teleportTo(duelLevel, invitorpos[0], invitorpos[1], invitorpos[2], invitorpos[3], invitorpos[4]);
             mcP2.teleportTo(duelLevel, playerpos[0], playerpos[1], playerpos[2], playerpos[3], playerpos[4]);
         }
+
+         */
 
         return game;
     }

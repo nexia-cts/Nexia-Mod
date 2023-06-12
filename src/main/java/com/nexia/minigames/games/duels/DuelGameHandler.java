@@ -38,10 +38,10 @@ public class DuelGameHandler {
     public static List<TeamDuelsGame> teamDuelsGames = new ArrayList<>();
     public static void leave(ServerPlayer player) {
         PlayerData data = PlayerDataManager.get(player);
-        if (player.getLastDamageSource() != null && data.duelsGame != null) {
+        if (data.duelsGame != null) {
             data.duelsGame.death(player, player.getLastDamageSource());
-            return;
-        } else if(player.getLastDamageSource() != null && data.teamDuelsGame != null) {
+        }
+        if(data.teamDuelsGame != null) {
             data.teamDuelsGame.death(player, player.getLastDamageSource());
         }
         if(data.gameMode == DuelGameMode.SPECTATING) {
