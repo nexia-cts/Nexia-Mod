@@ -28,7 +28,7 @@ public class DuelGameHandler {
 
     public static void leave(ServerPlayer player) {
         PlayerData data = PlayerDataManager.get(player);
-        if (player.getLastDamageSource() != null && data.duelsGame != null) {
+        if (data.duelsGame != null) {
             data.duelsGame.death(player, player.getLastDamageSource());
             return;
         }

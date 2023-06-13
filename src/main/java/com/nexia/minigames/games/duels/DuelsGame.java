@@ -188,7 +188,7 @@ public class DuelsGame { //implements Runnable{
         victimData.inDuel = false;
         victimData.inviteMap = "";
         victimData.inviteKit = "";
-        removeQueue(minecraftVictim, victimData.gameMode.id, true);
+        removeQueue(minecraftVictim, null, true);
         victimData.gameMode = DuelGameMode.LOBBY;
 
         if (!attackerNull) {
@@ -235,6 +235,10 @@ public class DuelsGame { //implements Runnable{
         victim.sendMessage(win);
         PlayerUtil.resetHealthStatus(victim);
         victim.getInventory().clear();
+
+        for(ServerPlayer spectator : this.spectators) {
+            LobbyUtil.leaveAllGames(spectator, true);
+        }
 
         SavedDuelsData data =
                 new SavedDuelsData(

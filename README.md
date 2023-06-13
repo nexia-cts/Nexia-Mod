@@ -1,4 +1,4 @@
-# Nexia DEV
+# Nexia MAIN
 using CombatReforged's Factory
 
 ### Requirements
