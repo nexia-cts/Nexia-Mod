@@ -5,10 +5,12 @@ import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.scheduler.TaskScheduler;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
+import net.minecraft.Util;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import xyz.nucleoid.fantasy.Fantasy;
@@ -29,6 +31,8 @@ public class ServerTime {
 
     public static FactoryAPI factoryAPI = null;
 
+    public static ServerType serverType = null;
+
     public static TaskScheduler scheduler = null;
 
     public static Fantasy fantasy = null;
@@ -36,6 +40,8 @@ public class ServerTime {
     public static void firstTick(MinecraftServer server) {
         minecraftServer = server;
         Main.server = server;
+
+        ServerTime.serverType = ServerType.returnServer();
 
         fantasy = Fantasy.get(minecraftServer);
         LobbyUtil.setLobbyWorld(minecraftServer);

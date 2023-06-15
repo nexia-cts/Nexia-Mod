@@ -45,9 +45,6 @@ import static com.nexia.core.utilities.time.ServerTime.leavePlayer;
 
 @Mixin(PlayerList.class)
 public class PlayerListMixin {
-
-    @Shadow @Final private MinecraftServer server;
-
     @ModifyArgs(method = "broadcastMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ClientboundChatPacket;<init>(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
     private void handleChat(Args args) {
         try {
@@ -122,8 +119,6 @@ public class PlayerListMixin {
             String reason = (String) object.get("reason");
 
             String textBanTime = banTimeToText(banTime);
-
-            Main.server.sendMessage(new TextComponent(String.valueOf(banTime)), Util.NIL_UUID);
 
             if(banTime > 0){
                 cir.setReturnValue(new TextComponent("§c§lYou have been banned.\n§7Duration: §d" + textBanTime + "\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + Main.config.discordLink));

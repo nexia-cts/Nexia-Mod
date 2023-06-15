@@ -38,9 +38,10 @@ public abstract class ServerPlayerMixin extends Player {
 
     @Inject(method = "attack", at = @At("HEAD"))
     public void onAttack(Entity entity, CallbackInfo ci) {
-        if(level == LobbyUtil.lobbyWorld && entity instanceof ServerPlayer player &&
+        ServerPlayer attacker = (ServerPlayer) (Object) this;
+        if(level == LobbyUtil.lobbyWorld && entity instanceof ServerPlayer player && player != attacker &&
                 this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("queue sword")) {
-            DuelGUI.openDuelGui((ServerPlayer) (Object) this, player);
+            DuelGUI.openDuelGui(attacker, player);
         }
     }
 
