@@ -25,6 +25,7 @@
     "main": [
       "com.nexia.core.Main",
       "com.nexia.ffa.Main",
+      "com.nexia.discord.Main",
       "com.nexia.minigames.Main"
     ],
     "factory": [

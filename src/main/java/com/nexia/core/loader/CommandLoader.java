@@ -4,6 +4,8 @@ import com.nexia.core.commands.player.*;
 import com.nexia.core.commands.player.duels.*;
 import com.nexia.core.commands.player.ffa.*;
 import com.nexia.core.commands.staff.*;
+import com.nexia.discord.commands.minecraft.LinkCommand;
+import com.nexia.discord.commands.minecraft.UnLinkCommand;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 
 public class CommandLoader {
@@ -38,6 +40,9 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(DuelCommand::register);
         CommandRegistrationCallback.EVENT.register(QueueCommand::register);
         CommandRegistrationCallback.EVENT.register(MapCommand::register);
+
+        CommandRegistrationCallback.EVENT.register(UnLinkCommand::register);
+        CommandRegistrationCallback.EVENT.register(LinkCommand::register);
 
         CommandRegistrationCallback.EVENT.register(BiomeCommand::register);
 

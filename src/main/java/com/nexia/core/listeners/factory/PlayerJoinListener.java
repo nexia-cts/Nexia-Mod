@@ -9,12 +9,19 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.discord.utilities.player.PlayerData;
+import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
+
+import static com.nexia.discord.Main.jda;
 
 public class PlayerJoinListener {
     public static void registerListener() {
@@ -83,43 +90,80 @@ public class PlayerJoinListener {
         player.sendMessage(ChatFormat.separatorLine("Welcome"));
         player.sendMessage(
                 Component.text(" » ").color(ChatFormat.brandColor2)
-                                .append(Component.text("Welcome ").color(ChatFormat.normalColor))
-                                        .append(Component.text(player.getRawName()).color(ChatFormat.brandColor2))
-                                                .append(Component.text(" to ").color(ChatFormat.normalColor))
-                                                        .append(Component.text("Nexia").color(ChatFormat.brandColor2))
-                                                                .append(Component.text("!").color(ChatFormat.normalColor))
+                        .append(Component.text("Welcome ").color(ChatFormat.normalColor))
+                        .append(Component.text(player.getRawName()).color(ChatFormat.brandColor2))
+                        .append(Component.text(" to ").color(ChatFormat.normalColor))
+                        .append(Component.text("Nexia").color(ChatFormat.brandColor2))
+                        .append(Component.text("!").color(ChatFormat.normalColor))
         );
         player.sendMessage(
                 Component.text(" » ").color(ChatFormat.brandColor2)
-                                .append(Component.text("Players online: ").color(ChatFormat.normalColor))
-                                        .append(Component.text(ServerTime.minecraftServer.getPlayerCount()).color(ChatFormat.brandColor2))
-                                                .append(Component.text("/").color(ChatFormat.lineColor))
-                                                        .append(Component.text(ServerTime.factoryServer.getMaxPlayerCount()).color(ChatFormat.brandColor2))
+                        .append(Component.text("Players online: ").color(ChatFormat.normalColor))
+                        .append(Component.text(ServerTime.minecraftServer.getPlayerCount()).color(ChatFormat.brandColor2))
+                        .append(Component.text("/").color(ChatFormat.lineColor))
+                        .append(Component.text(ServerTime.factoryServer.getMaxPlayerCount()).color(ChatFormat.brandColor2))
         );
         player.sendMessage(
                 Component.text(" » ").color(ChatFormat.brandColor2)
-                                .append(Component.text("Read the rules: ").color(ChatFormat.normalColor))
-                                        .append(Component.text("/rules")).color(ChatFormat.brandColor2).hoverEvent(HoverEvent.showText(Component.text("Click me").color(TextColor.fromHexString("#73ff54"))))
+                        .append(Component.text("Read the rules: ").color(ChatFormat.normalColor))
+                        .append(Component.text("/rules")).color(ChatFormat.brandColor2).hoverEvent(HoverEvent.showText(Component.text("Click me").color(TextColor.fromHexString("#73ff54"))))
                         .clickEvent(ClickEvent.suggestCommand("/rules"))
         );
         player.sendMessage(
                 Component.text(" » ").color(ChatFormat.brandColor2)
-                                .append(Component.text("Join our discord: ").color(ChatFormat.normalColor))
-                                        .append(Component.text(Main.config.discordLink)
-                                                .color(ChatFormat.brandColor2)
-                                                .hoverEvent(HoverEvent.showText(Component.text("Click me").color(TextColor.fromHexString("#73ff54"))))
-                                                .clickEvent(ClickEvent.openUrl(Main.config.discordLink))
-                                        )
+                        .append(Component.text("Join our discord: ").color(ChatFormat.normalColor))
+                        .append(Component.text(com.nexia.discord.Main.config.discordLink)
+                                .color(ChatFormat.brandColor2)
+                                .hoverEvent(HoverEvent.showText(Component.text("Click me").color(TextColor.fromHexString("#73ff54"))))
+                                .clickEvent(ClickEvent.openUrl(com.nexia.discord.Main.config.discordLink))
+                        )
         );
         player.sendMessage(ChatFormat.separatorLine(null));
     }
 
-    private static void processJoin(Player player, ServerPlayer minecraftPlayer){
+    private static void checkBooster(ServerPlayer player) throws RateLimitedException {
+        PlayerData playerData = com.nexia.discord.utilities.player.PlayerDataManager.get(player);
+        if(!playerData.savedData.isLinked) { return; }
+        Member discordUser = jda.getGuildById(com.nexia.discord.Main.config.guildID).retrieveMemberById(playerData.savedData.discordID).complete(true);
+        if(discordUser == null) {
+            if(Permissions.check(player, "nexia.prefix.supporter")) {
+                if(Permissions.check(player, "nexia.staff")) {
+                    ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getScoreboardName() + " supporter");
+                    return;
+                }
+                ServerTime.factoryServer.runCommand("/rank " + player.getScoreboardName() + " default", 4, false);
+            }
+            return;
+        }
+
+        Role supporterRole = jda.getRoleById("1107264322951979110"); // supporter rank role
+        boolean hasRole = discordUser.getRoles().contains(supporterRole);
+
+        if(hasRole && Permissions.check(player, "nexia.staff") && !Permissions.check(player, "nexia.prefix.supporter")) {
+            ServerTime.factoryServer.runCommand("/staffprefix add " + player.getScoreboardName() + " supporter");
+            return;
+        } else if(!hasRole && Permissions.check(player, "nexia.prefix.supporter")) {
+            ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getScoreboardName() + " supporter");
+            return;
+        }
+
+        if(hasRole && !Permissions.check(player, "nexia.prefix.supporter")) {
+            ServerTime.factoryServer.runCommand("/rank " + player.getScoreboardName() + " supporter", 4, false);
+        } else if(!hasRole && Permissions.check(player, "nexia.prefix.supporter")) {
+            ServerTime.factoryServer.runCommand("/rank " + player.getScoreboardName() + " default", 4, false);
+        }
+    }
+
+    private static void processJoin(Player player, ServerPlayer minecraftPlayer) {
         PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.ffa.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
+        com.nexia.discord.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.minigames.games.duels.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         LobbyUtil.leaveAllGames(minecraftPlayer, true);
         runCommands(player, minecraftPlayer);
+        try {
+            checkBooster(minecraftPlayer);
+        }catch (Exception ignored) {}
         sendJoinMessage(player);
     }
 }

@@ -15,6 +15,14 @@ public class ServerType {
         this.ip = ip;
     }
 
+    public static ServerType getServerType(String region) {
+        ServerType serverType = null;
+        if(region.equalsIgnoreCase("eu")) serverType = ServerType.EU;
+        if(region.equalsIgnoreCase("na")) serverType = ServerType.NA;
+        if(region.equalsIgnoreCase("dev")) serverType = ServerType.NA;
+        return serverType;
+    }
+
     public static ServerType returnServer() {
         String ip = ServerTime.minecraftServer.getLocalIp();
         ServerType serverType = ServerType.DEV;
