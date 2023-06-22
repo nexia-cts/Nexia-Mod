@@ -52,7 +52,7 @@ public class BanCommand {
                 ++i;
                 if(player != null){
                     PlayerUtil.getFactoryPlayer(player).sendMessage(
-                            ChatFormat.nexiaMessage()
+                            ChatFormat.nexiaMessage
                                             .append(Component.text("You have banned ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                                     .append(Component.text(ComponentUtils.getDisplayName(gameProfile).getString()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                                                             .append(Component.text(" for ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
@@ -72,7 +72,7 @@ public class BanCommand {
         if (i == 0) {
             if(player != null){
                 PlayerUtil.getFactoryPlayer(player).sendMessage(
-                        ChatFormat.nexiaMessage().append(Component.text("That player is already banned.").color(ChatFormat.failColor))
+                        ChatFormat.nexiaMessage.append(Component.text("That player is already banned.").color(ChatFormat.failColor))
                 );
             } else {
                 context.sendFailure(LegacyChatFormat.formatFail("That player is already banned."));

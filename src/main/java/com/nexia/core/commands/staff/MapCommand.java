@@ -50,7 +50,7 @@ public class MapCommand {
 
         if((ChatFormat.hasWhiteSpacesOrSpaces(null, map) || ChatFormat.hasWhiteSpacesOrSpaces(null, type)) || (type == null || map == null)) {
             player.sendMessage(
-                    ChatFormat.nexiaMessage()
+                    ChatFormat.nexiaMessage
                                     .append(Component.text("Invalid name!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
             );
 
@@ -78,7 +78,7 @@ public class MapCommand {
             mcPlayer.teleportTo(level, 0, 80, 0, 0, 0);
 
             player.sendMessage(
-                    ChatFormat.nexiaMessage()
+                    ChatFormat.nexiaMessage
                                     .append(Component.text("Created map called: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                             .append(Component.text(map).color(ChatFormat.brandColor2))
             );
@@ -89,7 +89,7 @@ public class MapCommand {
         if (type.equalsIgnoreCase("delete")) {
             ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), null).delete();
             player.sendMessage(
-                    ChatFormat.nexiaMessage()
+                    ChatFormat.nexiaMessage
                             .append(Component.text("Deleted map called: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                             .append(Component.text(map).color(ChatFormat.brandColor2))
             );
@@ -101,7 +101,7 @@ public class MapCommand {
             mcPlayer.teleportTo(level, 0, 80, 0, 0, 0);
 
             player.sendMessage(
-                    ChatFormat.nexiaMessage()
+                    ChatFormat.nexiaMessage
                             .append(Component.text("Teleported to map called: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                             .append(Component.text(map).color(ChatFormat.brandColor2))
             );

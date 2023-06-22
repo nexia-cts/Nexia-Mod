@@ -48,7 +48,7 @@ public class LinkCommand {
         Discord.idMinecraft.put(id, player.getUUID());
 
         factoryPlayer.sendMessage(
-                ChatFormat.nexiaMessage()
+                ChatFormat.nexiaMessage
                         .append(Component.text("Your code is: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                 .append(Component.text(id).color(ChatFormat.brandColor1)
                                         .decoration(ChatFormat.bold, true)

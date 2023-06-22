@@ -36,6 +36,7 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(UnTempBanCommand::register);
 
         CommandRegistrationCallback.EVENT.register(StaffPrefixCommand::register);
+        CommandRegistrationCallback.EVENT.register(StaffReportCommand::register);
 
         CommandRegistrationCallback.EVENT.register(DuelCommand::register);
         CommandRegistrationCallback.EVENT.register(QueueCommand::register);

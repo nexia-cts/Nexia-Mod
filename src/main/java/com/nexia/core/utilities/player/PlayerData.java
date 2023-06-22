@@ -22,6 +22,8 @@ public class PlayerData {
     public ServerPlayer combatTagPlayer;
     public LocalDateTime combatTagEnd;
 
+    public boolean isReportBanned;
+
     public ServerPlayer lastMessageSender;
 
     public PlayerData(SavedPlayerData savedData) {
@@ -29,6 +31,8 @@ public class PlayerData {
 
         this.combatTagPlayer = null;
         this.combatTagEnd = LocalDateTime.now();
+
+        this.isReportBanned = false;
 
         this.gameMode = PlayerGameMode.LOBBY;
         this.spawnWorld = LobbyUtil.lobbyWorld.dimension();

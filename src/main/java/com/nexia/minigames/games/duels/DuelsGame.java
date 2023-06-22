@@ -134,11 +134,11 @@ public class DuelsGame { //implements Runnable{
          */
 
 
-        p2.sendMessage(ChatFormat.nexiaMessage()
+        p2.sendMessage(ChatFormat.nexiaMessage
                 .append(Component.text("Your opponent: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                 .append(Component.text(p1.getRawName()).color(ChatFormat.brandColor2))));
 
-        p1.sendMessage(ChatFormat.nexiaMessage()
+        p1.sendMessage(ChatFormat.nexiaMessage
                 .append(Component.text("Your opponent: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                 .append(Component.text(p2.getRawName()).color(ChatFormat.brandColor2))));
 

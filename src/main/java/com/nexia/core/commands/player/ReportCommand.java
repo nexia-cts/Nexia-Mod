@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.http.DiscordWebhook;
+import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
@@ -50,9 +51,19 @@ public class ReportCommand {
     public static int report(CommandContext<CommandSourceStack> context, ServerPlayer player, String reason) throws CommandSyntaxException {
         ServerPlayer mcExecutor = context.getSource().getPlayerOrException();
         Player executor = PlayerUtil.getFactoryPlayer(mcExecutor);
+
+        if(PlayerDataManager.get(mcExecutor).isReportBanned) {
+            executor.sendMessage(
+                    ChatFormat.nexiaMessage
+                            .append(Component.text("You are report banned!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
+
+            );
+            return 1;
+        }
+
         if(mcExecutor == player){
             executor.sendMessage(
-                    ChatFormat.nexiaMessage()
+                    ChatFormat.nexiaMessage
                                     .append(Component.text("You cannot report yourself!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
 
             );
@@ -60,7 +71,7 @@ public class ReportCommand {
         }
 
         executor.sendMessage(
-                ChatFormat.nexiaMessage()
+                ChatFormat.nexiaMessage
                                 .append(Component.text("You have reported ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                         .append(Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2))
                                                 .append(Component.text(" for ").color(ChatFormat.normalColor))
@@ -73,7 +84,7 @@ public class ReportCommand {
             staffPlayer = PlayerUtil.getMinecraftPlayerFromName(Main.server.getPlayerNames()[i]);
             if(Permissions.check(staffPlayer, "nexia.staff.report", 1)) {
                 PlayerUtil.getFactoryPlayer(staffPlayer).sendMessage(
-                        ChatFormat.nexiaMessage()
+                        ChatFormat.nexiaMessage
                                         .append(Component.text(executor.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                                                 .append(Component.text(" has reported ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                                         .append(Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))

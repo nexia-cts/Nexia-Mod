@@ -31,7 +31,7 @@ public class PlayerMutes {
                 "\n{s}Reason: {b2}{}", muted.getScoreboardName(), muteTimeToText(duration), reason), false);
 
         PlayerUtil.getFactoryPlayer(muted).sendMessage(
-                ChatFormat.nexiaMessage()
+                ChatFormat.nexiaMessage
                                 .append(Component.text("You have been muted for "))
                                         .append(Component.text(muteTimeToText(duration)).color(ChatFormat.brandColor2))
                                                 .append(Component.text(".\nReason: "))
@@ -55,7 +55,7 @@ public class PlayerMutes {
         sender.sendSuccess(LegacyChatFormat.format("{s}Unmuted {b2}{}{s}.", unMuted.getScoreboardName()), false);
 
         PlayerUtil.getFactoryPlayer(unMuted).sendMessage(
-                ChatFormat.nexiaMessage()
+                ChatFormat.nexiaMessage
                                 .append(Component.text("You have been unmuted."))
         );
     }
@@ -68,7 +68,7 @@ public class PlayerMutes {
         if (muteTime > 0) {
 
             PlayerUtil.getFactoryPlayer(player).sendMessage(
-                    ChatFormat.nexiaMessage()
+                    ChatFormat.nexiaMessage
                             .append(Component.text("You have been muted for "))
                             .append(Component.text(muteTimeToText(muteTime)).color(ChatFormat.brandColor2))
                             .append(Component.text(".\nReason: "))

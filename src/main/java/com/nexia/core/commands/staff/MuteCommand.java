@@ -50,7 +50,7 @@ public class MuteCommand {
             try {
                 player = sender.getPlayerOrException();
                 PlayerUtil.getFactoryPlayer(player).sendMessage(
-                        ChatFormat.nexiaMessage()
+                        ChatFormat.nexiaMessage
                                         .append(Component.text("Invalid duration. Examples: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                                         .append(Component.text("1s / 2m / 3h").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
                 );

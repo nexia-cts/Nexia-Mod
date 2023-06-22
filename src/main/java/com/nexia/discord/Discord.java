@@ -75,7 +75,7 @@ public class Discord extends ListenerAdapter {
 
             event.getHook().editOriginal("Your account has been linked with " + player.getScoreboardName()).queue();
             PlayerUtil.getFactoryPlayer(player).sendMessage(
-                    ChatFormat.nexiaMessage()
+                    ChatFormat.nexiaMessage
                             .append(Component.text("Your account has been linked with the discord user: ")
                                     .decoration(ChatFormat.bold, false)
                                     .color(ChatFormat.normalColor)

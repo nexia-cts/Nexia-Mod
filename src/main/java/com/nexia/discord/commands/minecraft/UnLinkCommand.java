@@ -58,7 +58,7 @@ public class UnLinkCommand {
         }
 
         factoryPlayer.sendMessage(
-                ChatFormat.nexiaMessage()
+                ChatFormat.nexiaMessage
                         .append(Component.text("You have successfully unlinked your discord account.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
 
         return Command.SINGLE_SUCCESS;

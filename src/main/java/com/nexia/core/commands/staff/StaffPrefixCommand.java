@@ -51,7 +51,7 @@ public class StaffPrefixCommand {
 
                                                         if(factoryExecutor != null){
                                                             factoryExecutor.sendMessage(
-                                                                    ChatFormat.nexiaMessage()
+                                                                    ChatFormat.nexiaMessage
                                                                                     .append(Component.text("You have set the prefix of ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                                                                             .append(Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor2))
                                                                                                     .append(Component.text(" to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
@@ -63,7 +63,7 @@ public class StaffPrefixCommand {
                                                         }
 
                                                         otherPlayer.sendMessage(
-                                                                ChatFormat.nexiaMessage()
+                                                                ChatFormat.nexiaMessage
                                                                                 .append(Component.text("Your prefix has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                                                                         .append(Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                                                                                                 .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
@@ -84,7 +84,7 @@ public class StaffPrefixCommand {
 
                                                         if(factoryExecutor != null){
                                                             factoryExecutor.sendMessage(
-                                                                    ChatFormat.nexiaMessage()
+                                                                    ChatFormat.nexiaMessage
                                                                             .append(Component.text("You have removed the prefix ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                                                             .append(Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true).decoration(ChatFormat.bold, false))
                                                                             .append(Component.text(" from: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
@@ -106,7 +106,7 @@ public class StaffPrefixCommand {
                                                     if(prefix.equalsIgnoreCase(Main.config.ranks[i])){
                                                         if(factoryExecutor != null){
                                                             factoryExecutor.sendMessage(
-                                                                    ChatFormat.nexiaMessage()
+                                                                    ChatFormat.nexiaMessage
                                                                             .append(Component.text("You have added the prefix ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                                                             .append(Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                                                                             .append(Component.text(" to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))

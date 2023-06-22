@@ -114,7 +114,7 @@ public class SpawnGUI extends SimpleGui {
         if(pos != null){
             minecraftPlayer.teleportTo(FfaAreas.ffaWorld, pos[0], pos[1], pos[2], pos[3], pos[4]);
             player.sendMessage(
-                    ChatFormat.nexiaMessage()
+                    ChatFormat.nexiaMessage
                                     .append(Component.text("You have been teleported to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                             .append(Component.text(name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                             .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))

@@ -25,9 +25,10 @@ public class ServerType {
 
     public static ServerType returnServer() {
         String ip = ServerTime.minecraftServer.getLocalIp();
-        ServerType serverType = ServerType.DEV;
+        ServerType serverType = null;
         if(ip.equalsIgnoreCase(ServerType.EU.ip)) serverType = ServerType.EU;
         if(ip.equalsIgnoreCase(ServerType.NA.ip)) serverType = ServerType.NA;
+        if(ip.equalsIgnoreCase(ServerType.DEV.ip)) serverType = ServerType.DEV;
         return serverType;
     }
 }
