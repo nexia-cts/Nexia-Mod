@@ -404,7 +404,7 @@ public class GamemodeHandler {
             }
             if(!silent){
                 player.sendMessage(
-                        ChatFormat.nexiaMessage()
+                        ChatFormat.nexiaMessage
                                         .append(Component.text("You have left the queue for ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                                                                 .append(Component.text(stringGameMode.toUpperCase()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                                                                         .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
@@ -461,7 +461,7 @@ public class GamemodeHandler {
 
         duelsGame.spectators.add(executor);
         factoryExecutor.sendMessage(
-                ChatFormat.nexiaMessage()
+                ChatFormat.nexiaMessage
                         .append(Component.text("You are now spectating ")
                                 .color(ChatFormat.normalColor)
                                 .decoration(ChatFormat.bold, false)
@@ -500,7 +500,7 @@ public class GamemodeHandler {
         if(duelsGame != null) {
             duelsGame.spectators.remove(executor);
             factoryExecutor.sendMessage(
-                    ChatFormat.nexiaMessage()
+                    ChatFormat.nexiaMessage
                             .append(Component.text("You have stopped spectating ")
                                     .color(ChatFormat.normalColor)
                                     .decoration(ChatFormat.bold, false)
@@ -592,7 +592,7 @@ public class GamemodeHandler {
         if(playerData.inviting && playerData.invitingPlayer != null && playerData.invitingPlayer == minecraftExecutor && executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) && executorData.inviteKit.equalsIgnoreCase(playerData.inviteKit)){
             GamemodeHandler.joinGamemode(minecraftExecutor, minecraftPlayer, stringGameMode, map, true);
         } else if((!executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) || !executorData.inviteKit.equalsIgnoreCase(playerData.inviteKit)) && (playerData.invitingPlayer == null || !playerData.invitingPlayer.getStringUUID().equalsIgnoreCase(minecraftExecutor.getStringUUID())) && playerData.gameMode == DuelGameMode.LOBBY){
-            executor.sendMessage(ChatFormat.nexiaMessage()
+            executor.sendMessage(ChatFormat.nexiaMessage
                     .append(Component.text("Sending a duel request to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                             .append(Component.text(player.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                             .append(Component.text(" on map ")).append(Component.text(map).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))

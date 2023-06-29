@@ -193,7 +193,7 @@ public class LobbyUtil {
             if(message){
                 player.sendActionBarMessage(Component.text("You have joined §f☯ §c§lDuels §7\uD83E\uDE93"));
                 player.sendMessage(
-                        ChatFormat.nexiaMessage()
+                        ChatFormat.nexiaMessage
                                 .append(Component.text("Duels has now moved here. (main hub)").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                 );
                 player.sendMessage(Component.text("Meaning you can now use /duel, /queue and /spectate inside of the normal hub WITHOUT going to duels!").decoration(ChatFormat.bold, false));

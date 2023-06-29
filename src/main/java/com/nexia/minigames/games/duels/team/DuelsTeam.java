@@ -183,7 +183,7 @@ public class DuelsTeam {
         }
 
         if(message) {
-            factoryPlayer.sendMessage(ChatFormat.nexiaMessage()
+            factoryPlayer.sendMessage(ChatFormat.nexiaMessage
                     .append(Component.text("You have created a team.")
                             .color(ChatFormat.normalColor)
                             .decoration(ChatFormat.bold, false)

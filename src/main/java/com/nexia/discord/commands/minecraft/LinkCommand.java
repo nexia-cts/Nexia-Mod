@@ -28,7 +28,8 @@ public class LinkCommand {
                 .requires(commandSourceStack -> {
                     try {
                         return !PlayerDataManager.get(commandSourceStack.getPlayerOrException()).savedData.isLinked;
-                    } catch (Exception ignored) { }
+                    } catch (Exception ignored) {
+                    }
                     return false;
                 })
                 .executes(LinkCommand::run)
@@ -41,23 +42,22 @@ public class LinkCommand {
 
         int id = RandomUtil.randomInt(1000, 9999);
 
-        if(Discord.idMinecraft.containsKey(id)) {
+        if (Discord.idMinecraft.containsKey(id)) {
             id = RandomUtil.randomInt(1000, 9999);
         }
 
         Discord.idMinecraft.put(id, player.getUUID());
 
         factoryPlayer.sendMessage(
-                ChatFormat.nexiaMessage()
+                ChatFormat.nexiaMessage
                         .append(Component.text("Your code is: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                .append(Component.text(id).color(ChatFormat.brandColor1)
-                                        .decoration(ChatFormat.bold, true)
-                                        .hoverEvent(HoverEvent.showText(Component.text("Click me to copy").color(ChatFormat.greenColor)))
-                                        .clickEvent(ClickEvent.copyToClipboard(String.valueOf(id)))
+                        .append(Component.text(id).color(ChatFormat.brandColor1)
+                                .decoration(ChatFormat.bold, true)
+                                .hoverEvent(HoverEvent.showText(Component.text("Click me to copy").color(ChatFormat.greenColor)))
+                                .clickEvent(ClickEvent.copyToClipboard(String.valueOf(id)))
                         ));
 
         return Command.SINGLE_SUCCESS;
     }
 
 }
-

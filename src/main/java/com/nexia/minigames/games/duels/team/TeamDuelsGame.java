@@ -86,7 +86,7 @@ public class TeamDuelsGame { //implements Runnable{
             player.teleportTo(duelLevel, team1Pos[0], team1Pos[1], team1Pos[2], team1Pos[3], team1Pos[4]);
             player.setGameMode(gameMode.gameMode);
 
-            factoryPlayer.sendMessage(ChatFormat.nexiaMessage()
+            factoryPlayer.sendMessage(ChatFormat.nexiaMessage
                     .append(Component.text("Your opponent: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                             .append(Component.text(team2.creator.getScoreboardName() + "'s Team").color(ChatFormat.brandColor2))));
 
@@ -111,7 +111,7 @@ public class TeamDuelsGame { //implements Runnable{
             player.teleportTo(duelLevel, team2Pos[0], team2Pos[1], team2Pos[2], team2Pos[3], team2Pos[4]);
             player.setGameMode(gameMode.gameMode);
 
-            factoryPlayer.sendMessage(ChatFormat.nexiaMessage()
+            factoryPlayer.sendMessage(ChatFormat.nexiaMessage
                     .append(Component.text("Your opponent: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                             .append(Component.text(team1.creator.getScoreboardName() + "'s Team").color(ChatFormat.brandColor2))));
 

@@ -63,7 +63,7 @@ public class FfaUtil {
                 wasInSpawn.remove(minecraftPlayer.getUUID());
                 Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
                 saveInventory(minecraftPlayer);
-                player.sendActionBarMessage(ChatFormat.nexiaMessage().append(Component.text("Your inventory layout was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
+                player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your inventory layout was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
             }
         }
     }

@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.fabricmc.api.ModInitializer;
 import org.apache.logging.log4j.Level;
@@ -42,7 +43,16 @@ public class Main implements ModInitializer {
         jda.updateCommands().addCommands(
                 Commands.slash("link", "Link the minecraft player with the discord player.")
                         .setGuildOnly(true)
-                        .addOption(OptionType.INTEGER, "code", "The code when you do /link in minecraft.", true)
+                        .addOptions(
+                                new OptionData(OptionType.STRING, "server", "Which server you're trying to link on.")
+                                        .setRequired(true)
+                                        .setMaxLength(2)
+                                        .addChoice("EU", "eu")
+                                        .addChoice("NA", "na"),
+                                new OptionData(OptionType.INTEGER, "code", "The code when you do /link in minecraft.")
+                                        .setRequired(true)
+                                        .setRequiredRange(0, 9999)
+                        )
         ).queue();
     }
 }

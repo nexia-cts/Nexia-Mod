@@ -21,7 +21,7 @@ public class DiscordCommand {
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         PlayerUtil.getFactoryPlayer(context.getSource().getPlayerOrException()).sendMessage(
-                ChatFormat.nexiaMessage()
+                ChatFormat.nexiaMessage
                                 .append(Component.text("Link to discord: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                                         .append(Component.text(com.nexia.discord.Main.config.discordLink).color(ChatFormat.brandColor2)
                                                 .hoverEvent(HoverEvent.showText(Component.text("Click me").color(ChatFormat.greenColor)))

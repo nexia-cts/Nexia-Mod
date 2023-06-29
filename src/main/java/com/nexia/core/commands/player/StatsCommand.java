@@ -147,7 +147,7 @@ public class StatsCommand {
 
         Component user = start
                 .append(Component.text(" User: ").color(ChatFormat.brandColor2))
-                .append(Component.text(player.getRawName()).color(ChatFormat.normalColor))
+                .append(Component.text(otherPlayer.getScoreboardName()).color(ChatFormat.normalColor))
                 ;
 
 

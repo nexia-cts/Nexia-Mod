@@ -61,7 +61,7 @@ public class ProtectionMap {
             }
         }
 
-        PlayerUtil.getFactoryPlayer(player).sendMessage(ChatFormat.nexiaMessage()
+        PlayerUtil.getFactoryPlayer(player).sendMessage(ChatFormat.nexiaMessage
                 .append(Component.text("Map created successfully with ").color(ChatFormat.normalColor)
                         .append(Component.text(blockCount).color(ChatFormat.brandColor2)
                                 .append(Component.text(" protected blocks.").color(ChatFormat.normalColor))
@@ -79,11 +79,11 @@ public class ProtectionMap {
             fileWriter.write(json);
             fileWriter.close();
 
-            player.sendMessage(ChatFormat.nexiaMessage().append(Component.text("Successfully exported protection map.").color(ChatFormat.normalColor)));
+            player.sendMessage(ChatFormat.nexiaMessage.append(Component.text("Successfully exported protection map.").color(ChatFormat.normalColor)));
 
         } catch (Exception e) {
             e.printStackTrace();
-            player.sendMessage(ChatFormat.nexiaMessage().append(Component.text("Failed to export protection map.").color(ChatFormat.failColor)));
+            player.sendMessage(ChatFormat.nexiaMessage.append(Component.text("Failed to export protection map.").color(ChatFormat.failColor)));
         }
     }
 

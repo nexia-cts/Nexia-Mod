@@ -40,11 +40,15 @@ public class ServerTime {
 
     public static TaskScheduler scheduler = null;
 
+    public static ServerType serverType = null;
+
     public static Fantasy fantasy = null;
 
     public static void firstTick(MinecraftServer server) {
         minecraftServer = server;
         Main.server = server;
+
+        serverType = ServerType.returnServer();
 
         fantasy = Fantasy.get(minecraftServer);
         LobbyUtil.setLobbyWorld(minecraftServer);
@@ -85,8 +89,6 @@ public class ServerTime {
             case 6 -> BwGame.bedWarsSecond();
         }
     }
-
-    public static ServerType serverType = ServerType.DEV;
 
     static void everySecond() {
         totalSecondCount++;

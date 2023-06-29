@@ -41,6 +41,25 @@ public class ChatFormat {
     public static TextDecoration underlined = TextDecoration.UNDERLINED;
     public static TextDecoration obfuscated = TextDecoration.OBFUSCATED;
 
+    // Text
+
+    public static Component nexiaMessage = Component.text("N")
+            .color(TextColor.fromHexString("#9e00f5"))
+            .decoration(bold, true)
+            .append(Component.text("e")
+                    .color(TextColor.fromHexString("#aa00f3"))
+                    .append(Component.text("x")
+                            .color(TextColor.fromHexString("#b600f2"))
+                            .append(Component.text("i")
+                                    .color(TextColor.fromHexString("#c300f0"))
+                                    .append(Component.text("a")
+                                            .color(TextColor.fromHexString("#cf00ee"))
+                                    )
+                            )
+                    )
+            )
+            .append(Component.text(" » ").color(arrowColor).decoration(bold, false));
+
 
     public static Component separatorLine(String title) {
         String spaces = "                                                                ";
@@ -69,23 +88,4 @@ public class ChatFormat {
         }
         return false;
     }
-
-   public static Component nexiaMessage(){
-        return Component.text("N")
-                .color(TextColor.fromHexString("#9e00f5"))
-                .decoration(bold, true)
-                .append(Component.text("e")
-                        .color(TextColor.fromHexString("#aa00f3"))
-                        .append(Component.text("x")
-                                .color(TextColor.fromHexString("#b600f2"))
-                                .append(Component.text("i")
-                                        .color(TextColor.fromHexString("#c300f0"))
-                                        .append(Component.text("a")
-                                                .color(TextColor.fromHexString("#cf00ee"))
-                                        )
-                                )
-                        )
-                )
-                .append(Component.text(" » ").color(arrowColor).decoration(bold, false));
-   }
 }
