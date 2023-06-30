@@ -96,12 +96,10 @@ public class ServerTime {
         try {
             for (DuelsGame game : DuelGameHandler.duelsGames) {
                 if (game == null) return;
-                try {
-                    game.duelSecond();
-                } catch (Exception ignored) {
-                }
+                game.duelSecond();
             }
         } catch (Exception ignored) { }
+
     }
 
 }

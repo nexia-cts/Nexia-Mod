@@ -56,11 +56,6 @@ public class TeamCommand {
     public static int joinTeam(CommandContext<CommandSourceStack> context, ServerPlayer player) throws CommandSyntaxException {
         ServerPlayer executor = context.getSource().getPlayerOrException();
         com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(executor);
-
-        if(data.duelsTeam == null) {
-            PlayerUtil.getFactoryPlayer(executor).sendMessage(Component.text("You aren't in a team!"));
-            return 1;
-        }
         com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).duelsTeam.joinTeam(context.getSource().getPlayerOrException());
         return 1;
     }

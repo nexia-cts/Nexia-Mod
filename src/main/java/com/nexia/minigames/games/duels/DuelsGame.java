@@ -17,6 +17,8 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Position;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -29,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 
@@ -44,9 +47,11 @@ public class DuelsGame { //implements Runnable{
 
     public boolean hasStarted = false;
 
+    public HashMap<ServerPlayer, float[]> spawnPositions = new HashMap<>();
+
     public int startTime;
 
-    private int currentStartTime = 0;
+    private int currentStartTime = 5;
 
     public int endTime;
 
@@ -113,18 +118,13 @@ public class DuelsGame { //implements Runnable{
         ServerTime.factoryServer.runCommand(start + " if block 0 80 0 minecraft:structure_block run setblock 0 80 0 air");
         ServerTime.factoryServer.runCommand(start + " if block 1 80 0 minecraft:redstone_block run setblock 1 80 0 air");
 
-
-        p1.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-        p1.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
-
-        p2.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-        p2.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
-
         PlayerUtil.resetHealthStatus(p1);
         PlayerUtil.resetHealthStatus(p2);
 
         float[] invitorpos = DuelGameHandler.returnPosMap(selectedMap, true);
         float[] playerpos = DuelGameHandler.returnPosMap(selectedMap, false);
+
+
 
         mcP2.teleportTo(duelLevel, playerpos[0], playerpos[1], playerpos[2], playerpos[3], playerpos[4]);
         //EntityPos playerPos = new EntityPos(0, 85, 0, 0, 0);
@@ -177,6 +177,9 @@ public class DuelsGame { //implements Runnable{
         playerData.duelsGame = game;
 
         DuelGameHandler.duelsGames.add(game);
+
+        game.spawnPositions.put(mcP1, invitorpos);
+        game.spawnPositions.put(mcP2, playerpos);
 
         /*
         while(!game.hasStarted) {
@@ -239,8 +242,27 @@ public class DuelsGame { //implements Runnable{
             }
         }
         if(!this.hasStarted) {
-            this.currentStartTime++;
+            float[] p1pos = this.spawnPositions.get(this.p1);
+            float[] p2pos = this.spawnPositions.get(this.p2);
 
+            this.currentStartTime--;
+
+            this.p1.teleportTo(this.level, p1pos[0], p1pos[1], p1pos[2], p1pos[3], p1pos[4]);
+            this.p2.teleportTo(this.level, p2pos[0], p2pos[1], p2pos[2], p2pos[3], p2pos[4]);
+
+            if (this.startTime - this.currentStartTime >= this.startTime) {
+                PlayerUtil.sendSound(this.p1, new EntityPos(this.p1), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
+                PlayerUtil.sendSound(this.p2, new EntityPos(this.p2), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
+                this.p1.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                this.p1.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
+
+                this.p2.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                this.p2.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
+                this.hasStarted = true;
+                return;
+            }
+
+            Title title;
             TextColor color = NamedTextColor.GREEN;
 
             if(this.currentStartTime <= 3 && this.currentStartTime > 1) {
@@ -249,19 +271,14 @@ public class DuelsGame { //implements Runnable{
                 color = NamedTextColor.RED;
             }
 
-            Title title = Title.title(Component.text(this.currentStartTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(50), Duration.ofMillis(900), Duration.ofMillis(50)));
+            title = Title.title(Component.text(this.currentStartTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
 
             PlayerUtil.getFactoryPlayer(this.p1).sendTitle(title);
             PlayerUtil.getFactoryPlayer(this.p2).sendTitle(title);
 
-            PlayerUtil.sendSound(this.p1, new EntityPos(this.p1), SoundEvents.NOTE_BLOCK_BASS, SoundSource.BLOCKS, 10, 1);
-            PlayerUtil.sendSound(this.p2, new EntityPos(this.p1), SoundEvents.NOTE_BLOCK_BASS, SoundSource.BLOCKS, 10, 1);
+            PlayerUtil.sendSound(this.p1, new EntityPos(this.p1), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+            PlayerUtil.sendSound(this.p2, new EntityPos(this.p1), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
 
-            if (this.currentStartTime >= this.startTime || !this.shouldWait) {
-                PlayerUtil.sendSound(this.p1, new EntityPos(this.p1), SoundEvents.NOTE_BLOCK_BASS, SoundSource.BLOCKS, 10, 2);
-                PlayerUtil.sendSound(this.p2, new EntityPos(this.p2), SoundEvents.NOTE_BLOCK_BASS, SoundSource.BLOCKS, 10, 2);
-                this.hasStarted = true;
-            }
         }
     }
 
@@ -270,6 +287,7 @@ public class DuelsGame { //implements Runnable{
         this.winner = minecraftAttacker;
         this.loser = minecraftVictim;
         this.shouldWait = wait;
+        this.hasStarted = true;
         this.isEnding = true;
 
         boolean attackerNull = minecraftAttacker == null;

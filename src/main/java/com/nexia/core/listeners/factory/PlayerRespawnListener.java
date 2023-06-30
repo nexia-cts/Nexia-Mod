@@ -5,11 +5,9 @@ import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.combatreforged.factory.api.world.util.Location;
-import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
-import net.minecraft.Util;
 import net.minecraft.server.level.ServerPlayer;
 
 public class PlayerRespawnListener {
@@ -20,11 +18,11 @@ public class PlayerRespawnListener {
                 factoryPlayer = (Player) respawnEvent.getEntity();
             }
 
-            ServerTime.minecraftServer.sendMessage(LegacyChatFormat.format(String.valueOf(factoryPlayer == null)), Util.NIL_UUID);
             if(factoryPlayer == null) return;
 
             ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayer(factoryPlayer.getUUID());
 
+            if(player == null) return;
             DuelsGame duelsGame = PlayerDataManager.get(player).duelsGame;
 
             if(duelsGame != null && duelsGame.isEnding && duelsGame.winner != null) {

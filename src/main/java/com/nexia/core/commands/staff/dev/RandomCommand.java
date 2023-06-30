@@ -7,6 +7,7 @@ import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.TextComponent;
 
 public class RandomCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
@@ -19,6 +20,8 @@ public class RandomCommand {
     }
 
     public static int calculate(CommandContext<CommandSourceStack> context, int minimum, int maximum) {
-        return RandomUtil.randomInt(minimum, maximum);
+        int random = RandomUtil.randomInt(minimum, maximum);
+        context.getSource().sendSuccess(new TextComponent(String.valueOf(random)), false);
+        return random;
     }
 }
