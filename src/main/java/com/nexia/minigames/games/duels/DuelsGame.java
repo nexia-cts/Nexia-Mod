@@ -201,7 +201,7 @@ public class DuelsGame { //implements Runnable{
                 PlayerUtil.resetHealthStatus(attacker);
 
                 for(ServerPlayer spectator : this.spectators) {
-                    LobbyUtil.leaveAllGames(spectator, true);
+                    PlayerUtil.getFactoryPlayer(spectator).runCommand("/hub", 0, false);
                 }
 
                 victimData.duelsGame = null;

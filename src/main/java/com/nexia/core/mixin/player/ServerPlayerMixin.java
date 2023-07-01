@@ -70,6 +70,8 @@ public abstract class ServerPlayerMixin extends Player {
         }
         else if(gameMode == PlayerGameMode.LOBBY && duelsData.duelsGame != null){
             duelsData.duelsGame.death(player, damageSource);
+        } else if(gameMode == PlayerGameMode.LOBBY && duelsData.teamDuelsGame != null) {
+            duelsData.teamDuelsGame.death(player, damageSource);
         }
     }
 

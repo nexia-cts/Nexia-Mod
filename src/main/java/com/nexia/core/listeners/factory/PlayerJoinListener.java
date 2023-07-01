@@ -127,8 +127,9 @@ public class PlayerJoinListener {
         Member discordUser = jda.getGuildById(com.nexia.discord.Main.config.guildID).retrieveMemberById(playerData.savedData.discordID).complete(true);
         if(discordUser == null) {
             if(Permissions.check(player, "nexia.prefix.supporter")) {
-                if(Permissions.check(player, "nexia.staff")) {
+                if(Permissions.check(player, "nexia.rank")) {
                     ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getScoreboardName() + " supporter");
+                    ServerTime.factoryServer.runCommand("/staffprefix set " + player.getScoreboardName() + " default");
                     return;
                 }
                 ServerTime.factoryServer.runCommand("/rank " + player.getScoreboardName() + " supporter", 4, false);
@@ -139,11 +140,12 @@ public class PlayerJoinListener {
         Role supporterRole = jda.getRoleById("1107264322951979110");
         boolean hasRole = discordUser.getRoles().contains(supporterRole);
         
-        if(hasRole && Permissions.check(player, "nexia.staff") && !Permissions.check(player, "nexia.prefix.supporter")) {
+        if(hasRole && Permissions.check(player, "nexia.rank") && !Permissions.check(player, "nexia.prefix.supporter")) {
             ServerTime.factoryServer.runCommand("/staffprefix add " + player.getScoreboardName() + " supporter");
             return;
         } else if(!hasRole && Permissions.check(player, "nexia.prefix.supporter")) {
             ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getScoreboardName() + " supporter");
+            ServerTime.factoryServer.runCommand("/staffprefix set " + player.getScoreboardName() + " default");
             return;
         }
 

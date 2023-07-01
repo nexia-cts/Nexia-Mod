@@ -20,6 +20,7 @@ import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.oitc.OitcGameMode;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
@@ -72,6 +73,9 @@ public class LobbyUtil {
 
     public static void leaveAllGames(ServerPlayer minecraftPlayer, boolean tp) {
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+        if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter")) {
+            player.setAbleToFly(true);
+        }
         if (BwUtil.isInBedWars(minecraftPlayer)) BwPlayerEvents.leaveInBedWars(minecraftPlayer);
         else if (FfaUtil.isFfaPlayer(minecraftPlayer)) {
             FfaUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
@@ -115,6 +119,10 @@ public class LobbyUtil {
             minecraftPlayer.setRespawnPosition(lobbyWorld.dimension(), lobbySpawn.toBlockPos(), lobbySpawn.yaw, true, false);
             minecraftPlayer.teleportTo(lobbyWorld, lobbySpawn.x, lobbySpawn.y, lobbySpawn.z, lobbySpawn.pitch, lobbySpawn.yaw);
 
+            if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter")) {
+                player.setAbleToFly(true);
+            }
+
             LobbyUtil.giveItems(minecraftPlayer);
         }
 
@@ -152,6 +160,7 @@ public class LobbyUtil {
     public static void sendGame(ServerPlayer minecraftPlayer, String game, boolean message, boolean tp){
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
         minecraftPlayer.setInvulnerable(false);
+        player.setAbleToFly(false);
         if (!LobbyUtil.isLobbyWorld(minecraftPlayer.getLevel())) {
             LobbyUtil.leaveAllGames(minecraftPlayer, false);
         } else{
