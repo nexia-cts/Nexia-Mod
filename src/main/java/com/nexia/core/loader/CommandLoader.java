@@ -27,11 +27,9 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(LeaveCommand::register);
 
 
-        CommandRegistrationCallback.EVENT.register(DefaultGameRulesCommand::register);
         CommandRegistrationCallback.EVENT.register(ProtectionMapCommand::register);
         CommandRegistrationCallback.EVENT.register(PrefixCommand::register);
         CommandRegistrationCallback.EVENT.register(RankCommand::register);
-        CommandRegistrationCallback.EVENT.register(RoundPosCommand::register);
         CommandRegistrationCallback.EVENT.register(LinkCommand::register);
         CommandRegistrationCallback.EVENT.register(PingCommand::register);
 

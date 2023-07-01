@@ -99,7 +99,6 @@ public class ServerTime {
                 game.duelSecond();
             }
         } catch (Exception ignored) { }
-
     }
 
 }

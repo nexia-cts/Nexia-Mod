@@ -115,30 +115,30 @@ public class DuelGameHandler {
         if(player1){
             if (mapname.equalsIgnoreCase("city")) {
                 pos[0] = -55;
-                pos[1] = 81;
-                pos[3] = -4;
+                pos[1] = 80;
+                pos[3] = -90;
             } else if (mapname.equalsIgnoreCase("nethflat") || mapname.equalsIgnoreCase(("netheriteflat"))) {
                 pos[0] = 0;
                 pos[1] = 80;
                 pos[2] = -41;
             } else if (mapname.equalsIgnoreCase("plains")) {
                 pos[0] = -71;
-                pos[1] = 81;
+                pos[1] = 80;
                 pos[2] = -16;
             }
         } else {
             if (mapname.equalsIgnoreCase("city")) {
                 pos[0] = 17;
                 pos[1] = 80;
-                pos[2] = -4;
-                pos[3] = -90;
+                pos[3] = 90;
             } else if (mapname.equalsIgnoreCase("nethflat") || mapname.equalsIgnoreCase(("netheriteflat"))) {
                 pos[0] = 0;
                 pos[1] = 80;
                 pos[2] = 41;
+                pos[3] = 180;
             } else if (mapname.equalsIgnoreCase("plains")) {
                 pos[0] = -71;
-                pos[1] = 81;
+                pos[1] = 80;
                 pos[2] = 34;
                 pos[3] = 180;
             }

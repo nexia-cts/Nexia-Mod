@@ -77,6 +77,7 @@ public class PlayerListMixin {
         ServerLevel respawn = Main.server.getLevel(player.getRespawnDimension());
 
         if(LobbyUtil.isLobbyWorld(respawn)) {
+            player.inventory.clearContent();
             LobbyUtil.giveItems(player);
             player.setGameMode(GameType.ADVENTURE);
         }

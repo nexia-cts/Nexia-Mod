@@ -1,6 +1,7 @@
 package com.nexia.minigames.games.duels;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
@@ -19,12 +20,14 @@ import net.kyori.adventure.title.Title;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Position;
+import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.level.GameType;
 import org.apache.logging.log4j.core.jmx.Server;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -83,7 +86,7 @@ public class DuelsGame { //implements Runnable{
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
         if(gameMode == null){
             gameMode = DuelGameMode.FFA;
-
+            stringGameMode = "FFA";
             System.out.printf("[ERROR] Nexia: Invalid duel gamemode ({0}) selected! Using fallback one.%n", stringGameMode);
         }
 
@@ -124,12 +127,7 @@ public class DuelsGame { //implements Runnable{
         float[] invitorpos = DuelGameHandler.returnPosMap(selectedMap, true);
         float[] playerpos = DuelGameHandler.returnPosMap(selectedMap, false);
 
-
-
         mcP2.teleportTo(duelLevel, playerpos[0], playerpos[1], playerpos[2], playerpos[3], playerpos[4]);
-        //EntityPos playerPos = new EntityPos(0, 85, 0, 0, 0);
-        //mcP2.setRespawnPosition(duelLevel.dimension(), playerPos.toBlockPos(), playerPos.yaw, true, false);
-        //mcP2.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
         playerData.inviting = false;
         playerData.invitingPlayer = null;
         playerData.inDuel = true;
@@ -137,9 +135,6 @@ public class DuelsGame { //implements Runnable{
         playerData.duelPlayer = mcP1;
 
         mcP1.teleportTo(duelLevel, invitorpos[0], invitorpos[1], invitorpos[2], invitorpos[3], invitorpos[4]);
-        //EntityPos invitorPos = new EntityPos(0, 85, 0, 0, 0);
-        //mcP1.setRespawnPosition(duelLevel.dimension(), invitorPos.toBlockPos(), invitorPos.yaw, true, false);
-        //mcP1.setRespawnPosition(DuelsSpawn.duelWorld.dimension(), DuelsSpawn.spawn.toBlockPos(), DuelsSpawn.spawn.yaw, true, false);
         invitorData.inviting = false;
         invitorData.invitingPlayer = null;
         invitorData.inDuel = true;
@@ -181,19 +176,15 @@ public class DuelsGame { //implements Runnable{
         game.spawnPositions.put(mcP1, invitorpos);
         game.spawnPositions.put(mcP2, playerpos);
 
-        /*
-        while(!game.hasStarted) {
-            mcP1.teleportTo(duelLevel, invitorpos[0], invitorpos[1], invitorpos[2], invitorpos[3], invitorpos[4]);
-            mcP2.teleportTo(duelLevel, playerpos[0], playerpos[1], playerpos[2], playerpos[3], playerpos[4]);
-        }
-
-         */
 
         return game;
     }
 
     public void duelSecond() {
         if(this.isEnding) {
+            int color = 160 * 65536 + 248;
+            // r * 65536 + g * 256 + b;
+            DuelGameHandler.winnerRockets(this.winner, this.level, color);
             this.currentEndTime++;
             if(this.currentEndTime >= this.endTime || !this.shouldWait) {
                 ServerPlayer minecraftAttacker = this.winner;
@@ -233,12 +224,14 @@ public class DuelsGame { //implements Runnable{
                     victimData.savedData.loss++;
                 }
 
-                LobbyUtil.leaveAllGames(minecraftAttacker, true);
-                LobbyUtil.leaveAllGames(minecraftVictim, true);
-
                 this.isEnding = false;
-                DuelGameHandler.duelsGames.remove(this);
+
+                PlayerUtil.getFactoryPlayer(minecraftVictim).runCommand("/hub", 0, false);
+                attacker.runCommand("/hub", 0, false);
+
                 DuelGameHandler.deleteWorld(this.level.dimension().toString().replaceAll("]", "").split(":")[2]);
+                DuelGameHandler.duelsGames.remove(this);
+                return;
             }
         }
         if(!this.hasStarted) {

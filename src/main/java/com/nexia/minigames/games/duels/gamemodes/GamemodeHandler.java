@@ -417,9 +417,9 @@ public class GamemodeHandler {
             DuelGameMode.POT_QUEUE.remove(minecraftPlayer);
             DuelGameMode.NETH_POT_QUEUE.remove(minecraftPlayer);
             DuelGameMode.OG_VANILLA_QUEUE.remove(minecraftPlayer);
-            DuelGameMode.HSG_QUEUE.clear();
-            DuelGameMode.SKYWARS_QUEUE.clear();
-            DuelGameMode.CLASSIC_CRYSTAL_QUEUE.clear();
+            DuelGameMode.HSG_QUEUE.remove(minecraftPlayer);
+            DuelGameMode.SKYWARS_QUEUE.remove(minecraftPlayer);
+            DuelGameMode.CLASSIC_CRYSTAL_QUEUE.remove(minecraftPlayer);
             DuelGameMode.SMP_QUEUE.remove(minecraftPlayer);
             DuelGameMode.UHC_SHIELD_QUEUE.remove(minecraftPlayer);
             DuelGameMode.VANILLA_QUEUE.remove(minecraftPlayer);

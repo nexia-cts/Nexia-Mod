@@ -9,7 +9,6 @@ import java.util.ArrayList;
 
 public class DuelGameMode {
     public String id;
-
     public boolean hasRegen;
 
     public GameType gameMode;
