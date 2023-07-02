@@ -9,6 +9,8 @@ import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.DuelsGame;
+import com.nexia.minigames.games.duels.team.DuelsTeam;
+import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
@@ -21,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class GamemodeHandler {
 
@@ -187,6 +190,15 @@ public class GamemodeHandler {
         if(gameMode == null){
             if(!silent){
                 player.sendMessage(Component.text("Invalid gamemode!").color(ChatFormat.failColor));
+            }
+            return;
+        }
+
+        PlayerData data = PlayerDataManager.get(minecraftPlayer);
+
+        if(data.duelsTeam != null) {
+            if(!silent) {
+                player.sendMessage(Component.text("You are in a team!").color(ChatFormat.failColor));
             }
             return;
         }
@@ -441,7 +453,7 @@ public class GamemodeHandler {
 
         PlayerData playerData = PlayerDataManager.get(player);
 
-        if(!playerData.inDuel || playerData.duelsGame == null) {
+        if(!playerData.inDuel || playerData.duelsGame == null || playerData.teamDuelsGame == null) {
             factoryExecutor.sendMessage(Component.text("That player is not in a duel!").color(ChatFormat.failColor));
             return;
         }
@@ -458,8 +470,24 @@ public class GamemodeHandler {
         factoryExecutor.setGameMode(Minecraft.GameMode.SPECTATOR);
 
         DuelsGame duelsGame = playerData.duelsGame;
+        TeamDuelsGame teamDuelsGame = playerData.teamDuelsGame;
 
-        duelsGame.spectators.add(executor);
+        TextComponent spectateMSG = new TextComponent("§7§o(" + factoryExecutor.getRawName() + " started spectating)");
+
+        if(duelsGame == null && teamDuelsGame != null){
+            teamDuelsGame.spectators.add(executor);
+            List<ServerPlayer> everyTeamMember = teamDuelsGame.team1.all;
+            everyTeamMember.addAll(teamDuelsGame.team2.all);
+            for(ServerPlayer players : everyTeamMember) {
+                players.sendMessage(spectateMSG, Util.NIL_UUID);
+            }
+        } else if(duelsGame != null && teamDuelsGame == null){
+            duelsGame.spectators.add(executor);
+            duelsGame.p1.sendMessage(spectateMSG, Util.NIL_UUID);
+            duelsGame.p2.sendMessage(spectateMSG, Util.NIL_UUID);
+        }
+
+
         factoryExecutor.sendMessage(
                 ChatFormat.nexiaMessage
                         .append(Component.text("You are now spectating ")
@@ -471,11 +499,6 @@ public class GamemodeHandler {
                                 )
                         )
         );
-
-        TextComponent spectateMSG = new TextComponent("§7§o(" + factoryExecutor.getRawName() + " started spectating)");
-
-        duelsGame.p1.sendMessage(spectateMSG, Util.NIL_UUID);
-        duelsGame.p2.sendMessage(spectateMSG, Util.NIL_UUID);
 
         executorData.spectatingPlayer = player;
         executorData.gameMode = DuelGameMode.SPECTATING;
@@ -489,16 +512,19 @@ public class GamemodeHandler {
         }
 
         DuelsGame duelsGame = null;
+        TeamDuelsGame teamDuelsGame = null;
 
         if(player != null && playerData.inDuel && playerData.duelsGame != null) {
             duelsGame = playerData.duelsGame;
+        } else if(player != null && playerData.inDuel && playerData.teamDuelsGame != null) {
+            teamDuelsGame = playerData.teamDuelsGame;
         }
 
         PlayerData executorData = PlayerDataManager.get(executor);
         Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor);
 
-        if(duelsGame != null) {
-            duelsGame.spectators.remove(executor);
+        TextComponent spectateMSG = new TextComponent("§7§o(" + factoryExecutor.getRawName() + " has stopped spectating)");
+        if(duelsGame != null || teamDuelsGame != null) {
             factoryExecutor.sendMessage(
                     ChatFormat.nexiaMessage
                             .append(Component.text("You have stopped spectating ")
@@ -510,15 +536,27 @@ public class GamemodeHandler {
                                     )
                             )
             );
+        }
 
-            TextComponent spectateMSG = new TextComponent("§7§o(" + factoryExecutor.getRawName() + " has stopped spectating)");
+
+        if(duelsGame != null) {
+            duelsGame.spectators.remove(executor);
 
             duelsGame.p1.sendMessage(spectateMSG, Util.NIL_UUID);
             duelsGame.p2.sendMessage(spectateMSG, Util.NIL_UUID);
+        } else if(teamDuelsGame != null) {
+            duelsGame.spectators.remove(executor);
+
+            List<ServerPlayer> everyTeamPlayer = teamDuelsGame.team1.all;
+            everyTeamPlayer.addAll(teamDuelsGame.team2.all);
+
+            for(ServerPlayer players : everyTeamPlayer) {
+                players.sendMessage(spectateMSG, Util.NIL_UUID);
+            }
         }
         executorData.gameMode = DuelGameMode.LOBBY;
         executorData.spectatingPlayer = null;
-        LobbyUtil.sendGame(executor, "duels", false, teleport);
+        LobbyUtil.leaveAllGames(executor, teleport);
     }
 
 
@@ -530,7 +568,20 @@ public class GamemodeHandler {
             }
             return;
         }
-        DuelsGame.startGame(invitor, player, stringGameMode, selectedmap);
+        PlayerData data = PlayerDataManager.get(invitor);
+        if(data.duelsTeam != null && data.duelsTeam.creator == invitor) {
+            PlayerData playerData = PlayerDataManager.get(player);
+            if(playerData.duelsTeam == null) playerData.duelsTeam = DuelsTeam.createTeam(player, false);
+
+            TeamDuelsGame.startGame(data.duelsTeam, playerData.duelsTeam, stringGameMode, selectedmap);
+        } else if(data.duelsTeam != null){
+            if(!silent){
+                PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
+            }
+        } else {
+            DuelsGame.startGame(invitor, player, stringGameMode, selectedmap);
+        }
+
     }
 
     public static void challengePlayer(ServerPlayer minecraftExecutor, ServerPlayer minecraftPlayer, String stringGameMode, @Nullable String selectedmap){
@@ -559,6 +610,11 @@ public class GamemodeHandler {
 
         if(com.nexia.core.utilities.player.PlayerDataManager.get(minecraftPlayer).gameMode != PlayerGameMode.LOBBY){
             executor.sendMessage(Component.text("That player is not in duels!").color(ChatFormat.failColor));
+            return;
+        }
+
+        if(executorData.duelsTeam != null && executorData.duelsTeam.creator != minecraftExecutor) {
+            executor.sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
             return;
         }
 
@@ -592,17 +648,34 @@ public class GamemodeHandler {
         if(playerData.inviting && playerData.invitingPlayer != null && playerData.invitingPlayer == minecraftExecutor && executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) && executorData.inviteKit.equalsIgnoreCase(playerData.inviteKit)){
             GamemodeHandler.joinGamemode(minecraftExecutor, minecraftPlayer, stringGameMode, map, true);
         } else if((!executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) || !executorData.inviteKit.equalsIgnoreCase(playerData.inviteKit)) && (playerData.invitingPlayer == null || !playerData.invitingPlayer.getStringUUID().equalsIgnoreCase(minecraftExecutor.getStringUUID())) && playerData.gameMode == DuelGameMode.LOBBY){
-            executor.sendMessage(ChatFormat.nexiaMessage
-                    .append(Component.text("Sending a duel request to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                            .append(Component.text(player.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                            .append(Component.text(" on map ")).append(Component.text(map).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                            .append(Component.text(" with kit ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                            .append(Component.text(stringGameMode).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                            .append(Component.text(".")).color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
 
             Component message = Component.text(executor.getRawName()).color(ChatFormat.brandColor1)
-                            .append(Component.text(" has challenged you to a duel!").color(ChatFormat.normalColor)
-            );
+                    .append(Component.text(" has challenged you to a duel!").color(ChatFormat.normalColor)
+                    );
+
+            if(executorData.duelsTeam == null) {
+                executor.sendMessage(ChatFormat.nexiaMessage
+                        .append(Component.text("Sending a duel request to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
+                                .append(Component.text(player.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                .append(Component.text(" on map ")).append(Component.text(map).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                .append(Component.text(" with kit ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                .append(Component.text(stringGameMode).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                .append(Component.text(".")).color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
+            } else {
+                executor.sendMessage(ChatFormat.nexiaMessage
+                        .append(Component.text("Sending a ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
+                                .append(Component.text("team duel").color(ChatFormat.normalColor).decoration(ChatFormat.bold, true))
+                                .append(Component.text(" request to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                .append(Component.text(player.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                .append(Component.text(" on map ")).append(Component.text(map).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                .append(Component.text(" with kit ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                .append(Component.text(stringGameMode).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                .append(Component.text(".")).color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
+                message = Component.text(executor.getRawName()).color(ChatFormat.brandColor1)
+                        .append(Component.text(" has challenged you to a ").color(ChatFormat.normalColor))
+                        .append(Component.text("team duel").color(ChatFormat.normalColor).decoration(ChatFormat.bold, true))
+                        .append(Component.text("!").color(ChatFormat.normalColor));
+            }
 
 
             Component kit = Component.text("Kit: ").color(ChatFormat.brandColor1)

@@ -36,7 +36,7 @@ public class DuelGameHandler {
 
     public static List<DuelsGame> duelsGames = new ArrayList<>();
     public static List<TeamDuelsGame> teamDuelsGames = new ArrayList<>();
-    public static void leave(ServerPlayer player) {
+    public static void leave(ServerPlayer player, boolean leaveTeam) {
         PlayerData data = PlayerDataManager.get(player);
         if (data.duelsGame != null) {
             data.duelsGame.death(player, player.getLastDamageSource());
@@ -53,7 +53,9 @@ public class DuelGameHandler {
         removeQueue(player, null, true);
         data.gameMode = DuelGameMode.LOBBY;
         data.spectatingPlayer = null;
-        data.duelsTeam = null;
+        if(leaveTeam) {
+            data.duelsTeam = null;
+        }
         data.teamDuelsGame = null;
         data.duelsGame = null;
     }

@@ -5,6 +5,9 @@ build/
 out/
 classes/
 
+# text editors
+.obsidian
+
 # eclipse
 
 *.launch

@@ -73,14 +73,11 @@ public class LobbyUtil {
 
     public static void leaveAllGames(ServerPlayer minecraftPlayer, boolean tp) {
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
-        if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter")) {
-            player.setAbleToFly(true);
-        }
         if (BwUtil.isInBedWars(minecraftPlayer)) BwPlayerEvents.leaveInBedWars(minecraftPlayer);
         else if (FfaUtil.isFfaPlayer(minecraftPlayer)) {
             FfaUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
         }
-        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(minecraftPlayer);
+        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(minecraftPlayer, false);
         else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.OITC) OitcGame.leave(minecraftPlayer);
 
         BwScoreboard.removeScoreboardFor(minecraftPlayer);
@@ -113,7 +110,7 @@ public class LobbyUtil {
 
         // Duels shit
         player.addTag("duels");
-        DuelGameHandler.leave(minecraftPlayer);
+        DuelGameHandler.leave(minecraftPlayer, false);
 
         if (tp) {
             minecraftPlayer.setRespawnPosition(lobbyWorld.dimension(), lobbySpawn.toBlockPos(), lobbySpawn.yaw, true, false);
