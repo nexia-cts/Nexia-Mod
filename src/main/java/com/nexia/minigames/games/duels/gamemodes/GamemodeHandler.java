@@ -2,6 +2,7 @@ package com.nexia.minigames.games.duels.gamemodes;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.types.Minecraft;
+import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -453,7 +454,7 @@ public class GamemodeHandler {
 
         PlayerData playerData = PlayerDataManager.get(player);
 
-        if(!playerData.inDuel || playerData.duelsGame == null || playerData.teamDuelsGame == null) {
+        if(!playerData.inDuel || (playerData.duelsGame == null || playerData.teamDuelsGame == null)) {
             factoryExecutor.sendMessage(Component.text("That player is not in a duel!").color(ChatFormat.failColor));
             return;
         }
@@ -545,7 +546,7 @@ public class GamemodeHandler {
             duelsGame.p1.sendMessage(spectateMSG, Util.NIL_UUID);
             duelsGame.p2.sendMessage(spectateMSG, Util.NIL_UUID);
         } else if(teamDuelsGame != null) {
-            duelsGame.spectators.remove(executor);
+            teamDuelsGame.spectators.remove(executor);
 
             List<ServerPlayer> everyTeamPlayer = teamDuelsGame.team1.all;
             everyTeamPlayer.addAll(teamDuelsGame.team2.all);
@@ -569,18 +570,25 @@ public class GamemodeHandler {
             return;
         }
         PlayerData data = PlayerDataManager.get(invitor);
-        if(data.duelsTeam != null && data.duelsTeam.creator == invitor) {
-            PlayerData playerData = PlayerDataManager.get(player);
-            if(playerData.duelsTeam == null) playerData.duelsTeam = DuelsTeam.createTeam(player, false);
+        PlayerData playerData = PlayerDataManager.get(player);
 
-            TeamDuelsGame.startGame(data.duelsTeam, playerData.duelsTeam, stringGameMode, selectedmap);
-        } else if(data.duelsTeam != null){
-            if(!silent){
+        if(data.duelsTeam != null && data.duelsTeam.creator != invitor) {
+            if (!silent) {
                 PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
             }
-        } else {
-            DuelsGame.startGame(invitor, player, stringGameMode, selectedmap);
+            return;
         }
+
+        if(data.duelsTeam == null && playerData.duelsTeam != null) {
+            DuelsTeam.createTeam(invitor, false);
+        }
+
+        if(data.duelsTeam != null && playerData.duelsTeam != null) {
+            TeamDuelsGame.startGame(data.duelsTeam, playerData.duelsTeam, stringGameMode, selectedmap);
+            return;
+        }
+
+        DuelsGame.startGame(invitor, player, stringGameMode, selectedmap);
 
     }
 

@@ -2,12 +2,15 @@ package com.nexia.core.mixin.player;
 
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
+import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
+import com.nexia.minigames.games.duels.team.DuelsTeam;
+import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import com.nexia.minigames.games.oitc.OitcGame;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -46,8 +49,6 @@ public abstract class PlayerMixin extends LivingEntity {
 
     @Shadow public abstract ItemCooldowns getCooldowns();
 
-    @Shadow public abstract InteractionResult interactOn(Entity entity, InteractionHand interactionHand);
-
     protected PlayerMixin(EntityType<? extends LivingEntity> entityType, Level level) {
         super(entityType, level);
     }
@@ -82,8 +83,11 @@ public abstract class PlayerMixin extends LivingEntity {
             cir.setReturnValue(false);
         }
 
-        if (damageSource.getEntity() instanceof ServerPlayer attacker && attacker.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
-            cir.setReturnValue(false);
+        if(damageSource.getEntity() instanceof ServerPlayer attacker) {
+            if(attacker.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) cir.setReturnValue(false);
+
+            DuelsTeam team = PlayerDataManager.get(player).duelsTeam;
+            if(team != null && team.all.contains(attacker) && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) cir.setReturnValue(false);
         }
     }
 

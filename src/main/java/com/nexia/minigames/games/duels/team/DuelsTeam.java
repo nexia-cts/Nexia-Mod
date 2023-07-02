@@ -14,28 +14,29 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class DuelsTeam {
     public ServerPlayer creator;
 
-    public List<ServerPlayer> people;
+    public List<ServerPlayer> people = new ArrayList<>();
 
-    public List<ServerPlayer> alive;
+    public List<ServerPlayer> alive = new ArrayList<>();
 
     private List<ServerPlayer> invited = new ArrayList<>();
 
-    public List<ServerPlayer> all;
+    public List<ServerPlayer> all = new ArrayList<>();
 
     public DuelsTeam(ServerPlayer creator, List<ServerPlayer> people){
         this.creator = creator;
-        this.people = people;
+        this.people.addAll(people);
 
 
         List<ServerPlayer> allPlayers = new ArrayList<>();
         allPlayers.add(creator);
         allPlayers.addAll(people);
-        all = allPlayers;
-        alive = allPlayers;
+        this.all.addAll(allPlayers);
+        this.alive.addAll(allPlayers);
     }
 
     public void disbandTeam(ServerPlayer executor, boolean message) {
@@ -61,10 +62,6 @@ public class DuelsTeam {
         PlayerData data = PlayerDataManager.get(player);
         if(this.creator == player) {
             if(message) factoryPlayer.sendMessage(Component.text("You cannot leave your own team without disbanding it!").color(ChatFormat.failColor));
-            return;
-        }
-        if(data.duelsTeam != this) {
-            if(message) factoryPlayer.sendMessage(Component.text("That player is not in your team!").color(ChatFormat.failColor));
             return;
         }
 
@@ -117,7 +114,7 @@ public class DuelsTeam {
 
         factoryPlayer.sendMessage(
                 Component.text(factoryInviter.getRawName()).color(ChatFormat.brandColor2)
-                        .append(Component.text(" has invited you to their team!"))
+                        .append(Component.text(" has invited you to their team!").color(ChatFormat.normalColor))
         );
 
         factoryPlayer.sendMessage(yes.append(no));
@@ -171,6 +168,24 @@ public class DuelsTeam {
         PlayerUtil.broadcast(this.all, LegacyChatFormat.format("§d{} §7has joined team.", factoryPlayer.getRawName()));
     }
 
+    public void declineTeam(ServerPlayer player) {
+        Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
+        Player factoryInviter = PlayerUtil.getFactoryPlayer(this.creator);
+        PlayerData data = PlayerDataManager.get(player);
+        if(data.duelsTeam != null) {
+            factoryPlayer.sendMessage(Component.text("You are currently in a team!").color(ChatFormat.failColor));
+            return;
+        }
+
+        if(!this.invited.contains(player)) {
+            factoryInviter.sendMessage(Component.text("That player did not invite you!").color(ChatFormat.failColor));
+            return;
+        }
+
+        this.invited.remove(player);
+        factoryInviter.sendMessage(Component.text(factoryPlayer.getRawName() + " has declined your invite.").color(ChatFormat.failColor));
+    }
+
     public static DuelsTeam createTeam(ServerPlayer player, boolean message) {
         PlayerData data = PlayerDataManager.get(player);
         Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
@@ -178,8 +193,8 @@ public class DuelsTeam {
         if(data.duelsTeam != null) {
             if(message) {
                 factoryPlayer.sendMessage(Component.text("You are currently in a team!").color(ChatFormat.failColor));
-                return null;
             }
+            return null;
         }
 
         if(message) {

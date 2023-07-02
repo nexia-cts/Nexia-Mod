@@ -99,7 +99,11 @@ public class LobbyUtil {
             }
         }
 
-        //minecraftPlayer.setInvulnerable(false);
+        minecraftPlayer.setInvulnerable(false);
+
+        minecraftPlayer.abilities.mayfly = false;
+        minecraftPlayer.abilities.flying = false;
+        minecraftPlayer.onUpdateAbilities();
 
         PlayerUtil.resetHealthStatus(player);
         minecraftPlayer.setGameMode(GameType.ADVENTURE);
@@ -116,9 +120,16 @@ public class LobbyUtil {
             minecraftPlayer.setRespawnPosition(lobbyWorld.dimension(), lobbySpawn.toBlockPos(), lobbySpawn.yaw, true, false);
             minecraftPlayer.teleportTo(lobbyWorld, lobbySpawn.x, lobbySpawn.y, lobbySpawn.z, lobbySpawn.pitch, lobbySpawn.yaw);
 
+            /*
             if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter")) {
-                player.setAbleToFly(true);
+                minecraftPlayer.abilities.mayfly = true;
+                minecraftPlayer.onUpdateAbilities();
             }
+
+             */
+
+            minecraftPlayer.abilities.mayfly = true;
+            minecraftPlayer.onUpdateAbilities();
 
             LobbyUtil.giveItems(minecraftPlayer);
         }
@@ -157,7 +168,10 @@ public class LobbyUtil {
     public static void sendGame(ServerPlayer minecraftPlayer, String game, boolean message, boolean tp){
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
         minecraftPlayer.setInvulnerable(false);
-        player.setAbleToFly(false);
+
+        minecraftPlayer.abilities.mayfly = false;
+        minecraftPlayer.onUpdateAbilities();
+
         if (!LobbyUtil.isLobbyWorld(minecraftPlayer.getLevel())) {
             LobbyUtil.leaveAllGames(minecraftPlayer, false);
         } else{

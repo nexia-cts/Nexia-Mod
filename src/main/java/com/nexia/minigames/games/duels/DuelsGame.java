@@ -270,7 +270,7 @@ public class DuelsGame { //implements Runnable{
             PlayerUtil.getFactoryPlayer(this.p2).sendTitle(title);
 
             PlayerUtil.sendSound(this.p1, new EntityPos(this.p1), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
-            PlayerUtil.sendSound(this.p2, new EntityPos(this.p1), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+            PlayerUtil.sendSound(this.p2, new EntityPos(this.p2), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
 
         }
     }
