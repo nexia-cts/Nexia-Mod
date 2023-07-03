@@ -83,6 +83,12 @@ public class TeamDuelsGame { //implements Runnable{
             System.out.printf("[ERROR] Nexia: Invalid duel gamemode ({0}) selected! Using fallback one.%n", stringGameMode);
         }
 
+        team1.alive.clear();
+        team1.alive.addAll(team1.all);
+
+        team2.alive.clear();
+        team2.alive.addAll(team2.all);
+
         ServerLevel duelLevel = DuelGameHandler.createWorld(gameMode.hasRegen);
         if(selectedMap == null){
             selectedMap = com.nexia.minigames.Main.config.duelsMaps.get(RandomUtil.randomInt(0, com.nexia.minigames.Main.config.duelsMaps.size()));
@@ -105,7 +111,6 @@ public class TeamDuelsGame { //implements Runnable{
 
         TeamDuelsGame game = new TeamDuelsGame(team1, team2, gameMode, selectedMap, duelLevel, 5, 5);
         DuelGameHandler.teamDuelsGames.add(game);
-
 
         for(ServerPlayer player : team1.all) {
             PlayerData data = PlayerDataManager.get(player);

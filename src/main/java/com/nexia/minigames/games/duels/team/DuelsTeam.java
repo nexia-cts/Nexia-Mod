@@ -4,6 +4,7 @@ import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
@@ -11,10 +12,10 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.Util;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class DuelsTeam {
     public ServerPlayer creator;
@@ -31,17 +32,45 @@ public class DuelsTeam {
         this.creator = creator;
         this.people.addAll(people);
 
-
         List<ServerPlayer> allPlayers = new ArrayList<>();
         allPlayers.add(creator);
         allPlayers.addAll(people);
         this.all.addAll(allPlayers);
-        this.alive.addAll(allPlayers);
     }
+
+
+    public boolean refreshCreator(@NotNull ServerPlayer creator) {
+        this.creator = ServerTime.minecraftServer.getPlayerList().getPlayer(this.creator.getUUID());
+        return this.creator.getUUID().equals(creator.getUUID());
+    }
+
+    public void refreshPeople() {
+        List<ServerPlayer> refreshedPlayers = new ArrayList<>();
+
+        for(ServerPlayer player : this.people) {
+            refreshedPlayers.add(ServerTime.minecraftServer.getPlayerList().getPlayer(player.getUUID()));
+        }
+
+        this.people.clear();
+        this.people.add(this.creator);
+        this.people.addAll(refreshedPlayers);
+
+    }
+
+    public void refreshTeam() {
+        refreshCreator(this.creator);
+        refreshPeople();
+
+        this.alive.clear();
+        this.all.clear();
+        this.all.add(this.creator);
+        this.all.addAll(this.people);
+    }
+
 
     public void disbandTeam(ServerPlayer executor, boolean message) {
 
-        if(executor != this.creator) {
+        if(!this.refreshCreator(executor)) {
             if(message) PlayerUtil.getFactoryPlayer(executor).sendMessage(Component.text("You are not the creator!").color(ChatFormat.failColor));
             return;
         }
@@ -53,6 +82,7 @@ public class DuelsTeam {
         }
         this.people.clear();
         this.all.clear();
+        this.alive.clear();
         this.creator = null;
         this.invited.clear();
     }
@@ -60,7 +90,7 @@ public class DuelsTeam {
     public void leaveTeam(ServerPlayer player, boolean message) {
         Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
         PlayerData data = PlayerDataManager.get(player);
-        if(this.creator == player) {
+        if(this.refreshCreator(player)) {
             if(message) factoryPlayer.sendMessage(Component.text("You cannot leave your own team without disbanding it!").color(ChatFormat.failColor));
             return;
         }
@@ -68,6 +98,7 @@ public class DuelsTeam {
         data.duelsTeam = null;
         this.people.remove(player);
         this.all.remove(player);
+        this.alive.remove(player);
         PlayerUtil.broadcast(this.all, LegacyChatFormat.format("§d{} §7has left the team.", player.getScoreboardName()));
     }
 
@@ -98,7 +129,7 @@ public class DuelsTeam {
                         .color(ChatFormat.greenColor)
                         .decorate(ChatFormat.bold)
                         .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor2)))
-                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/team join " + factoryInviter.getRawName())))
+                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/party join " + factoryInviter.getRawName())))
                 .append(Component.text("]  ").color(NamedTextColor.DARK_GRAY)
                 );
 
@@ -108,7 +139,7 @@ public class DuelsTeam {
                         .decoration(ChatFormat.bold, true)
                         .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("Click me")
                                 .color(ChatFormat.brandColor2)))
-                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/team decline " + factoryInviter.getRawName())))
+                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/party decline " + factoryInviter.getRawName())))
                 .append(Component.text("]").color(NamedTextColor.DARK_GRAY)
                 );
 
@@ -120,17 +151,27 @@ public class DuelsTeam {
         factoryPlayer.sendMessage(yes.append(no));
     }
 
+    public void listTeam(ServerPlayer executor) {
+        Player factoryPlayer = PlayerUtil.getFactoryPlayer(executor);
+
+        factoryPlayer.sendMessage(Component.text("People on " + this.creator.getScoreboardName() + "'s Team").color(ChatFormat.normalColor));
+        for(ServerPlayer player : this.all) {
+            factoryPlayer.sendMessage(Component.text("» ").color(ChatFormat.brandColor1).append(Component.text(player.getScoreboardName()).color(ChatFormat.normalColor)));
+        }
+    }
+
     public void kickPlayer(ServerPlayer executor, ServerPlayer player) {
         Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
         Player factoryInviter = PlayerUtil.getFactoryPlayer(this.creator);
         PlayerData data = PlayerDataManager.get(player);
 
-        if(player == this.creator) {
-            factoryPlayer.sendMessage(Component.text("You cannot kick yourself!").color(ChatFormat.failColor));
+        if(!this.refreshCreator(executor)) {
+            factoryPlayer.sendMessage(Component.text("You are not the creator!").color(ChatFormat.failColor));
             return;
         }
-        if(executor != this.creator) {
-            factoryPlayer.sendMessage(Component.text("You are not the creator!").color(ChatFormat.failColor));
+
+        if(player == executor) {
+            factoryPlayer.sendMessage(Component.text("You cannot kick yourself!").color(ChatFormat.failColor));
             return;
         }
 
@@ -143,6 +184,7 @@ public class DuelsTeam {
 
         data.duelsTeam = null;
         this.people.remove(player);
+        this.alive.remove(player);
         this.all.remove(player);
     }
 
@@ -150,6 +192,7 @@ public class DuelsTeam {
         Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
         Player factoryInviter = PlayerUtil.getFactoryPlayer(this.creator);
         PlayerData data = PlayerDataManager.get(player);
+
         if(data.duelsTeam != null) {
             factoryPlayer.sendMessage(Component.text("You are currently in a team!").color(ChatFormat.failColor));
             return;
@@ -165,13 +208,14 @@ public class DuelsTeam {
         this.people.add(player);
 
         data.duelsTeam = this;
-        PlayerUtil.broadcast(this.all, LegacyChatFormat.format("§d{} §7has joined team.", factoryPlayer.getRawName()));
+        PlayerUtil.broadcast(this.all, LegacyChatFormat.format("§d{} §7has joined the team.", factoryPlayer.getRawName()));
     }
 
     public void declineTeam(ServerPlayer player) {
         Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
         Player factoryInviter = PlayerUtil.getFactoryPlayer(this.creator);
         PlayerData data = PlayerDataManager.get(player);
+
         if(data.duelsTeam != null) {
             factoryPlayer.sendMessage(Component.text("You are currently in a team!").color(ChatFormat.failColor));
             return;

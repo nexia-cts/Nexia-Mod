@@ -18,7 +18,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 public class TeamCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
-        dispatcher.register(Commands.literal("dteam")
+        dispatcher.register(Commands.literal("party")
                 .requires(commandSourceStack -> {
                     try {
                         com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException());
@@ -42,6 +42,7 @@ public class TeamCommand {
                 )
                 .then(Commands.literal("disband").executes(TeamCommand::disbandTeam))
                 .then(Commands.literal("create").executes(TeamCommand::createTeam))
+                .then(Commands.literal("list").executes(TeamCommand::listTeam))
                 .then(Commands.literal("leave").executes(TeamCommand::leaveTeam))
         );
         dispatcher.register(Commands.literal("duelsteam")
@@ -68,6 +69,7 @@ public class TeamCommand {
                 )
                 .then(Commands.literal("disband").executes(TeamCommand::disbandTeam))
                 .then(Commands.literal("create").executes(TeamCommand::createTeam))
+                .then(Commands.literal("list").executes(TeamCommand::listTeam))
                 .then(Commands.literal("leave").executes(TeamCommand::leaveTeam))
         );
     }
@@ -86,6 +88,20 @@ public class TeamCommand {
 
     public static int joinTeam(CommandContext<CommandSourceStack> context, ServerPlayer player) throws CommandSyntaxException {
         com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).duelsTeam.joinTeam(context.getSource().getPlayerOrException());
+        return 1;
+    }
+
+    public static int listTeam(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer executor = context.getSource().getPlayerOrException();
+
+        com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(executor);
+
+        if(data.duelsTeam == null) {
+            PlayerUtil.getFactoryPlayer(executor).sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
+            return 1;
+        }
+
+        data.duelsTeam.listTeam(executor);
         return 1;
     }
 

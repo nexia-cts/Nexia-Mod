@@ -21,10 +21,14 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
+import net.minecraft.server.players.ServerOpList;
+import net.minecraft.server.players.UserWhiteList;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.level.GameType;
 import org.json.simple.JSONObject;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
@@ -41,6 +45,12 @@ import static com.nexia.core.utilities.time.ServerTime.leavePlayer;
 
 @Mixin(PlayerList.class)
 public class PlayerListMixin {
+
+    @Shadow private boolean doWhiteList;
+
+    @Shadow @Final private ServerOpList ops;
+
+    @Shadow @Final private UserWhiteList whitelist;
 
     @ModifyArgs(method = "broadcastMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ClientboundChatPacket;<init>(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
     private void handleChat(Args args) {
