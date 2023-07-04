@@ -41,6 +41,10 @@ public class DuelsTeam {
 
     public boolean refreshCreator(@NotNull ServerPlayer creator) {
         this.creator = ServerTime.minecraftServer.getPlayerList().getPlayer(this.creator.getUUID());
+        if(this.creator == null) {
+            this.creator = creator;
+            this.disbandTeam(creator, false);
+        }
         return this.creator.getUUID().equals(creator.getUUID());
     }
 

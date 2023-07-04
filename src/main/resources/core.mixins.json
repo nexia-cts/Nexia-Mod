@@ -14,6 +14,7 @@
     "entity.AbstractLivingEntityMixin",
     "entity.ArmorStandMixin",
     "entity.EntityMixin",
+    "entity.ProjectileMixin",
     "entity.FishingBobberEntity",
     "entity.ItemEntityMixin",
     "entity.ItemFrameMixin",

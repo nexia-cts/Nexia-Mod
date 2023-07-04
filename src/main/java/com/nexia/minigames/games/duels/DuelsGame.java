@@ -1,5 +1,6 @@
 package com.nexia.minigames.games.duels;
 
+import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
@@ -229,7 +230,12 @@ public class DuelsGame { //implements Runnable{
                 PlayerUtil.getFactoryPlayer(minecraftVictim).runCommand("/hub", 0, false);
                 attacker.runCommand("/hub", 0, false);
 
-                DuelGameHandler.deleteWorld(this.level.dimension().toString().replaceAll("]", "").split(":")[2]);
+                String duels2 = this.level.dimension().toString().replaceAll("]", "").split(":")[2];
+
+                DuelGameHandler.deleteWorld(duels2);
+                try {
+                    ServerTime.factoryServer.unloadWorld(duels2, false);
+                } catch (Exception ignored) { }
                 DuelGameHandler.duelsGames.remove(this);
                 return;
             }

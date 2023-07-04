@@ -1,8 +1,10 @@
 package com.nexia.core.mixin.entity;
 
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
@@ -35,5 +37,4 @@ public class AbstractArrowMixin {
 
         return arrowDamage;
     }
-
 }
