@@ -120,16 +120,10 @@ public class LobbyUtil {
             minecraftPlayer.setRespawnPosition(lobbyWorld.dimension(), lobbySpawn.toBlockPos(), lobbySpawn.yaw, true, false);
             minecraftPlayer.teleportTo(lobbyWorld, lobbySpawn.x, lobbySpawn.y, lobbySpawn.z, lobbySpawn.pitch, lobbySpawn.yaw);
 
-            /*
             if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter")) {
                 minecraftPlayer.abilities.mayfly = true;
                 minecraftPlayer.onUpdateAbilities();
             }
-
-             */
-
-            minecraftPlayer.abilities.mayfly = true;
-            minecraftPlayer.onUpdateAbilities();
 
             LobbyUtil.giveItems(minecraftPlayer);
         }
@@ -147,21 +141,29 @@ public class LobbyUtil {
         ItemStack compass = new ItemStack(Items.COMPASS);
         compass.setHoverName(new TextComponent("§eGamemode Selector"));
         ItemDisplayUtil.addGlint(compass);
-        ItemDisplayUtil.addLore(compass, "§7Right click to open the menu.", 0);
+        ItemDisplayUtil.addLore(compass, "§eRight click §7to open the menu.", 0);
 
         ItemStack nameTag = new ItemStack(Items.NAME_TAG);
         nameTag.setHoverName(new TextComponent("§ePrefix Selector"));
         ItemDisplayUtil.addGlint(nameTag);
-        ItemDisplayUtil.addLore(nameTag, "§7Right click to open the menu.", 0);
+        ItemDisplayUtil.addLore(nameTag, "§eRight click §7to open the menu.", 0);
 
         ItemStack queueSword = new ItemStack(Items.IRON_SWORD);
         queueSword.setHoverName(new TextComponent("§eQueue Sword"));
         ItemDisplayUtil.addGlint(queueSword);
-        ItemDisplayUtil.addLore(queueSword, "§7Right click to queue menu.", 0);
+        ItemDisplayUtil.addLore(queueSword, "§eRight click §7to queue menu.", 0);
+        ItemDisplayUtil.addLore(queueSword, "§eHit a player §7to duel them.", 1);
+
+        ItemStack teamSword = new ItemStack(Items.IRON_AXE);
+        teamSword.setHoverName(new TextComponent("§eTeam §eAxe"));
+        ItemDisplayUtil.addGlint(teamSword);
+        ItemDisplayUtil.addLore(teamSword, "§eHit a player §7to invite them to your team.", 0);
+        ItemDisplayUtil.addLore(teamSword, "§eRight click §7to list the team.", 1);
 
         minecraftPlayer.setSlot(4, compass); //middle slot
         minecraftPlayer.setSlot(3, nameTag); //left
         minecraftPlayer.setSlot(5, queueSword); //right
+        minecraftPlayer.setSlot(8, teamSword); // like right right not right
         ItemStackUtil.sendInventoryRefreshPacket(minecraftPlayer);
     }
 

@@ -10,9 +10,13 @@ import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import com.nexia.world.structure.Rotation;
+import com.nexia.world.structure.StructureMap;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -33,6 +37,7 @@ import org.apache.logging.log4j.core.jmx.Server;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -115,12 +120,14 @@ public class DuelsGame { //implements Runnable{
 
         String start = "/execute in " + mapid + ":" + name;
 
+
         ServerTime.factoryServer.runCommand(start + " run forceload add 0 0");
         ServerTime.factoryServer.runCommand(start + " run " + DuelGameHandler.returnCommandMap(selectedMap));
         ServerTime.factoryServer.runCommand(start + " run setblock 1 80 0 minecraft:redstone_block");
 
         ServerTime.factoryServer.runCommand(start + " if block 0 80 0 minecraft:structure_block run setblock 0 80 0 air");
         ServerTime.factoryServer.runCommand(start + " if block 1 80 0 minecraft:redstone_block run setblock 1 80 0 air");
+
 
         PlayerUtil.resetHealthStatus(p1);
         PlayerUtil.resetHealthStatus(p2);
@@ -233,9 +240,7 @@ public class DuelsGame { //implements Runnable{
                 String duels2 = this.level.dimension().toString().replaceAll("]", "").split(":")[2];
 
                 DuelGameHandler.deleteWorld(duels2);
-                try {
-                    ServerTime.factoryServer.unloadWorld(duels2, false);
-                } catch (Exception ignored) { }
+
                 DuelGameHandler.duelsGames.remove(this);
                 return;
             }
@@ -314,6 +319,10 @@ public class DuelsGame { //implements Runnable{
         if (!attackerNull) {
             win = Component.text(attacker.getRawName()).color(ChatFormat.brandColor2)
                     .append(Component.text(" has won the duel!").color(ChatFormat.normalColor)
+                            .append(Component.text(" [")
+                                    .color(ChatFormat.lineColor))
+                            .append(Component.text(FfaUtil.calculateHealth(attacker.getHealth()) + "❤").color(ChatFormat.failColor))
+                            .append(Component.text("]").color(ChatFormat.lineColor))
                     );
 
             titleLose = Component.text("You lost!").color(ChatFormat.brandColor2);
@@ -321,6 +330,11 @@ public class DuelsGame { //implements Runnable{
                     .color(ChatFormat.normalColor)
                     .append(Component.text(attacker.getRawName())
                             .color(ChatFormat.brandColor2)
+                            .append(Component.text(" [")
+                                    .color(ChatFormat.lineColor)
+                            .append(Component.text(FfaUtil.calculateHealth(attacker.getHealth()) + "❤").color(ChatFormat.failColor))
+                            .append(Component.text("]").color(ChatFormat.lineColor))
+                            )
                     );
 
             titleWin = Component.text("You won!").color(ChatFormat.brandColor2);

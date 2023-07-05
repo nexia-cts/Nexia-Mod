@@ -8,7 +8,7 @@ import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
-import net.minecraft.core.BlockPos;
+import com.nexia.world.structure.Rotation;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceKey;
@@ -20,7 +20,6 @@ import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
@@ -54,6 +53,13 @@ public class DuelGameHandler {
         data.gameMode = DuelGameMode.LOBBY;
         data.spectatingPlayer = null;
         if(leaveTeam) {
+            if(data.duelsTeam != null) {
+                if(data.duelsTeam.refreshCreator(player)) {
+                    data.duelsTeam.disbandTeam(player, true);
+                } else {
+                    data.duelsTeam.leaveTeam(player, true);
+                }
+            }
             data.duelsTeam = null;
         }
         data.teamDuelsGame = null;
@@ -153,7 +159,7 @@ public class DuelGameHandler {
 
         int[] pos = new int[]{0, 0, 0};
 
-        String rotation = "";
+        Rotation rotation = Rotation.NO_ROTATION;
         if (mapname.equalsIgnoreCase("city")) {
             pos[0] = -65;
             pos[1] = -11;
@@ -166,14 +172,15 @@ public class DuelGameHandler {
             pos[0] = -40;
             pos[1] = -20;
             pos[2] = -31;
-            rotation = "CLOCKWISE_90";
+            rotation = Rotation.CLOCKWISE_90;
         }
 
-        if(rotation.trim().length() != 0){
-            return "setblock 0 80 0 minecraft:structure_block{mode:'LOAD',name:'duels:" + mapname.toLowerCase() + "'" + ",posX:" + pos[0] + ",posY:" + pos[1] + ",posZ:" + pos[2] + ",rotation:\"" + rotation + "\"}";
+        if(rotation != Rotation.NO_ROTATION){
+            return "setblock 0 80 0 minecraft:structure_block{mode:'LOAD',name:'duels:" + mapname.toLowerCase() + "'" + ",posX:" + pos[0] + ",posY:" + pos[1] + ",posZ:" + pos[2] + ",rotation:\"" + rotation.id + "\"}";
         } else {
             return "setblock 0 80 0 minecraft:structure_block{mode:'LOAD',name:'duels:" + mapname.toLowerCase() + "'" + ",posX:" + pos[0] + ",posY:" + pos[1] + ",posZ:" + pos[2] + "}";
         }
+
     }
 
     public static ServerLevel createWorld(boolean doRegeneration){

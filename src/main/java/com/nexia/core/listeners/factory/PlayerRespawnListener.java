@@ -8,6 +8,7 @@ import com.combatreforged.factory.api.world.util.Location;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
+import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -26,17 +27,29 @@ public class PlayerRespawnListener {
             ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayer(factoryPlayer.getUUID());
 
             if(player == null) return;
-            DuelsGame duelsGame = PlayerDataManager.get(player).duelsGame;
-            TeamDuelsGame teamDuelsGame = PlayerDataManager.get(player).teamDuelsGame;
+            PlayerData data = PlayerDataManager.get(player);
+            DuelsGame duelsGame = data.duelsGame;
+            TeamDuelsGame teamDuelsGame = data.teamDuelsGame;
 
             if(duelsGame != null && duelsGame.isEnding && duelsGame.winner != null) {
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
                 respawnEvent.setSpawnpoint(new Location(duelsGame.winner.getX(), duelsGame.winner.getY(), duelsGame.winner.getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", duelsGame.level.dimension().toString().replaceAll("]", "").split(":")[2]))));
                 //player.teleportTo(duelsGame.level, duelsGame.winner.getX(), duelsGame.winner.getY(), duelsGame.winner.getZ(), 0, 0);
-            } else if(teamDuelsGame != null && teamDuelsGame.isEnding && teamDuelsGame.winner != null) {
+            } else if(teamDuelsGame != null && data.duelsTeam != null) {
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
+                // duelsTeam.alive.get(new Random().nextInt(teamDuelsGame.winner.alive.size()))
 
-                ServerPlayer player1 = teamDuelsGame.winner.alive.get(new Random().nextInt(teamDuelsGame.winner.alive.size()));
+                ServerPlayer player1;
+                if(data.duelsTeam.alive.isEmpty()) {
+                    if(teamDuelsGame.team1 == data.duelsTeam) {
+                        player1 = teamDuelsGame.team2.alive.get(new Random().nextInt(teamDuelsGame.team2.alive.size()));
+                    } else {
+                        player1 = teamDuelsGame.team1.alive.get(new Random().nextInt(teamDuelsGame.team1.alive.size()));
+                    }
+                } else {
+                    player1 = data.duelsTeam.alive.get(new Random().nextInt(data.duelsTeam.alive.size()));
+                }
+
 
                 respawnEvent.setSpawnpoint(new Location(player1.getX(), player1.getY(), player1.getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", teamDuelsGame.level.dimension().toString().replaceAll("]", "").split(":")[2]))));
                 //player.teleportTo(duelsGame.level, duelsGame.winner.getX(), duelsGame.winner.getY(), duelsGame.winner.getZ(), 0, 0);

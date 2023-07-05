@@ -38,6 +38,10 @@ public class UseItemListener {
             if(sName.contains("queue sword") && gameMode == PlayerGameMode.LOBBY) {
                 QueueGUI.openQueueGUI(minecraftPlayer);
             }
+
+            if(sName.contains("team axe") && gameMode == PlayerGameMode.LOBBY) {
+                player.runCommand("/party list");
+            }
         });
     }
 }

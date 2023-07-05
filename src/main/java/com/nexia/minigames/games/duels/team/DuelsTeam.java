@@ -1,6 +1,7 @@
 package com.nexia.minigames.games.duels.team;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
@@ -45,7 +46,7 @@ public class DuelsTeam {
             this.creator = creator;
             this.disbandTeam(creator, false);
         }
-        return this.creator.getUUID().equals(creator.getUUID());
+        return this.creator.getScoreboardName().equalsIgnoreCase(creator.getScoreboardName());
     }
 
     public void refreshPeople() {
@@ -56,7 +57,6 @@ public class DuelsTeam {
         }
 
         this.people.clear();
-        this.people.add(this.creator);
         this.people.addAll(refreshedPlayers);
 
     }
@@ -73,9 +73,10 @@ public class DuelsTeam {
 
 
     public void disbandTeam(ServerPlayer executor, boolean message) {
+        Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor);
 
         if(!this.refreshCreator(executor)) {
-            if(message) PlayerUtil.getFactoryPlayer(executor).sendMessage(Component.text("You are not the creator!").color(ChatFormat.failColor));
+            if(message) factoryExecutor.sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
             return;
         }
 
@@ -89,6 +90,7 @@ public class DuelsTeam {
         this.alive.clear();
         this.creator = null;
         this.invited.clear();
+        if(message) factoryExecutor.sendMessage(Component.text("You have disbanded your own team.").color(ChatFormat.normalColor));
     }
 
     public void leaveTeam(ServerPlayer player, boolean message) {
@@ -103,23 +105,40 @@ public class DuelsTeam {
         this.people.remove(player);
         this.all.remove(player);
         this.alive.remove(player);
+
+        if(message) factoryPlayer.sendMessage(Component.text("You have left " + this.creator.getScoreboardName() + "'s Team.").color(ChatFormat.normalColor));
         PlayerUtil.broadcast(this.all, LegacyChatFormat.format("§d{} §7has left the team.", player.getScoreboardName()));
     }
 
     public void invitePlayer(ServerPlayer invitor, ServerPlayer player) {
         Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
-        Player factoryInviter = PlayerUtil.getFactoryPlayer(this.creator);
-        if(player == this.creator) {
-            factoryPlayer.sendMessage(Component.text("You cannot invite yourself!").color(ChatFormat.failColor));
+        Player factoryInvitor = PlayerUtil.getFactoryPlayer(invitor);
+
+        boolean isCreator = this.refreshCreator(invitor);
+
+        if(!isCreator){
+            factoryInvitor.sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
             return;
         }
-        if(invitor != this.creator){
-            factoryPlayer.sendMessage(Component.text("You are not the creator!").color(ChatFormat.failColor));
+
+        if(player == this.creator) {
+            factoryInvitor.sendMessage(Component.text("You cannot invite yourself!").color(ChatFormat.failColor));
+            return;
+        }
+
+
+        if(com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode != PlayerGameMode.LOBBY) {
+            factoryInvitor.sendMessage(Component.text("That player is not in duels!").color(ChatFormat.failColor));
+            return;
+        }
+
+        if(PlayerDataManager.get(player).duelsTeam != null) {
+            factoryInvitor.sendMessage(Component.text("That player is already in a team!").color(ChatFormat.failColor));
             return;
         }
 
         if(this.people.contains(player)) {
-            factoryInviter.sendMessage(Component.text("That player is already in your team!").color(ChatFormat.failColor));
+            factoryInvitor.sendMessage(Component.text("That player is already in your team!").color(ChatFormat.failColor));
             return;
         }
 
@@ -133,7 +152,7 @@ public class DuelsTeam {
                         .color(ChatFormat.greenColor)
                         .decorate(ChatFormat.bold)
                         .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor2)))
-                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/party join " + factoryInviter.getRawName())))
+                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/party join " + factoryInvitor.getRawName())))
                 .append(Component.text("]  ").color(NamedTextColor.DARK_GRAY)
                 );
 
@@ -143,12 +162,12 @@ public class DuelsTeam {
                         .decoration(ChatFormat.bold, true)
                         .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("Click me")
                                 .color(ChatFormat.brandColor2)))
-                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/party decline " + factoryInviter.getRawName())))
+                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/party decline " + factoryInvitor.getRawName())))
                 .append(Component.text("]").color(NamedTextColor.DARK_GRAY)
                 );
 
         factoryPlayer.sendMessage(
-                Component.text(factoryInviter.getRawName()).color(ChatFormat.brandColor2)
+                Component.text(factoryInvitor.getRawName()).color(ChatFormat.brandColor2)
                         .append(Component.text(" has invited you to their team!").color(ChatFormat.normalColor))
         );
 
@@ -166,16 +185,16 @@ public class DuelsTeam {
 
     public void kickPlayer(ServerPlayer executor, ServerPlayer player) {
         Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
-        Player factoryInviter = PlayerUtil.getFactoryPlayer(this.creator);
+        Player factoryInviter = PlayerUtil.getFactoryPlayer(executor);
         PlayerData data = PlayerDataManager.get(player);
 
         if(!this.refreshCreator(executor)) {
-            factoryPlayer.sendMessage(Component.text("You are not the creator!").color(ChatFormat.failColor));
+            factoryInviter.sendMessage(Component.text("You are not the creator!").color(ChatFormat.failColor));
             return;
         }
 
         if(player == executor) {
-            factoryPlayer.sendMessage(Component.text("You cannot kick yourself!").color(ChatFormat.failColor));
+            factoryInviter.sendMessage(Component.text("You cannot kick yourself!").color(ChatFormat.failColor));
             return;
         }
 
@@ -190,6 +209,8 @@ public class DuelsTeam {
         this.people.remove(player);
         this.alive.remove(player);
         this.all.remove(player);
+
+        factoryPlayer.sendMessage(Component.text("You have been kicked from " + factoryInviter.getRawName() + "'s Team.").color(ChatFormat.normalColor));
     }
 
     public void joinTeam(ServerPlayer player) {
@@ -212,6 +233,7 @@ public class DuelsTeam {
         this.people.add(player);
 
         data.duelsTeam = this;
+        factoryPlayer.sendMessage(Component.text("You have joined " + factoryInviter.getRawName() + "'s team").color(ChatFormat.normalColor));
         PlayerUtil.broadcast(this.all, LegacyChatFormat.format("§d{} §7has joined the team.", factoryPlayer.getRawName()));
     }
 
@@ -231,6 +253,7 @@ public class DuelsTeam {
         }
 
         this.invited.remove(player);
+        factoryPlayer.sendMessage(Component.text("You have declined " + factoryInviter.getRawName() + "'s invite.").color(ChatFormat.normalColor));
         factoryInviter.sendMessage(Component.text(factoryPlayer.getRawName() + " has declined your invite.").color(ChatFormat.failColor));
     }
 

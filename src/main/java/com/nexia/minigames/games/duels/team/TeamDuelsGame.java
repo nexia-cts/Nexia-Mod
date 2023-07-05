@@ -195,6 +195,8 @@ public class TeamDuelsGame { //implements Runnable{
                 }
 
                 DuelGameHandler.deleteWorld(this.level.dimension().toString().replaceAll("]", "").split(":")[2]);
+                this.team1.refreshTeam();
+                this.team2.refreshTeam();
                 DuelGameHandler.teamDuelsGames.remove(this);
                 return;
             }
@@ -353,8 +355,11 @@ public class TeamDuelsGame { //implements Runnable{
             return;
         }
 
+        /*
         if(isVictimTeamDead){
             this.endGame(victimTeam, null, false);
         }
+
+         */
     }
 }
