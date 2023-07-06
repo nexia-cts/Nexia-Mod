@@ -1,10 +1,9 @@
 package com.nexia.minigames.games.oitc.util;
 
-import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.time.TickUtil;
 import com.nexia.minigames.games.oitc.OitcGame;
-import com.nexia.minigames.games.oitc.OitcSpawn;
 import com.nexia.minigames.games.oitc.util.player.PlayerDataManager;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
@@ -22,7 +21,7 @@ import java.util.ArrayList;
 public class OitcScoreboard {
 
     private static final String objectiveName = "oitc_sidebar";
-    private static final TextComponent title = new TextComponent(ChatFormat.brandColor1 + "\247l      OITC     ");
+    private static final TextComponent title = new TextComponent(LegacyChatFormat.brandColor1 + "\247l      OITC     ");
 
     public static final int timerLine = 1;
 
@@ -54,7 +53,7 @@ public class OitcScoreboard {
         addLines(lines);
         updateTimer();
 
-        for (ServerPlayer player : ServerTime.minecraftServer.getPlayerList().getPlayers()) {
+        for (ServerPlayer player : OitcGame.alive) {
             updateStats(player);
             sendLines(player);
         }
@@ -62,12 +61,12 @@ public class OitcScoreboard {
 
     public static void updateTimer() {
         String[] timer = TickUtil.minuteTimeStamp(OitcGame.gameTime * 20);
-        String time = "Time left: " + ChatFormat.brandColor2 + timer[0] + ":" + timer[1];
+        String time = "Time left: " + LegacyChatFormat.brandColor2 + timer[0] + ":" + timer[1];
         OitcScoreboard.replaceLine(OitcScoreboard.timerLine, time);
     }
 
     public static void updateStats(ServerPlayer player) {
-        String kills = "Kills: " + ChatFormat.brandColor2 + PlayerDataManager.get(player).kills;
+        String kills = "Kills: " + LegacyChatFormat.brandColor2 + PlayerDataManager.get(player).kills;
         OitcScoreboard.replaceLinePlayer(2, kills, player);
     }
 

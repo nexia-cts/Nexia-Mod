@@ -226,14 +226,8 @@ public class LobbyUtil {
             player.addTag("oitc");
             PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.OITC;
             OitcGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
-            com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(minecraftPlayer).gameMode = OitcGameMode.LOBBY;
-            /*
-            if(tp){
-                minecraftPlayer.teleportTo(OitcSpawn.oitcWorld, OitcSpawn.spawn.x, OitcSpawn.spawn.y, OitcSpawn.spawn.z, OitcSpawn.spawn.yaw, OitcSpawn.spawn.pitch);
-                minecraftPlayer.setRespawnPosition(OitcSpawn.oitcWorld.dimension(), OitcSpawn.spawn.toBlockPos(), OitcSpawn.spawn.yaw, true, false);
-            }
 
-             */
+            com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(minecraftPlayer).gameMode = OitcGameMode.LOBBY;
 
             OitcGame.joinQueue(minecraftPlayer);
 

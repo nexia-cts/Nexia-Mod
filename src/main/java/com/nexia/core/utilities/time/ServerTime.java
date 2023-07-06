@@ -8,6 +8,7 @@ import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.ffa.utilities.FfaUtil;
+import com.nexia.minigames.GameHandler;
 import com.nexia.minigames.games.bedwars.BwGame;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.areas.BwDimension;
@@ -94,6 +95,7 @@ public class ServerTime {
     static void everySecond() {
         totalSecondCount++;
         OitcGame.second();
+        GameHandler.second();
         try {
             for (DuelsGame game : DuelGameHandler.duelsGames) {
                 if (game == null) return;

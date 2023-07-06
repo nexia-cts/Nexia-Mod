@@ -8,6 +8,7 @@
     "block.BeaconBlockMixin",
     "block.BlockMixin",
     "block.DispenserBlockMixin",
+    "block.GrindstoneBlockMixin",
     "block.SignBlockMixin",
     "entity.AbstractArrowMixin",
     "entity.AbstractHurtingProjectileMixin",

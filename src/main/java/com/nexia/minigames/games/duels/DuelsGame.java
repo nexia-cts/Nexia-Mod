@@ -202,9 +202,7 @@ public class DuelsGame { //implements Runnable{
                 PlayerData victimData = PlayerDataManager.get(this.loser);
                 PlayerData attackerData = null;
 
-                if (minecraftAttacker != null) {
-                    attackerData = PlayerDataManager.get(minecraftAttacker);
-                }
+                attackerData = PlayerDataManager.get(minecraftAttacker);
 
                 PlayerUtil.resetHealthStatus(attacker);
 
@@ -220,17 +218,15 @@ public class DuelsGame { //implements Runnable{
                 removeQueue(minecraftVictim, null, true);
                 victimData.gameMode = DuelGameMode.LOBBY;
 
-                if (minecraftAttacker != null) {
-                    attackerData.inviting = false;
-                    attackerData.inDuel = false;
-                    attackerData.inviteKit = "";
-                    attackerData.inviteMap = "";
-                    attackerData.gameMode = DuelGameMode.LOBBY;
-                    attackerData.duelsGame = null;
+                attackerData.inviting = false;
+                attackerData.inDuel = false;
+                attackerData.inviteKit = "";
+                attackerData.inviteMap = "";
+                attackerData.gameMode = DuelGameMode.LOBBY;
+                attackerData.duelsGame = null;
 
-                    attackerData.savedData.wins++;
-                    victimData.savedData.loss++;
-                }
+                attackerData.savedData.wins++;
+                victimData.savedData.loss++;
 
                 this.isEnding = false;
 

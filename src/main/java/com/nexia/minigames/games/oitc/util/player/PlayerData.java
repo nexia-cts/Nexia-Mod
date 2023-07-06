@@ -12,10 +12,6 @@ public class PlayerData {
 
     public int kills;
 
-    public boolean isSpectating;
-
-    public boolean isDeathTime;
-
     public int deathTime;
 
     public PlayerData(SavedPlayerData savedData) {
@@ -23,8 +19,6 @@ public class PlayerData {
 
         this.gameMode = OitcGameMode.LOBBY;
         this.kills = 0;
-        this.isSpectating = false;
-        this.isDeathTime = false;
         this.deathTime = 5;
     }
 

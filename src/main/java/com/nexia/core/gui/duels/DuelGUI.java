@@ -1,5 +1,6 @@
 package com.nexia.core.gui.duels;
 
+import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.minigames.Main;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
@@ -77,6 +78,7 @@ public class DuelGUI extends SimpleGui {
         }
         //this.setSlot(4, HeadFunctions.getPlayerHead(otherp.getScoreboardName(), 1));
         int i1 = 0;
+        ItemStack item;
         for(String duel : DuelGameMode.duels){
             if(slot == 17) {
                 slot = 19;
@@ -85,7 +87,10 @@ public class DuelGUI extends SimpleGui {
                 slot = 28;
             }
 
-            this.setSlot(slot, DuelGameMode.duelsItems.get(i1).setHoverName(new TextComponent("§f" + duel.toUpperCase().replaceAll("_", " "))));
+            item = DuelGameMode.duelsItems.get(i1).setHoverName(new TextComponent("§f" + duel.toUpperCase().replaceAll("_", " ")));
+            ItemDisplayUtil.removeLore(item, 0);
+            ItemDisplayUtil.removeLore(item, 1);
+            this.setSlot(slot, item);
             slot++;
             i1++;
         }

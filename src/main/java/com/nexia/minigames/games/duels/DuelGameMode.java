@@ -51,7 +51,7 @@ public class DuelGameMode {
     public static final DuelGameMode UHC_SHIELD = new DuelGameMode("uhc_shield", false, GameType.SURVIVAL);
 
     public static ArrayList<ServerPlayer> HSG_QUEUE = new ArrayList<>();
-    public static final DuelGameMode HSG = new DuelGameMode("hsg", true, GameType.SURVIVAL);
+    public static final DuelGameMode HSG = new DuelGameMode("hsg", false, GameType.SURVIVAL);
 
     public static ArrayList<ServerPlayer> SKYWARS_QUEUE = new ArrayList<>();
     public static final DuelGameMode SKYWARS = new DuelGameMode("skywars", true, GameType.SURVIVAL);

@@ -5,11 +5,17 @@ import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.combatreforged.factory.api.world.util.Location;
+import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import com.nexia.minigames.games.oitc.OitcGame;
+import com.nexia.minigames.games.oitc.OitcGameMode;
+import net.blumbo.blfscheduler.BlfRunnable;
+import net.blumbo.blfscheduler.BlfScheduler;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Random;
@@ -27,27 +33,50 @@ public class PlayerRespawnListener {
             ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayer(factoryPlayer.getUUID());
 
             if(player == null) return;
-            PlayerData data = PlayerDataManager.get(player);
-            DuelsGame duelsGame = data.duelsGame;
-            TeamDuelsGame teamDuelsGame = data.teamDuelsGame;
+            PlayerData duelsData = PlayerDataManager.get(player);
+            com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
+            DuelsGame duelsGame = duelsData.duelsGame;
+            TeamDuelsGame teamDuelsGame = duelsData.teamDuelsGame;
 
+            
+            if(data.gameMode == PlayerGameMode.OITC) {
+                double[] respawn = {0, 100, 0};
+                if(player.getLastDamageSource() != null && PlayerUtil.getPlayerAttacker(player.getLastDamageSource().getEntity()) != null) {
+                    ServerPlayer serverPlayer = PlayerUtil.getPlayerAttacker(player.getLastDamageSource().getEntity());
+                    if(com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(serverPlayer).gameMode == OitcGameMode.PLAYING) {
+                        respawn[0] = serverPlayer.getX();
+                        respawn[1] = serverPlayer.getY();
+                        respawn[2] = serverPlayer.getZ();
+                    }
+                }
+                BlfScheduler.delay(100, new BlfRunnable() {
+                    @Override
+                    public void run() {
+                        respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
+                    }
+                });
+
+                respawnEvent.setSpawnpoint(new Location(respawn[0], respawn[1], respawn[2], ServerTime.factoryServer.getWorld(new Identifier("oitc", OitcGame.world.dimension().toString().replaceAll("]", "").split(":")[2]))));
+                return;
+            }
+            
             if(duelsGame != null && duelsGame.isEnding && duelsGame.winner != null) {
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
                 respawnEvent.setSpawnpoint(new Location(duelsGame.winner.getX(), duelsGame.winner.getY(), duelsGame.winner.getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", duelsGame.level.dimension().toString().replaceAll("]", "").split(":")[2]))));
                 //player.teleportTo(duelsGame.level, duelsGame.winner.getX(), duelsGame.winner.getY(), duelsGame.winner.getZ(), 0, 0);
-            } else if(teamDuelsGame != null && data.duelsTeam != null) {
+            } else if(teamDuelsGame != null && duelsData.duelsTeam != null) {
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
                 // duelsTeam.alive.get(new Random().nextInt(teamDuelsGame.winner.alive.size()))
 
                 ServerPlayer player1;
-                if(data.duelsTeam.alive.isEmpty()) {
-                    if(teamDuelsGame.team1 == data.duelsTeam) {
+                if(duelsData.duelsTeam.alive.isEmpty()) {
+                    if(teamDuelsGame.team1 == duelsData.duelsTeam) {
                         player1 = teamDuelsGame.team2.alive.get(new Random().nextInt(teamDuelsGame.team2.alive.size()));
                     } else {
                         player1 = teamDuelsGame.team1.alive.get(new Random().nextInt(teamDuelsGame.team1.alive.size()));
                     }
                 } else {
-                    player1 = data.duelsTeam.alive.get(new Random().nextInt(data.duelsTeam.alive.size()));
+                    player1 = duelsData.duelsTeam.alive.get(new Random().nextInt(duelsData.duelsTeam.alive.size()));
                 }
 
 
