@@ -453,7 +453,7 @@ public class GamemodeHandler {
 
         PlayerData playerData = PlayerDataManager.get(player);
 
-        if (!playerData.inDuel || (playerData.duelsGame == null || playerData.teamDuelsGame == null)) {
+        if (!playerData.inDuel && (playerData.teamDuelsGame == null || playerData.duelsGame == null)) {
             factoryExecutor.sendMessage(Component.text("That player is not in a duel!").color(ChatFormat.failColor));
             return;
         }
@@ -620,7 +620,7 @@ public class GamemodeHandler {
         }
 
         if (!playerData.inviting || !playerData.invitingPlayer.getUUID().equals(executor.getUUID())) {
-            executor.sendMessage(Component.text("That player has not challenged you to a duel!"));
+            executor.sendMessage(Component.text("That player has not challenged you to a duel!").color(ChatFormat.failColor));
             return;
         }
 

@@ -49,12 +49,7 @@ public class PlayerRespawnListener {
                         respawn[2] = serverPlayer.getZ();
                     }
                 }
-                BlfScheduler.delay(100, new BlfRunnable() {
-                    @Override
-                    public void run() {
-                        respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
-                    }
-                });
+                respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
 
                 respawnEvent.setSpawnpoint(new Location(respawn[0], respawn[1], respawn[2], ServerTime.factoryServer.getWorld(new Identifier("oitc", OitcGame.world.dimension().toString().replaceAll("]", "").split(":")[2]))));
                 return;

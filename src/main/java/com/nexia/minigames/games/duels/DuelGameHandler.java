@@ -133,6 +133,10 @@ public class DuelGameHandler {
                 pos[0] = -71;
                 pos[1] = 80;
                 pos[2] = -16;
+            } else if (mapname.equalsIgnoreCase("eden")) {
+                pos[0] = 55;
+                pos[1] = 80;
+                pos[3] = 90;
             }
         } else {
             if (mapname.equalsIgnoreCase("city")) {
@@ -149,6 +153,10 @@ public class DuelGameHandler {
                 pos[1] = 80;
                 pos[2] = 34;
                 pos[3] = 180;
+            } else if (mapname.equalsIgnoreCase("eden")) {
+                pos[0] = -55;
+                pos[1] = 80;
+                pos[3] = -90;
             }
         }
 
@@ -173,6 +181,10 @@ public class DuelGameHandler {
             pos[1] = -20;
             pos[2] = -31;
             rotation = Rotation.CLOCKWISE_90;
+        } else if (mapname.equalsIgnoreCase("eden")) {
+            pos[0] = -62;
+            pos[1] = -7;
+            pos[2] = -23;
         }
 
         if(rotation != Rotation.NO_ROTATION){

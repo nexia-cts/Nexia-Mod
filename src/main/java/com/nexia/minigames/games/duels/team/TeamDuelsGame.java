@@ -1,6 +1,7 @@
 package com.nexia.minigames.games.duels.team;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -22,6 +23,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.level.GameType;
 import org.apache.logging.log4j.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -75,6 +77,10 @@ public class TeamDuelsGame { //implements Runnable{
         this.level = level;
     }
 
+    public boolean detectBrokenGame() {
+        return (this.team1 == null || this.team1.creator == null || this.team2 == null || this.team2.creator == null) || (this.isEnding && ((this.winner == null || this.winner.creator == null) || (this.loser == null || this.loser.creator == null)));
+    }
+
     public static TeamDuelsGame startGame(@NotNull DuelsTeam team1, @NotNull DuelsTeam team2, String stringGameMode, @Nullable String selectedMap){
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
         if(gameMode == null){
@@ -122,6 +128,8 @@ public class TeamDuelsGame { //implements Runnable{
             data.teamDuelsGame = game;
             data.inDuel = true;
 
+            factoryPlayer.addTag(LobbyUtil.NO_DAMAGE_TAG);
+
             player.teleportTo(duelLevel, team1Pos[0], team1Pos[1], team1Pos[2], team1Pos[3], team1Pos[4]);
             player.setGameMode(gameMode.gameMode);
 
@@ -156,6 +164,8 @@ public class TeamDuelsGame { //implements Runnable{
 
             factoryPlayer.runCommand("/loadinventory " + stringGameMode.toLowerCase(), 4, false);
 
+            factoryPlayer.addTag(LobbyUtil.NO_DAMAGE_TAG);
+
             factoryPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
             factoryPlayer.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
@@ -170,6 +180,35 @@ public class TeamDuelsGame { //implements Runnable{
     }
 
     public void duelSecond() {
+        if(this.detectBrokenGame()) {
+            Component error = ChatFormat.nexiaMessage
+                    .append(Component.text("The game you were in was identified as broken, please contact NotCoded or any other dev.")
+                            .color(ChatFormat.failColor)
+                    );
+
+            for(ServerPlayer spectator : this.spectators) {
+                Player factoryPlayer = PlayerUtil.getFactoryPlayer(spectator);
+                factoryPlayer.runCommand("/hub", 0, false);
+                factoryPlayer.setGameMode(Minecraft.GameMode.ADVENTURE);
+                factoryPlayer.getInventory().clear();
+                factoryPlayer.sendMessage(error);
+            }
+
+            for(ServerPlayer player : this.level.players()) {
+                Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
+                factoryPlayer.runCommand("/hub", 0, false);
+                factoryPlayer.sendMessage(error);
+                factoryPlayer.setGameMode(Minecraft.GameMode.ADVENTURE);
+                factoryPlayer.getInventory().clear();
+                DuelGameHandler.leave(player, true);
+            }
+
+            this.isEnding = false;
+            this.hasStarted = true;
+            DuelGameHandler.deleteWorld(this.level.dimension().toString().replaceAll("]", "").split(":")[2]);
+            DuelGameHandler.teamDuelsGames.remove(this);
+            return;
+        }
         if(this.isEnding) {
             int color = 160 * 65536 + 248;
             // r * 65536 + g * 256 + b;
@@ -286,7 +325,7 @@ public class TeamDuelsGame { //implements Runnable{
         Component subtitleWin = win;
 
 
-        if (winnerTeam == null) {
+        if (winnerTeam == null || winnerTeam.creator == null) {
             for(ServerPlayer player : loserTeam.all) {
                 Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
                 factoryPlayer.sendTitle(Title.title(titleWin, subtitleWin));
@@ -347,7 +386,7 @@ public class TeamDuelsGame { //implements Runnable{
             }
             return;
         }
-        if(source == null || !(source.getEntity() instanceof ServerPlayer)) {
+        if((source == null || !(source.getEntity() instanceof ServerPlayer)) && isVictimTeamDead) {
 
             if(this.team1 == victimTeam) this.endGame(victimTeam, this.team2, true);
             else if(this.team2 == victimTeam) this.endGame(victimTeam, this.team1, true);

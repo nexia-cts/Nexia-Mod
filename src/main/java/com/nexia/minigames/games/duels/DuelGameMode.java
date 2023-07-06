@@ -81,6 +81,7 @@ public class DuelGameMode {
         duelsMaps.add(new ItemStack(Items.SMOOTH_STONE)); // City
         duelsMaps.add(new ItemStack(Items.NETHERITE_BLOCK)); // Neth Flat
         duelsMaps.add(new ItemStack(Items.GRASS_BLOCK)); // Plains
+        duelsMaps.add(new ItemStack(Items.ALLIUM)); // Skywars Map (Eden)
 
         duelsItems.add(new ItemStack(Items.IRON_AXE)); // AXE
         duelsItems.add(new ItemStack(Items.DIAMOND_SWORD)); // SWORD_ONLY
