@@ -15,8 +15,6 @@ public class GameHandler {
 
     public static HashMap<ServerPlayer, Integer> countdown = new HashMap<>();
 
-    public static HashMap<ServerPlayer, Player> cachedFactoryPlayers = new HashMap<>();
-
     public static void second() {
         GameHandler.setCountdown();
     }
@@ -33,14 +31,7 @@ public class GameHandler {
             }
             countdown.replace(player, second, currentSecond);
 
-            Player factoryPlayer;
-
-            if(cachedFactoryPlayers.get(player) != null) {
-                factoryPlayer = cachedFactoryPlayers.get(player);
-            } else {
-                factoryPlayer = PlayerUtil.getFactoryPlayer(player);
-                cachedFactoryPlayers.put(player, factoryPlayer);
-            }
+            Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
 
             Title title;
             TextColor color = NamedTextColor.GREEN;

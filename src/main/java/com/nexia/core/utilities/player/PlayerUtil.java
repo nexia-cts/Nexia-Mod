@@ -22,9 +22,14 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 public class PlayerUtil {
+
+    public static HashMap<Player, ServerPlayer> cachedServerPlayer = new HashMap<>();
+
+    public static HashMap<ServerPlayer, Player> cachedFactoryPlayers = new HashMap<>();
 
     public static void broadcast(List<ServerPlayer> players, String string) {
         broadcast(players, new TextComponent(string));
@@ -59,8 +64,13 @@ public class PlayerUtil {
         }
     }
 
-    public static Player getFactoryPlayer(@NotNull net.minecraft.world.entity.player.Player minecraftPlayer) {
-        return getFactoryPlayerFromName(minecraftPlayer.getScoreboardName());
+    public static Player getFactoryPlayer(@NotNull ServerPlayer minecraftPlayer) {
+        Player fPlayer = cachedFactoryPlayers.get(minecraftPlayer);
+        if(fPlayer == null) {
+            fPlayer = ServerTime.factoryServer.getPlayer(minecraftPlayer.getUUID());
+            cachedFactoryPlayers.put(minecraftPlayer, fPlayer);
+        }
+        return fPlayer;
     }
 
     public static Player getFactoryPlayerFromName(@NotNull String player) {
@@ -69,7 +79,13 @@ public class PlayerUtil {
     }
 
     public static ServerPlayer getMinecraftPlayer(@NotNull Player player){
-        return PlayerUtil.getMinecraftPlayerFromName(player.getRawName());
+
+        ServerPlayer sPlayer = cachedServerPlayer.get(player);
+        if(sPlayer == null) {
+            sPlayer = ServerTime.minecraftServer.getPlayerList().getPlayer(player.getUUID());
+            cachedServerPlayer.put(player, sPlayer);
+        }
+        return sPlayer;
     }
 
     public static ServerPlayer getMinecraftPlayerFromName(@NotNull String player){

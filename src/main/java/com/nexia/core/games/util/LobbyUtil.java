@@ -73,12 +73,21 @@ public class LobbyUtil {
 
     public static void leaveAllGames(ServerPlayer minecraftPlayer, boolean tp) {
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
-        if (BwUtil.isInBedWars(minecraftPlayer)) BwPlayerEvents.leaveInBedWars(minecraftPlayer);
+        if (BwUtil.isInBedWars(minecraftPlayer)) {
+            BwPlayerEvents.leaveInBedWars(minecraftPlayer);
+            PlayerGameMode.BEDWARS.players--;
+        }
         else if (FfaUtil.isFfaPlayer(minecraftPlayer)) {
             FfaUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
+            PlayerGameMode.FFA.players--;
         }
-        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(minecraftPlayer, false);
-        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.OITC) OitcGame.leave(minecraftPlayer);
+        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) {
+            DuelGameHandler.leave(minecraftPlayer, false);
+        }
+        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.OITC) {
+            OitcGame.leave(minecraftPlayer);
+            PlayerGameMode.OITC.players--;
+        }
 
         BwScoreboard.removeScoreboardFor(minecraftPlayer);
 
@@ -129,12 +138,12 @@ public class LobbyUtil {
         }
 
         minecraftPlayer.connection.send(new ClientboundStopSoundPacket());
-        ServerTime.minecraftServer.getPlayerList().sendPlayerPermissionLevel(minecraftPlayer);
 
         PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.LOBBY;
         player.removeTag(LobbyUtil.NO_RANK_DISPLAY_TAG);
         player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
         player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+        ServerTime.minecraftServer.getPlayerList().sendPlayerPermissionLevel(minecraftPlayer);
     }
 
     public static void giveItems(ServerPlayer minecraftPlayer) {
@@ -193,6 +202,7 @@ public class LobbyUtil {
         }
         if(game.equalsIgnoreCase("classic ffa")){
             player.addTag("ffa");
+            PlayerGameMode.FFA.players++;
             FfaUtil.wasInSpawn.add(player.getUUID());
             PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.FFA;
             if(tp){
@@ -205,6 +215,7 @@ public class LobbyUtil {
             FfaUtil.setInventory(minecraftPlayer);
         }
         if(game.equalsIgnoreCase("bedwars")){
+            PlayerGameMode.BEDWARS.players++;
             if(message){ player.sendActionBarMessage(Component.text("You have joined §b\uD83E\uDE93 §c§lBedwars §e⚡"));}
             BwPlayerEvents.tryToJoin(minecraftPlayer, false);
         }
@@ -224,6 +235,7 @@ public class LobbyUtil {
 
         if(game.equalsIgnoreCase("oitc")){
             player.addTag("oitc");
+            PlayerGameMode.OITC.players++;
             PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.OITC;
             OitcGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
 

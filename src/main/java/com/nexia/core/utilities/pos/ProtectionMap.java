@@ -25,7 +25,7 @@ public class ProtectionMap {
     public byte notListedBlockId;
     public String outsideMessage;
 
-    public ProtectionMap(net.minecraft.world.entity.player.Player player, BlockPos corner1, BlockPos corner2, String filePath, ProtectionBlock[] listedBlocks, ProtectionBlock notListedBlock, String outSideMessage) {
+    public ProtectionMap(ServerPlayer player, BlockPos corner1, BlockPos corner2, String filePath, ProtectionBlock[] listedBlocks, ProtectionBlock notListedBlock, String outSideMessage) {
         this.blocksByIds = listedBlocks;
         this.notListedBlock = notListedBlock;
         this.notListedBlockId = (byte)blocksByIds.length;
@@ -46,7 +46,7 @@ public class ProtectionMap {
         this.outsideMessage = outsideMessage;
     }
 
-    private void createMap(net.minecraft.world.entity.player.Player player, BlockPos corner1) {
+    private void createMap(ServerPlayer player, BlockPos corner1) {
         Level world = player.level;
         int blockCount = 0;
 
@@ -69,7 +69,7 @@ public class ProtectionMap {
         ));
     }
 
-    private void exportMap(net.minecraft.world.entity.player.Player mcPlayer, String filePath) {
+    private void exportMap(ServerPlayer mcPlayer, String filePath) {
         Player player = PlayerUtil.getFactoryPlayer(mcPlayer);
         try {
             Gson gson = new Gson();
@@ -117,7 +117,7 @@ public class ProtectionMap {
         return this.canBuiltAt(mapCorner1, buildPos, null, false);
     }
 
-    public boolean canBuiltAt(BlockPos mapCorner1, BlockPos buildPos, net.minecraft.world.entity.player.Player mcPlayer, boolean sendMessage) {
+    public boolean canBuiltAt(BlockPos mapCorner1, BlockPos buildPos, ServerPlayer mcPlayer, boolean sendMessage) {
         sendMessage = sendMessage && mcPlayer != null;
 
         Player player = null;
