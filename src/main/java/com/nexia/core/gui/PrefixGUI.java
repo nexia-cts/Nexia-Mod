@@ -57,12 +57,12 @@ public class PrefixGUI extends SimpleGui {
                 ItemStack enchantedItem = new ItemStack(Items.NAME_TAG, 1);
                 enchantedItem.enchant(Enchantments.SHARPNESS, 1);
                 enchantedItem.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
-                enchantedItem.setHoverName(new TextComponent(Main.config.ranks[i]).withStyle(ChatFormatting.BOLD, ChatFormatting.LIGHT_PURPLE));
+                enchantedItem.setHoverName(new TextComponent("§d§l" + Main.config.ranks[i]));
                 this.setSlot(slot, enchantedItem);
                 slot++;
             } else if(PlayerUtil.hasPermission(player.createCommandSourceStack(), "nexia.prefix." + Main.config.ranks[i], 4)){
                 ItemStack changedItem = new ItemStack(Items.NAME_TAG, 1);
-                changedItem.setHoverName(new TextComponent(Main.config.ranks[i]).withStyle(ChatFormatting.WHITE));
+                changedItem.setHoverName(new TextComponent("§f" + Main.config.ranks[i]));
                 this.setSlot(slot, changedItem);
                 slot++;
             } else if(player.getTags().contains(Main.config.ranks[i])) {
@@ -80,7 +80,7 @@ public class PrefixGUI extends SimpleGui {
         GuiElementInterface element = this.getSlot(index);
         if(element != null && clickType != ClickType.MOUSE_DOUBLE_CLICK) {
             ItemStack itemStack = element.getItemStack();
-            Component name = itemStack.getHoverName();
+            String name = itemStack.getHoverName().getString().substring(2).replaceAll("§l", "");
 
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
 
@@ -89,7 +89,7 @@ public class PrefixGUI extends SimpleGui {
                 player.sendMessage(
                         ChatFormat.nexiaMessage
                                         .append(net.kyori.adventure.text.Component.text("Your prefix has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                                .append(net.kyori.adventure.text.Component.text(name.getString()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                                .append(net.kyori.adventure.text.Component.text(name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                                                         .append(net.kyori.adventure.text.Component.text(".").decoration(ChatFormat.bold, false))
                 );
 
@@ -97,7 +97,7 @@ public class PrefixGUI extends SimpleGui {
                     player.removeTag(Main.config.ranks[i]);
                 }
 
-                player.addTag(name.getString().toLowerCase());
+                player.addTag(name.toLowerCase());
                 this.setMainLayout(this.player);
             }
 

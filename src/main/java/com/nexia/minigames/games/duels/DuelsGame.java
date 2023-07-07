@@ -1,11 +1,8 @@
 package com.nexia.minigames.games.duels;
 
-import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.world.entity.player.Player;
-import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
@@ -14,30 +11,18 @@ import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
-import com.nexia.world.structure.Rotation;
-import com.nexia.world.structure.StructureMap;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
-import net.minecraft.Util;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Position;
-import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.level.GameType;
-import org.apache.logging.log4j.core.jmx.Server;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -229,8 +214,19 @@ public class DuelsGame { //implements Runnable{
 
                 this.isEnding = false;
 
-                PlayerUtil.getFactoryPlayer(minecraftVictim).runCommand("/hub", 0, false);
-                attacker.runCommand("/hub", 0, false);
+                minecraftVictim = PlayerUtil.getFixedPlayer(minecraftVictim);
+
+                if(minecraftVictim != null) {
+                    PlayerUtil.getFactoryPlayer(minecraftVictim).runCommand("/hub", 0, false);
+                }
+
+
+                minecraftAttacker = PlayerUtil.getFixedPlayer(minecraftAttacker);
+
+                if(minecraftAttacker != null) {
+                    PlayerUtil.getFactoryPlayer(minecraftAttacker).runCommand("/hub", 0, false);
+                }
+
 
                 String duels2 = this.level.dimension().toString().replaceAll("]", "").split(":")[2];
 
