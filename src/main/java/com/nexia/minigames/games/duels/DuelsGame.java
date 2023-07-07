@@ -184,7 +184,6 @@ public class DuelsGame { //implements Runnable{
         game.spawnPositions.put(mcP1, invitorpos);
         game.spawnPositions.put(mcP2, playerpos);
 
-
         return game;
     }
 

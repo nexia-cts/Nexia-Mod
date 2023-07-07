@@ -453,7 +453,7 @@ public class GamemodeHandler {
 
         PlayerData playerData = PlayerDataManager.get(player);
 
-        if (!playerData.inDuel && (playerData.teamDuelsGame == null || playerData.duelsGame == null)) {
+        if (!playerData.inDuel && playerData.teamDuelsGame == null && playerData.duelsGame == null) {
             factoryExecutor.sendMessage(Component.text("That player is not in a duel!").color(ChatFormat.failColor));
             return;
         }
@@ -577,7 +577,7 @@ public class GamemodeHandler {
             return;
         }
 
-        if (data.duelsTeam != null && data.duelsTeam.creator != invitor) {
+        if (data.duelsTeam != null && !data.duelsTeam.refreshCreator(invitor)) {
             if (!silent) {
                 PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
             }
