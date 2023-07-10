@@ -21,14 +21,11 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
-import net.minecraft.server.players.ServerOpList;
-import net.minecraft.server.players.UserWhiteList;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.level.GameType;
 import org.json.simple.JSONObject;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
@@ -45,13 +42,6 @@ import static com.nexia.core.utilities.time.ServerTime.leavePlayer;
 
 @Mixin(PlayerList.class)
 public class PlayerListMixin {
-
-    @Shadow private boolean doWhiteList;
-
-    @Shadow @Final private ServerOpList ops;
-
-    @Shadow @Final private UserWhiteList whitelist;
-
     @ModifyArgs(method = "broadcastMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ClientboundChatPacket;<init>(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
     private void handleChat(Args args) {
         try {
@@ -86,15 +76,17 @@ public class PlayerListMixin {
 
         ServerLevel respawn = Main.server.getLevel(player.getRespawnDimension());
 
-        if(LobbyUtil.isLobbyWorld(respawn)) {
+        if(respawn != null && LobbyUtil.isLobbyWorld(respawn)) {
             player.inventory.clearContent();
             LobbyUtil.giveItems(player);
             player.setGameMode(GameType.ADVENTURE);
+            return;
         }
 
         if (BwUtil.isInBedWars(player)) { BwPlayerEvents.respawned(player); }
     }
 
+    @Unique
     private static Component joinFormat(Component original, ServerPlayer joinPlayer) {
         try {
             String name = String.valueOf(joinPlayer.getScoreboardName());
@@ -106,6 +98,7 @@ public class PlayerListMixin {
         }
     }
 
+    @Unique
     private static Component leaveFormat(Component original, ServerPlayer leavePlayer) {
         try {
             String name = String.valueOf(leavePlayer.getScoreboardName());
@@ -139,7 +132,7 @@ public class PlayerListMixin {
     }
 
     @Inject(method = "canBypassPlayerLimit", at = @At("TAIL"), cancellable = true)
-    private void playerLimitBypasser(GameProfile gameProfile, CallbackInfoReturnable<Boolean> cir) {
+    private void playerLimitBypass(GameProfile gameProfile, CallbackInfoReturnable<Boolean> cir) {
         CompletableFuture<Boolean> bool = Permissions.check(gameProfile, "nexia.join.full");
         try {
             boolean value = bool.get();
@@ -152,6 +145,7 @@ public class PlayerListMixin {
         joinPlayer = serverPlayer;
     }
 
+    @Unique
     private static Component chatFormat(ServerPlayer player, Component original) {
         try {
             TranslatableComponent component = (TranslatableComponent) original;

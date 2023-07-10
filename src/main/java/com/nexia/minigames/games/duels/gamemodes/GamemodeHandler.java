@@ -627,6 +627,71 @@ public class GamemodeHandler {
         GamemodeHandler.joinGamemode(minecraftExecutor, minecraftPlayer, playerData.inviteKit, playerData.inviteMap, true);
     }
 
+    public static void declineDuel(@NotNull ServerPlayer minecraftExecutor, @NotNull ServerPlayer minecraftPlayer) {
+        Player executor = PlayerUtil.getFactoryPlayer(minecraftExecutor);
+        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+
+        //PlayerData executorData = PlayerDataManager.get(minecraftExecutor);
+        PlayerData playerData = PlayerDataManager.get(minecraftPlayer);
+
+        if (minecraftExecutor == minecraftPlayer) {
+            executor.sendMessage(Component.text("You cannot duel yourself!").color(ChatFormat.failColor));
+            return;
+        }
+
+        if (com.nexia.core.utilities.player.PlayerDataManager.get(minecraftExecutor).gameMode != PlayerGameMode.LOBBY || com.nexia.core.utilities.player.PlayerDataManager.get(minecraftPlayer).gameMode != PlayerGameMode.LOBBY) {
+            executor.sendMessage(Component.text("That player is not in duels!").color(ChatFormat.failColor));
+            return;
+        }
+
+        if (!playerData.inviting || !playerData.invitingPlayer.getUUID().equals(executor.getUUID())) {
+            executor.sendMessage(Component.text("That player has not challenged you to a duel!").color(ChatFormat.failColor));
+            return;
+        }
+
+        /*
+        if (!executorData.inviteMap.equalsIgnoreCase(map)) {
+            executorData.inviteMap = map;
+        }
+
+        if (!executorData.inviteKit.equalsIgnoreCase(stringGameMode.toUpperCase())) {
+            executorData.inviteKit = stringGameMode.toUpperCase();
+        }
+
+        if (!executorData.inviting) {
+            executorData.inviting = true;
+        }
+
+        if (executorData.invitingPlayer != minecraftPlayer) {
+            executorData.invitingPlayer = minecraftPlayer;
+        }
+         */
+
+        playerData.inviteMap = "";
+        playerData.inviteKit = "";
+        playerData.inviting = false;
+        playerData.invitingPlayer = null;
+
+
+        player.sendMessage(ChatFormat.nexiaMessage.append(Component.text(executor.getRawName() + " has declined your duel.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
+
+        executor.sendMessage(ChatFormat.nexiaMessage
+                .append(Component.text("You have declined ")
+                        .color(ChatFormat.normalColor)
+                        .decoration(ChatFormat.bold, false))
+                        .append(Component.text(player.getRawName())
+                                .color(ChatFormat.brandColor1)
+                                .decoration(ChatFormat.bold, true))
+                                .append(Component.text("'s duel.")
+                                        .color(ChatFormat.normalColor)
+                                        .decoration(ChatFormat.bold, false)
+                                )
+        );
+
+
+        GamemodeHandler.joinGamemode(minecraftExecutor, minecraftPlayer, playerData.inviteKit, playerData.inviteMap, true);
+    }
+
     public static void challengePlayer(ServerPlayer minecraftExecutor, ServerPlayer minecraftPlayer, String stringGameMode, @Nullable String selectedmap) {
 
         Player executor = PlayerUtil.getFactoryPlayer(minecraftExecutor);
@@ -737,8 +802,12 @@ public class GamemodeHandler {
                 );
 
         Component no = Component.text("[").color(NamedTextColor.DARK_GRAY)
-                .append(Component.text("IGNORE").color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
-                .append(Component.text("]").color(NamedTextColor.DARK_GRAY)
+                .append(Component.text("DECLINE")
+                        .color(ChatFormat.failColor)
+                        .decorate(ChatFormat.bold)
+                        .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor2)))
+                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/declineduel " + executor.getRawName())))
+                .append(Component.text("]  ").color(NamedTextColor.DARK_GRAY)
                 );
 
 

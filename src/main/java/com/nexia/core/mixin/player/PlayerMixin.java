@@ -63,14 +63,14 @@ public abstract class PlayerMixin extends LivingEntity {
         this.getCooldowns().addCooldown(Items.SHIELD, (int)(f * 20.0F));
         this.stopUsingItem();
         this.level.broadcastEntityEvent(this, (byte)30);
-        if((this.getLastDamageSource() != null && this.getLastDamageSource().getEntity() instanceof Player attacker) && Main.config.enhancements.betterShields){
+        if((this.getLastDamageSource() != null && this.getLastDamageSource().getEntity() instanceof ServerPlayer attacker) && Main.config.enhancements.betterShields){
             //this.level.broadcastEntityEvent(attacker, (byte)30);
 
             SoundSource soundSource = null;
             for (SoundSource source : SoundSource.values()) {
                 soundSource = source;
             }
-            PlayerUtil.sendSound((ServerPlayer) attacker, new EntityPos(attacker.position()), SoundEvents.SHIELD_BREAK, soundSource, 2, 1);
+            PlayerUtil.sendSound(attacker, new EntityPos(attacker.position()), SoundEvents.SHIELD_BREAK, soundSource, 2, 1);
         }
         return true;
     }
@@ -81,9 +81,11 @@ public abstract class PlayerMixin extends LivingEntity {
 
         if (player.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
             cir.setReturnValue(false);
+            return;
         }
 
-        if(damageSource.getEntity() instanceof ServerPlayer attacker) {
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(damageSource.getEntity());
+        if(attacker != null) {
             if(attacker.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) cir.setReturnValue(false);
 
             DuelsTeam team = PlayerDataManager.get(player).duelsTeam;

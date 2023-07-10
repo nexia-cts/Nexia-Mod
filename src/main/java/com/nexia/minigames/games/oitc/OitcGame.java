@@ -27,6 +27,7 @@ import net.minecraft.world.level.GameType;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class OitcGame {
     public static ArrayList<ServerPlayer> alive = new ArrayList<>();
@@ -38,6 +39,8 @@ public class OitcGame {
     public static ServerLevel world = null;
 
     public static String mapName = "city";
+
+    public static ArrayList<int[]> spawnPositions = new ArrayList<>();
 
     // Both timers counted in seconds.
     public static int gameTime = 300;
@@ -61,6 +64,7 @@ public class OitcGame {
 
         OitcScoreboard.removeScoreboardFor(minecraftPlayer);
         data.kills = 0;
+        data.deathTime = 5;
 
         player.removeTag("in_oitc_game");
 
@@ -85,10 +89,8 @@ public class OitcGame {
             }
         } else {
             if(OitcGame.queue.size() >= 2) {
+                PlayerUtil.broadcast(OitcGame.queue, "§7The game will start in §5" + OitcGame.queueTime + " §7seconds.");
                 OitcGame.queueTime--;
-                if(OitcGame.queueTime == 15) {
-                    PlayerUtil.broadcast(OitcGame.queue, "§7The game will start in §515 §7seconds.");
-                }
             } else {
                 OitcGame.queueTime = 15;
             }
@@ -116,7 +118,7 @@ public class OitcGame {
         PlayerData data = PlayerDataManager.get(player);
         data.deathTime = 5;
         data.kills = 0;
-        player.setHealth(20f);
+        player.setHealth(player.getMaxHealth());
         if(OitcGame.isStarted){
             OitcGame.spectator.add(player);
             PlayerDataManager.get(player).gameMode = OitcGameMode.SPECTATOR;
@@ -139,7 +141,8 @@ public class OitcGame {
         ItemStack bow = new ItemStack(Items.BOW);
         bow.enchant(Enchantments.POWER_ARROWS, 1000);
         bow.getOrCreateTag().putBoolean("Unbreakable", true);
-        bow.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
+        //bow.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
+        // test why one shot isnt working
         bow.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
 
         ItemStack arrow = new ItemStack(Items.ARROW);
@@ -162,21 +165,22 @@ public class OitcGame {
             ItemStack bow = new ItemStack(Items.BOW);
             bow.enchant(Enchantments.POWER_ARROWS, 1000);
             bow.getOrCreateTag().putBoolean("Unbreakable", true);
-            bow.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
+            //bow.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
+            // test why one shot isnt working
             bow.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
 
             for(ServerPlayer player : OitcGame.alive) {
                 player.inventory.setItem(0, sword);
                 player.inventory.setItem(1, bow);
                 player.inventory.setItem(2, new ItemStack(Items.ARROW));
-                BlockPos pos = new BlockPos(0, 80, 0);
 
                 PlayerDataManager.get(player).gameMode = OitcGameMode.PLAYING;
 
                 player.addTag("in_oitc_game");
                 player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
 
-                player.teleportTo(world, pos.getX(), pos.getY(), pos.getZ(), 0, 0);
+                spawnInRandomPos(player);
+
                 //player.setRespawnPosition(world.dimension(), pos, 0, true, false);
             }
 
@@ -195,7 +199,7 @@ public class OitcGame {
             for(ServerPlayer player : OitcGame.alive){
                 OitcScoreboard.removeScoreboardFor(player);
                 player.removeTag("in_oitc_game");
-                LobbyUtil.sendGame(player, "oitc", false, true);
+                PlayerUtil.getFactoryPlayer(player).runCommand("/hub", 0, false);
             }
 
             OitcGame.alive.clear();
@@ -209,6 +213,9 @@ public class OitcGame {
 
     public static void spawnInRandomPos(ServerPlayer player){
         String map = OitcGame.mapName;
+        int[] pos = OitcGame.spawnPositions.get(RandomUtil.randomInt(0, OitcGame.spawnPositions.size()));
+
+        player.teleportTo(world, pos[0], pos[1], pos[2], pos[3], pos[4]);
     }
 
     public static boolean isOITCPlayer(ServerPlayer player){
@@ -249,6 +256,10 @@ public class OitcGame {
         isStarted = false;
         queueTime = 15;
         gameTime = 300;
+    }
+
+    static {
+        spawnPositions.add(new int[]{0, 80, 0, 0, 0});
     }
 }
 

@@ -41,6 +41,7 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(UnLinkCommand::register);
 
         CommandRegistrationCallback.EVENT.register(AcceptDuelCommand::register);
+        CommandRegistrationCallback.EVENT.register(DeclineDuelCommand::register);
 
         CommandRegistrationCallback.EVENT.register(StaffPrefixCommand::register);
         CommandRegistrationCallback.EVENT.register(DevExperimentalMapCommand::register);

@@ -8,14 +8,13 @@ import com.combatreforged.factory.api.world.util.Location;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.minigames.GameHandler;
 import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.oitc.OitcGameMode;
-import net.blumbo.blfscheduler.BlfRunnable;
-import net.blumbo.blfscheduler.BlfScheduler;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Random;
@@ -41,16 +40,20 @@ public class PlayerRespawnListener {
             
             if(data.gameMode == PlayerGameMode.OITC) {
                 double[] respawn = {0, 100, 0};
+                boolean isPlaying = com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(player).gameMode == OitcGameMode.PLAYING;
                 if(player.getLastDamageSource() != null && PlayerUtil.getPlayerAttacker(player.getLastDamageSource().getEntity()) != null) {
                     ServerPlayer serverPlayer = PlayerUtil.getPlayerAttacker(player.getLastDamageSource().getEntity());
-                    if(com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(serverPlayer).gameMode == OitcGameMode.PLAYING) {
+                    if(isPlaying) {
                         respawn[0] = serverPlayer.getX();
                         respawn[1] = serverPlayer.getY();
                         respawn[2] = serverPlayer.getZ();
                     }
                 }
-                respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
 
+                if(isPlaying) {
+                    GameHandler.showCountdown(player, 5);
+                }
+                respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
                 respawnEvent.setSpawnpoint(new Location(respawn[0], respawn[1], respawn[2], ServerTime.factoryServer.getWorld(new Identifier("oitc", OitcGame.world.dimension().toString().replaceAll("]", "").split(":")[2]))));
                 return;
             }

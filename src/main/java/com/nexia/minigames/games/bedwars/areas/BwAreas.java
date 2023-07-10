@@ -7,6 +7,7 @@ import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.pos.ProtectionBlock;
 import com.nexia.core.utilities.pos.ProtectionMap;
+import com.nexia.ffa.Main;
 import com.nexia.minigames.games.bedwars.BwGame;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
@@ -61,7 +62,7 @@ public class BwAreas {
     // ------------------------------------------------------------
 
     public static boolean isBedWarsWorld(Level level) {
-        return level.dimension().equals(BwDimension.LEVEL_KEY);
+        return level.dimension().equals(BwDimension.LEVEL_KEY) || level.dimension().toString().contains(BwDimension.DIMENSION_ID + ":" + BwDimension.DIMENSION_NAME);
     }
 
     public static void setBedWarsWorld(MinecraftServer minecraftServer) {

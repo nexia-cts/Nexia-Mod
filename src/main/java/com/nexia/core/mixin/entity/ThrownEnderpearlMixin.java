@@ -19,8 +19,7 @@ public abstract class ThrownEnderpearlMixin extends ThrowableItemProjectile {
 
     @ModifyArg(method = "onHit", index = 1, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
     private float pearlDamage(float damage) {
-        if (getOwner() instanceof ServerPlayer) {
-            ServerPlayer thrower = (ServerPlayer) getOwner();
+        if (getOwner() instanceof ServerPlayer thrower) {
 
             if (BwUtil.isInBedWars(thrower)) {
                 return BwUtil.getPearlDamage();

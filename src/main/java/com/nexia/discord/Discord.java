@@ -47,13 +47,13 @@ public class Discord extends ListenerAdapter {
             }
 
             int code = event.getOption("code", OptionMapping::getAsInt);
-            ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayer(idMinecraft.get(code));
 
             if(idMinecraft.get(code) == null) {
                 event.getHook().editOriginal("Invalid code!").queue();
                 return;
             }
 
+            ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayer(idMinecraft.get(code));
 
             if (player == null) {
                 event.getHook().editOriginal("Player is not online!").queue();
@@ -79,7 +79,7 @@ public class Discord extends ListenerAdapter {
                             .append(Component.text("Your account has been linked with the discord user: ")
                                     .decoration(ChatFormat.bold, false)
                                     .color(ChatFormat.normalColor)
-                                    .append(Component.text(user.getAsTag())
+                                    .append(Component.text("@" + user.getName())
                                             .color(ChatFormat.brandColor1)
                                             .decoration(ChatFormat.bold, true))
                             )
