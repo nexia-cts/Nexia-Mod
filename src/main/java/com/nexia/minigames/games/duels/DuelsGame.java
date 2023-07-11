@@ -1,5 +1,6 @@
 package com.nexia.minigames.games.duels;
 
+import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -11,6 +12,7 @@ import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import com.nexia.world.file.FileMap;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -99,13 +101,11 @@ public class DuelsGame { //implements Runnable{
         if(selectedMap == null){
             selectedMap = com.nexia.minigames.Main.config.duelsMaps.get(RandomUtil.randomInt(0, com.nexia.minigames.Main.config.duelsMaps.size()));
         }
-        String name = duelLevel.dimension().toString().replaceAll("]", "").split(":")[2];
+        String[] absoluteName = duelLevel.dimension().toString().replaceAll("dimension / ", "").replaceAll("]", "").split(":");
+        String name = absoluteName[2];
 
         String mapid = "duels";
-
         String start = "/execute in " + mapid + ":" + name;
-
-
         ServerTime.factoryServer.runCommand(start + " run forceload add 0 0");
         ServerTime.factoryServer.runCommand(start + " run " + DuelGameHandler.returnCommandMap(selectedMap));
         ServerTime.factoryServer.runCommand(start + " run setblock 1 80 0 minecraft:redstone_block");
