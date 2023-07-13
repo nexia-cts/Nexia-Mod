@@ -2,10 +2,12 @@ package com.nexia.core.mixin.player;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.misc.EventUtil;
 import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
@@ -19,6 +21,7 @@ import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.ItemStack;
@@ -134,6 +137,18 @@ public class ServerGamePacketListenerMixin {
             if (!BwPlayerEvents.spectatorTeleport(player, packet)) {
                 ci.cancel();
                 return;
+            }
+        }
+
+        if(FfaUtil.isFfaPlayer(player)) {
+            for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
+                Entity entity = packet.getEntity(serverLevel);
+                if (!(entity instanceof ServerPlayer target)) continue;
+
+                if (!FfaUtil.isFfaPlayer(target)) {
+                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
+                    return;
+                }
             }
         }
 

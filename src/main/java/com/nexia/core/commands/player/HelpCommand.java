@@ -29,7 +29,9 @@ public class HelpCommand {
             "stats" + commandSeparator + "shows you your stats",
             "duel" + commandSeparator + "duel a player that is in the hub (duels)",
             "queue" + commandSeparator + "queue for a gamemode in duels",
-            "spectate" + commandSeparator + "spectate a player which is in duels"
+            "spectate" + commandSeparator + "spectate a player which is in duels (or ffa if you have supporter rank)",
+            "buy" + commandSeparator + "buy our ranks to support the server",
+            "shout" + commandSeparator + "shout a message to the whole server (supporter++)"
     };
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

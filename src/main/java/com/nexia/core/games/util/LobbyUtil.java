@@ -22,11 +22,13 @@ import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.oitc.OitcGameMode;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
@@ -130,6 +132,16 @@ public class LobbyUtil {
             minecraftPlayer.teleportTo(lobbyWorld, lobbySpawn.x, lobbySpawn.y, lobbySpawn.z, lobbySpawn.pitch, lobbySpawn.yaw);
 
             if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter")) {
+                ItemStack elytra = new ItemStack(Items.ELYTRA);
+                elytra.setHoverName(new TextComponent("§5§lSupporter Elytra"));
+                ItemDisplayUtil.addGlint(elytra);
+                elytra.getOrCreateTag().putBoolean("Unbreakable", true);
+                ItemDisplayUtil.addLore(elytra, "§7Thanks for supporting the server!", 0);
+                elytra.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
+                minecraftPlayer.setItemSlot(EquipmentSlot.CHEST, elytra);
+            }
+
+            if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter++")) {
                 minecraftPlayer.abilities.mayfly = true;
                 minecraftPlayer.onUpdateAbilities();
             }
@@ -164,7 +176,7 @@ public class LobbyUtil {
         ItemDisplayUtil.addLore(queueSword, "§eHit a player §7to duel them.", 1);
 
         ItemStack teamSword = new ItemStack(Items.IRON_AXE);
-        teamSword.setHoverName(new TextComponent("§eTeam §eAxe"));
+        teamSword.setHoverName(new TextComponent("§eTeam Axe"));
         ItemDisplayUtil.addGlint(teamSword);
         ItemDisplayUtil.addLore(teamSword, "§eHit a player §7to invite them to your team.", 0);
         ItemDisplayUtil.addLore(teamSword, "§eRight click §7to list the team.", 1);

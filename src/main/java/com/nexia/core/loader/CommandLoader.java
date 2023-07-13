@@ -37,6 +37,8 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(TeamCommand::register);
 
         CommandRegistrationCallback.EVENT.register(TempBanCommand::register);
+        CommandRegistrationCallback.EVENT.register(ShoutCommand::register);
+        CommandRegistrationCallback.EVENT.register(RanksCommand::register);
         CommandRegistrationCallback.EVENT.register(UnTempBanCommand::register);
         CommandRegistrationCallback.EVENT.register(UnLinkCommand::register);
 
