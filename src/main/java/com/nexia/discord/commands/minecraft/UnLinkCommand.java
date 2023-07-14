@@ -37,7 +37,7 @@ public class UnLinkCommand {
         dispatcher.register(Commands.literal("unlink")
                 .requires(commandSourceStack -> {
                     try {
-                        return PlayerDataManager.get(commandSourceStack.getPlayerOrException()).savedData.isLinked;
+                        return PlayerDataManager.get(commandSourceStack.getPlayerOrException().getUUID()).savedData.isLinked;
                     } catch (Exception ignored) { }
                     return false;
                 })
@@ -49,7 +49,7 @@ public class UnLinkCommand {
         ServerPlayer player = context.getSource().getPlayerOrException();
         Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
 
-        PlayerData data = PlayerDataManager.get(player);
+        PlayerData data = PlayerDataManager.get(player.getUUID());
         Member user = jda.getGuildById(Main.config.guildID).retrieveMemberById(data.savedData.discordID).complete();
 
         data.savedData.isLinked = false;

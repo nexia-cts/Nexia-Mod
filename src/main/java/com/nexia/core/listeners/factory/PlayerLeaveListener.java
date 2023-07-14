@@ -65,7 +65,7 @@ public class PlayerLeaveListener {
 
         PlayerDataManager.removePlayerData(minecraftPlayer);
         com.nexia.ffa.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer);
-        com.nexia.discord.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer);
+        com.nexia.discord.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer.getUUID());
         com.nexia.minigames.games.duels.util.player.PlayerDataManager.removePlayerData(minecraftPlayer);
 
 

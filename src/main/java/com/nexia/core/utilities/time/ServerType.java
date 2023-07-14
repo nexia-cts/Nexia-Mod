@@ -28,7 +28,7 @@ public class ServerType {
         ServerType serverType = null;
         if(region.equalsIgnoreCase("eu")) serverType = ServerType.EU;
         if(region.equalsIgnoreCase("na")) serverType = ServerType.NA;
-        if(region.equalsIgnoreCase("dev")) serverType = ServerType.NA;
+        if(region.equalsIgnoreCase("dev")) serverType = ServerType.DEV;
         return serverType;
     }
 }

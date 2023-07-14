@@ -1,4 +1,4 @@
-package com.nexia.core.commands.player.duels;
+package com.nexia.core.commands.player;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.types.Minecraft;

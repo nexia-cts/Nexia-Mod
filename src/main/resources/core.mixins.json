@@ -46,6 +46,7 @@
     "player.FoodDataMixin",
     "player.PlayerListMixin",
     "player.PlayerMixin",
+    "player.DedicatedPlayerListMixin",
     "player.ServerGamePacketListenerMixin",
     "player.ServerLoginPacketListenerMixin",
     "player.ServerPlayerMixin"

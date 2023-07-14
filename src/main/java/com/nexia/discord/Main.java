@@ -46,12 +46,13 @@ public class Main implements ModInitializer {
                         .addOptions(
                                 new OptionData(OptionType.STRING, "server", "Which server you're trying to link on.")
                                         .setRequired(true)
-                                        .setMaxLength(2)
+                                        .setMaxLength(3)
                                         .addChoice("EU", "eu")
-                                        .addChoice("NA", "na"),
+                                        .addChoice("NA", "na")
+                                        .addChoice("DEV", "dev"),
                                 new OptionData(OptionType.INTEGER, "code", "The code when you do /link in minecraft.")
                                         .setRequired(true)
-                                        .setRequiredRange(0, 9999)
+                                        .setRequiredRange(1000, 9999)
                         )
         ).queue();
     }

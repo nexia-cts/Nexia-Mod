@@ -16,6 +16,7 @@ repositories {
 	maven { url "https://maven.rizecookey.net/" }
 	maven { url "https://maven.shedaniel.me/" }
 	maven { url "https://maven.gegy.dev/" }
+	maven { url "https://jitpack.io" }
 	maven { url "https://maven.terraformersmc.com/releases/" }
 	maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
 	maven { url 'https://github.com/ricksouth/serilum-forge-maven/raw/maven/' }
@@ -37,6 +38,8 @@ dependencies {
 	}
 	implementation("org.apache.logging.log4j:log4j-core:2.20.0")
 	implementation("com.google.code.gson:gson:2.9.0")
+
+	include(implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:${project.mixin_extras_version}")))
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 

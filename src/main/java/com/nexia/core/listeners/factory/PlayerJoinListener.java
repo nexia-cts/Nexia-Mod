@@ -122,7 +122,7 @@ public class PlayerJoinListener {
     }
 
     private static void checkBooster(ServerPlayer player) throws RateLimitedException {
-        PlayerData playerData = com.nexia.discord.utilities.player.PlayerDataManager.get(player);
+        PlayerData playerData = com.nexia.discord.utilities.player.PlayerDataManager.get(player.getUUID());
         if(!playerData.savedData.isLinked) { return; }
         Member discordUser = jda.getGuildById(com.nexia.discord.Main.config.guildID).retrieveMemberById(playerData.savedData.discordID).complete(true);
         if(discordUser == null) {
@@ -179,7 +179,7 @@ public class PlayerJoinListener {
     private static void processJoin(Player player, ServerPlayer minecraftPlayer) {
         PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.ffa.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
-        com.nexia.discord.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
+        com.nexia.discord.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer.getUUID());
         com.nexia.minigames.games.duels.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         LobbyUtil.leaveAllGames(minecraftPlayer, true);
         runCommands(player, minecraftPlayer);
