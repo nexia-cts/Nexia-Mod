@@ -80,12 +80,6 @@ public abstract class PlayerMixin extends LivingEntity {
             DuelsTeam team = PlayerDataManager.get(player).duelsTeam;
             if(team != null && team.all.contains(attacker) && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) cir.setReturnValue(false);
         }
-
-        if (attacker.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
-            cir.setReturnValue(false);
-            return;
-
-        }
     }
 
     @Inject(method = "drop*", cancellable = true, at = @At("HEAD"))
