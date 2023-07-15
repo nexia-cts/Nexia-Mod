@@ -32,17 +32,6 @@ public class ShoutCommand {
                         .executes(context -> ShoutCommand.shout(context, StringArgumentType.getString(context, "message")))
                 )
         );
-        dispatcher.register(Commands.literal("say")
-                .requires(context -> {
-                    try {
-                        return Permissions.check(context.getPlayerOrException(), "nexia.prefix.supporter++");
-                    } catch (Exception ignored) { }
-                    return false;
-                })
-                .then(Commands.argument("message", StringArgumentType.greedyString())
-                        .executes(context -> ShoutCommand.shout(context, StringArgumentType.getString(context, "message")))
-                )
-        );
     }
 
     public static String timeToText(long millis) {

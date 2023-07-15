@@ -65,7 +65,6 @@ public class LobbyUtil {
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
         if (FfaUtil.isFfaPlayer(minecraftPlayer)) {
             FfaUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
-            PlayerGameMode.FFA.players--;
         } else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(minecraftPlayer, false);
 
         for(int i = 0; i < LobbyUtil.removedTags.length; i++){
@@ -187,7 +186,6 @@ public class LobbyUtil {
         }
         if(game.equalsIgnoreCase("classic ffa")){
             player.addTag("ffa");
-            PlayerGameMode.FFA.players++;
             FfaUtil.wasInSpawn.add(player.getUUID());
             PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.FFA;
             if(tp){

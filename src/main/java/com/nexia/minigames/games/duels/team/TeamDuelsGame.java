@@ -2,7 +2,6 @@ package com.nexia.minigames.games.duels.team;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.types.Minecraft;
-import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
@@ -23,8 +22,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.level.GameType;
-import org.apache.logging.log4j.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -188,25 +185,30 @@ public class TeamDuelsGame { //implements Runnable{
 
             for(ServerPlayer spectator : this.spectators) {
                 Player factoryPlayer = PlayerUtil.getFactoryPlayer(spectator);
-                factoryPlayer.runCommand("/hub", 0, false);
                 factoryPlayer.setGameMode(Minecraft.GameMode.ADVENTURE);
                 factoryPlayer.getInventory().clear();
                 factoryPlayer.sendMessage(error);
+                factoryPlayer.runCommand("/hub", 0, false);
             }
 
             for(ServerPlayer player : this.level.players()) {
                 Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
-                factoryPlayer.runCommand("/hub", 0, false);
                 factoryPlayer.sendMessage(error);
                 factoryPlayer.setGameMode(Minecraft.GameMode.ADVENTURE);
                 factoryPlayer.getInventory().clear();
                 DuelGameHandler.leave(player, true);
+                factoryPlayer.runCommand("/hub", 0, false);
             }
 
-            this.isEnding = false;
-            this.hasStarted = true;
-            DuelGameHandler.deleteWorld(this.level.dimension().toString().replaceAll("]", "").split(":")[2]);
-            DuelGameHandler.teamDuelsGames.remove(this);
+            boolean canSafelyDelete = this.level.players().isEmpty() && this.spectators.isEmpty();
+
+            if(canSafelyDelete) {
+                this.isEnding = false;
+                this.hasStarted = true;
+                DuelGameHandler.deleteWorld(this.level.dimension().toString().replaceAll("]", "").split(":")[2]);
+                DuelGameHandler.teamDuelsGames.remove(this);
+            }
+
             return;
         }
         if(this.isEnding) {
