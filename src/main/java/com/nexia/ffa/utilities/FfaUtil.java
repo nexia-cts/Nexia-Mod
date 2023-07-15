@@ -251,7 +251,7 @@ public class FfaUtil {
 
         ServerPlayer attacker = null;
 
-        if (source != null && source.getEntity() != null && source.getEntity() instanceof net.minecraft.world.entity.player.Player) {
+        if (source != null && source.getEntity() != null && PlayerUtil.getPlayerAttacker(source.getEntity()) != null) {
             attacker = PlayerUtil.getPlayerAttacker(source.getEntity());
         }
 
