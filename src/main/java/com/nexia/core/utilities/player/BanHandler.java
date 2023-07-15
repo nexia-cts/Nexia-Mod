@@ -2,9 +2,9 @@ package com.nexia.core.utilities.player;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
-import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.discord.Main;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.TextComponent;

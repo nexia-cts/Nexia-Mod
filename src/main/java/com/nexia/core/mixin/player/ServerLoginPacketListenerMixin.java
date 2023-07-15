@@ -1,6 +1,6 @@
 package com.nexia.core.mixin.player;
 
-import com.nexia.core.Main;
+import com.nexia.discord.Main;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
