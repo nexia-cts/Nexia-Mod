@@ -3,11 +3,14 @@ public class PlayerGameMode {
 
     String id;
 
-    public static final PlayerGameMode LOBBY = new PlayerGameMode("lobby");
-    public static final PlayerGameMode FFA = new PlayerGameMode("ffa");
+    public int players;
 
-    PlayerGameMode(String id) {
+    public static final PlayerGameMode LOBBY = new PlayerGameMode("lobby", 0);
+    public static final PlayerGameMode FFA = new PlayerGameMode("ffa", 0);
+
+    PlayerGameMode(String id, int players) {
         this.id = id;
+        this.players = players;
     }
 
 }

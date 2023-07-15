@@ -49,7 +49,7 @@ dependencies {
 	modApi('me.lucko:fabric-permissions-api:0.2-SNAPSHOT')
 
 	// discord stuff
-	include(api('net.dv8tion:JDA:5.0.0-beta.6'))
+	include(api("net.dv8tion:JDA:${project.jda_version}"))
 	include(api('club.minnced:discord-webhooks:0.8.2') { exclude(group: "org.json") })
 	include(api('org.json:json:20230227'))
 

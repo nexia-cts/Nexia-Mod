@@ -12,12 +12,14 @@ import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
@@ -63,7 +65,8 @@ public class LobbyUtil {
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
         if (FfaUtil.isFfaPlayer(minecraftPlayer)) {
             FfaUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
-        } else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(minecraftPlayer);
+            PlayerGameMode.FFA.players--;
+        } else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(minecraftPlayer, false);
 
         for(int i = 0; i < LobbyUtil.removedTags.length; i++){
             if(player.hasTag(LobbyUtil.removedTags[i])){
@@ -84,6 +87,10 @@ public class LobbyUtil {
 
         minecraftPlayer.setInvulnerable(false);
 
+        minecraftPlayer.abilities.mayfly = false;
+        minecraftPlayer.abilities.flying = false;
+        minecraftPlayer.onUpdateAbilities();
+
         PlayerUtil.resetHealthStatus(player);
         minecraftPlayer.setGameMode(GameType.ADVENTURE);
 
@@ -93,11 +100,16 @@ public class LobbyUtil {
 
         // Duels shit
         player.addTag("duels");
-        DuelGameHandler.leave(minecraftPlayer);
+        DuelGameHandler.leave(minecraftPlayer, false);
 
         if (tp) {
             minecraftPlayer.setRespawnPosition(lobbyWorld.dimension(), lobbySpawn.toBlockPos(), lobbySpawn.yaw, true, false);
             minecraftPlayer.teleportTo(lobbyWorld, lobbySpawn.x, lobbySpawn.y, lobbySpawn.z, lobbySpawn.pitch, lobbySpawn.yaw);
+
+            if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter++")) {
+                minecraftPlayer.abilities.mayfly = true;
+                minecraftPlayer.onUpdateAbilities();
+            }
 
             LobbyUtil.giveItems(minecraftPlayer);
         }
@@ -115,27 +127,47 @@ public class LobbyUtil {
         ItemStack compass = new ItemStack(Items.COMPASS);
         compass.setHoverName(new TextComponent("§eGamemode Selector"));
         ItemDisplayUtil.addGlint(compass);
-        ItemDisplayUtil.addLore(compass, "§7Right click to open the menu.", 0);
+        ItemDisplayUtil.addLore(compass, "§eRight click §7to open the menu.", 0);
 
         ItemStack nameTag = new ItemStack(Items.NAME_TAG);
         nameTag.setHoverName(new TextComponent("§ePrefix Selector"));
         ItemDisplayUtil.addGlint(nameTag);
-        ItemDisplayUtil.addLore(nameTag, "§7Right click to open the menu.", 0);
+        ItemDisplayUtil.addLore(nameTag, "§eRight click §7to open the menu.", 0);
 
         ItemStack queueSword = new ItemStack(Items.IRON_SWORD);
         queueSword.setHoverName(new TextComponent("§eQueue Sword"));
         ItemDisplayUtil.addGlint(queueSword);
-        ItemDisplayUtil.addLore(queueSword, "§7Right click to queue menu.", 0);
+        ItemDisplayUtil.addLore(queueSword, "§eRight click §7to queue menu.", 0);
+        ItemDisplayUtil.addLore(queueSword, "§eHit a player §7to duel them.", 1);
+
+        ItemStack teamSword = new ItemStack(Items.IRON_AXE);
+        teamSword.setHoverName(new TextComponent("§eTeam Axe"));
+        ItemDisplayUtil.addGlint(teamSword);
+        ItemDisplayUtil.addLore(teamSword, "§eHit a player §7to invite them to your team.", 0);
+        ItemDisplayUtil.addLore(teamSword, "§eRight click §7to list the team.", 1);
+
+        if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter")) {
+            ItemStack elytra = new ItemStack(Items.ELYTRA);
+            elytra.setHoverName(new TextComponent("§5§lSupporter Elytra"));
+            ItemDisplayUtil.addGlint(elytra);
+            elytra.getOrCreateTag().putBoolean("Unbreakable", true);
+            ItemDisplayUtil.addLore(elytra, "§7Thanks for supporting the server!", 0);
+            elytra.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
+            minecraftPlayer.setItemSlot(EquipmentSlot.CHEST, elytra);
+        }
 
         minecraftPlayer.setSlot(4, compass); //middle slot
         minecraftPlayer.setSlot(3, nameTag); //left
         minecraftPlayer.setSlot(5, queueSword); //right
+        minecraftPlayer.setSlot(8, teamSword); // like right right not right
         ItemStackUtil.sendInventoryRefreshPacket(minecraftPlayer);
     }
 
     public static void sendGame(ServerPlayer minecraftPlayer, String game, boolean message, boolean tp){
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
         minecraftPlayer.setInvulnerable(false);
+        minecraftPlayer.abilities.mayfly = false;
+        minecraftPlayer.onUpdateAbilities();
         if (!LobbyUtil.isLobbyWorld(minecraftPlayer.getLevel())) {
             LobbyUtil.leaveAllGames(minecraftPlayer, false);
         } else{
@@ -155,6 +187,7 @@ public class LobbyUtil {
         }
         if(game.equalsIgnoreCase("classic ffa")){
             player.addTag("ffa");
+            PlayerGameMode.FFA.players++;
             FfaUtil.wasInSpawn.add(player.getUUID());
             PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.FFA;
             if(tp){

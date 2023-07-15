@@ -22,15 +22,55 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 public class PlayerUtil {
-    private static void sendDefaultTitleLength(ServerPlayer player) {
-        player.connection.send(new ClientboundSetTitlesPacket(10, 60, 20));
+
+    public static HashMap<Player, ServerPlayer> cachedServerPlayer = new HashMap<>();
+
+    public static HashMap<ServerPlayer, Player> cachedFactoryPlayers = new HashMap<>();
+
+    public static void broadcast(List<ServerPlayer> players, String string) {
+        broadcast(players, new TextComponent(string));
     }
 
-    public static Player getFactoryPlayer(@NotNull net.minecraft.world.entity.player.Player minecraftPlayer) {
-        return getFactoryPlayerFromName(minecraftPlayer.getScoreboardName());
+    public static void broadcast(List<ServerPlayer> players, Component component) {
+        for (ServerPlayer player : players) {
+            player.sendMessage(component, Util.NIL_UUID);
+        }
+    }
+
+    public static void broadcastTitle(List<ServerPlayer> players, String title, String subtitle, int in, int stay, int out) {
+        ClientboundSetTitlesPacket titlePacket = new ClientboundSetTitlesPacket(
+                ClientboundSetTitlesPacket.Type.TITLE, new TextComponent(title));
+        ClientboundSetTitlesPacket subtitlePacket = new ClientboundSetTitlesPacket(
+                ClientboundSetTitlesPacket.Type.SUBTITLE, new TextComponent(subtitle));
+
+        for (ServerPlayer player : players) {
+            player.connection.send(new ClientboundSetTitlesPacket(in, stay, out));
+            player.connection.send(titlePacket);
+            player.connection.send(subtitlePacket);
+        }
+    }
+
+    public static void broadcastSound(List<ServerPlayer> players, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch) {
+        for (ServerPlayer player : players) {
+            sendSound(player, soundEvent, soundSource, volume, pitch);
+        }
+    }
+
+    public static Player getFactoryPlayer(@NotNull ServerPlayer minecraftPlayer) {
+        Player fPlayer = cachedFactoryPlayers.get(minecraftPlayer);
+        if(fPlayer == null) {
+            fPlayer = ServerTime.factoryServer.getPlayer(minecraftPlayer.getUUID());
+            cachedFactoryPlayers.put(minecraftPlayer, fPlayer);
+        }
+        return fPlayer;
+    }
+
+    private static void sendDefaultTitleLength(ServerPlayer player) {
+        player.connection.send(new ClientboundSetTitlesPacket(10, 60, 20));
     }
 
     public static Player getFactoryPlayerFromName(@NotNull String player) {
@@ -38,8 +78,35 @@ public class PlayerUtil {
         return ServerTime.factoryServer.getPlayer(player);
     }
 
+    public static void sendTitle(ServerPlayer player, String title, String sub, int in, int stay, int out) {
+        player.connection.send(new ClientboundSetTitlesPacket(in, stay, out));
+        player.connection.send(new ClientboundSetTitlesPacket(
+                ClientboundSetTitlesPacket.Type.TITLE, new TextComponent(title)));
+        player.connection.send(new ClientboundSetTitlesPacket(
+                ClientboundSetTitlesPacket.Type.SUBTITLE, new TextComponent(sub)));
+    }
+
+    public static void broadcastTitle(List<ServerPlayer> players, String title, String subtitle) {
+        ClientboundSetTitlesPacket titlePacket = new ClientboundSetTitlesPacket(
+                ClientboundSetTitlesPacket.Type.TITLE, new TextComponent(title));
+        ClientboundSetTitlesPacket subtitlePacket = new ClientboundSetTitlesPacket(
+                ClientboundSetTitlesPacket.Type.SUBTITLE, new TextComponent(subtitle));
+
+        for (ServerPlayer player : players) {
+            sendDefaultTitleLength(player);
+            player.connection.send(titlePacket);
+            player.connection.send(subtitlePacket);
+        }
+    }
+
     public static ServerPlayer getMinecraftPlayer(@NotNull Player player){
-        return PlayerUtil.getMinecraftPlayerFromName(player.getRawName());
+
+        ServerPlayer sPlayer = cachedServerPlayer.get(player);
+        if(sPlayer == null) {
+            sPlayer = ServerTime.minecraftServer.getPlayerList().getPlayer(player.getUUID());
+            cachedServerPlayer.put(player, sPlayer);
+        }
+        return sPlayer;
     }
 
     public static ServerPlayer getMinecraftPlayerFromName(@NotNull String player){

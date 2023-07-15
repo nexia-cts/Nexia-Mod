@@ -47,43 +47,51 @@ public class Discord extends ListenerAdapter {
             }
 
             int code = event.getOption("code", OptionMapping::getAsInt);
-            ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayer(idMinecraft.get(code));
+            UUID uuid = idMinecraft.get(code);
 
-            if(idMinecraft.get(code) == null) {
+            if(uuid == null) {
                 event.getHook().editOriginal("Invalid code!").queue();
                 return;
             }
 
 
+            ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayer(idMinecraft.get(code));
+
+            /*
             if (player == null) {
                 event.getHook().editOriginal("Player is not online!").queue();
                 return;
             }
+             */
 
             event.deferReply(true).queue();
 
-            PlayerData playerData = PlayerDataManager.get(player);
+            PlayerData playerData = PlayerDataManager.get(uuid);
 
             playerData.savedData.isLinked = true;
             playerData.savedData.discordID = discordID;
 
             discordData.savedData.isLinked = true;
-            discordData.savedData.minecraftUUID = player.getStringUUID();
+            discordData.savedData.minecraftUUID = uuid.toString();
             DiscordDataManager.removeDiscordData(discordID);
 
             idMinecraft.remove(code);
-
-            event.getHook().editOriginal("Your account has been linked with " + player.getScoreboardName()).queue();
-            PlayerUtil.getFactoryPlayer(player).sendMessage(
-                    ChatFormat.nexiaMessage
-                            .append(Component.text("Your account has been linked with the discord user: ")
-                                    .decoration(ChatFormat.bold, false)
-                                    .color(ChatFormat.normalColor)
-                                    .append(Component.text(user.getAsTag())
-                                            .color(ChatFormat.brandColor1)
-                                            .decoration(ChatFormat.bold, true))
-                            )
-            );
+            if(player != null) {
+                event.getHook().editOriginal("Your account has been linked with " + player.getScoreboardName()).queue();
+                PlayerUtil.getFactoryPlayer(player).sendMessage(
+                        ChatFormat.nexiaMessage
+                                .append(Component.text("Your account has been linked with the discord user: ")
+                                        .decoration(ChatFormat.bold, false)
+                                        .color(ChatFormat.normalColor)
+                                        .append(Component.text("@" + user.getName())
+                                                .color(ChatFormat.brandColor1)
+                                                .decoration(ChatFormat.bold, true))
+                                )
+                );
+            } else {
+                PlayerDataManager.removePlayerData(uuid);
+            }
+            event.getHook().editOriginal("Your account has been linked!").queue();
 
 
         }

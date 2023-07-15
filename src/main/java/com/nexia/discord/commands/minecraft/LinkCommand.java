@@ -27,7 +27,7 @@ public class LinkCommand {
         dispatcher.register(Commands.literal("link")
                 .requires(commandSourceStack -> {
                     try {
-                        return !PlayerDataManager.get(commandSourceStack.getPlayerOrException()).savedData.isLinked;
+                        return !PlayerDataManager.get(commandSourceStack.getPlayerOrException().getUUID()).savedData.isLinked;
                     } catch (Exception ignored) { }
                     return false;
                 })

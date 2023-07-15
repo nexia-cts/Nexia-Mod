@@ -44,7 +44,7 @@ import static com.nexia.core.utilities.time.ServerTime.joinPlayer;
 import static com.nexia.core.utilities.time.ServerTime.leavePlayer;
 
 @Mixin(PlayerList.class)
-public class PlayerListMixin {
+public abstract class PlayerListMixin {
     @ModifyArgs(method = "broadcastMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ClientboundChatPacket;<init>(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
     private void handleChat(Args args) {
         try {
@@ -74,12 +74,13 @@ public class PlayerListMixin {
     }
 
     @Inject(at = @At("RETURN"), method = "respawn")
-    private void respawned(ServerPlayer serverPlayer, boolean bl, CallbackInfoReturnable<ServerPlayer> cir) {
-        ServerPlayer player = PlayerUtil.getFixedPlayer(serverPlayer);
+    private void respawned(ServerPlayer oldPlayer, boolean bl, CallbackInfoReturnable<ServerPlayer> cir) {
+        ServerPlayer player = PlayerUtil.getFixedPlayer(oldPlayer);
 
         ServerLevel respawn = Main.server.getLevel(player.getRespawnDimension());
 
         if(respawn != null && LobbyUtil.isLobbyWorld(respawn)) {
+            player.inventory.clearContent();
             LobbyUtil.giveItems(player);
             player.setGameMode(GameType.ADVENTURE);
         }
@@ -121,7 +122,7 @@ public class PlayerListMixin {
             String textBanTime = banTimeToText(banTime);
 
             if(banTime > 0){
-                cir.setReturnValue(new TextComponent("§c§lYou have been banned.\n§7Duration: §d" + textBanTime + "\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + Main.config.discordLink));
+                cir.setReturnValue(new TextComponent("§c§lYou have been banned.\n§7Duration: §d" + textBanTime + "\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + com.nexia.discord.Main.config.discordLink));
             } else {
                 BanHandler.removeBanFromList(gameProfile);
             }
@@ -129,7 +130,7 @@ public class PlayerListMixin {
     }
 
     @Inject(method = "canBypassPlayerLimit", at = @At("TAIL"), cancellable = true)
-    private void playerLimitBypasser(GameProfile gameProfile, CallbackInfoReturnable<Boolean> cir) {
+    private void playerLimitBypass(GameProfile gameProfile, CallbackInfoReturnable<Boolean> cir) {
         CompletableFuture<Boolean> bool = Permissions.check(gameProfile, "nexia.join.full");
         try {
             boolean value = bool.get();

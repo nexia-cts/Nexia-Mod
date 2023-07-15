@@ -10,6 +10,8 @@ import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
+import com.nexia.minigames.games.duels.DuelsGame;
+import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import net.minecraft.Util;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -74,5 +76,18 @@ public class ServerTime {
 
     static void everySecond() {
         totalSecondCount++;
+        try {
+            for (DuelsGame game : DuelGameHandler.duelsGames) {
+                if (game == null) return;
+                game.duelSecond();
+            }
+        } catch (Exception ignored) { }
+
+        try {
+            for (TeamDuelsGame game : DuelGameHandler.teamDuelsGames) {
+                if (game == null) return;
+                game.duelSecond();
+            }
+        } catch (Exception ignored) { }
     }
 }

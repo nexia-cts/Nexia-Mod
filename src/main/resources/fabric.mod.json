@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Nexia",
-  "description": "The mod for the nexia CTS server.",
+  "description": "The mod for the Nexia CTS server.",
   "authors": [
     "NotCoded"
   ],
@@ -17,16 +17,16 @@
     "sources": "https://github.com/nexia-cts/Nexia-Mod"
   },
 
-  "license": "MIT",
-  "icon": "assets/nexia/icon.png",
+  "license": "LGPL-3.0",
+  "icon": "assets/nexia/logo.png",
 
   "environment": "server",
   "entrypoints": {
     "main": [
       "com.nexia.core.Main",
       "com.nexia.ffa.Main",
-      "com.nexia.discord.Main",
-      "com.nexia.minigames.Main"
+      "com.nexia.minigames.Main",
+      "com.nexia.discord.Main"
     ],
     "factory": [
       "com.nexia.core.Main"
@@ -38,8 +38,9 @@
 
   "depends": {
     "fabricloader": ">=0.7.4",
-    "minecraft": "1.16.x",
+    "minecraft": ["1.16.3-combat.8.c", "1.16.2-1.16.combat-6"],
     "fabric": "*",
-    "factory-api": "*"
+    "factory-api": "*",
+    "collective-fabric": ">=1.16.5-5.50"
   }
 }

@@ -2,9 +2,12 @@ package com.nexia.core.mixin.player;
 
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
+import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.ffa.utilities.FfaUtil;
+import com.nexia.minigames.games.duels.team.DuelsTeam;
+import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -48,14 +51,15 @@ public abstract class PlayerMixin extends LivingEntity {
         this.getCooldowns().addCooldown(Items.SHIELD, (int)(f * 20.0F));
         this.stopUsingItem();
         this.level.broadcastEntityEvent(this, (byte)30);
-        if((this.getLastDamageSource() != null && this.getLastDamageSource().getEntity() instanceof Player attacker) && Main.config.enhancements.betterShields){
+        if((this.getLastDamageSource() != null && this.getLastDamageSource().getEntity() != null && PlayerUtil.getPlayerAttacker(this.getLastDamageSource().getEntity()) != null) && Main.config.enhancements.betterShields){
             //this.level.broadcastEntityEvent(attacker, (byte)30);
+            ServerPlayer attacker = PlayerUtil.getPlayerAttacker(this.getLastDamageSource().getEntity());
 
             SoundSource soundSource = null;
             for (SoundSource source : SoundSource.values()) {
                 soundSource = source;
             }
-            PlayerUtil.sendSound((ServerPlayer) attacker, new EntityPos(attacker.position()), SoundEvents.SHIELD_BREAK, soundSource, 2, 1);
+            PlayerUtil.sendSound(attacker, new EntityPos(attacker.position()), SoundEvents.SHIELD_BREAK, soundSource, 2, 1);
         }
         return true;
     }
@@ -66,10 +70,21 @@ public abstract class PlayerMixin extends LivingEntity {
 
         if (player.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
             cir.setReturnValue(false);
+            return;
         }
 
-        if (damageSource.getEntity() instanceof ServerPlayer attacker && attacker.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(damageSource.getEntity());
+        if(attacker != null) {
+            if(attacker.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) cir.setReturnValue(false);
+
+            DuelsTeam team = PlayerDataManager.get(player).duelsTeam;
+            if(team != null && team.all.contains(attacker) && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) cir.setReturnValue(false);
+        }
+
+        if (attacker.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
             cir.setReturnValue(false);
+            return;
+
         }
     }
 

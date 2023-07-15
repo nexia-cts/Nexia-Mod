@@ -36,9 +36,6 @@ public class ModConfig implements ConfigData {
             0.5,
     };
 
-    public String discordLink = "";
-
-
     public Enhancements enhancements = new Enhancements();
     public static class Enhancements {
         @Comment("Toggles if the better shields are enabled.")

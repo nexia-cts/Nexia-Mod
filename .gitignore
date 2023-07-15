@@ -16,6 +16,9 @@ classes/
 *.ipr
 *.iws
 
+# text editors
+.obsidian
+
 # vscode
 
 .settings/

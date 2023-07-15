@@ -5,6 +5,7 @@ import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.duels.DuelGUI;
 import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import net.minecraft.core.BlockPos;
@@ -39,9 +40,11 @@ public abstract class ServerPlayerMixin extends Player {
     @Inject(method = "attack", at = @At("HEAD"))
     public void onAttack(Entity entity, CallbackInfo ci) {
         ServerPlayer attacker = (ServerPlayer) (Object) this;
-        if(level == LobbyUtil.lobbyWorld && entity instanceof ServerPlayer player && player != attacker &&
-                this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("queue sword")) {
-            DuelGUI.openDuelGui(attacker, player);
+        if(level == LobbyUtil.lobbyWorld && entity instanceof ServerPlayer player && player != attacker) {
+            if (this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("queue sword"))
+                DuelGUI.openDuelGui(attacker, player);
+            if (this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("team axe"))
+                PlayerUtil.getFactoryPlayer(attacker).runCommand("/party invite " + player.getScoreboardName());
         }
     }
 
@@ -56,6 +59,8 @@ public abstract class ServerPlayerMixin extends Player {
             FfaUtil.leaveOrDie(player, damageSource, false);
         } else if(gameMode == PlayerGameMode.LOBBY && duelsData.duelsGame != null){
             duelsData.duelsGame.death(player, damageSource);
+        } else if(gameMode == PlayerGameMode.LOBBY && duelsData.teamDuelsGame != null) {
+            duelsData.teamDuelsGame.death(player, damageSource);
         }
     }
 

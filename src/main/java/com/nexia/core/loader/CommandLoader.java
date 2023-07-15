@@ -47,7 +47,12 @@ public class CommandLoader {
 
         CommandRegistrationCallback.EVENT.register(BiomeCommand::register);
 
+        CommandRegistrationCallback.EVENT.register(TeamCommand::register);
         CommandRegistrationCallback.EVENT.register(MuteCommand::register);
+        CommandRegistrationCallback.EVENT.register(ShoutCommand::register);
+        CommandRegistrationCallback.EVENT.register(RanksCommand::register);
+        CommandRegistrationCallback.EVENT.register(AcceptDuelCommand::register);
+        CommandRegistrationCallback.EVENT.register(DeclineDuelCommand::register);
         CommandRegistrationCallback.EVENT.register(UnMuteCommand::register);
 
         CommandRegistrationCallback.EVENT.register(PlayCommand::register);

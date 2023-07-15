@@ -8,6 +8,7 @@ import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,16 +23,22 @@ public class PrefixGUI extends SimpleGui {
         super(type, player, includePlayer);
     }
 
-    private void fillEmptySlots(ItemStack itemStack){
-        for(int i = 0; i < 36; i++){
+    private void fillEmptySlots(ItemStack itemStack, int slots){
+        for(int i = 0; i < slots; i++){
             this.setSlot(i, itemStack);
+            /*
+            GuiElementInterface element = this.getSlot(i);
+            if(element != null && element.getItemStack().getItem() == null || element.getItemStack().getItem() == Items.AIR){
+                this.setSlot(i, itemStack);
+            }
+             */
         }
     }
     private void setMainLayout(ServerPlayer player){
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
 
-        fillEmptySlots(emptySlot);
+        fillEmptySlots(emptySlot, 36);
         int slot = 10;
         int airSlots = 10;
         for(int air = 0; air < 14; air++){
@@ -50,12 +57,12 @@ public class PrefixGUI extends SimpleGui {
                 ItemStack enchantedItem = new ItemStack(Items.NAME_TAG, 1);
                 enchantedItem.enchant(Enchantments.SHARPNESS, 1);
                 enchantedItem.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
-                enchantedItem.setHoverName(new TextComponent(Main.config.ranks[i]).withStyle(ChatFormatting.BOLD, ChatFormatting.LIGHT_PURPLE));
+                enchantedItem.setHoverName(new TextComponent("§d§l" + Main.config.ranks[i]));
                 this.setSlot(slot, enchantedItem);
                 slot++;
             } else if(PlayerUtil.hasPermission(player.createCommandSourceStack(), "nexia.prefix." + Main.config.ranks[i], 4)){
                 ItemStack changedItem = new ItemStack(Items.NAME_TAG, 1);
-                changedItem.setHoverName(new TextComponent(Main.config.ranks[i]).withStyle(ChatFormatting.WHITE));
+                changedItem.setHoverName(new TextComponent("§f" + Main.config.ranks[i]));
                 this.setSlot(slot, changedItem);
                 slot++;
             } else if(player.getTags().contains(Main.config.ranks[i])) {
@@ -73,7 +80,7 @@ public class PrefixGUI extends SimpleGui {
         GuiElementInterface element = this.getSlot(index);
         if(element != null && clickType != ClickType.MOUSE_DOUBLE_CLICK) {
             ItemStack itemStack = element.getItemStack();
-            Component name = itemStack.getHoverName();
+            String name = itemStack.getHoverName().getString().substring(2).replaceAll("§l", "");
 
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
 
@@ -81,16 +88,16 @@ public class PrefixGUI extends SimpleGui {
 
                 player.sendMessage(
                         ChatFormat.nexiaMessage
-                                        .append(net.kyori.adventure.text.Component.text("Your prefix has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                                .append(net.kyori.adventure.text.Component.text(name.getString()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                                                        .append(net.kyori.adventure.text.Component.text(".").decoration(ChatFormat.bold, false))
+                                .append(net.kyori.adventure.text.Component.text("Your prefix has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                .append(net.kyori.adventure.text.Component.text(name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                .append(net.kyori.adventure.text.Component.text(".").decoration(ChatFormat.bold, false))
                 );
 
                 for(int i = 0; i < 9; i++){
                     player.removeTag(Main.config.ranks[i]);
                 }
 
-                player.addTag(name.getString().toLowerCase());
+                player.addTag(name.toLowerCase());
                 this.setMainLayout(this.player);
             }
 

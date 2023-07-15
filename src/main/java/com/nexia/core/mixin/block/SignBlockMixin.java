@@ -19,9 +19,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class SignBlockMixin {
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     public void onUse(BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult, CallbackInfoReturnable<InteractionResult> cir) {
-        if(!(player instanceof ServerPlayer))
+        if(!(player instanceof ServerPlayer serverPlayer))
             return;
 
-        EventUtil.onSignClick(cir, blockPos, level, (ServerPlayer) player);
+        EventUtil.onSignClick(cir, blockPos, level, serverPlayer);
     }
 }

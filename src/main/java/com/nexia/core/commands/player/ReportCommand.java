@@ -10,6 +10,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.http.DiscordWebhook;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.time.ServerTime;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
@@ -28,6 +29,8 @@ public class ReportCommand {
         webhook.addEmbed(new DiscordWebhook.EmbedObject()
                 .setAuthor((reporter + " reported " + victim), null, null)
                 .setColor(Color.RED)
+
+                .addField("Server: ", ServerTime.serverType.type, false)
                 .addField("Reporter:", reporter, true)
                 .addField("Reported Player:", victim, true)
                 .setThumbnail("https://mc-heads.net/avatar/" + victim + "/64")
@@ -55,7 +58,8 @@ public class ReportCommand {
         if(PlayerDataManager.get(mcExecutor).isReportBanned) {
             executor.sendMessage(
                     ChatFormat.nexiaMessage
-                            .append(Component.text("You are report banned!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
+                            .append(Component.text("You are report banned!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false)
+                            )
 
             );
             return 1;
@@ -64,7 +68,7 @@ public class ReportCommand {
         if(mcExecutor == player){
             executor.sendMessage(
                     ChatFormat.nexiaMessage
-                                    .append(Component.text("You cannot report yourself!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
+                            .append(Component.text("You cannot report yourself!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
 
             );
             return 1;
@@ -72,10 +76,10 @@ public class ReportCommand {
 
         executor.sendMessage(
                 ChatFormat.nexiaMessage
-                                .append(Component.text("You have reported ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                        .append(Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2))
-                                                .append(Component.text(" for ").color(ChatFormat.normalColor))
-                                                        .append(Component.text(reason).color(ChatFormat.brandColor2))
+                        .append(Component.text("You have reported ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                        .append(Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2))
+                        .append(Component.text(" for ").color(ChatFormat.normalColor))
+                        .append(Component.text(reason).color(ChatFormat.brandColor2))
         );
 
         ServerPlayer staffPlayer;
@@ -85,11 +89,11 @@ public class ReportCommand {
             if(Permissions.check(staffPlayer, "nexia.staff.report", 1)) {
                 PlayerUtil.getFactoryPlayer(staffPlayer).sendMessage(
                         ChatFormat.nexiaMessage
-                                        .append(Component.text(executor.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                                                .append(Component.text(" has reported ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                                        .append(Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                                                                .append(Component.text(" for ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                                                        .append(Component.text(reason).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                .append(Component.text(executor.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                .append(Component.text(" has reported ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                .append(Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                .append(Component.text(" for ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                .append(Component.text(reason).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                 );
             }
         }

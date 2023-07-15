@@ -15,9 +15,7 @@ public class LivingEntityMixin {
     // Make void death instant
     @ModifyArg(method = "hurt", index = 1, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;actuallyHurt(Lnet/minecraft/world/damagesource/DamageSource;F)V"))
     protected float hurt(DamageSource damageSource, float value) {
-        if((Object)this instanceof ServerPlayer){
-            ServerPlayer player = (ServerPlayer)(Object)this;
-
+        if((Object)this instanceof ServerPlayer player){
             if(PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) {
                 return value;
             }

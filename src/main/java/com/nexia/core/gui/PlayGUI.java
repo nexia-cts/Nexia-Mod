@@ -1,7 +1,12 @@
 package com.nexia.core.gui;
 
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.core.utilities.item.ItemDisplayUtil;
+import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.minigames.games.duels.DuelGameMode;
+import com.nexia.minigames.games.duels.util.player.PlayerData;
+import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
@@ -33,52 +38,70 @@ public class PlayGUI extends SimpleGui {
         }
     }
     private void setMainLayout(){
-        ItemStack enchanted_sword = new ItemStack(Items.NETHERITE_SWORD, 1);
-        enchanted_sword.setHoverName(new TextComponent("§7§lFFA"));
-        enchanted_sword.enchant(Enchantments.SHARPNESS, 1);
-        enchanted_sword.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
-        enchanted_sword.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
+        ItemStack ffa = new ItemStack(Items.NETHERITE_SWORD, 1);
+        ffa.setHoverName(new TextComponent("§3FFA"));
+        ItemDisplayUtil.addGlint(ffa);
+        ffa.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
-        ItemStack enchanted_barrier = new ItemStack(Items.BARRIER, 1);
-        enchanted_barrier.setHoverName(new TextComponent("§c§lHub"));
-        enchanted_barrier.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
+        ItemDisplayUtil.addLore(ffa, "§5", 0);
+        ItemDisplayUtil.addLore(ffa, "§7Fight players in a huge landscape", 1);
+        ItemDisplayUtil.addLore(ffa, "§7be the best player.", 2);
+        ItemDisplayUtil.addLore(ffa, "§f", 3);
+        ItemDisplayUtil.addLore(ffa, "§3◆ There are " + PlayerGameMode.FFA.players + " people playing this gamemode.", 4);
 
-        ItemStack duels = new ItemStack(Items.DIAMOND_SWORD, 1);
-        duels.setHoverName(new TextComponent("§b§lDuels"));
-        duels.enchant(Enchantments.SHARPNESS, 1);
-        duels.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
+        ItemStack hub = new ItemStack(Items.DRAGON_BREATH, 1);
+        hub.setHoverName(new TextComponent("§5Hub"));
+        hub.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
+        ItemDisplayUtil.addLore(hub, "§7Return back to the hub.", 0);
+
+        ItemStack duels = new ItemStack(Items.NETHERITE_AXE, 1);
+        duels.setHoverName(new TextComponent("§9Duels"));
+        ItemDisplayUtil.addGlint(duels);
         duels.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
+
+        int duelsPlayers = 0;
+        for(ServerPlayer serverPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()) {
+            DuelGameMode gameMode = PlayerDataManager.get(serverPlayer).gameMode;
+            if(gameMode != null && (gameMode != DuelGameMode.LOBBY && gameMode != DuelGameMode.SPECTATING)) duelsPlayers++;
+        }
+
+        ItemDisplayUtil.addLore(duels, "§5", 0);
+        ItemDisplayUtil.addLore(duels, "§7Duel against other people", 1);
+        ItemDisplayUtil.addLore(duels, "§7or play against people in teams", 2);
+        ItemDisplayUtil.addLore(duels, "§7with team duels!", 3);
+        ItemDisplayUtil.addLore(duels, "§f", 4);
+        ItemDisplayUtil.addLore(duels, "§9◆ There are " + (LobbyUtil.lobbyWorld.players().size() + duelsPlayers) + " people playing this gamemode.", 5);
+
 
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
 
-        fillEmptySlots(emptySlot, 27);
-        this.setSlot(11, enchanted_sword);
-        this.setSlot(13, enchanted_barrier);
-        this.setSlot(15, duels);
+        fillEmptySlots(emptySlot, 9);
+        this.setSlot(2, ffa);
+        this.setSlot(4, hub);
+        this.setSlot(6, duels);
     }
 
     private void setFFALayout(){
         this.setTitle(ffaTitle);
         ItemStack enchanted_sword = new ItemStack(Items.NETHERITE_SWORD, 1);
-        enchanted_sword.setHoverName(new TextComponent("§7§lClassic"));
+        enchanted_sword.setHoverName(new TextComponent("§cClassic"));
         enchanted_sword.enchant(Enchantments.SHARPNESS, 1);
         enchanted_sword.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
         enchanted_sword.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         ItemStack unknown = new ItemStack(Items.BARRIER, 1);
-        unknown.setHoverName(new TextComponent("§7§l???"));
-        unknown.enchant(Enchantments.SHARPNESS, 1);
-        unknown.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
+        unknown.setHoverName(new TextComponent("§c???"));
+        ItemDisplayUtil.addGlint(unknown);
         unknown.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
 
-        fillEmptySlots(emptySlot, 27);
-        this.setSlot(11, unknown);
-        this.setSlot(13, enchanted_sword);
-        this.setSlot(15, unknown);
+        fillEmptySlots(emptySlot, 9);
+        this.setSlot(3, unknown);
+        this.setSlot(4, enchanted_sword);
+        this.setSlot(5, unknown);
     }
 
     public boolean click(int index, ClickType clickType, net.minecraft.world.inventory.ClickType action){
@@ -86,21 +109,15 @@ public class PlayGUI extends SimpleGui {
         if(element != null && clickType != ClickType.MOUSE_DOUBLE_CLICK) {
             ItemStack itemStack = element.getItemStack();
             Component name = itemStack.getHoverName();
-            if(name.getString().equalsIgnoreCase("§7§lClassic")){
+            if(name.getString().equalsIgnoreCase("§cClassic")){
                 LobbyUtil.sendGame(this.player, "classic ffa", true, true);
                 this.close();
             }
-            if(name.getString().equalsIgnoreCase("§7§lFFA")){
+            if(name.getString().equalsIgnoreCase("§3FFA")){
                 this.setFFALayout();
             }
 
-            if(name.getString().equalsIgnoreCase("§b§lDuels")){
-                LobbyUtil.sendGame(this.player, "duels", true, true);
-                this.close();
-            }
-
-
-            if(name.getString().toLowerCase().contains("hub")){
+            if(name.getString().toLowerCase().equalsIgnoreCase("§5Hub")){
                 LobbyUtil.leaveAllGames(this.player, true);
             }
 
@@ -111,7 +128,7 @@ public class PlayGUI extends SimpleGui {
         return super.click(index, clickType, action);
     }
     public static void openMainGUI(ServerPlayer player) {
-        PlayGUI shop = new PlayGUI(MenuType.GENERIC_9x3, player, false);
+        PlayGUI shop = new PlayGUI(MenuType.GENERIC_9x1, player, false);
         shop.setTitle(title);
         shop.setMainLayout();
         shop.open();

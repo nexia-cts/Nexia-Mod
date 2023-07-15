@@ -9,7 +9,6 @@ import java.util.ArrayList;
 
 public class DuelGameMode {
     public String id;
-
     public boolean hasRegen;
 
     public GameType gameMode;
@@ -52,7 +51,7 @@ public class DuelGameMode {
     public static final DuelGameMode UHC_SHIELD = new DuelGameMode("uhc_shield", false, GameType.SURVIVAL);
 
     public static ArrayList<ServerPlayer> HSG_QUEUE = new ArrayList<>();
-    public static final DuelGameMode HSG = new DuelGameMode("hsg", true, GameType.SURVIVAL);
+    public static final DuelGameMode HSG = new DuelGameMode("hsg", false, GameType.SURVIVAL);
 
     public static ArrayList<ServerPlayer> SKYWARS_QUEUE = new ArrayList<>();
     public static final DuelGameMode SKYWARS = new DuelGameMode("skywars", true, GameType.SURVIVAL);
@@ -82,6 +81,7 @@ public class DuelGameMode {
         duelsMaps.add(new ItemStack(Items.SMOOTH_STONE)); // City
         duelsMaps.add(new ItemStack(Items.NETHERITE_BLOCK)); // Neth Flat
         duelsMaps.add(new ItemStack(Items.GRASS_BLOCK)); // Plains
+        duelsMaps.add(new ItemStack(Items.ALLIUM)); // Skywars Map (Eden)
 
         duelsItems.add(new ItemStack(Items.IRON_AXE)); // AXE
         duelsItems.add(new ItemStack(Items.DIAMOND_SWORD)); // SWORD_ONLY

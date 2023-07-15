@@ -36,7 +36,7 @@ public class EventUtil {
             if(bp.contains(signPos)) {
                 SpawnGUI.openSpawnGUI(p);
             }
-            ci.cancel();
+            ci.setReturnValue(InteractionResult.PASS);
         }
     }
 

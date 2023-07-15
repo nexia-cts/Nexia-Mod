@@ -40,7 +40,7 @@ public class ChatFormat {
 
     public static Component nexiaMessage = Component.text("N")
             .color(TextColor.fromHexString("#9e00f5"))
-            .decorate(bold)
+            .decoration(bold, true)
             .append(Component.text("e")
                     .color(TextColor.fromHexString("#aa00f3"))
                     .decorate(bold)
@@ -54,10 +54,9 @@ public class ChatFormat {
                                             .decorate(bold)
                                             .color(TextColor.fromHexString("#cf00ee"))
                                     )
-                                    .append(Component.text(" » ").color(arrowColor).decoration(bold, false))
                             )
                     )
-            );
+            ).append(Component.text(" » ").color(arrowColor).decoration(bold, false));
 
 
     public static Component separatorLine(String title) {
