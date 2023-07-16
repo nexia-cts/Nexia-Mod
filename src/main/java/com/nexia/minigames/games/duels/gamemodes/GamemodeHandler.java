@@ -473,14 +473,14 @@ public class GamemodeHandler {
 
         TextComponent spectateMSG = new TextComponent("§7§o(" + factoryExecutor.getRawName() + " started spectating)");
 
-        if (duelsGame == null && teamDuelsGame != null) {
+        if (teamDuelsGame != null) {
             teamDuelsGame.spectators.add(executor);
             List<ServerPlayer> everyTeamMember = teamDuelsGame.team1.all;
             everyTeamMember.addAll(teamDuelsGame.team2.all);
             for (ServerPlayer players : everyTeamMember) {
                 players.sendMessage(spectateMSG, Util.NIL_UUID);
             }
-        } else if (duelsGame != null && teamDuelsGame == null) {
+        } else if (duelsGame != null) {
             duelsGame.spectators.add(executor);
             duelsGame.p1.sendMessage(spectateMSG, Util.NIL_UUID);
             duelsGame.p2.sendMessage(spectateMSG, Util.NIL_UUID);

@@ -48,7 +48,7 @@ public class PrefixGUI extends SimpleGui {
             this.setSlot(airSlots, new ItemStack(Items.AIR));
             airSlots++;
         }
-        for(int i = 0; i < 11; i++){
+        for(int i = 0; i < 13; i++){
             if(slot == 17) {
                 slot = 19;
             }
@@ -93,7 +93,7 @@ public class PrefixGUI extends SimpleGui {
                                 .append(net.kyori.adventure.text.Component.text(".").decoration(ChatFormat.bold, false))
                 );
 
-                for(int i = 0; i < 11; i++){
+                for(int i = 0; i < 13; i++){
                     player.removeTag(Main.config.ranks[i]);
                 }
 

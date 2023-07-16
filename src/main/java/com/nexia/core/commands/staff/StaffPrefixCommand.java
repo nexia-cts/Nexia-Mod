@@ -45,7 +45,7 @@ public class StaffPrefixCommand {
 
 
                                             if(type.equalsIgnoreCase("set")){
-                                                for(int i = 0; i < 9; i++){
+                                                for(int i = 0; i < 13; i++){
                                                     if(prefix.equalsIgnoreCase(Main.config.ranks[i])){
 
 
@@ -69,7 +69,7 @@ public class StaffPrefixCommand {
                                                                                                 .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                                         );
 
-                                                        for (int i2 = 0; i2 < 9; i2++) {
+                                                        for (int i2 = 0; i2 < 13; i2++) {
                                                             otherPlayer.removeTag(Main.config.ranks[i2]);
                                                         }
 
@@ -79,7 +79,7 @@ public class StaffPrefixCommand {
                                             }
 
                                             if(type.equalsIgnoreCase("remove")){
-                                                for(int i = 0; i < 9; i++){
+                                                for(int i = 0; i < 13; i++){
                                                     if(prefix.equalsIgnoreCase(Main.config.ranks[i])){
 
                                                         if(factoryExecutor != null){
@@ -102,7 +102,7 @@ public class StaffPrefixCommand {
                                             }
 
                                             if(type.equalsIgnoreCase("add")){
-                                                for(int i = 0; i < 9; i++){
+                                                for(int i = 0; i < 13; i++){
                                                     if(prefix.equalsIgnoreCase(Main.config.ranks[i])){
                                                         if(factoryExecutor != null){
                                                             factoryExecutor.sendMessage(

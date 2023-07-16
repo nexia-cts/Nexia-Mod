@@ -201,15 +201,15 @@ public class TeamDuelsGame { //implements Runnable{
             }
 
             boolean canSafelyDelete = this.level.players().isEmpty() && this.spectators.isEmpty();
+            this.hasStarted = true;
+            this.isEnding = true;
 
             if(canSafelyDelete) {
                 this.isEnding = false;
-                this.hasStarted = true;
                 DuelGameHandler.deleteWorld(this.level.dimension().toString().replaceAll("]", "").split(":")[2]);
                 DuelGameHandler.teamDuelsGames.remove(this);
+                return;
             }
-
-            return;
         }
         if(this.isEnding) {
             int color = 160 * 65536 + 248;
