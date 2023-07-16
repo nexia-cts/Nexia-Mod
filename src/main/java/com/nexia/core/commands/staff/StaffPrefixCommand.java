@@ -45,7 +45,7 @@ public class StaffPrefixCommand {
 
 
                                             if(type.equalsIgnoreCase("set")){
-                                                for(int i = 0; i < 13; i++){
+                                                for(int i = 0; i < 11; i++){
                                                     if(prefix.equalsIgnoreCase(Main.config.ranks[i])){
 
 
@@ -79,7 +79,7 @@ public class StaffPrefixCommand {
                                             }
 
                                             if(type.equalsIgnoreCase("remove")){
-                                                for(int i = 0; i < 13; i++){
+                                                for(int i = 0; i < 11; i++){
                                                     if(prefix.equalsIgnoreCase(Main.config.ranks[i])){
 
                                                         if(factoryExecutor != null){
@@ -102,7 +102,7 @@ public class StaffPrefixCommand {
                                             }
 
                                             if(type.equalsIgnoreCase("add")){
-                                                for(int i = 0; i < 13; i++){
+                                                for(int i = 0; i < 11; i++){
                                                     if(prefix.equalsIgnoreCase(Main.config.ranks[i])){
                                                         if(factoryExecutor != null){
                                                             factoryExecutor.sendMessage(
