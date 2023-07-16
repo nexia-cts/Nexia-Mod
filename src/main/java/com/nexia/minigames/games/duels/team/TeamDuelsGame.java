@@ -125,8 +125,6 @@ public class TeamDuelsGame { //implements Runnable{
             data.teamDuelsGame = game;
             data.inDuel = true;
 
-            factoryPlayer.addTag(LobbyUtil.NO_DAMAGE_TAG);
-
             player.teleportTo(duelLevel, team1Pos[0], team1Pos[1], team1Pos[2], team1Pos[3], team1Pos[4]);
             player.setGameMode(gameMode.gameMode);
 
@@ -136,7 +134,8 @@ public class TeamDuelsGame { //implements Runnable{
 
             factoryPlayer.runCommand("/loadinventory " + stringGameMode.toLowerCase(), 4, false);
 
-            factoryPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+
+            factoryPlayer.addTag(LobbyUtil.NO_DAMAGE_TAG);
             factoryPlayer.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
             PlayerUtil.resetHealthStatus(factoryPlayer);
@@ -162,8 +161,6 @@ public class TeamDuelsGame { //implements Runnable{
             factoryPlayer.runCommand("/loadinventory " + stringGameMode.toLowerCase(), 4, false);
 
             factoryPlayer.addTag(LobbyUtil.NO_DAMAGE_TAG);
-
-            factoryPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
             factoryPlayer.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
             PlayerUtil.resetHealthStatus(factoryPlayer);

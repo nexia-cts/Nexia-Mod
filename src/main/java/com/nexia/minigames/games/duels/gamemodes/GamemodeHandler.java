@@ -465,6 +465,11 @@ public class GamemodeHandler {
             unspectatePlayer(executor, player, false);
         }
 
+        if(playerData.teamDuelsGame != null) {
+            factoryExecutor.sendMessage(Component.text("Spectating Team Duels is currently not available. We are sorry for the inconvenience.").color(ChatFormat.failColor));
+            return;
+        }
+
         factoryExecutor.setGameMode(Minecraft.GameMode.SPECTATOR);
         executor.teleportTo(player.getLevel(), player.getX(), player.getY(), player.getZ(), 0, 0);
 

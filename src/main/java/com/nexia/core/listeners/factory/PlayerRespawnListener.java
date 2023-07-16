@@ -30,7 +30,7 @@ public class PlayerRespawnListener {
 
             if(player == null) return;
             PlayerData duelsData = PlayerDataManager.get(player);
-            com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
+            //com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
             DuelsGame duelsGame = duelsData.duelsGame;
             TeamDuelsGame teamDuelsGame = duelsData.teamDuelsGame;
 

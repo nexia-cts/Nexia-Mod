@@ -114,6 +114,11 @@ public class PlayGUI extends SimpleGui {
                 LobbyUtil.sendGame(this.player, "classic ffa", true, true);
                 this.close();
             }
+
+            if(name.getString().equalsIgnoreCase("§9Duels")) {
+                LobbyUtil.sendGame(this.player, "duels", true, true);
+            }
+
             if(name.getString().equalsIgnoreCase("§3FFA")){
                 this.setFFALayout();
             }
