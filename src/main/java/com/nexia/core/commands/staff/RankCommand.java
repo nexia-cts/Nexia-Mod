@@ -40,6 +40,15 @@ public class RankCommand {
 
         for(int i = 0; i < 9; i++){
             if(rank.equalsIgnoreCase(Main.config.ranks[i])){
+
+
+                if(rank.equalsIgnoreCase("pro") || rank.equalsIgnoreCase("god")){
+                    if(factoryExecutor != null) {
+                        factoryExecutor.runCommand("/staffprefix add " + otherFactoryPlayer.getRawName() + " " + rank, 3, true);
+                        factoryExecutor.runCommand("/staffprefix set " + otherFactoryPlayer.getRawName() + " " + rank, 3, true);
+                    }
+                }
+
                 if(factoryExecutor != null){
                     factoryExecutor.sendMessage(
                             ChatFormat.nexiaMessage
