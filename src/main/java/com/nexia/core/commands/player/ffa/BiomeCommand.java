@@ -19,7 +19,7 @@ public class BiomeCommand {
         dispatcher.register(Commands.literal("biome")
                 .executes(context -> {
                     ServerPlayer player = context.getSource().getPlayerOrException();
-                    boolean isSpawn = PlayerDataManager.get(player).gameMode == PlayerGameMode.FFA && FfaUtil.wasInSpawn.contains(player.getUUID());
+                    boolean isSpawn = FfaUtil.isFfaPlayer(player) && FfaUtil.wasInSpawn.contains(player.getUUID());
                     if(isSpawn){
                         run(context);
                     } else {
@@ -32,7 +32,7 @@ public class BiomeCommand {
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest(SpawnGUI.mapLocations.keySet(), builder)))
                         .executes(context -> {
                             ServerPlayer player = context.getSource().getPlayerOrException();
-                            boolean isSpawn = PlayerDataManager.get(player).gameMode == PlayerGameMode.FFA && FfaUtil.wasInSpawn.contains(player.getUUID());
+                            boolean isSpawn = FfaUtil.isFfaPlayer(player) && FfaUtil.wasInSpawn.contains(player.getUUID());
                             if(isSpawn){
                                 selectedMap(context);
                             } else {
@@ -46,7 +46,7 @@ public class BiomeCommand {
         dispatcher.register(Commands.literal("spawn")
                 .executes(context -> {
                     ServerPlayer player = context.getSource().getPlayerOrException();
-                    boolean isSpawn = PlayerDataManager.get(player).gameMode == PlayerGameMode.FFA && FfaUtil.wasInSpawn.contains(player.getUUID());
+                    boolean isSpawn = FfaUtil.isFfaPlayer(player) && FfaUtil.wasInSpawn.contains(player.getUUID());
                     if(isSpawn){
                         run(context);
                     } else {
@@ -59,7 +59,7 @@ public class BiomeCommand {
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest(SpawnGUI.mapLocations.keySet(), builder)))
                         .executes(context -> {
                             ServerPlayer player = context.getSource().getPlayerOrException();
-                            boolean isSpawn = PlayerDataManager.get(player).gameMode == PlayerGameMode.FFA && FfaUtil.wasInSpawn.contains(player.getUUID());
+                            boolean isSpawn = FfaUtil.isFfaPlayer(player) && FfaUtil.wasInSpawn.contains(player.getUUID());
                             if(isSpawn){
                                 selectedMap(context);
                             } else {

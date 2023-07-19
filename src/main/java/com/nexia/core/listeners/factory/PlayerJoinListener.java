@@ -152,7 +152,9 @@ public class PlayerJoinListener {
         if(hasRole && Permissions.check(player, "nexia.rank") && !Permissions.check(player, "nexia.prefix.supporter")) {
             ServerTime.factoryServer.runCommand("/staffprefix add " + player.getScoreboardName() + " supporter");
             return;
-        } else if(!hasRole && Permissions.check(player, "nexia.rank") && Permissions.check(player, "nexia.prefix.supporter")) {
+        }
+
+        if(!hasRole && Permissions.check(player, "nexia.rank") && Permissions.check(player, "nexia.prefix.supporter")) {
             ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getScoreboardName() + " supporter");
             ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getScoreboardName() + " supporter++");
             ServerTime.factoryServer.runCommand("/staffprefix set " + player.getScoreboardName() + " default");
@@ -161,14 +163,18 @@ public class PlayerJoinListener {
 
 
 
-        if(hasRole && !Permissions.check(player, "nexia.prefix.supporter")) {
+        if(hasRole) {
             if(hasPlusRole && !Permissions.check(player, "nexia.prefix.supporter++")) {
                 ServerTime.factoryServer.runCommand("/rank " + player.getScoreboardName() + " supporter++", 4, false);
                 ServerTime.factoryServer.runCommand("/staffprefix add " + player.getScoreboardName() + " supporter");
                 return;
             }
+            if(!Permissions.check(player, "nexia.prefix.supporter")){
+                ServerTime.factoryServer.runCommand("/staffprefix add " + player.getScoreboardName() + " supporter");
+                return;
+            }
             ServerTime.factoryServer.runCommand("/rank " + player.getScoreboardName() + " supporter", 4, false);
-        } else if(!hasRole && Permissions.check(player, "nexia.prefix.supporter")) {
+        } else if(Permissions.check(player, "nexia.prefix.supporter")) {
             if(!hasPlusRole && Permissions.check(player, "nexia.prefix.supporter++")) {
                 ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getScoreboardName() + " supporter");
             }
