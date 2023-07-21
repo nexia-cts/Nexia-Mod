@@ -83,7 +83,6 @@ public class QueueGUI extends SimpleGui {
             Component name = itemStack.getHoverName();
 
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
-
                 if(name.getString().substring(4).equalsIgnoreCase("Leave ALL Queues")) {
                     //PlayerUtil.getFactoryPlayer(player).runCommand("/queue LEAVE", 0, false);
                     LobbyUtil.leaveAllGames(this.player, true);
@@ -92,9 +91,8 @@ public class QueueGUI extends SimpleGui {
                 }
 
                 String modifiedName = name.getString().substring(2).replaceAll(" ", "_");
-
                 DuelGameMode gameMode = GamemodeHandler.identifyGamemode(modifiedName);
-                if(GamemodeHandler.isInQueue(player, gameMode)) {
+                if(gameMode != null && GamemodeHandler.isInQueue(player, gameMode)) {
                     GamemodeHandler.removeQueue(this.player, modifiedName, false);
                     this.close();
                 } else {
