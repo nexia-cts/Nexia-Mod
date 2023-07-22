@@ -24,7 +24,7 @@ public class ShoutCommand {
         dispatcher.register(Commands.literal("shout")
                 .requires(context -> {
                     try {
-                        return Permissions.check(context.getPlayerOrException(), "nexia.prefix.supporter++");
+                        return Permissions.check(context, "nexia.prefix.supporter");
                     } catch (Exception ignored) { }
                     return false;
                 })

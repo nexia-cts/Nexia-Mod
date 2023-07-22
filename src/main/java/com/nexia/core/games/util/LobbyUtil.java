@@ -105,7 +105,7 @@ public class LobbyUtil {
             minecraftPlayer.setRespawnPosition(lobbyWorld.dimension(), lobbySpawn.toBlockPos(), lobbySpawn.yaw, true, false);
             minecraftPlayer.teleportTo(lobbyWorld, lobbySpawn.x, lobbySpawn.y, lobbySpawn.z, lobbySpawn.pitch, lobbySpawn.yaw);
 
-            if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter++")) {
+            if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter")) {
                 minecraftPlayer.abilities.mayfly = true;
                 minecraftPlayer.onUpdateAbilities();
             }

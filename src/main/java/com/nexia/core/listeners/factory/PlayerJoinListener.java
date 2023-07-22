@@ -13,7 +13,6 @@ import com.nexia.discord.utilities.player.PlayerData;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -121,62 +120,42 @@ public class PlayerJoinListener {
         player.sendMessage(ChatFormat.separatorLine(null));
     }
 
-    private static void checkBooster(ServerPlayer player) throws RateLimitedException {
+    private static void checkBooster(ServerPlayer player) {
         PlayerData playerData = com.nexia.discord.utilities.player.PlayerDataManager.get(player.getUUID());
         if(!playerData.savedData.isLinked) { return; }
-        Member discordUser = jda.getGuildById(com.nexia.discord.Main.config.guildID).retrieveMemberById(playerData.savedData.discordID).complete(true);
+        Member discordUser = null;
+
+        try {
+            discordUser = jda.getGuildById(com.nexia.discord.Main.config.guildID).retrieveMemberById(playerData.savedData.discordID).complete(true);
+        } catch (Exception ignored) { }
+
         if(discordUser == null) {
             if(Permissions.check(player, "nexia.prefix.supporter")) {
                 if(Permissions.check(player, "nexia.rank")) {
                     ServerTime.factoryServer.runCommand("/staffprefix set " + player.getScoreboardName() + " default");
+                    ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getScoreboardName() + " supporter");
                     return;
                 }
-                ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getScoreboardName() + " supporter");
-                ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getScoreboardName() + " supporter++");
                 ServerTime.factoryServer.runCommand("/rank " + player.getScoreboardName() + " default", 4, false);
             }
             return;
         }
 
         Role supporterRole = jda.getRoleById("1107264322951979110");
-        Role supporterPlusRole = jda.getRoleById("1125391407616630845");
         boolean hasRole = discordUser.getRoles().contains(supporterRole);
-        boolean hasPlusRole = discordUser.getRoles().contains(supporterPlusRole);
+        boolean hasSupporterPrefix = Permissions.check(player, "nexia.prefix.supporter");
 
-
-        if(hasPlusRole && Permissions.check(player, "nexia.rank") && !Permissions.check(player, "nexia.prefix.supporter++")) {
-            ServerTime.factoryServer.runCommand("/staffprefix add " + player.getScoreboardName() + " supporter++");
-            return;
-        }
-
-        if(hasRole && Permissions.check(player, "nexia.rank") && !Permissions.check(player, "nexia.prefix.supporter")) {
-            ServerTime.factoryServer.runCommand("/staffprefix add " + player.getScoreboardName() + " supporter");
-            return;
-        }
-
-        if(!hasRole && Permissions.check(player, "nexia.rank") && Permissions.check(player, "nexia.prefix.supporter")) {
-            ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getScoreboardName() + " supporter");
-            ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getScoreboardName() + " supporter++");
-            ServerTime.factoryServer.runCommand("/staffprefix set " + player.getScoreboardName() + " default");
-            return;
-        }
-
-
-
-        if(hasRole) {
-            if(hasPlusRole && !Permissions.check(player, "nexia.prefix.supporter++")) {
-                ServerTime.factoryServer.runCommand("/rank " + player.getScoreboardName() + " supporter++", 4, false);
-                ServerTime.factoryServer.runCommand("/staffprefix add " + player.getScoreboardName() + " supporter");
-                return;
-            }
-            if(!Permissions.check(player, "nexia.prefix.supporter")){
-                ServerTime.factoryServer.runCommand("/staffprefix add " + player.getScoreboardName() + " supporter");
+        if(hasRole && !hasSupporterPrefix) {
+            if(Permissions.check(player, "nexia.rank")) {
+                ServerTime.factoryServer.runCommand("/staffprefix add " + player.getScoreboardName() + " supporter", 4, false);
                 return;
             }
             ServerTime.factoryServer.runCommand("/rank " + player.getScoreboardName() + " supporter", 4, false);
-        } else if(Permissions.check(player, "nexia.prefix.supporter")) {
-            if(!hasPlusRole && Permissions.check(player, "nexia.prefix.supporter++")) {
-                ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getScoreboardName() + " supporter");
+        } else if(!hasRole && hasSupporterPrefix) {
+            if(Permissions.check(player, "nexia.rank")) {
+                ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getScoreboardName() + " supporter", 4, false);
+                ServerTime.factoryServer.runCommand("/staffprefix set " + player.getScoreboardName() + " default", 4, false);
+                return;
             }
             ServerTime.factoryServer.runCommand("/rank " + player.getScoreboardName() + " default", 4, false);
         }
