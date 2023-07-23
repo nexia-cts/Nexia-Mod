@@ -5,6 +5,7 @@ import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.combatreforged.factory.api.world.util.Location;
+import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
@@ -35,10 +36,15 @@ public class PlayerRespawnListener {
             TeamDuelsGame teamDuelsGame = duelsData.teamDuelsGame;
 
             if(duelsGame != null && duelsGame.isEnding && duelsGame.winner != null) {
+
+                factoryPlayer.getInventory().clear();
+                LobbyUtil.giveItems(player);
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
                 respawnEvent.setSpawnpoint(new Location(duelsGame.winner.getX(), duelsGame.winner.getY(), duelsGame.winner.getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", duelsGame.level.dimension().toString().replaceAll("]", "").split(":")[2]))));
                 //player.teleportTo(duelsGame.level, duelsGame.winner.getX(), duelsGame.winner.getY(), duelsGame.winner.getZ(), 0, 0);
             } else if(teamDuelsGame != null && duelsData.duelsTeam != null) {
+                factoryPlayer.getInventory().clear();
+                LobbyUtil.giveItems(player);
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
                 // duelsTeam.alive.get(new Random().nextInt(teamDuelsGame.winner.alive.size()))
 
