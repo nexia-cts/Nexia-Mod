@@ -10,6 +10,7 @@ import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelGameMode;
+import com.nexia.minigames.games.duels.DuelsMap;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
@@ -94,7 +95,7 @@ public class TeamDuelsGame { //implements Runnable{
 
         ServerLevel duelLevel = DuelGameHandler.createWorld(gameMode.hasRegen);
         if(selectedMap == null){
-            selectedMap = com.nexia.minigames.Main.config.duelsMaps.get(RandomUtil.randomInt(0, com.nexia.minigames.Main.config.duelsMaps.size()));
+            selectedMap = DuelsMap.stringDuelsMaps.get(RandomUtil.randomInt(0, DuelsMap.stringDuelsMaps.size()));
         }
         String name = duelLevel.dimension().toString().replaceAll("]", "").split(":")[2];
 

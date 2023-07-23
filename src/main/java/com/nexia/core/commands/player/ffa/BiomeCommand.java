@@ -19,26 +19,16 @@ public class BiomeCommand {
         dispatcher.register(Commands.literal("biome")
                 .executes(context -> {
                     ServerPlayer player = context.getSource().getPlayerOrException();
-                    boolean isSpawn = FfaUtil.isFfaPlayer(player) && FfaUtil.wasInSpawn.contains(player.getUUID());
-                    if(isSpawn){
-                        run(context);
-                    } else {
-                        LobbyUtil.sendGame(player, "classic ffa", false, true);
-                        run(context);
-                    }
+                    LobbyUtil.sendGame(player, "classic ffa", false, true);
+                    run(context);
                     return 1;
                 })
                 .then(Commands.argument("biome", StringArgumentType.greedyString())
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest(SpawnGUI.mapLocations.keySet(), builder)))
                         .executes(context -> {
                             ServerPlayer player = context.getSource().getPlayerOrException();
-                            boolean isSpawn = FfaUtil.isFfaPlayer(player) && FfaUtil.wasInSpawn.contains(player.getUUID());
-                            if(isSpawn){
-                                selectedMap(context);
-                            } else {
-                                LobbyUtil.sendGame(player, "classic ffa", false, true);
-                                selectedMap(context);
-                            }
+                            LobbyUtil.sendGame(player, "classic ffa", false, true);
+                            selectedMap(context);
                             return 1;
                         })
                 )
@@ -46,26 +36,17 @@ public class BiomeCommand {
         dispatcher.register(Commands.literal("spawn")
                 .executes(context -> {
                     ServerPlayer player = context.getSource().getPlayerOrException();
-                    boolean isSpawn = FfaUtil.isFfaPlayer(player) && FfaUtil.wasInSpawn.contains(player.getUUID());
-                    if(isSpawn){
-                        run(context);
-                    } else {
-                        LobbyUtil.sendGame(player, "classic ffa", false, true);
-                        run(context);
-                    }
+                    LobbyUtil.sendGame(player, "classic ffa", false, true);
+                    run(context);
+
                     return 1;
                 })
                 .then(Commands.argument("biome", StringArgumentType.string())
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest(SpawnGUI.mapLocations.keySet(), builder)))
                         .executes(context -> {
                             ServerPlayer player = context.getSource().getPlayerOrException();
-                            boolean isSpawn = FfaUtil.isFfaPlayer(player) && FfaUtil.wasInSpawn.contains(player.getUUID());
-                            if(isSpawn){
-                                selectedMap(context);
-                            } else {
-                                LobbyUtil.sendGame(player, "classic ffa", false, true);
-                                selectedMap(context);
-                            }
+                            LobbyUtil.sendGame(player, "classic ffa", false, true);
+                            selectedMap(context);
                             return 1;
                         })
                 )

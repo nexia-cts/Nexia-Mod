@@ -60,7 +60,7 @@ public class QueueGUI extends SimpleGui {
 
             DuelGameMode gameMode = GamemodeHandler.identifyGamemode(duel);
             ItemDisplayUtil.removeLore(item, 0);
-            ItemDisplayUtil.addLore(item, "§7There are §7§l" + GamemodeHandler.identifyQueue(gameMode).size() + " §7people queued up.", 0);
+            ItemDisplayUtil.addLore(item, "§7There are §7§l" + gameMode.queue.size() + " §7people queued up.", 0);
 
             if(GamemodeHandler.isInQueue(player, gameMode)) {
                 ItemDisplayUtil.removeLore(item, 1);

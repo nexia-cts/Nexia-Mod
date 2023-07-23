@@ -1,8 +1,8 @@
 package com.nexia.core.gui.duels;
 
 import com.nexia.core.utilities.item.ItemDisplayUtil;
-import com.nexia.minigames.Main;
 import com.nexia.minigames.games.duels.DuelGameMode;
+import com.nexia.minigames.games.duels.DuelsMap;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
@@ -13,17 +13,20 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GameType;
 
 import java.util.Arrays;
 
 public class DuelGUI extends SimpleGui {
     static final TextComponent title = new TextComponent("Duel Menu");
 
-    static ServerPlayer other = null;
+    ServerPlayer other;
 
-    static String kit = "";
+    String kit;
     public DuelGUI(MenuType<?> type, ServerPlayer player, boolean includePlayer) {
         super(type, player, includePlayer);
+        this.other = null;
+        this.kit = "";
     }
 
     private void fillEmptySlots(ItemStack itemStack){
@@ -32,7 +35,7 @@ public class DuelGUI extends SimpleGui {
         }
     }
 
-    private void setMapLayout(){
+    private void setMapLayout(DuelGameMode gameMode){
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
 
@@ -49,10 +52,9 @@ public class DuelGUI extends SimpleGui {
             this.setSlot(airSlots, new ItemStack(Items.AIR));
             airSlots++;
         }
-        int i1 = 0;
-        for(String map : Main.config.duelsMaps){
-            this.setSlot(slot, DuelGameMode.duelsMaps.get(i1).setHoverName(new TextComponent("§f" + map.toLowerCase())));
-            i1++;
+        for(DuelsMap map : DuelsMap.duelsMaps){
+            if(gameMode.gameMode == GameType.ADVENTURE && !map.isAdventureSupported) return;
+            this.setSlot(slot, map.item.setHoverName(new TextComponent("§f" + map.id)));
             slot++;
         }
     }
@@ -61,7 +63,7 @@ public class DuelGUI extends SimpleGui {
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
 
-        other = otherp;
+        this.other = otherp;
 
         fillEmptySlots(emptySlot);
         int slot = 10;
@@ -103,10 +105,10 @@ public class DuelGUI extends SimpleGui {
 
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
                 if(Arrays.stream(DuelGameMode.duels).toList().contains(name.getString().substring(2).replaceAll(" ", "_"))){
-                    kit = name.getString().substring(2).replaceAll(" ", "_");
-                    setMapLayout();
+                    this.kit = name.getString().substring(2).replaceAll(" ", "_");
+                    setMapLayout(GamemodeHandler.identifyGamemode(this.kit));
                 } else {
-                    GamemodeHandler.challengePlayer(this.player, other, kit, name.getString().substring(2));
+                    GamemodeHandler.challengePlayer(this.player, this.other, this.kit, name.getString().substring(2));
                     this.close();
                 }
 
