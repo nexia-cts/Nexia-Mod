@@ -6,9 +6,21 @@ plugins {
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
+String getGitCommit() {
+	ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+	exec {
+		commandLine("git", "rev-parse", "--short", "HEAD")
+		standardOutput = stdout
+	}
+	return stdout.toString().trim()
+}
+
 archivesBaseName = project.archives_base_name
-version = project.mod_version
+version = project.mod_version + "." + getGitCommit()
 group = project.maven_group
+
+// Set Build Dir to main to differentiate with dev
+buildDir = new File(buildDir, "main")
 
 // Repo for CT intermediary mappings
 repositories {
