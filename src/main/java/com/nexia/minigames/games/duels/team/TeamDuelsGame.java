@@ -2,7 +2,6 @@ package com.nexia.minigames.games.duels.team;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.types.Minecraft;
-import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
@@ -11,6 +10,7 @@ import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelGameMode;
+import com.nexia.minigames.games.duels.DuelsMap;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
@@ -23,8 +23,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.level.GameType;
-import org.apache.logging.log4j.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -97,7 +95,7 @@ public class TeamDuelsGame { //implements Runnable{
 
         ServerLevel duelLevel = DuelGameHandler.createWorld(gameMode.hasRegen);
         if(selectedMap == null){
-            selectedMap = com.nexia.minigames.Main.config.duelsMaps.get(RandomUtil.randomInt(0, com.nexia.minigames.Main.config.duelsMaps.size()));
+            selectedMap = DuelsMap.stringDuelsMaps.get(RandomUtil.randomInt(0, DuelsMap.stringDuelsMaps.size()));
         }
         String name = duelLevel.dimension().toString().replaceAll("]", "").split(":")[2];
 
@@ -128,8 +126,6 @@ public class TeamDuelsGame { //implements Runnable{
             data.teamDuelsGame = game;
             data.inDuel = true;
 
-            factoryPlayer.addTag(LobbyUtil.NO_DAMAGE_TAG);
-
             player.teleportTo(duelLevel, team1Pos[0], team1Pos[1], team1Pos[2], team1Pos[3], team1Pos[4]);
             player.setGameMode(gameMode.gameMode);
 
@@ -139,7 +135,7 @@ public class TeamDuelsGame { //implements Runnable{
 
             factoryPlayer.runCommand("/loadinventory " + stringGameMode.toLowerCase(), 4, false);
 
-            factoryPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+            factoryPlayer.addTag(LobbyUtil.NO_DAMAGE_TAG);
             factoryPlayer.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
             PlayerUtil.resetHealthStatus(factoryPlayer);
@@ -188,26 +184,31 @@ public class TeamDuelsGame { //implements Runnable{
 
             for(ServerPlayer spectator : this.spectators) {
                 Player factoryPlayer = PlayerUtil.getFactoryPlayer(spectator);
-                factoryPlayer.runCommand("/hub", 0, false);
                 factoryPlayer.setGameMode(Minecraft.GameMode.ADVENTURE);
                 factoryPlayer.getInventory().clear();
                 factoryPlayer.sendMessage(error);
+                factoryPlayer.runCommand("/hub", 0, false);
             }
 
             for(ServerPlayer player : this.level.players()) {
                 Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
-                factoryPlayer.runCommand("/hub", 0, false);
                 factoryPlayer.sendMessage(error);
                 factoryPlayer.setGameMode(Minecraft.GameMode.ADVENTURE);
                 factoryPlayer.getInventory().clear();
                 DuelGameHandler.leave(player, true);
+                factoryPlayer.runCommand("/hub", 0, false);
             }
 
-            this.isEnding = false;
+            boolean canSafelyDelete = this.level.players().isEmpty() && this.spectators.isEmpty();
             this.hasStarted = true;
-            DuelGameHandler.deleteWorld(this.level.dimension().toString().replaceAll("]", "").split(":")[2]);
-            DuelGameHandler.teamDuelsGames.remove(this);
-            return;
+            this.isEnding = true;
+
+            if(canSafelyDelete) {
+                this.isEnding = false;
+                DuelGameHandler.deleteWorld(this.level.dimension().toString().replaceAll("]", "").split(":")[2]);
+                DuelGameHandler.teamDuelsGames.remove(this);
+                return;
+            }
         }
         if(this.isEnding) {
             int color = 160 * 65536 + 248;

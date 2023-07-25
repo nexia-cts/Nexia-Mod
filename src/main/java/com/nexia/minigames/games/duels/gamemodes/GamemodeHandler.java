@@ -2,7 +2,6 @@ package com.nexia.minigames.games.duels.gamemodes;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.types.Minecraft;
-import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -10,25 +9,26 @@ import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.DuelsGame;
+import com.nexia.minigames.games.duels.DuelsMap;
 import com.nexia.minigames.games.duels.team.DuelsTeam;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.Util;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GamemodeHandler {
 
     public static DuelGameMode identifyGamemode(@NotNull String gameMode) {
+
         if (gameMode.equalsIgnoreCase("axe")) {
             return DuelGameMode.AXE;
         }
@@ -101,81 +101,7 @@ public class GamemodeHandler {
     }
 
     public static boolean isInQueue(@NotNull ServerPlayer player, @NotNull DuelGameMode gameMode) {
-        ArrayList<ServerPlayer> queue = identifyQueue(gameMode);
-        return queue != null && queue.contains(player);
-    }
-
-    public static ArrayList<ServerPlayer> identifyQueue(@NotNull DuelGameMode gameMode) {
-
-        if (gameMode.equals(DuelGameMode.AXE)) {
-            return DuelGameMode.AXE_QUEUE;
-        }
-
-        if (gameMode.equals(DuelGameMode.BOW_ONLY)) {
-            return DuelGameMode.BOW_ONLY_QUEUE;
-        }
-
-        if (gameMode.equals(DuelGameMode.SHIELD)) {
-            return DuelGameMode.SHIELD_QUEUE;
-        }
-
-        if (gameMode.equals(DuelGameMode.POT)) {
-            return DuelGameMode.POT_QUEUE;
-        }
-
-        if (gameMode.equals(DuelGameMode.NETH_POT)) {
-            return DuelGameMode.NETH_POT_QUEUE;
-        }
-
-        if (gameMode.equals(DuelGameMode.OG_VANILLA)) {
-            return DuelGameMode.OG_VANILLA_QUEUE;
-        }
-
-        if (gameMode.equals(DuelGameMode.HSG)) {
-            return DuelGameMode.HSG_QUEUE;
-        }
-
-        if (gameMode.equals(DuelGameMode.SKYWARS)) {
-            return DuelGameMode.SKYWARS_QUEUE;
-        }
-
-        if (gameMode.equals(DuelGameMode.CLASSIC_CRYSTAL)) {
-            return DuelGameMode.CLASSIC_CRYSTAL_QUEUE;
-        }
-
-        if (gameMode.equals(DuelGameMode.UHC_SHIELD)) {
-            return DuelGameMode.UHC_SHIELD_QUEUE;
-        }
-
-        if (gameMode.equals(DuelGameMode.VANILLA)) {
-            return DuelGameMode.VANILLA_QUEUE;
-        }
-
-        if (gameMode.equals(DuelGameMode.SMP)) {
-            return DuelGameMode.SMP_QUEUE;
-        }
-
-        if (gameMode.equals(DuelGameMode.SWORD_ONLY)) {
-            return DuelGameMode.SWORD_ONLY_QUEUE;
-        }
-
-        if (gameMode.equals(DuelGameMode.FFA)) {
-            return DuelGameMode.FFA_QUEUE;
-        }
-
-        if (gameMode.equals(DuelGameMode.HOE_ONLY)) {
-            return DuelGameMode.HOE_ONLY_QUEUE;
-        }
-
-        if (gameMode.equals(DuelGameMode.UHC)) {
-            return DuelGameMode.UHC_QUEUE;
-        }
-
-        if (gameMode.equals(DuelGameMode.TRIDENT_ONLY)) {
-            return DuelGameMode.TRIDENT_ONLY_QUEUE;
-        }
-
-        return null;
+        return gameMode.queue.contains(player);
     }
 
     public static void joinQueue(ServerPlayer minecraftPlayer, String stringGameMode, boolean silent) {
@@ -217,122 +143,12 @@ public class GamemodeHandler {
         removeQueue(minecraftPlayer, stringGameMode, true);
 
 
-        if (gameMode == DuelGameMode.AXE) {
-            DuelGameMode.AXE_QUEUE.add(minecraftPlayer);
-            if (DuelGameMode.AXE_QUEUE.size() >= 2) {
-                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.AXE_QUEUE.get(0), stringGameMode, null, false);
-            }
-        }
-
-        if (gameMode == DuelGameMode.SWORD_ONLY) {
-            DuelGameMode.SWORD_ONLY_QUEUE.add(minecraftPlayer);
-            if (DuelGameMode.SWORD_ONLY_QUEUE.size() >= 2) {
-                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.SWORD_ONLY_QUEUE.get(0), stringGameMode, null, false);
-            }
-        }
-
-        if (gameMode == DuelGameMode.TRIDENT_ONLY) {
-            DuelGameMode.TRIDENT_ONLY_QUEUE.add(minecraftPlayer);
-            if (DuelGameMode.TRIDENT_ONLY_QUEUE.size() >= 2) {
-                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.TRIDENT_ONLY_QUEUE.get(0), stringGameMode, null, false);
-            }
-        }
-
-        if (gameMode == DuelGameMode.HOE_ONLY) {
-            DuelGameMode.HOE_ONLY_QUEUE.add(minecraftPlayer);
-            if (DuelGameMode.HOE_ONLY_QUEUE.size() >= 2) {
-                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.HOE_ONLY_QUEUE.get(0), stringGameMode, null, false);
-            }
-        }
-
-        if (gameMode == DuelGameMode.BOW_ONLY) {
-            DuelGameMode.BOW_ONLY_QUEUE.add(minecraftPlayer);
-            if (DuelGameMode.BOW_ONLY_QUEUE.size() >= 2) {
-                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.BOW_ONLY_QUEUE.get(0), stringGameMode, null, false);
-            }
-        }
-
-        if (gameMode == DuelGameMode.SHIELD) {
-            DuelGameMode.SHIELD_QUEUE.add(minecraftPlayer);
-            if (DuelGameMode.SHIELD_QUEUE.size() >= 2) {
-                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.SHIELD_QUEUE.get(0), stringGameMode, null, false);
-            }
-        }
-
-        if (gameMode == DuelGameMode.POT) {
-            DuelGameMode.POT_QUEUE.add(minecraftPlayer);
-            if (DuelGameMode.POT_QUEUE.size() >= 2) {
-                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.POT_QUEUE.get(0), stringGameMode, null, false);
-            }
-        }
-
-        if (gameMode == DuelGameMode.NETH_POT) {
-            DuelGameMode.NETH_POT_QUEUE.add(minecraftPlayer);
-            if (DuelGameMode.NETH_POT_QUEUE.size() >= 2) {
-                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.NETH_POT_QUEUE.get(0), stringGameMode, null, false);
-            }
-        }
-
-        if (gameMode == DuelGameMode.OG_VANILLA) {
-            DuelGameMode.OG_VANILLA_QUEUE.add(minecraftPlayer);
-            if (DuelGameMode.OG_VANILLA_QUEUE.size() >= 2) {
-                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.OG_VANILLA_QUEUE.get(0), stringGameMode, null, false);
-            }
-        }
-
-        if (gameMode == DuelGameMode.SMP) {
-            DuelGameMode.SMP_QUEUE.add(minecraftPlayer);
-            if (DuelGameMode.SMP_QUEUE.size() >= 2) {
-                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.SMP_QUEUE.get(0), stringGameMode, null, false);
-            }
-        }
-
-        if (gameMode == DuelGameMode.UHC_SHIELD) {
-            DuelGameMode.UHC_SHIELD_QUEUE.add(minecraftPlayer);
-            if (DuelGameMode.UHC_SHIELD_QUEUE.size() >= 2) {
-                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.UHC_SHIELD_QUEUE.get(0), stringGameMode, null, false);
-            }
-        }
-
-        if (gameMode == DuelGameMode.HSG) {
-            DuelGameMode.HSG_QUEUE.add(minecraftPlayer);
-            if (DuelGameMode.HSG_QUEUE.size() >= 2) {
-                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.HSG_QUEUE.get(0), stringGameMode, null, false);
-            }
-        }
-
-        if (gameMode == DuelGameMode.SKYWARS) {
-            DuelGameMode.SKYWARS_QUEUE.add(minecraftPlayer);
-            if (DuelGameMode.SKYWARS_QUEUE.size() >= 2) {
-                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.SKYWARS_QUEUE.get(0), stringGameMode, null, false);
-            }
-        }
-
-        if (gameMode == DuelGameMode.CLASSIC_CRYSTAL) {
-            DuelGameMode.CLASSIC_CRYSTAL_QUEUE.add(minecraftPlayer);
-            if (DuelGameMode.CLASSIC_CRYSTAL_QUEUE.size() >= 2) {
-                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.CLASSIC_CRYSTAL_QUEUE.get(0), stringGameMode, null, false);
-            }
-        }
-
-        if (gameMode == DuelGameMode.VANILLA) {
-            DuelGameMode.VANILLA_QUEUE.add(minecraftPlayer);
-            if (DuelGameMode.VANILLA_QUEUE.size() >= 2) {
-                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.VANILLA_QUEUE.get(0), stringGameMode, null, false);
-            }
-        }
-
-        if (gameMode == DuelGameMode.UHC) {
-            DuelGameMode.UHC_QUEUE.add(minecraftPlayer);
-            if (DuelGameMode.UHC_QUEUE.size() >= 2) {
-                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.UHC_QUEUE.get(0), stringGameMode, null, false);
-            }
-        }
-
-        if (gameMode == DuelGameMode.FFA) {
-            DuelGameMode.FFA_QUEUE.add(minecraftPlayer);
-            if (DuelGameMode.FFA_QUEUE.size() >= 2) {
-                GamemodeHandler.joinGamemode(minecraftPlayer, DuelGameMode.FFA_QUEUE.get(0), stringGameMode, null, false);
+        for(DuelGameMode duelGameMode : DuelGameMode.duelGameModes) {
+            if(gameMode.equals(duelGameMode)) {
+                duelGameMode.queue.add(minecraftPlayer);
+                if(duelGameMode.queue.size() >= 2) {
+                    GamemodeHandler.joinGamemode(minecraftPlayer, duelGameMode.queue.get(0), stringGameMode, null, false);
+                }
             }
         }
     }
@@ -347,73 +163,9 @@ public class GamemodeHandler {
                 }
                 return;
             }
-            if (gameMode == DuelGameMode.AXE) {
-                DuelGameMode.AXE_QUEUE.remove(minecraftPlayer);
-            }
 
-            if (gameMode == DuelGameMode.BOW_ONLY) {
-                DuelGameMode.BOW_ONLY_QUEUE.remove(minecraftPlayer);
-            }
+            gameMode.queue.remove(minecraftPlayer);
 
-            if (gameMode == DuelGameMode.SHIELD) {
-                DuelGameMode.SHIELD_QUEUE.remove(minecraftPlayer);
-            }
-
-            if (gameMode == DuelGameMode.POT) {
-                DuelGameMode.POT_QUEUE.remove(minecraftPlayer);
-            }
-
-            if (gameMode == DuelGameMode.NETH_POT) {
-                DuelGameMode.NETH_POT_QUEUE.remove(minecraftPlayer);
-            }
-
-            if (gameMode == DuelGameMode.OG_VANILLA) {
-                DuelGameMode.OG_VANILLA_QUEUE.remove(minecraftPlayer);
-            }
-
-            if (gameMode == DuelGameMode.SMP) {
-                DuelGameMode.SMP_QUEUE.remove(minecraftPlayer);
-            }
-
-            if (gameMode == DuelGameMode.UHC_SHIELD) {
-                DuelGameMode.UHC_SHIELD_QUEUE.remove(minecraftPlayer);
-            }
-
-            if (gameMode == DuelGameMode.HSG) {
-                DuelGameMode.HSG_QUEUE.remove(minecraftPlayer);
-            }
-
-            if (gameMode == DuelGameMode.SKYWARS) {
-                DuelGameMode.SKYWARS_QUEUE.remove(minecraftPlayer);
-            }
-
-            if (gameMode == DuelGameMode.CLASSIC_CRYSTAL) {
-                DuelGameMode.CLASSIC_CRYSTAL_QUEUE.remove(minecraftPlayer);
-            }
-
-            if (gameMode == DuelGameMode.VANILLA) {
-                DuelGameMode.VANILLA_QUEUE.remove(minecraftPlayer);
-            }
-
-            if (gameMode == DuelGameMode.SWORD_ONLY) {
-                DuelGameMode.SWORD_ONLY_QUEUE.remove(minecraftPlayer);
-            }
-
-            if (gameMode == DuelGameMode.FFA) {
-                DuelGameMode.FFA_QUEUE.remove(minecraftPlayer);
-            }
-
-            if (gameMode == DuelGameMode.UHC) {
-                DuelGameMode.UHC_QUEUE.remove(minecraftPlayer);
-            }
-
-            if (gameMode == DuelGameMode.TRIDENT_ONLY) {
-                DuelGameMode.TRIDENT_ONLY_QUEUE.remove(minecraftPlayer);
-            }
-
-            if (gameMode == DuelGameMode.HOE_ONLY) {
-                DuelGameMode.HOE_ONLY_QUEUE.remove(minecraftPlayer);
-            }
             if (!silent) {
                 player.sendMessage(
                         ChatFormat.nexiaMessage
@@ -423,23 +175,9 @@ public class GamemodeHandler {
                                 ));
             }
         } else {
-            DuelGameMode.AXE_QUEUE.remove(minecraftPlayer);
-            DuelGameMode.BOW_ONLY_QUEUE.remove(minecraftPlayer);
-            DuelGameMode.SHIELD_QUEUE.remove(minecraftPlayer);
-            DuelGameMode.POT_QUEUE.remove(minecraftPlayer);
-            DuelGameMode.NETH_POT_QUEUE.remove(minecraftPlayer);
-            DuelGameMode.OG_VANILLA_QUEUE.remove(minecraftPlayer);
-            DuelGameMode.HSG_QUEUE.remove(minecraftPlayer);
-            DuelGameMode.SKYWARS_QUEUE.remove(minecraftPlayer);
-            DuelGameMode.CLASSIC_CRYSTAL_QUEUE.remove(minecraftPlayer);
-            DuelGameMode.SMP_QUEUE.remove(minecraftPlayer);
-            DuelGameMode.UHC_SHIELD_QUEUE.remove(minecraftPlayer);
-            DuelGameMode.VANILLA_QUEUE.remove(minecraftPlayer);
-            DuelGameMode.SWORD_ONLY_QUEUE.remove(minecraftPlayer);
-            DuelGameMode.FFA_QUEUE.remove(minecraftPlayer);
-            DuelGameMode.UHC_QUEUE.remove(minecraftPlayer);
-            DuelGameMode.TRIDENT_ONLY_QUEUE.remove(minecraftPlayer);
-            DuelGameMode.HOE_ONLY_QUEUE.remove(minecraftPlayer);
+            for(DuelGameMode gameMode : DuelGameMode.duelGameModes) {
+                gameMode.queue.remove(minecraftPlayer);
+            }
         }
     }
 
@@ -465,6 +203,11 @@ public class GamemodeHandler {
             unspectatePlayer(executor, player, false);
         }
 
+        if(playerData.teamDuelsGame != null) {
+            factoryExecutor.sendMessage(Component.text("Spectating Team Duels is currently not available. We are sorry for the inconvenience.").color(ChatFormat.failColor));
+            return;
+        }
+
         factoryExecutor.setGameMode(Minecraft.GameMode.SPECTATOR);
         executor.teleportTo(player.getLevel(), player.getX(), player.getY(), player.getZ(), 0, 0);
 
@@ -473,14 +216,14 @@ public class GamemodeHandler {
 
         TextComponent spectateMSG = new TextComponent("§7§o(" + factoryExecutor.getRawName() + " started spectating)");
 
-        if (duelsGame == null && teamDuelsGame != null) {
+        if (teamDuelsGame != null) {
             teamDuelsGame.spectators.add(executor);
             List<ServerPlayer> everyTeamMember = teamDuelsGame.team1.all;
             everyTeamMember.addAll(teamDuelsGame.team2.all);
             for (ServerPlayer players : everyTeamMember) {
                 players.sendMessage(spectateMSG, Util.NIL_UUID);
             }
-        } else if (duelsGame != null && teamDuelsGame == null) {
+        } else if (duelsGame != null) {
             duelsGame.spectators.add(executor);
             duelsGame.p1.sendMessage(spectateMSG, Util.NIL_UUID);
             duelsGame.p2.sendMessage(spectateMSG, Util.NIL_UUID);
@@ -679,13 +422,13 @@ public class GamemodeHandler {
                 .append(Component.text("You have declined ")
                         .color(ChatFormat.normalColor)
                         .decoration(ChatFormat.bold, false))
-                        .append(Component.text(player.getRawName())
-                                .color(ChatFormat.brandColor1)
-                                .decoration(ChatFormat.bold, true))
-                                .append(Component.text("'s duel.")
-                                        .color(ChatFormat.normalColor)
-                                        .decoration(ChatFormat.bold, false)
-                                )
+                .append(Component.text(player.getRawName())
+                        .color(ChatFormat.brandColor1)
+                        .decoration(ChatFormat.bold, true))
+                .append(Component.text("'s duel.")
+                        .color(ChatFormat.normalColor)
+                        .decoration(ChatFormat.bold, false)
+                )
         );
 
 
@@ -728,13 +471,19 @@ public class GamemodeHandler {
 
         String map = selectedmap;
         if (map == null) {
-            map = com.nexia.minigames.Main.config.duelsMaps.get(RandomUtil.randomInt(0, com.nexia.minigames.Main.config.duelsMaps.size()));
+            map = DuelsMap.stringDuelsMaps.get(RandomUtil.randomInt(0, DuelsMap.duelsMaps.size()));
         } else {
             map = selectedmap;
-            if (!com.nexia.minigames.Main.config.duelsMaps.contains(map.toLowerCase())) {
+            if (!DuelsMap.stringDuelsMaps.contains(map.toLowerCase())) {
                 executor.sendMessage(Component.text("Invalid map!").color(ChatFormat.failColor));
                 return;
             }
+        }
+
+        DuelsMap duelsMap = DuelsMap.identifyMap(map);
+        if(duelsMap != null && gameMode.gameMode == GameType.ADVENTURE && !duelsMap.isAdventureSupported) {
+            executor.sendMessage(Component.text("This map is not supported for this gamemode!").color(ChatFormat.failColor));
+            return;
         }
 
         if (!executorData.inviteMap.equalsIgnoreCase(map)) {

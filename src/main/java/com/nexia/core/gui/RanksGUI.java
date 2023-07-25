@@ -37,7 +37,7 @@ public class RanksGUI extends SimpleGui {
         }
     }
     private void setMainLayout(){
-        ItemStack supporter = new ItemStack(Items.PURPLE_SHULKER_BOX, 1);
+        ItemStack supporter = new ItemStack(Items.DRAGON_BREATH, 1);
         supporter.setHoverName(new TextComponent("§5Supporter"));
         ItemDisplayUtil.addGlint(supporter);
         supporter.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
@@ -51,23 +51,6 @@ public class RanksGUI extends SimpleGui {
         ItemDisplayUtil.addLore(supporter, "§d" + Main.config.discordLink, 6);
         ItemDisplayUtil.addLore(supporter, "§3", 7);
         ItemDisplayUtil.addLore(supporter, "§dPrice: §5§l5.00$", 8);
-
-        ItemStack supporterplusplus = new ItemStack(Items.DRAGON_BREATH, 1);
-        supporterplusplus.setHoverName(new TextComponent("§5Supporter§5§l++"));
-        ItemDisplayUtil.addGlint(supporterplusplus);
-        supporterplusplus.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
-
-        ItemDisplayUtil.addLore(supporterplusplus, "§7How to get it:", 0);
-        ItemDisplayUtil.addLore(supporterplusplus, "§1", 1);
-        ItemDisplayUtil.addLore(supporterplusplus, "§cPatreon - Buy supporter rank from our patreon.", 2);
-        ItemDisplayUtil.addLore(supporterplusplus, "§c§lhttps://www.patreon.com/Nexia", 3);
-        ItemDisplayUtil.addLore(supporterplusplus, "§f§lAND", 4);
-        ItemDisplayUtil.addLore(supporterplusplus, "§5Boosting - §5Boost the discord server.", 5);
-        ItemDisplayUtil.addLore(supporterplusplus, "§5§l" + Main.config.discordLink, 6);
-        ItemDisplayUtil.addLore(supporterplusplus, "§3", 7);
-        ItemDisplayUtil.addLore(supporterplusplus, "§7You need to do §c§lBOTH §7of these things to get §5Supporter§5§l++§7.", 8);
-        ItemDisplayUtil.addLore(supporterplusplus, "§4", 9);
-        ItemDisplayUtil.addLore(supporterplusplus, "§dPrice: §5§l10.00$", 10);
 
         ItemStack purple = new ItemStack(Items.PURPLE_STAINED_GLASS_PANE, 1);
         purple.setHoverName(new TextComponent(""));
@@ -85,21 +68,20 @@ public class RanksGUI extends SimpleGui {
         fillEmptySlots(emptySlot, 27);
 
         this.setSlot(2, purple);
-        this.setSlot(3, magenta);
-        this.setSlot(4, purple);
-        this.setSlot(5, magenta);
+        this.setSlot(3, magenta_glow);
+        this.setSlot(4, magenta_glow);
+        this.setSlot(5, magenta_glow);
         this.setSlot(6, purple);
-        this.setSlot(11, magenta_glow);
-        this.setSlot(13, magenta_glow);
-        this.setSlot(15, magenta_glow);
+        this.setSlot(11, magenta);
+        this.setSlot(12, magenta_glow);
+        this.setSlot(13, supporter);
+        this.setSlot(14, magenta_glow);
+        this.setSlot(15, magenta);
         this.setSlot(20, purple);
-        this.setSlot(21, magenta);
-        this.setSlot(22, purple);
-        this.setSlot(23, magenta);
+        this.setSlot(21, magenta_glow);
+        this.setSlot(22, magenta_glow);
+        this.setSlot(23, magenta_glow);
         this.setSlot(24, purple);
-
-        this.setSlot(12, supporter);
-        this.setSlot(14, supporterplusplus);
     }
 
     public boolean click(int index, ClickType clickType, net.minecraft.world.inventory.ClickType action){
@@ -113,37 +95,15 @@ public class RanksGUI extends SimpleGui {
             if(name.getString().equalsIgnoreCase("§5Supporter")){
                 // Insert supporter thing here (link to discord and patreon)
                 factoryPlayer.sendMessage(ChatFormat.nexiaMessage.append(
-                        net.kyori.adventure.text.Component.text("In order to get the ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                                .append(net.kyori.adventure.text.Component.text("Supporter").color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
-                                .append(net.kyori.adventure.text.Component.text(" rank, you need to either ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                .append(net.kyori.adventure.text.Component.text("buy from our patreon")
-                                        .color(TextColor.fromHexString("#f96b59"))
-                                        .decoration(ChatFormat.bold, true)
-                                        .hoverEvent(HoverEvent.showText(net.kyori.adventure.text.Component.text("Click me").color(TextColor.fromHexString("#f96b59"))))
-                                        .clickEvent(ClickEvent.openUrl("https://www.patreon.com/Nexia")))
-                                .append(net.kyori.adventure.text.Component.text(" or ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                .append(net.kyori.adventure.text.Component.text("boost our discord server")
-                                        .color(TextColor.fromHexString("#8c00ff"))
-                                        .decoration(ChatFormat.bold, true)
-                                        .hoverEvent(HoverEvent.showText(net.kyori.adventure.text.Component.text("Click me").color(TextColor.fromHexString("#8c00ff"))))
-                                        .clickEvent(ClickEvent.openUrl(Main.config.discordLink)))
-                                .append(net.kyori.adventure.text.Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                        )
-                );
-            }
-
-            if(name.getString().equalsIgnoreCase("§5Supporter§5§l++")){
-                // Insert supporter thing here (link to discord and patreon) AND also warn them that you have to buy both
-                factoryPlayer.sendMessage(ChatFormat.nexiaMessage.append(
                                 net.kyori.adventure.text.Component.text("In order to get the ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                                        .append(net.kyori.adventure.text.Component.text("Supporter++").color(ChatFormat.brandColor1).decoration(ChatFormat.bold, true))
-                                        .append(net.kyori.adventure.text.Component.text(" rank, you need to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                        .append(net.kyori.adventure.text.Component.text("Supporter").color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                                        .append(net.kyori.adventure.text.Component.text(" rank, you need to either ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                         .append(net.kyori.adventure.text.Component.text("buy from our patreon")
                                                 .color(TextColor.fromHexString("#f96b59"))
                                                 .decoration(ChatFormat.bold, true)
                                                 .hoverEvent(HoverEvent.showText(net.kyori.adventure.text.Component.text("Click me").color(TextColor.fromHexString("#f96b59"))))
                                                 .clickEvent(ClickEvent.openUrl("https://www.patreon.com/Nexia")))
-                                        .append(net.kyori.adventure.text.Component.text(" AND ").color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
+                                        .append(net.kyori.adventure.text.Component.text(" or ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                         .append(net.kyori.adventure.text.Component.text("boost our discord server")
                                                 .color(TextColor.fromHexString("#8c00ff"))
                                                 .decoration(ChatFormat.bold, true)

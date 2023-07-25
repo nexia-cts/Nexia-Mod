@@ -38,7 +38,7 @@ public class OitcGame {
 
     public static ServerLevel world = null;
 
-    public static String mapName = "city";
+    public static OitcMap map = OitcMap.CITY;
 
     public static ArrayList<int[]> spawnPositions = new ArrayList<>();
 
@@ -206,20 +206,20 @@ public class OitcGame {
             OitcGame.spectator.clear();
             OitcGame.queue.clear();
 
-            OitcGame.mapName = Main.config.oitcMaps.get(RandomUtil.randomInt(0, Main.config.oitcMaps.size()));
-            world = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("oitc", OitcGame.mapName), new RuntimeWorldConfig()).asWorld();
+            OitcGame.map.id = OitcMap.stringOitcMaps.get(RandomUtil.randomInt(0, OitcMap.stringOitcMaps.size()));
+            world = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("oitc", OitcGame.map.id), new RuntimeWorldConfig()).asWorld();
         }
     }
 
     public static void spawnInRandomPos(ServerPlayer player){
-        String map = OitcGame.mapName;
+        String map = OitcGame.map.id;
         int[] pos = OitcGame.spawnPositions.get(RandomUtil.randomInt(0, OitcGame.spawnPositions.size()));
 
         player.teleportTo(world, pos[0], pos[1], pos[2], pos[3], pos[4]);
     }
 
     public static boolean isOITCPlayer(ServerPlayer player){
-        return com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.OITC;
+        return com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.OITC || player.getTags().contains("oitc");
     }
 
     public static void death(ServerPlayer victim, DamageSource source){
@@ -250,8 +250,8 @@ public class OitcGame {
         spectator.clear();
         deathPlayers.clear();
 
-        mapName = "city"; // Placeholder name
-        world = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("oitc", OitcGame.mapName), new RuntimeWorldConfig()).asWorld();
+        map = OitcMap.CITY; // Placeholder Map
+        world = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("oitc", OitcGame.map.id), new RuntimeWorldConfig()).asWorld();
 
         isStarted = false;
         queueTime = 15;

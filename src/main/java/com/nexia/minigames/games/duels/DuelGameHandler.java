@@ -82,23 +82,9 @@ public class DuelGameHandler {
     }
 
     public static void starting() {
-        DuelGameMode.AXE_QUEUE.clear();
-        DuelGameMode.SWORD_ONLY_QUEUE.clear();
-        DuelGameMode.FFA_QUEUE.clear();
-        DuelGameMode.TRIDENT_ONLY_QUEUE.clear();
-        DuelGameMode.HOE_ONLY_QUEUE.clear();
-        DuelGameMode.UHC_QUEUE.clear();
-        DuelGameMode.BOW_ONLY_QUEUE.clear();
-        DuelGameMode.VANILLA_QUEUE.clear();
-        DuelGameMode.SHIELD_QUEUE.clear();
-        DuelGameMode.POT_QUEUE.clear();
-        DuelGameMode.NETH_POT_QUEUE.clear();
-        DuelGameMode.OG_VANILLA_QUEUE.clear();
-        DuelGameMode.SMP_QUEUE.clear();
-        DuelGameMode.UHC_SHIELD_QUEUE.clear();
-        DuelGameMode.HSG_QUEUE.clear();
-        DuelGameMode.SKYWARS_QUEUE.clear();
-        DuelGameMode.CLASSIC_CRYSTAL_QUEUE.clear();
+        for(DuelGameMode duelGameMode : DuelGameMode.duelGameModes) {
+            duelGameMode.queue.clear();
+        }
 
         DuelGameHandler.duelsGames.clear();
         DuelGameHandler.teamDuelsGames.clear();

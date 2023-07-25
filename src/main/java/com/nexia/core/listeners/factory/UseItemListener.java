@@ -28,7 +28,8 @@ public class UseItemListener {
             String sName = name.toString().toLowerCase();
 
             if(sName.contains("gamemode selector") && gameMode == PlayerGameMode.LOBBY){
-                PlayGUI.openMainGUI(minecraftPlayer);
+                //PlayGUI.openMainGUI(minecraftPlayer);
+                player.runCommand("/play", 0, false);
             }
 
             if(sName.contains("prefix selector") && gameMode == PlayerGameMode.LOBBY){

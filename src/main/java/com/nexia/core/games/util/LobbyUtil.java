@@ -77,11 +77,9 @@ public class LobbyUtil {
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
         if (BwUtil.isInBedWars(minecraftPlayer)) {
             BwPlayerEvents.leaveInBedWars(minecraftPlayer);
-            PlayerGameMode.BEDWARS.players--;
         }
         else if (FfaUtil.isFfaPlayer(minecraftPlayer)) {
             FfaUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
-            PlayerGameMode.FFA.players--;
         }
         else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) {
             DuelGameHandler.leave(minecraftPlayer, false);
@@ -138,12 +136,9 @@ public class LobbyUtil {
                 elytra.getOrCreateTag().putBoolean("Unbreakable", true);
                 ItemDisplayUtil.addLore(elytra, "§7Thanks for supporting the server!", 0);
                 elytra.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
-                minecraftPlayer.setItemSlot(EquipmentSlot.CHEST, elytra);
-            }
-
-            if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter++")) {
                 minecraftPlayer.abilities.mayfly = true;
                 minecraftPlayer.onUpdateAbilities();
+                minecraftPlayer.setItemSlot(EquipmentSlot.CHEST, elytra);
             }
 
             LobbyUtil.giveItems(minecraftPlayer);
@@ -214,7 +209,6 @@ public class LobbyUtil {
         }
         if(game.equalsIgnoreCase("classic ffa")){
             player.addTag("ffa");
-            PlayerGameMode.FFA.players++;
             FfaUtil.wasInSpawn.add(player.getUUID());
             PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.FFA;
             if(tp){

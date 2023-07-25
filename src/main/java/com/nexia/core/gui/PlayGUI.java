@@ -4,6 +4,8 @@ import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.ffa.utilities.FfaAreas;
+import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
@@ -47,7 +49,7 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(ffa, "§7Fight players in a huge landscape", 1);
         ItemDisplayUtil.addLore(ffa, "§7be the best player.", 2);
         ItemDisplayUtil.addLore(ffa, "§f", 3);
-        ItemDisplayUtil.addLore(ffa, "§3◆ There are " + PlayerGameMode.FFA.players + " people playing this gamemode.", 4);
+        ItemDisplayUtil.addLore(ffa, "§3◆ There are " + FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
 
         ItemStack hub = new ItemStack(Items.DRAGON_BREATH, 1);
         hub.setHoverName(new TextComponent("§5Hub"));
@@ -64,7 +66,7 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(bedwars, "§7destroy other's beds, kill your", 2);
         ItemDisplayUtil.addLore(bedwars, "§7opponents to win!", 3);
         ItemDisplayUtil.addLore(bedwars, "§f", 4);
-        ItemDisplayUtil.addLore(bedwars, "§c◆ There are " + PlayerGameMode.BEDWARS.players + " people playing this gamemode.", 5);
+        ItemDisplayUtil.addLore(bedwars, "§c◆ There are " + BwAreas.bedWarsWorld.players().size() + " people playing this gamemode.", 5);
 
         ItemStack oitc = new ItemStack(Items.BOW, 1);
         oitc.setHoverName(new TextComponent("§eOITC"));

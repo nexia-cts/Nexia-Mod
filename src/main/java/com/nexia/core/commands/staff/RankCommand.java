@@ -1,6 +1,7 @@
 package com.nexia.core.commands.staff;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -38,8 +39,9 @@ public class RankCommand {
             factoryExecutor = PlayerUtil.getFactoryPlayer(context.getSource().getPlayerOrException());
         } catch(Exception ignored) { }
 
-        for(int i = 0; i < 9; i++){
+        for(int i = 0; i < 10; i++){
             if(rank.equalsIgnoreCase(Main.config.ranks[i])){
+
                 if(factoryExecutor != null){
                     factoryExecutor.sendMessage(
                             ChatFormat.nexiaMessage
@@ -51,6 +53,12 @@ public class RankCommand {
                     );
                 } else {
                     executer.sendSuccess(LegacyChatFormat.format("{b1}You have set the rank of {b2}{} {b1}to: {b2}{b}{}{b1}.", otherFactoryPlayer.getRawName(), Main.config.ranks[i]), false);
+                }
+
+                if(rank.equalsIgnoreCase("pro") || rank.equalsIgnoreCase("god")){
+                    ServerTime.factoryServer.runCommand("/staffprefix add " + otherFactoryPlayer.getRawName() + " " + rank, 3, true);
+                    ServerTime.factoryServer.runCommand("/staffprefix set " + otherFactoryPlayer.getRawName() + " " + rank, 3, true);
+                    return Command.SINGLE_SUCCESS;
                 }
 
 

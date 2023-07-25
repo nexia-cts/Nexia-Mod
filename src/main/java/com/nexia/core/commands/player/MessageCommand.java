@@ -34,6 +34,13 @@ public class MessageCommand {
                         )
                 )
         );
+        commandDispatcher.register(Commands.literal("tell")
+                .then(Commands.argument("player", EntityArgument.player())
+                        .then(Commands.argument("message", StringArgumentType.greedyString())
+                                .executes(MessageCommand::msgCommand)
+                        )
+                )
+        );
     }
 
     public static void registerReply(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {

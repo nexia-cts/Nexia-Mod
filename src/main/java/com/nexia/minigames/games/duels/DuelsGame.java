@@ -99,7 +99,7 @@ public class DuelsGame { //implements Runnable{
 
         ServerLevel duelLevel = DuelGameHandler.createWorld(gameMode.hasRegen);
         if(selectedMap == null){
-            selectedMap = com.nexia.minigames.Main.config.duelsMaps.get(RandomUtil.randomInt(0, com.nexia.minigames.Main.config.duelsMaps.size()));
+            selectedMap = DuelsMap.stringDuelsMaps.get(RandomUtil.randomInt(0, DuelsMap.stringDuelsMaps.size()));
         }
         String[] absoluteName = duelLevel.dimension().toString().replaceAll("dimension / ", "").replaceAll("]", "").split(":");
         String name = absoluteName[2];
