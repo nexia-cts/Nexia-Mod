@@ -19,6 +19,9 @@ archivesBaseName = project.archives_base_name
 version = project.mod_version + "." + getGitCommit()
 group = project.maven_group
 
+// Set Build Dir to dev to differentiate with main
+buildDir = new File(buildDir, "dev")
+
 // Repo for CT intermediary mappings
 repositories {
 	maven { url 'https://maven.nucleoid.xyz' }
