@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Random;
 
 public class GamemodeHandler {
 
@@ -471,7 +472,7 @@ public class GamemodeHandler {
 
         String map = selectedmap;
         if (map == null) {
-            map = DuelsMap.stringDuelsMaps.get(RandomUtil.randomInt(0, DuelsMap.duelsMaps.size()));
+            map = DuelsMap.stringDuelsMaps.get(RandomUtil.randomInt(DuelsMap.stringDuelsMaps.size()));
         } else {
             map = selectedmap;
             if (!DuelsMap.stringDuelsMaps.contains(map.toLowerCase())) {
