@@ -471,7 +471,7 @@ public class GamemodeHandler {
 
         String map = selectedmap;
         if (map == null) {
-            map = DuelsMap.stringDuelsMaps.get(RandomUtil.randomInt(0, DuelsMap.duelsMaps.size()));
+            map = DuelsMap.stringDuelsMaps.get(RandomUtil.randomInt(DuelsMap.stringDuelsMaps.size()));
         } else {
             map = selectedmap;
             if (!DuelsMap.stringDuelsMaps.contains(map.toLowerCase())) {

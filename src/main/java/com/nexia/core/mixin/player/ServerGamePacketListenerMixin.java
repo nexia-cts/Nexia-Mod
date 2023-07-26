@@ -95,6 +95,7 @@ public class ServerGamePacketListenerMixin {
 
                 if (!FfaUtil.isFfaPlayer(target)) {
                     PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
+                    ci.cancel();
                     return;
                 }
             }

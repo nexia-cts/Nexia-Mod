@@ -1,3 +1,5 @@
+import org.apache.commons.io.FileUtils;
+
 plugins {
 	id 'fabric-loom' version '0.13-SNAPSHOT'
 	id 'maven-publish'
@@ -21,6 +23,7 @@ group = project.maven_group
 
 // Set Build Dir to main to differentiate with dev
 buildDir = new File(buildDir, "main")
+if(new File(buildDir, "libs").exists()) FileUtils.cleanDirectory(buildDir.toPath().resolve("libs").toFile())
 
 // Repo for CT intermediary mappings
 repositories {
