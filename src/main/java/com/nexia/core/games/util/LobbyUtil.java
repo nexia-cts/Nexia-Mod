@@ -164,6 +164,13 @@ public class LobbyUtil {
 
     public static void sendGame(ServerPlayer minecraftPlayer, String game, boolean message, boolean tp){
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+
+        if(game.equalsIgnoreCase("classic ffa") && !FfaUtil.canGoToSpawn(minecraftPlayer)) {
+            player.sendMessage(Component.text("You must be fully healed to go to spawn!").color(ChatFormat.failColor));
+            return;
+        }
+
+
         minecraftPlayer.setInvulnerable(false);
         minecraftPlayer.abilities.mayfly = false;
         minecraftPlayer.onUpdateAbilities();
@@ -185,6 +192,7 @@ public class LobbyUtil {
             player.removeTag(LobbyUtil.NO_SATURATION_TAG);
         }
         if(game.equalsIgnoreCase("classic ffa")){
+
             player.addTag("ffa");
             FfaUtil.wasInSpawn.add(player.getUUID());
             PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.FFA;

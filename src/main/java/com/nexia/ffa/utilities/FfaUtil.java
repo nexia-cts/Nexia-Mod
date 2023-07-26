@@ -139,6 +139,11 @@ public class FfaUtil {
         return Float.parseFloat(new DecimalFormat("#.0").format(fixedHealth));
     }
 
+    public static boolean canGoToSpawn(ServerPlayer player) {
+        if(!FfaUtil.isFfaPlayer(player) || FfaUtil.wasInSpawn.contains(player.getUUID())) return true;
+        return !(player.getHealth() < 20);
+    }
+
     public static void calculateDeath(ServerPlayer player){
         SavedPlayerData data = PlayerDataManager.get(player).savedData;
         data.deaths++;
