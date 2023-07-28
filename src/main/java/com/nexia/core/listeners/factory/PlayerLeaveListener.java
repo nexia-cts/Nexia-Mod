@@ -42,12 +42,12 @@ public class PlayerLeaveListener {
 
 
     private static void runCommands(Player player){
-        if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.playerLeaveCommands, null)) {
+        if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.playerLeaveCommands)) {
             for (String command : Main.config.events.playerLeaveCommands) {
                 ServerTime.factoryServer.runCommand(command);
             }
         }
-        if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.serverLeaveCommands, null)){
+        if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.serverLeaveCommands)){
             for(String command : Main.config.events.serverLeaveCommands){
                 player.runCommand(command);
             }

@@ -62,24 +62,24 @@ public class PlayerJoinListener {
 
     private static void runCommands(Player player, ServerPlayer minecraftPlayer){
         if(minecraftPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) <= 1) {
-            if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.playerFirstJoinCommands, null)) {
+            if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.playerFirstJoinCommands)) {
                 for (String command : Main.config.events.playerFirstJoinCommands) {
                     ServerTime.factoryServer.runCommand(command);
                 }
             }
-            if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.playerFirstJoinCommands, null)){
+            if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.playerFirstJoinCommands)){
                 for(String command : Main.config.events.serverFirstJoinCommands){
                     player.runCommand(command);
                 }
             }
         }
 
-        if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.playerJoinCommands, null)) {
+        if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.playerJoinCommands)) {
             for (String command : Main.config.events.playerJoinCommands) {
                 ServerTime.factoryServer.runCommand(command);
             }
         }
-        if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.serverJoinCommands, null)){
+        if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.serverJoinCommands)){
             for(String command : Main.config.events.serverJoinCommands){
                 player.runCommand(command);
             }
@@ -169,9 +169,7 @@ public class PlayerJoinListener {
         com.nexia.minigames.games.duels.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         LobbyUtil.leaveAllGames(minecraftPlayer, true);
         runCommands(player, minecraftPlayer);
-        try {
-            checkBooster(minecraftPlayer);
-        }catch (Exception ignored) {}
+        checkBooster(minecraftPlayer);
         sendJoinMessage(player);
     }
 }

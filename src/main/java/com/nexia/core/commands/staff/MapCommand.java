@@ -48,7 +48,7 @@ public class MapCommand {
         String type = StringArgumentType.getString(context, "type");
         String map = StringArgumentType.getString(context, "map");
 
-        if((ChatFormat.hasWhiteSpacesOrSpaces(null, map) || ChatFormat.hasWhiteSpacesOrSpaces(null, type)) || (type == null || map == null)) {
+        if(ChatFormat.hasWhiteSpacesOrSpaces(map) || ChatFormat.hasWhiteSpacesOrSpaces(type)) {
             player.sendMessage(
                     ChatFormat.nexiaMessage
                                     .append(Component.text("Invalid name!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))

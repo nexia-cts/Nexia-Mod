@@ -9,7 +9,7 @@ import com.nexia.core.gui.duels.DuelGUI;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.minigames.games.duels.DuelGameMode;
-import com.nexia.minigames.games.duels.DuelsMap;
+import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -61,7 +61,7 @@ public class DuelCommand {
 
     public static int challenge(CommandContext<CommandSourceStack> context, ServerPlayer player, String gameMode, @Nullable String map) throws CommandSyntaxException {
         ServerPlayer executer = context.getSource().getPlayerOrException();
-        GamemodeHandler.challengePlayer(executer, player, gameMode, map);
+        GamemodeHandler.challengePlayer(executer, player, gameMode, DuelsMap.identifyMap(map));
         return 1;
     }
 }

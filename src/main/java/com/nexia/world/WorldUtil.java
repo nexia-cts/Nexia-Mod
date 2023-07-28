@@ -6,9 +6,9 @@ import com.nexia.core.utilities.time.ServerTime;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-public class WorldUtils {
+public class WorldUtil {
     public static World getWorld(@NotNull Level level) {
-        String[] name = level.dimension().toString().replaceAll("]", "").split(":");
+        String[] name = level.dimension().toString().replaceAll("dimension / ", "").replaceAll("]", "").split(":");
         return ServerTime.factoryServer.getWorld(new Identifier(name[1], name[2]));
     }
 }

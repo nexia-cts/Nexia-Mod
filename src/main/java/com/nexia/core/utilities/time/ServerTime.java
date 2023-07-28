@@ -68,6 +68,7 @@ public class ServerTime {
             for(ServerPlayer player : ServerTime.minecraftServer.getPlayerList().getPlayers()){
                 player.connection.disconnect(LegacyChatFormat.formatFail("The server is restarting!"));
             }
+            DuelGameHandler.starting();
             BwAreas.clearQueueBuild();
         } catch (Exception e) {
             e.printStackTrace();

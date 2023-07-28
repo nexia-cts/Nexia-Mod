@@ -1,11 +1,14 @@
 package com.nexia.core.utilities.chat;
 
+import com.combatreforged.factory.api.world.entity.player.Player;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -60,6 +63,13 @@ public class ChatFormat {
             )
             .append(Component.text(" » ").color(arrowColor).decoration(bold, false));
 
+    public static void sendError(Player player, Component component) {
+        player.sendMessage(
+                ChatFormat.nexiaMessage
+                        .append(component.decoration(ChatFormat.bold, false))
+        );
+    }
+
 
     public static Component separatorLine(String title) {
         String spaces = "                                                                ";
@@ -76,15 +86,13 @@ public class ChatFormat {
         }
     }
 
-    public static boolean hasWhiteSpacesOrSpaces(@Nullable String[] strings, @Nullable String string){
-        if(strings == null && string != null){
-            return string.matches(".*\\s+.*") || string.matches("");
-        } else {
-            for (String s : strings) {
-                if (s.matches(".*\\s+.*") || s.matches("")) {
-                    return true;
-                }
-            }
+    public static boolean hasWhiteSpacesOrSpaces(@NotNull String string){
+        return string.matches(".*\\s+.*") || string.trim().length() != 0;
+    }
+
+    public static boolean hasWhiteSpacesOrSpaces(@NotNull String[] strings){
+        for(String string : strings) {
+            return string.matches(".*\\s+.*") || string.trim().length() != 0;
         }
         return false;
     }
