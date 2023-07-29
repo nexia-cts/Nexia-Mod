@@ -52,6 +52,11 @@ public class FfaUtil {
         }
     }
 
+    public static boolean canGoToSpawn(ServerPlayer player) {
+        if(!FfaUtil.isFfaPlayer(player) || FfaUtil.wasInSpawn.contains(player.getUUID())) return true;
+        return !(player.getHealth() < 20);
+    }
+
     public static void fiveTick() {
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
             if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !FfaAreas.isInFfaSpawn(minecraftPlayer)){

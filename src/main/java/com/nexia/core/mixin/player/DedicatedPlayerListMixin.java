@@ -24,7 +24,7 @@ public abstract class DedicatedPlayerListMixin {
         PlayerData playerData = PlayerDataManager.get(gameProfile.getId());
 
         Member member;
-        Role role = jda.getRoleById("1125391407616630845"); // Supporter++
+        Role role = jda.getRoleById("1107264322951979110"); // Supporter
 
         try {
             member = jda.getGuildById(com.nexia.discord.Main.config.guildID).retrieveMemberById(playerData.savedData.discordID).complete(true);

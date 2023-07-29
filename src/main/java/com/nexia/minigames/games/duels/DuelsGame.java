@@ -6,6 +6,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
+import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.map.DuelsMap;
@@ -95,28 +96,26 @@ public class DuelsGame { //implements Runnable{
         Player p1 = PlayerUtil.getFactoryPlayer(mcP1);
         Player p2 = PlayerUtil.getFactoryPlayer(mcP2);
 
-        UUID gameUUID = UUID.fromString(UUID.randomUUID().toString().replaceAll("-", ""));
+        UUID gameUUID = UUID.randomUUID();
 
         ServerLevel duelLevel = DuelGameHandler.createWorld(gameUUID.toString(), gameMode.hasRegen);
         if(selectedMap == null){
             selectedMap = DuelsMap.duelsMaps.get(RandomUtil.randomInt(0, DuelsMap.duelsMaps.size()));
         }
-        /*
-        String[] absoluteName = duelLevel.dimension().toString().replaceAll("dimension / ", "").replaceAll("]", "").split(":");
-        String name = absoluteName[2];
+
+
+        String name = String.valueOf(gameUUID);
 
         String mapid = "duels";
         String start = "/execute in " + mapid + ":" + name;
         ServerTime.factoryServer.runCommand(start + " run forceload add 0 0");
-        ServerTime.factoryServer.runCommand(start + " run " + DuelGameHandler.returnCommandMap(selectedMap));
+        ServerTime.factoryServer.runCommand(start + " run " + selectedMap.structureMap.returnCommand(duelLevel));
         ServerTime.factoryServer.runCommand(start + " run setblock 1 80 0 minecraft:redstone_block");
 
         ServerTime.factoryServer.runCommand(start + " if block 0 80 0 minecraft:structure_block run setblock 0 80 0 air");
         ServerTime.factoryServer.runCommand(start + " if block 1 80 0 minecraft:redstone_block run setblock 1 80 0 air");
 
-         */
-
-        selectedMap.structureMap.pasteMap(duelLevel);
+        //selectedMap.structureMap.pasteMap(duelLevel);
 
         if(!gameMode.hasSaturation) {
             p1.addTag(LobbyUtil.NO_SATURATION_TAG);
@@ -233,10 +232,7 @@ public class DuelsGame { //implements Runnable{
                     PlayerUtil.getFactoryPlayer(minecraftAttacker).runCommand("/hub", 0, false);
                 }
 
-
-                String duels2 = this.level.dimension().toString().replaceAll("]", "").split(":")[2];
-
-                DuelGameHandler.deleteWorld(duels2);
+                DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
                 DuelGameHandler.duelsGames.remove(this);
                 return;
             }

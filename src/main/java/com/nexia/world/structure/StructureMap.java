@@ -79,4 +79,15 @@ public class StructureMap {
             ServerTime.factoryServer.runCommand(String.format("%s if block %s %s %s minecraft:redstone_block run setblock %s %s %s air", start, this.placePos.getX() + 1, this.placePos.getY(), this.placePos.getZ(), this.placePos.getX() + 1, this.placePos.getY(), this.placePos.getZ()));
         }
     }
+
+    public String returnCommand(ServerLevel level) {
+        String[] name = level.dimension().toString().replaceAll("dimension / ", "").replaceAll("]", "").split(":");
+        String start = "execute in " + name[1] + ":" + name[2];
+
+        if(this.rotation != Rotation.NO_ROTATION) {
+            return String.format("%s run setblock %s %s %s minecraft:structure_block{mode:'LOAD',name:'%s:%s',posX:%s,posY:%s,posZ:%s,rotation:\"%s\"}", start, placePos.getX(), placePos.getY(), placePos.getZ(), this.identifier.getNamespace(), this.identifier.getId(), pastePos.getX(), pastePos.getY(), pastePos.getZ(), this.rotation.id);
+        } else {
+            return String.format("%s run setblock %s %s %s minecraft:structure_block{mode:'LOAD',name:'%s:%s',posX:%s,posY:%s,posZ:%s}", start, placePos.getX(), placePos.getY(), placePos.getZ(), this.identifier.getNamespace(), this.identifier.getId(), pastePos.getX(), pastePos.getY(), pastePos.getZ());
+        }
+    }
 }

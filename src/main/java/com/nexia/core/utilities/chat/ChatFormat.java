@@ -87,12 +87,12 @@ public class ChatFormat {
     }
 
     public static boolean hasWhiteSpacesOrSpaces(@NotNull String string){
-        return string.matches(".*\\s+.*") || string.trim().length() != 0;
+        return string.matches(".*\\s+.*") || string.trim().length() == 0;
     }
 
     public static boolean hasWhiteSpacesOrSpaces(@NotNull String[] strings){
         for(String string : strings) {
-            return string.matches(".*\\s+.*") || string.trim().length() != 0;
+            return string.matches(".*\\s+.*") || string.trim().length() == 0;
         }
         return false;
     }

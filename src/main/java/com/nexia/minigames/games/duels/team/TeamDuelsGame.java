@@ -436,7 +436,7 @@ public class TeamDuelsGame { // implements Runnable{
 
         if (source != null && source.getEntity() instanceof ServerPlayer attacker) {
             PlayerData attackerData = PlayerDataManager.get(attacker);
-            if (attackerData.teamDuelsGame.equals(this) && isVictimTeamDead) {
+            if (attackerData.teamDuelsGame != null && attackerData.teamDuelsGame.equals(this) && isVictimTeamDead) {
                 this.endGame(victimTeam, attackerData.duelsTeam, true);
             }
             return;

@@ -30,7 +30,7 @@ public class ReportCommand {
                 .setAuthor((reporter + " reported " + victim), null, null)
                 .setColor(Color.RED)
 
-                .addField("Server: ", ServerTime.serverType.type, false)
+                .addField("Server: ", ServerTime.serverType.type.toUpperCase(), false)
                 .addField("Reporter:", reporter, true)
                 .addField("Reported Player:", victim, true)
                 .setThumbnail("https://mc-heads.net/avatar/" + victim + "/64")

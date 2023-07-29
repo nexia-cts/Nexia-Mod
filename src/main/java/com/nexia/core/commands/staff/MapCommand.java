@@ -20,7 +20,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.GameRules;
+import org.apache.commons.io.FileUtils;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
+
+import java.io.File;
 
 public class MapCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
@@ -87,6 +90,10 @@ public class MapCommand {
         }
 
         if (type.equalsIgnoreCase("delete")) {
+            try {
+                FileUtils.deleteDirectory(new File("/world/dimensions/" + mapname[0], mapname[1]));
+            } catch (Exception ignored) { }
+
             ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), null).delete();
             player.sendMessage(
                     ChatFormat.nexiaMessage

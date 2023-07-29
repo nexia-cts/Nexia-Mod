@@ -21,10 +21,12 @@ import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -146,6 +148,7 @@ public class DuelGameHandler {
     public static void deleteWorld(String id) {
         RuntimeWorldHandle worldHandle;
         try {
+            FileUtils.deleteDirectory(new File("/world/dimensions/duels", id));
             worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(
                     ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", id)).location(),
                     null);

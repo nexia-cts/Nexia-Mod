@@ -14,7 +14,6 @@
     "entity.AbstractHurtingProjectileMixin",
     "entity.ArmorStandMixin",
     "entity.EntityMixin",
-    "entity.ProjectileMixin",
     "entity.ItemEntityMixin",
     "entity.ItemFrameMixin",
     "entity.LargeFireballMixin",

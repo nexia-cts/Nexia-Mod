@@ -186,6 +186,11 @@ public class LobbyUtil {
         minecraftPlayer.abilities.mayfly = false;
         minecraftPlayer.onUpdateAbilities();
 
+        if(game.equalsIgnoreCase("classic ffa") && !FfaUtil.canGoToSpawn(minecraftPlayer)) {
+            player.sendMessage(Component.text("You must be fully healed to go to spawn!").color(ChatFormat.failColor));
+            return;
+        }
+
         if (!LobbyUtil.isLobbyWorld(minecraftPlayer.getLevel())) {
             LobbyUtil.leaveAllGames(minecraftPlayer, false);
         } else{
