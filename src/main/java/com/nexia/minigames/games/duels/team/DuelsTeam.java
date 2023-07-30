@@ -129,8 +129,12 @@ public class DuelsTeam {
     public void leaveTeam(ServerPlayer player, boolean message) {
         Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
         PlayerData data = PlayerDataManager.get(player);
-        if(this.refreshLeader(player)) this.leader = this.people.get(RandomUtil.randomInt(this.people.size()));
 
+        if(this.refreshLeader(player) && this.people.isEmpty()) {
+            this.disbandTeam(player, true);
+            return;
+        }
+        if(this.refreshLeader(player) && !this.people.isEmpty()) this.leader = this.people.get(RandomUtil.randomInt(this.people.size()));
 
         data.duelsTeam = null;
         this.people.remove(player);
