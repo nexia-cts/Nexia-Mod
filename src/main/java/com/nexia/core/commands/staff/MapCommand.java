@@ -90,9 +90,6 @@ public class MapCommand {
         }
 
         if (type.equalsIgnoreCase("delete")) {
-            try {
-                FileUtils.deleteDirectory(new File("/world/dimensions/" + mapname[0], mapname[1]));
-            } catch (Exception ignored) { }
 
             ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), null).delete();
             player.sendMessage(
@@ -100,6 +97,9 @@ public class MapCommand {
                             .append(Component.text("Deleted map called: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                             .append(Component.text(map).color(ChatFormat.brandColor2))
             );
+            try {
+                FileUtils.forceDeleteOnExit(new File("/world/dimensions/" + mapname[0], mapname[1]));
+            } catch (Exception ignored) { }
             return 1;
         }
 

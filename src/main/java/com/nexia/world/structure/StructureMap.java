@@ -64,19 +64,24 @@ public class StructureMap {
         String[] name = level.dimension().toString().replaceAll("dimension / ", "").replaceAll("]", "").split(":");
         String start = "execute in " + name[1] + ":" + name[2];
 
-        if(this.forceLoad) ServerTime.factoryServer.runCommand(start + " run forceload add 0 0");
+        Identifier identifier = this.identifier;
+        BlockPos placePos = this.placePos;
+        BlockPos pastePos = this.pastePos;
+        boolean forceLoad = this.forceLoad;
 
-        if(stringRotation.trim().length() != 0 && this.rotation != Rotation.NO_ROTATION) {
-            ServerTime.factoryServer.runCommand(String.format("%s run setblock %s %s %s minecraft:structure_block{mode:'LOAD',name:'%s:%s',posX:%s,posY:%s,posZ:%s,rotation:\"%s\"}", start, this.placePos.getX(), this.placePos.getY(), this.placePos.getZ(), this.identifier.getNamespace(), this.identifier.getId(), this.pastePos.getX(), this.pastePos.getY(), this.pastePos.getZ(), stringRotation), 4, false);
+        if(forceLoad) ServerTime.factoryServer.runCommand(start + " run forceload add 0 0");
+
+        if(!stringRotation.trim().isEmpty() && this.rotation != Rotation.NO_ROTATION) {
+            ServerTime.factoryServer.runCommand(String.format("%s run setblock %s %s %s minecraft:structure_block{mode:'LOAD',name:'%s:%s',posX:%s,posY:%s,posZ:%s,rotation:\"%s\"}", start, placePos.getX(), placePos.getY(), placePos.getZ(), identifier.getNamespace(), identifier.getId(), pastePos.getX(), pastePos.getY(), pastePos.getZ(), stringRotation), 4, false);
         } else if(this.rotation == Rotation.NO_ROTATION){
-            ServerTime.factoryServer.runCommand(String.format("%s run setblock %s %s %s minecraft:structure_block{mode:'LOAD',name:'%s:%s',posX:%s,posY:%s,posZ:%s}", start, this.placePos.getX(), this.placePos.getY(), this.placePos.getZ(), this.identifier.getNamespace(), this.identifier.getId(), this.pastePos.getX(), this.pastePos.getY(), this.pastePos.getZ()), 4, false);
+            ServerTime.factoryServer.runCommand(String.format("%s run setblock %s %s %s minecraft:structure_block{mode:'LOAD',name:'%s:%s',posX:%s,posY:%s,posZ:%s}", start, placePos.getX(), placePos.getY(), placePos.getZ(), identifier.getNamespace(), identifier.getId(), pastePos.getX(), pastePos.getY(), pastePos.getZ()), 4, false);
         }
 
         if(this.cleanUp) {
-            ServerTime.factoryServer.runCommand(String.format("%s run setblock %s %s %s minecraft:redstone_block", start, this.placePos.getX() + 1, this.placePos.getY(), this.placePos.getZ()));
+            ServerTime.factoryServer.runCommand(String.format("%s run setblock %s %s %s minecraft:redstone_block", start, placePos.getX() + 1, placePos.getY(), placePos.getZ()));
 
-            ServerTime.factoryServer.runCommand(String.format("%s if block %s %s %s minecraft:structure_block run setblock %s %s %s air", start, this.placePos.getX(), this.placePos.getY(), this.placePos.getZ(), this.placePos.getX(), this.placePos.getY(), this.placePos.getZ()));
-            ServerTime.factoryServer.runCommand(String.format("%s if block %s %s %s minecraft:redstone_block run setblock %s %s %s air", start, this.placePos.getX() + 1, this.placePos.getY(), this.placePos.getZ(), this.placePos.getX() + 1, this.placePos.getY(), this.placePos.getZ()));
+            ServerTime.factoryServer.runCommand(String.format("%s if block %s %s %s minecraft:structure_block run setblock %s %s %s air", start, placePos.getX(), placePos.getY(), placePos.getZ(), placePos.getX(), placePos.getY(), placePos.getZ()));
+            ServerTime.factoryServer.runCommand(String.format("%s if block %s %s %s minecraft:redstone_block run setblock %s %s %s air", start, placePos.getX() + 1, placePos.getY(), placePos.getZ(), placePos.getX() + 1, placePos.getY(), placePos.getZ()));
         }
     }
 
@@ -84,10 +89,14 @@ public class StructureMap {
         String[] name = level.dimension().toString().replaceAll("dimension / ", "").replaceAll("]", "").split(":");
         String start = "execute in " + name[1] + ":" + name[2];
 
+        Identifier identifier = this.identifier;
+        BlockPos placePos = this.placePos;
+        BlockPos pastePos = this.pastePos;
+
         if(this.rotation != Rotation.NO_ROTATION) {
-            return String.format("%s run setblock %s %s %s minecraft:structure_block{mode:'LOAD',name:'%s:%s',posX:%s,posY:%s,posZ:%s,rotation:\"%s\"}", start, placePos.getX(), placePos.getY(), placePos.getZ(), this.identifier.getNamespace(), this.identifier.getId(), pastePos.getX(), pastePos.getY(), pastePos.getZ(), this.rotation.id);
+            return String.format("%s run setblock %s %s %s minecraft:structure_block{mode:'LOAD',name:'%s:%s',posX:%s,posY:%s,posZ:%s,rotation:\"%s\"}", start, placePos.getX(), placePos.getY(), placePos.getZ(), identifier.getNamespace(), identifier.getId(), pastePos.getX(), pastePos.getY(), pastePos.getZ(), this.rotation.id);
         } else {
-            return String.format("%s run setblock %s %s %s minecraft:structure_block{mode:'LOAD',name:'%s:%s',posX:%s,posY:%s,posZ:%s}", start, placePos.getX(), placePos.getY(), placePos.getZ(), this.identifier.getNamespace(), this.identifier.getId(), pastePos.getX(), pastePos.getY(), pastePos.getZ());
+            return String.format("%s run setblock %s %s %s minecraft:structure_block{mode:'LOAD',name:'%s:%s',posX:%s,posY:%s,posZ:%s}", start, placePos.getX(), placePos.getY(), placePos.getZ(), identifier.getNamespace(), identifier.getId(), pastePos.getX(), pastePos.getY(), pastePos.getZ());
         }
     }
 }

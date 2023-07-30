@@ -35,7 +35,7 @@ public class DuelsMap {
     public static DuelsMap EDEN = new DuelsMap("eden", false, new ItemStack(Items.ALLIUM), new EntityPos(55, 80, 0, 90, 0), new EntityPos(-55, 80, 0, -90, 0), new StructureMap(new Identifier("duels", "eden"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-62, -7, -23), true));
 
 
-public static DuelsMap identifyMap(String name) {
+    public static DuelsMap identifyMap(String name) {
         for(DuelsMap map : DuelsMap.duelsMaps) {
             if(map.id.equalsIgnoreCase(name)) return map;
         }

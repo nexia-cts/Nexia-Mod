@@ -132,8 +132,10 @@ public class LobbyUtil {
                 elytra.getOrCreateTag().putBoolean("Unbreakable", true);
                 ItemDisplayUtil.addLore(elytra, "§7Thanks for supporting the server!", 0);
                 elytra.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
+
                 minecraftPlayer.abilities.mayfly = true;
                 minecraftPlayer.onUpdateAbilities();
+
                 minecraftPlayer.setItemSlot(EquipmentSlot.CHEST, elytra);
             }
 
@@ -169,8 +171,8 @@ public class LobbyUtil {
         ItemStack teamSword = new ItemStack(Items.IRON_AXE);
         teamSword.setHoverName(new TextComponent("§eTeam Axe"));
         ItemDisplayUtil.addGlint(teamSword);
-        ItemDisplayUtil.addLore(teamSword, "§eHit a player §7to invite them to your team.", 0);
-        ItemDisplayUtil.addLore(teamSword, "§eRight click §7to list the team.", 1);
+        ItemDisplayUtil.addLore(teamSword, "§eRight click §7to list the team.", 0);
+        ItemDisplayUtil.addLore(teamSword, "§eHit a player §7to invite them to your team.", 1);
 
         minecraftPlayer.setSlot(4, compass); //middle slot
         minecraftPlayer.setSlot(3, nameTag); //left

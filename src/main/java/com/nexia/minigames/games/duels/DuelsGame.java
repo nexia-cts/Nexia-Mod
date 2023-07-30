@@ -103,9 +103,9 @@ public class DuelsGame { //implements Runnable{
             selectedMap = DuelsMap.duelsMaps.get(RandomUtil.randomInt(0, DuelsMap.duelsMaps.size()));
         }
 
-
         String name = String.valueOf(gameUUID);
 
+        /*
         String mapid = "duels";
         String start = "/execute in " + mapid + ":" + name;
         ServerTime.factoryServer.runCommand(start + " run forceload add 0 0");
@@ -114,8 +114,9 @@ public class DuelsGame { //implements Runnable{
 
         ServerTime.factoryServer.runCommand(start + " if block 0 80 0 minecraft:structure_block run setblock 0 80 0 air");
         ServerTime.factoryServer.runCommand(start + " if block 1 80 0 minecraft:redstone_block run setblock 1 80 0 air");
+         */
 
-        //selectedMap.structureMap.pasteMap(duelLevel);
+        selectedMap.structureMap.pasteMap(duelLevel);
 
         if(!gameMode.hasSaturation) {
             p1.addTag(LobbyUtil.NO_SATURATION_TAG);
@@ -129,7 +130,7 @@ public class DuelsGame { //implements Runnable{
         playerData.inviting = false;
         playerData.invitingPlayer = null;
         playerData.inDuel = true;
-        removeQueue(mcP2, stringGameMode, false);
+        removeQueue(mcP2, null, true);
         playerData.spectatingPlayer = null;
         playerData.duelPlayer = mcP1;
 
@@ -137,7 +138,7 @@ public class DuelsGame { //implements Runnable{
         invitorData.inviting = false;
         invitorData.invitingPlayer = null;
         invitorData.inDuel = true;
-        removeQueue(mcP2, stringGameMode, false);
+        removeQueue(mcP2, null, true);
         invitorData.spectatingPlayer = null;
         invitorData.duelPlayer = mcP2;
 
@@ -233,6 +234,7 @@ public class DuelsGame { //implements Runnable{
                 }
 
                 DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
+
                 DuelGameHandler.duelsGames.remove(this);
                 return;
             }
@@ -242,7 +244,7 @@ public class DuelsGame { //implements Runnable{
             this.currentStartTime--;
 
             this.map.p1Pos.teleportPlayer(this.level, this.p1);
-            this.map.p2Pos.teleportPlayer(this.level, this.p1);
+            this.map.p2Pos.teleportPlayer(this.level, this.p2);
 
             if (this.startTime - this.currentStartTime >= this.startTime) {
                 PlayerUtil.sendSound(this.p1, new EntityPos(this.p1), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);

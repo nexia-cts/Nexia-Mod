@@ -111,13 +111,11 @@ public class TeamDuelsGame { // implements Runnable{
 
     }
 
-    public static TeamDuelsGame startGame(@NotNull DuelsTeam team1, @NotNull DuelsTeam team2, String stringGameMode,
-            @Nullable DuelsMap selectedMap) {
+    public static TeamDuelsGame startGame(@NotNull DuelsTeam team1, @NotNull DuelsTeam team2, String stringGameMode, @Nullable DuelsMap selectedMap) {
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
         if (gameMode == null) {
             gameMode = DuelGameMode.FFA;
-            System.out.printf("[ERROR] Nexia: Invalid duel gamemode ({0}) selected! Using fallback one.%n",
-                    stringGameMode);
+            System.out.printf("[ERROR] Nexia: Invalid duel gamemode ({0}) selected! Using fallback one.%n", stringGameMode);
             stringGameMode = "FFA";
         }
 
@@ -134,21 +132,18 @@ public class TeamDuelsGame { // implements Runnable{
             selectedMap = DuelsMap.duelsMaps.get(RandomUtil.randomInt(0, DuelsMap.duelsMaps.size()));
         }
 
-        /*
-        String name = duelLevel.dimension().toString().replaceAll("]", "").split(":")[2];
+        String name = String.valueOf(gameUUID);
 
+        /*
         String mapid = "duels";
         String start = "/execute in " + mapid + ":" + name;
-
         ServerTime.factoryServer.runCommand(start + " run forceload add 0 0");
-        ServerTime.factoryServer.runCommand(start + " run " + DuelGameHandler.returnCommandMap(selectedMap));
+        ServerTime.factoryServer.runCommand(start + " run " + selectedMap.structureMap.returnCommand(duelLevel));
         ServerTime.factoryServer.runCommand(start + " run setblock 1 80 0 minecraft:redstone_block");
 
-        ServerTime.factoryServer
-                .runCommand(start + " if block 0 80 0 minecraft:structure_block run setblock 0 80 0 air");
-        ServerTime.factoryServer
-                .runCommand(start + " if block 1 80 0 minecraft:redstone_block run setblock 1 80 0 air");
-         */
+        ServerTime.factoryServer.runCommand(start + " if block 0 80 0 minecraft:structure_block run setblock 0 80 0 air");
+        ServerTime.factoryServer.runCommand(start + " if block 1 80 0 minecraft:redstone_block run setblock 1 80 0 air");
+        */
 
         selectedMap.structureMap.pasteMap(duelLevel);
 
@@ -261,7 +256,9 @@ public class TeamDuelsGame { // implements Runnable{
 
             if (canSafelyDelete) {
                 this.isEnding = false;
-                DuelGameHandler.deleteWorld(this.level.dimension().toString().replaceAll("]", "").split(":")[2]);
+
+                DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
+
                 DuelGameHandler.teamDuelsGames.remove(this);
                 return;
             }
@@ -291,7 +288,7 @@ public class TeamDuelsGame { // implements Runnable{
                     PlayerUtil.getFactoryPlayer(player).runCommand("/hub", 0, false);
                 }
 
-                DuelGameHandler.deleteWorld(this.level.dimension().toString().replaceAll("]", "").split(":")[2]);
+                DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
                 this.team1.refreshTeam();
                 this.team2.refreshTeam();
                 DuelGameHandler.teamDuelsGames.remove(this);

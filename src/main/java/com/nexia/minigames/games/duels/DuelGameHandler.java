@@ -5,11 +5,9 @@ import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
-import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
-import com.nexia.world.structure.Rotation;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceKey;
@@ -121,6 +119,7 @@ public class DuelGameHandler {
     }
      */
 
+
     public static ServerLevel createWorld(String uuid, boolean doRegeneration) {
         RuntimeWorldConfig config = new RuntimeWorldConfig()
                 .setDimensionType(FfaAreas.ffaWorld.dimensionType())
@@ -138,20 +137,19 @@ public class DuelGameHandler {
                 .setGameRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS, false)
                 .setTimeOfDay(6000);
 
-        // return ServerTime.fantasy.openTemporaryWorld(config).asWorld();
 
-        return ServerTime.fantasy.getOrOpenPersistentWorld(
-                ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", uuid)).location(), config)
-                .asWorld();
+        return ServerTime.fantasy.openTemporaryWorld(config, new ResourceLocation("duels", uuid)).asWorld();
+        //return ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", uuid)).location(), config).asWorld();
     }
 
     public static void deleteWorld(String id) {
         RuntimeWorldHandle worldHandle;
         try {
-            FileUtils.deleteDirectory(new File("/world/dimensions/duels", id));
             worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(
                     ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", id)).location(),
-                    null);
+                    new RuntimeWorldConfig());
+            ServerTime.factoryServer.unloadWorld("duels:" + id, false);
+            FileUtils.forceDeleteOnExit(new File("/world/dimensions/duels", id));
         } catch (Exception ignored) {
             Main.logger.error("Error occurred while deleting world: duels:" + id);
             return;

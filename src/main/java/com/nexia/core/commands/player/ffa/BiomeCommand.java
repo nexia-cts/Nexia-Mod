@@ -23,7 +23,7 @@ public class BiomeCommand {
                 .executes(context -> {
                     ServerPlayer player = context.getSource().getPlayerOrException();
                     if(!FfaUtil.canGoToSpawn(player)) {
-                        PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You must be fully healed to go to spawn!").color(ChatFormat.failColor));
+                        PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You must be fully healed to change biomes!").color(ChatFormat.failColor));
                         return 1;
                     }
                     LobbyUtil.sendGame(player, "classic ffa", false, true);
@@ -35,7 +35,7 @@ public class BiomeCommand {
                         .executes(context -> {
                             ServerPlayer player = context.getSource().getPlayerOrException();
                             if(!FfaUtil.canGoToSpawn(player)) {
-                                PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You must be fully healed to go to spawn!").color(ChatFormat.failColor));
+                                PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You must be fully healed to change biomes!").color(ChatFormat.failColor));
                                 return 1;
                             }
                             LobbyUtil.sendGame(player, "classic ffa", false, true);
@@ -48,7 +48,7 @@ public class BiomeCommand {
                 .executes(context -> {
                     ServerPlayer player = context.getSource().getPlayerOrException();
                     if(!FfaUtil.canGoToSpawn(player)) {
-                        PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You must be fully healed to go to spawn!").color(ChatFormat.failColor));
+                        PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You must be fully healed to change biomes!").color(ChatFormat.failColor));
                         return 1;
                     }
                     LobbyUtil.sendGame(player, "classic ffa", false, true);
@@ -60,7 +60,7 @@ public class BiomeCommand {
                         .executes(context -> {
                             ServerPlayer player = context.getSource().getPlayerOrException();
                             if(!FfaUtil.canGoToSpawn(player)) {
-                                PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You must be fully healed to go to spawn!").color(ChatFormat.failColor));
+                                PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You must be fully healed to change biomes!").color(ChatFormat.failColor));
                                 return 1;
                             }
                             LobbyUtil.sendGame(player, "classic ffa", false, true);
