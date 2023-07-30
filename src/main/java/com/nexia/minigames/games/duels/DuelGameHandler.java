@@ -19,14 +19,15 @@ import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 
@@ -34,15 +35,16 @@ public class DuelGameHandler {
 
     public static List<DuelsGame> duelsGames = new ArrayList<>();
     public static List<TeamDuelsGame> teamDuelsGames = new ArrayList<>();
+
     public static void leave(ServerPlayer player, boolean leaveTeam) {
         PlayerData data = PlayerDataManager.get(player);
         if (data.duelsGame != null) {
             data.duelsGame.death(player, player.getLastDamageSource());
         }
-        if(data.teamDuelsGame != null) {
+        if (data.teamDuelsGame != null) {
             data.teamDuelsGame.death(player, player.getLastDamageSource());
         }
-        if(data.gameMode == DuelGameMode.SPECTATING) {
+        if (data.gameMode == DuelGameMode.SPECTATING) {
             GamemodeHandler.unspectatePlayer(player, data.spectatingPlayer, false);
         }
         data.inviting = false;
@@ -51,9 +53,9 @@ public class DuelGameHandler {
         removeQueue(player, null, true);
         data.gameMode = DuelGameMode.LOBBY;
         data.spectatingPlayer = null;
-        if(leaveTeam) {
-            if(data.duelsTeam != null) {
-                if(data.duelsTeam.refreshCreator(player)) {
+        if (leaveTeam) {
+            if (data.duelsTeam != null) {
+                if (data.duelsTeam.refreshLeader(player)) {
                     data.duelsTeam.disbandTeam(player, true);
                 } else {
                     data.duelsTeam.leaveTeam(player, true);
@@ -65,7 +67,8 @@ public class DuelGameHandler {
         data.duelsGame = null;
     }
 
-    public static void winnerRockets(@NotNull ServerPlayer winner, @NotNull ServerLevel level, @NotNull Integer winnerColor) {
+    public static void winnerRockets(@NotNull ServerPlayer winner, @NotNull ServerLevel level,
+                                     @NotNull Integer winnerColor) {
 
         Random random = level.getRandom();
         EntityPos pos = new EntityPos(winner).add(random.nextInt(9) - 4, 2, random.nextInt(9) - 4);
@@ -74,14 +77,15 @@ public class DuelGameHandler {
         try {
             itemStack.setTag(TagParser.parseTag("{Fireworks:{Explosions:[{Type:0,Flicker:1b,Trail:1b,Colors:[I;" +
                     winnerColor + "]}]}}"));
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         FireworkRocketEntity rocket = new FireworkRocketEntity(level, pos.x, pos.y, pos.z, itemStack);
         level.addFreshEntity(rocket);
     }
 
     public static void starting() {
-        for(DuelGameMode duelGameMode : DuelGameMode.duelGameModes) {
+        for (DuelGameMode duelGameMode : DuelGameMode.duelGameModes) {
             duelGameMode.queue.clear();
         }
 
@@ -102,85 +106,21 @@ public class DuelGameHandler {
         }
     }
 
-    public static float[] returnPosMap(String mapname, boolean player1){
-        float[] pos = new float[]{0, 83, 0, 0, 0};
-
-        if(player1){
-            if (mapname.equalsIgnoreCase("city")) {
-                pos[0] = -55;
-                pos[1] = 80;
-                pos[3] = -90;
-            } else if (mapname.equalsIgnoreCase("nethflat") || mapname.equalsIgnoreCase(("netheriteflat"))) {
-                pos[0] = 0;
-                pos[1] = 80;
-                pos[2] = -41;
-            } else if (mapname.equalsIgnoreCase("plains")) {
-                pos[0] = -71;
-                pos[1] = 80;
-                pos[2] = -16;
-            } else if (mapname.equalsIgnoreCase("eden")) {
-                pos[0] = 55;
-                pos[1] = 80;
-                pos[3] = 90;
-            }
+    /*
+    public static String returnCommandMap(DuelsMap map) {
+        if (map.structureMap.rotation != Rotation.NO_ROTATION) {
+            return "setblock 0 80 0 minecraft:structure_block{mode:'LOAD',name:'duels:" + map.id + "'" + ",posX:"
+                    + map.structureMap.pastePos.getX() + ",posY:" + map.structureMap.pastePos.getY() + ",posZ:" + map.structureMap.pastePos.getZ() + ",rotation:\"" + map.structureMap.rotation.id + "\"}";
         } else {
-            if (mapname.equalsIgnoreCase("city")) {
-                pos[0] = 17;
-                pos[1] = 80;
-                pos[3] = 90;
-            } else if (mapname.equalsIgnoreCase("nethflat") || mapname.equalsIgnoreCase(("netheriteflat"))) {
-                pos[0] = 0;
-                pos[1] = 80;
-                pos[2] = 41;
-                pos[3] = 180;
-            } else if (mapname.equalsIgnoreCase("plains")) {
-                pos[0] = -71;
-                pos[1] = 80;
-                pos[2] = 34;
-                pos[3] = 180;
-            } else if (mapname.equalsIgnoreCase("eden")) {
-                pos[0] = -55;
-                pos[1] = 80;
-                pos[3] = -90;
-            }
-        }
-
-        return pos;
-    }
-
-    public static String returnCommandMap(String mapname) {
-
-        int[] pos = new int[]{0, 0, 0};
-
-        String rotation = "";
-        if (mapname.equalsIgnoreCase("city")) {
-            pos[0] = -65;
-            pos[1] = -11;
-            pos[2] = -31;
-        } else if (mapname.equalsIgnoreCase("nethflat") || mapname.equalsIgnoreCase(("netheriteflat"))) {
-            pos[0] = -36;
-            pos[1] = -3;
-            pos[2] = -51;
-        } else if (mapname.equalsIgnoreCase("plains")) {
-            pos[0] = -40;
-            pos[1] = -20;
-            pos[2] = -31;
-            rotation = "CLOCKWISE_90";
-        } else if (mapname.equalsIgnoreCase("eden")) {
-            pos[0] = -62;
-            pos[1] = -7;
-            pos[2] = -23;
-        }
-
-        if(rotation.trim().length() != 0){
-            return "setblock 0 80 0 minecraft:structure_block{mode:'LOAD',name:'duels:" + mapname.toLowerCase() + "'" + ",posX:" + pos[0] + ",posY:" + pos[1] + ",posZ:" + pos[2] + ",rotation:\"" + rotation + "\"}";
-        } else {
-            return "setblock 0 80 0 minecraft:structure_block{mode:'LOAD',name:'duels:" + mapname.toLowerCase() + "'" + ",posX:" + pos[0] + ",posY:" + pos[1] + ",posZ:" + pos[2] + "}";
+            return "setblock 0 80 0 minecraft:structure_block{mode:'LOAD',name:'duels:" + map.id + "'" + ",posX:"
+                    + map.structureMap.pastePos.getX() + ",posY:" + map.structureMap.pastePos.getY() + ",posZ:" + map.structureMap.pastePos.getZ() + "}";
         }
 
     }
+     */
 
-    public static ServerLevel createWorld(boolean doRegeneration){
+
+    public static ServerLevel createWorld(String uuid, boolean doRegeneration) {
         RuntimeWorldConfig config = new RuntimeWorldConfig()
                 .setDimensionType(FfaAreas.ffaWorld.dimensionType())
                 .setGenerator(FfaAreas.ffaWorld.getChunkSource().getGenerator())
@@ -197,16 +137,19 @@ public class DuelGameHandler {
                 .setGameRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS, false)
                 .setTimeOfDay(6000);
 
-        //return ServerTime.fantasy.openTemporaryWorld(config).asWorld();
 
-
-        return ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", UUID.randomUUID().toString().replaceAll("-", ""))).location(), config).asWorld();
+        return ServerTime.fantasy.openTemporaryWorld(config, new ResourceLocation("duels", uuid)).asWorld();
+        //return ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", uuid)).location(), config).asWorld();
     }
 
     public static void deleteWorld(String id) {
         RuntimeWorldHandle worldHandle;
         try {
-            worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", id)).location(), null);
+            worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(
+                    ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", id)).location(),
+                    new RuntimeWorldConfig());
+            ServerTime.factoryServer.unloadWorld("duels:" + id, false);
+            FileUtils.forceDeleteOnExit(new File("/world/dimensions/duels", id));
         } catch (Exception ignored) {
             Main.logger.error("Error occurred while deleting world: duels:" + id);
             return;

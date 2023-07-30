@@ -142,8 +142,8 @@ public class LobbyUtil {
         ItemStack teamSword = new ItemStack(Items.IRON_AXE);
         teamSword.setHoverName(new TextComponent("§eTeam Axe"));
         ItemDisplayUtil.addGlint(teamSword);
-        ItemDisplayUtil.addLore(teamSword, "§eHit a player §7to invite them to your team.", 0);
-        ItemDisplayUtil.addLore(teamSword, "§eRight click §7to list the team.", 1);
+        ItemDisplayUtil.addLore(teamSword, "§eRight click §7to list the team.", 0);
+        ItemDisplayUtil.addLore(teamSword, "§eHit a player §7to invite them to your team.", 1);
 
         if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter")) {
             ItemStack elytra = new ItemStack(Items.ELYTRA);

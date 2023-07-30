@@ -20,7 +20,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.GameRules;
+import org.apache.commons.io.FileUtils;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
+
+import java.io.File;
 
 public class MapCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
@@ -48,7 +51,7 @@ public class MapCommand {
         String type = StringArgumentType.getString(context, "type");
         String map = StringArgumentType.getString(context, "map");
 
-        if((ChatFormat.hasWhiteSpacesOrSpaces(null, map) || ChatFormat.hasWhiteSpacesOrSpaces(null, type)) || (type == null || map == null)) {
+        if(ChatFormat.hasWhiteSpacesOrSpaces(map) || ChatFormat.hasWhiteSpacesOrSpaces(type)) {
             player.sendMessage(
                     ChatFormat.nexiaMessage
                                     .append(Component.text("Invalid name!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
@@ -93,6 +96,9 @@ public class MapCommand {
                             .append(Component.text("Deleted map called: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                             .append(Component.text(map).color(ChatFormat.brandColor2))
             );
+            try {
+                FileUtils.forceDeleteOnExit(new File("/world/dimensions/" + mapname[0], mapname[1]));
+            } catch (Exception ignored) { }
             return 1;
         }
 

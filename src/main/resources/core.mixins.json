@@ -11,7 +11,6 @@
     "block.SignBlockMixin",
     "entity.ArmorStandMixin",
     "entity.EntityMixin",
-    "entity.ProjectileMixin",
     "entity.ItemFrameMixin",
     "entity.LivingEntityMixin",
     "entity.PrimedTntMixin",

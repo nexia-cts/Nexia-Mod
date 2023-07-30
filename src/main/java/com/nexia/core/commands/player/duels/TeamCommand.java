@@ -31,6 +31,9 @@ public class TeamCommand {
                 .then(Commands.literal("invite")
                         .then(Commands.argument("player", EntityArgument.player()).executes(context -> TeamCommand.invitePlayer(context, EntityArgument.getPlayer(context, "player"))))
                 )
+                .then(Commands.literal("promote")
+                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> TeamCommand.promotePlayer(context, EntityArgument.getPlayer(context, "player"))))
+                )
                 .then(Commands.literal("join")
                         .then(Commands.argument("player", EntityArgument.player()).executes(context -> TeamCommand.joinTeam(context, EntityArgument.getPlayer(context, "player"))))
                 )
@@ -58,6 +61,9 @@ public class TeamCommand {
                 .then(Commands.literal("invite")
                         .then(Commands.argument("player", EntityArgument.player()).executes(context -> TeamCommand.invitePlayer(context, EntityArgument.getPlayer(context, "player"))))
                 )
+                .then(Commands.literal("promote")
+                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> TeamCommand.promotePlayer(context, EntityArgument.getPlayer(context, "player"))))
+                )
                 .then(Commands.literal("join")
                         .then(Commands.argument("player", EntityArgument.player()).executes(context -> TeamCommand.joinTeam(context, EntityArgument.getPlayer(context, "player"))))
                 )
@@ -83,6 +89,20 @@ public class TeamCommand {
             DuelsTeam.createTeam(invitor, false);
         }
         data.duelsTeam.invitePlayer(invitor, player);
+        return 1;
+    }
+
+    public static int promotePlayer(CommandContext<CommandSourceStack> context, ServerPlayer player) throws CommandSyntaxException {
+        ServerPlayer executor = context.getSource().getPlayerOrException();
+
+        com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(executor);
+
+        if(data.duelsTeam == null) {
+            PlayerUtil.getFactoryPlayer(executor).sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
+            return 1;
+        }
+
+        data.duelsTeam.replaceLeader(executor, player, true);
         return 1;
     }
 

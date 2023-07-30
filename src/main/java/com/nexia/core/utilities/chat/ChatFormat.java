@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ChatFormat {
@@ -74,15 +75,13 @@ public class ChatFormat {
         }
     }
 
-    public static boolean hasWhiteSpacesOrSpaces(@Nullable String[] strings, @Nullable String string){
-        if(strings == null && string != null){
-            return string.matches(".*\\s+.*") || string.matches("");
-        } else {
-            for (String s : strings) {
-                if (s.matches(".*\\s+.*") || s.matches("")) {
-                    return true;
-                }
-            }
+    public static boolean hasWhiteSpacesOrSpaces(@NotNull String string){
+        return string.matches(".*\\s+.*") || string.trim().isEmpty();
+    }
+
+    public static boolean hasWhiteSpacesOrSpaces(@NotNull String[] strings){
+        for(String string : strings) {
+            return string.matches(".*\\s+.*") || string.trim().isEmpty();
         }
         return false;
     }

@@ -9,7 +9,7 @@ import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.DuelsGame;
-import com.nexia.minigames.games.duels.DuelsMap;
+import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.team.DuelsTeam;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Random;
 
 public class GamemodeHandler {
 
@@ -106,7 +107,7 @@ public class GamemodeHandler {
 
     public static void joinQueue(ServerPlayer minecraftPlayer, String stringGameMode, boolean silent) {
         if (stringGameMode.equalsIgnoreCase("lobby") || stringGameMode.equalsIgnoreCase("leave")) {
-            LobbyUtil.sendGame(minecraftPlayer, "duels", false, false);
+            LobbyUtil.leaveAllGames(minecraftPlayer, true);
             return;
         }
 
@@ -115,18 +116,14 @@ public class GamemodeHandler {
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
 
         if (gameMode == null) {
-            if (!silent) {
-                player.sendMessage(Component.text("Invalid gamemode!").color(ChatFormat.failColor));
-            }
+            if (!silent) player.sendMessage(Component.text("Invalid gamemode!").color(ChatFormat.failColor));
             return;
         }
 
         PlayerData data = PlayerDataManager.get(minecraftPlayer);
 
         if (data.duelsTeam != null) {
-            if (!silent) {
-                player.sendMessage(Component.text("You are in a team!").color(ChatFormat.failColor));
-            }
+            if (!silent) player.sendMessage(Component.text("You are in a team!").color(ChatFormat.failColor));
             return;
         }
 
@@ -141,7 +138,6 @@ public class GamemodeHandler {
         }
 
         removeQueue(minecraftPlayer, stringGameMode, true);
-
 
         for(DuelGameMode duelGameMode : DuelGameMode.duelGameModes) {
             if(gameMode.equals(duelGameMode)) {
@@ -158,9 +154,7 @@ public class GamemodeHandler {
         if (stringGameMode != null) {
             DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
             if (gameMode == null) {
-                if (!silent) {
-                    player.sendMessage(Component.text("Invalid gamemode!").color(ChatFormat.failColor));
-                }
+                if (!silent) player.sendMessage(Component.text("Invalid gamemode!").color(ChatFormat.failColor));
                 return;
             }
 
@@ -300,9 +294,7 @@ public class GamemodeHandler {
         executorData.spectatingPlayer = null;
         LobbyUtil.leaveAllGames(executor, teleport);
     }
-
-
-    public static void joinGamemode(ServerPlayer invitor, ServerPlayer player, String stringGameMode, @Nullable String selectedmap, boolean silent) {
+    public static void joinGamemode(ServerPlayer invitor, ServerPlayer player, String stringGameMode, @Nullable DuelsMap selectedmap, boolean silent) {
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
         if (gameMode == null) {
             if (!silent) {
@@ -320,7 +312,7 @@ public class GamemodeHandler {
             return;
         }
 
-        if (data.duelsTeam != null && !data.duelsTeam.refreshCreator(invitor)) {
+        if (data.duelsTeam != null && !data.duelsTeam.refreshLeader(invitor)) {
             if (!silent) {
                 PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
             }
@@ -410,7 +402,7 @@ public class GamemodeHandler {
         }
          */
 
-        playerData.inviteMap = "";
+        playerData.inviteMap = DuelsMap.CITY;
         playerData.inviteKit = "";
         playerData.inviting = false;
         playerData.invitingPlayer = null;
@@ -435,7 +427,7 @@ public class GamemodeHandler {
         GamemodeHandler.joinGamemode(minecraftExecutor, minecraftPlayer, playerData.inviteKit, playerData.inviteMap, true);
     }
 
-    public static void challengePlayer(ServerPlayer minecraftExecutor, ServerPlayer minecraftPlayer, String stringGameMode, @Nullable String selectedmap) {
+    public static void challengePlayer(ServerPlayer minecraftExecutor, ServerPlayer minecraftPlayer, String stringGameMode, @Nullable DuelsMap selectedmap) {
 
         Player executor = PlayerUtil.getFactoryPlayer(minecraftExecutor);
 
@@ -464,29 +456,27 @@ public class GamemodeHandler {
             return;
         }
 
-        if (executorData.duelsTeam != null && !executorData.duelsTeam.refreshCreator(minecraftExecutor)) {
+        if (executorData.duelsTeam != null && !executorData.duelsTeam.refreshLeader(minecraftExecutor)) {
             executor.sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
             return;
         }
 
-        String map = selectedmap;
+        DuelsMap map = selectedmap;
         if (map == null) {
-            map = DuelsMap.stringDuelsMaps.get(RandomUtil.randomInt(DuelsMap.stringDuelsMaps.size()));
+            map = DuelsMap.duelsMaps.get(RandomUtil.randomInt(DuelsMap.duelsMaps.size()));
         } else {
             map = selectedmap;
-            if (!DuelsMap.stringDuelsMaps.contains(map.toLowerCase())) {
+            if (!DuelsMap.duelsMaps.contains(map)) {
                 executor.sendMessage(Component.text("Invalid map!").color(ChatFormat.failColor));
                 return;
             }
         }
-
-        DuelsMap duelsMap = DuelsMap.identifyMap(map);
-        if(duelsMap != null && gameMode.gameMode == GameType.ADVENTURE && !duelsMap.isAdventureSupported) {
+        if(map != null && gameMode.gameMode == GameType.ADVENTURE && !map.isAdventureSupported) {
             executor.sendMessage(Component.text("This map is not supported for this gamemode!").color(ChatFormat.failColor));
             return;
         }
 
-        if (!executorData.inviteMap.equalsIgnoreCase(map)) {
+        if (!executorData.inviteMap.equals(map)) {
             executorData.inviteMap = map;
         }
 
@@ -512,7 +502,7 @@ public class GamemodeHandler {
             executor.sendMessage(ChatFormat.nexiaMessage
                     .append(Component.text("Sending a duel request to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                             .append(Component.text(player.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                            .append(Component.text(" on map ")).append(Component.text(map).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                            .append(Component.text(" on map ")).append(Component.text(map.id.toUpperCase()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                             .append(Component.text(" with kit ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                             .append(Component.text(stringGameMode).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                             .append(Component.text(".")).color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
@@ -522,7 +512,7 @@ public class GamemodeHandler {
                             .append(Component.text("team duel").color(ChatFormat.normalColor).decoration(ChatFormat.bold, true))
                             .append(Component.text(" request to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                             .append(Component.text(player.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                            .append(Component.text(" on map ")).append(Component.text(map).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                            .append(Component.text(" on map ")).append(Component.text(map.id.toUpperCase()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                             .append(Component.text(" with kit ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                             .append(Component.text(stringGameMode).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                             .append(Component.text(".")).color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
@@ -538,7 +528,7 @@ public class GamemodeHandler {
                 );
 
         Component mapName = Component.text("Map: ").color(ChatFormat.brandColor1)
-                .append(Component.text(map.toUpperCase()).color(ChatFormat.normalColor)
+                .append(Component.text(map.id.toUpperCase()).color(ChatFormat.normalColor)
                 );
 
         Component yes = Component.text("[").color(NamedTextColor.DARK_GRAY)

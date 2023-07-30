@@ -6,9 +6,9 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
+import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
@@ -25,23 +25,23 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.UUID;
 
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 
 public class DuelsGame { //implements Runnable{
     public ServerPlayer p1;
+
+    public UUID uuid;
     public ServerPlayer p2;
 
     public DuelGameMode gameMode;
 
-    public String selectedMap;
+    public DuelsMap map;
 
     public boolean isEnding = false;
 
     public boolean hasStarted = false;
-
-    public HashMap<ServerPlayer, float[]> spawnPositions = new HashMap<>();
 
     public int startTime;
 
@@ -63,22 +63,22 @@ public class DuelsGame { //implements Runnable{
 
     private boolean shouldWait = false;
 
-    public DuelsGame(ServerPlayer p1, ServerPlayer p2, DuelGameMode gameMode, String selectedMap, ServerLevel level, int endTime, int startTime){
+    public DuelsGame(ServerPlayer p1, ServerPlayer p2, DuelGameMode gameMode, DuelsMap map, ServerLevel level, int endTime, int startTime){
         this.p1 = p1;
         this.p2 = p2;
         this.gameMode = gameMode;
-        this.selectedMap = selectedMap;
+        this.map = map;
         this.endTime = endTime;
         this.startTime = startTime;
         this.level = level;
     }
 
-    public static DuelsGame startGame(ServerPlayer mcP1, ServerPlayer mcP2, String stringGameMode, @Nullable String selectedMap){
+    public static DuelsGame startGame(ServerPlayer mcP1, ServerPlayer mcP2, String stringGameMode, @Nullable DuelsMap selectedMap){
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
         if(gameMode == null){
             gameMode = DuelGameMode.FFA;
-            stringGameMode = "FFA";
             System.out.printf("[ERROR] Nexia: Invalid duel gamemode ({0}) selected! Using fallback one.%n", stringGameMode);
+            stringGameMode = "FFA";
         }
 
         PlayerData invitorData = PlayerDataManager.get(mcP1);
@@ -95,40 +95,49 @@ public class DuelsGame { //implements Runnable{
         Player p1 = PlayerUtil.getFactoryPlayer(mcP1);
         Player p2 = PlayerUtil.getFactoryPlayer(mcP2);
 
-        ServerLevel duelLevel = DuelGameHandler.createWorld(gameMode.hasRegen);
-        if(selectedMap == null){
-            selectedMap = DuelsMap.stringDuelsMaps.get(RandomUtil.randomInt(0, DuelsMap.stringDuelsMaps.size()));
-        }
-        String[] absoluteName = duelLevel.dimension().toString().replaceAll("dimension / ", "").replaceAll("]", "").split(":");
-        String name = absoluteName[2];
+        UUID gameUUID = UUID.randomUUID();
 
+        ServerLevel duelLevel = DuelGameHandler.createWorld(gameUUID.toString(), gameMode.hasRegen);
+        if(selectedMap == null){
+            selectedMap = DuelsMap.duelsMaps.get(RandomUtil.randomInt(0, DuelsMap.duelsMaps.size()));
+        }
+
+        String name = String.valueOf(gameUUID);
+
+        /*
         String mapid = "duels";
         String start = "/execute in " + mapid + ":" + name;
         ServerTime.factoryServer.runCommand(start + " run forceload add 0 0");
-        ServerTime.factoryServer.runCommand(start + " run " + DuelGameHandler.returnCommandMap(selectedMap));
+        ServerTime.factoryServer.runCommand(start + " run " + selectedMap.structureMap.returnCommand(duelLevel));
         ServerTime.factoryServer.runCommand(start + " run setblock 1 80 0 minecraft:redstone_block");
 
         ServerTime.factoryServer.runCommand(start + " if block 0 80 0 minecraft:structure_block run setblock 0 80 0 air");
         ServerTime.factoryServer.runCommand(start + " if block 1 80 0 minecraft:redstone_block run setblock 1 80 0 air");
+         */
 
+        selectedMap.structureMap.pasteMap(duelLevel);
+
+        if(!gameMode.hasSaturation) {
+            p1.addTag(LobbyUtil.NO_SATURATION_TAG);
+            p2.addTag(LobbyUtil.NO_SATURATION_TAG);
+        }
 
         PlayerUtil.resetHealthStatus(p1);
         PlayerUtil.resetHealthStatus(p2);
 
-        float[] invitorpos = DuelGameHandler.returnPosMap(selectedMap, true);
-        float[] playerpos = DuelGameHandler.returnPosMap(selectedMap, false);
-
-        mcP2.teleportTo(duelLevel, playerpos[0], playerpos[1], playerpos[2], playerpos[3], playerpos[4]);
+        selectedMap.p2Pos.teleportPlayer(duelLevel, mcP2);
         playerData.inviting = false;
         playerData.invitingPlayer = null;
         playerData.inDuel = true;
+        removeQueue(mcP2, null, true);
         playerData.spectatingPlayer = null;
         playerData.duelPlayer = mcP1;
 
-        mcP1.teleportTo(duelLevel, invitorpos[0], invitorpos[1], invitorpos[2], invitorpos[3], invitorpos[4]);
+        selectedMap.p1Pos.teleportPlayer(duelLevel, mcP1);
         invitorData.inviting = false;
         invitorData.invitingPlayer = null;
         invitorData.inDuel = true;
+        removeQueue(mcP2, null, true);
         invitorData.spectatingPlayer = null;
         invitorData.duelPlayer = mcP2;
 
@@ -164,8 +173,7 @@ public class DuelsGame { //implements Runnable{
 
         DuelGameHandler.duelsGames.add(game);
 
-        game.spawnPositions.put(mcP1, invitorpos);
-        game.spawnPositions.put(mcP2, playerpos);
+        game.uuid = gameUUID;
 
         return game;
     }
@@ -181,10 +189,8 @@ public class DuelsGame { //implements Runnable{
                 ServerPlayer minecraftVictim = this.loser;
                 Player attacker = PlayerUtil.getFactoryPlayer(minecraftAttacker);
 
-                PlayerData victimData = PlayerDataManager.get(this.loser);
-                PlayerData attackerData = null;
-
-                attackerData = PlayerDataManager.get(minecraftAttacker);
+                PlayerData victimData = PlayerDataManager.get(minecraftVictim);
+                PlayerData attackerData = PlayerDataManager.get(minecraftAttacker);
 
                 PlayerUtil.resetHealthStatus(attacker);
 
@@ -195,17 +201,18 @@ public class DuelsGame { //implements Runnable{
                 victimData.duelsGame = null;
                 victimData.inviting = false;
                 victimData.inDuel = false;
-                victimData.inviteMap = "";
+                victimData.inviteMap = DuelsMap.CITY;
                 victimData.inviteKit = "";
                 removeQueue(minecraftVictim, null, true);
                 victimData.gameMode = DuelGameMode.LOBBY;
 
+                attackerData.duelsGame = null;
                 attackerData.inviting = false;
                 attackerData.inDuel = false;
+                attackerData.inviteMap = DuelsMap.CITY;
                 attackerData.inviteKit = "";
-                attackerData.inviteMap = "";
+                removeQueue(minecraftAttacker, null, true);
                 attackerData.gameMode = DuelGameMode.LOBBY;
-                attackerData.duelsGame = null;
 
                 attackerData.savedData.wins++;
                 victimData.savedData.loss++;
@@ -225,23 +232,18 @@ public class DuelsGame { //implements Runnable{
                     PlayerUtil.getFactoryPlayer(minecraftAttacker).runCommand("/hub", 0, false);
                 }
 
-
-                String duels2 = this.level.dimension().toString().replaceAll("]", "").split(":")[2];
-
-                DuelGameHandler.deleteWorld(duels2);
+                DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
 
                 DuelGameHandler.duelsGames.remove(this);
                 return;
             }
         }
         if(!this.hasStarted) {
-            float[] p1pos = this.spawnPositions.get(this.p1);
-            float[] p2pos = this.spawnPositions.get(this.p2);
 
             this.currentStartTime--;
 
-            this.p1.teleportTo(this.level, p1pos[0], p1pos[1], p1pos[2], p1pos[3], p1pos[4]);
-            this.p2.teleportTo(this.level, p2pos[0], p2pos[1], p2pos[2], p2pos[3], p2pos[4]);
+            this.map.p1Pos.teleportPlayer(this.level, this.p1);
+            this.map.p2Pos.teleportPlayer(this.level, this.p2);
 
             if (this.startTime - this.currentStartTime >= this.startTime) {
                 PlayerUtil.sendSound(this.p1, new EntityPos(this.p1), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
@@ -362,6 +364,7 @@ public class DuelsGame { //implements Runnable{
             }
             return;
         }
+
         if(victimData.inDuel) {
             endGame(victim, null, false);
         }

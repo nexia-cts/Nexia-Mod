@@ -27,12 +27,14 @@ if(new File(buildDir, "libs").exists()) FileUtils.cleanDirectory(buildDir.toPath
 
 // Repo for CT intermediary mappings
 repositories {
+	maven { url 'https://github.com/not-coded/notcoded-maven/raw/fabric/' }
 	maven { url 'https://maven.nucleoid.xyz' }
 	maven { url "https://maven.rizecookey.net/" }
 	maven { url "https://maven.shedaniel.me/" }
 	maven { url "https://maven.terraformersmc.com/releases/" }
 	maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
 	maven { url 'https://github.com/ricksouth/serilum-forge-maven/raw/maven/' }
+
 }
 
 dependencies {
@@ -57,7 +59,7 @@ dependencies {
 	//include(modApi("eu.pb4:sidebar-api:0.0.2") { exclude(group: "net.fabricmc.fabric-api") })
 
 	modApi('com.natamus.collective:collective-fabric:1.16.5-5.50')
-	include(modApi('xyz.nucleoid:fantasy:0.4.0') {exclude(group: "net.fabricmc.fabric-api") })
+	modApi('xyz.nucleoid:fantasy:0.4.0') {exclude(group: "net.fabricmc.fabric-api") }
 	include(modApi('eu.pb4:sgui:0.5.0')  { exclude(group: "net.fabricmc.fabric-api") })
 	include(modApi('me.sargunvohra.mcmods:autoconfig1u:3.3.1') { exclude(group: "net.fabricmc.fabric-api") })
 	include(implementation("com.googlecode.json-simple:json-simple:1.1.1"))

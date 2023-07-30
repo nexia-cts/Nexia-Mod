@@ -4,6 +4,7 @@ import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
+import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
@@ -19,34 +20,66 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DuelsTeam {
-    public ServerPlayer creator;
+    public ServerPlayer leader;
 
-    public List<ServerPlayer> people = new ArrayList<>();
+    public List<ServerPlayer> people;
 
-    public List<ServerPlayer> alive = new ArrayList<>();
+    public List<ServerPlayer> alive;
 
-    private List<ServerPlayer> invited = new ArrayList<>();
+    private List<ServerPlayer> invited;
 
-    public List<ServerPlayer> all = new ArrayList<>();
+    public List<ServerPlayer> all;
 
-    public DuelsTeam(ServerPlayer creator, List<ServerPlayer> people){
-        this.creator = creator;
+    public DuelsTeam(ServerPlayer leader, List<ServerPlayer> people){
+        this.leader = leader;
+
+        this.people = new ArrayList<>();
         this.people.addAll(people);
 
+        this.alive = new ArrayList<>();
+        this.invited = new ArrayList<>();
+        this.all = new ArrayList<>();
+
         List<ServerPlayer> allPlayers = new ArrayList<>();
-        allPlayers.add(creator);
+        allPlayers.add(leader);
         allPlayers.addAll(people);
         this.all.addAll(allPlayers);
     }
 
 
-    public boolean refreshCreator(@NotNull ServerPlayer creator) {
-        this.creator = ServerTime.minecraftServer.getPlayerList().getPlayer(this.creator.getUUID());
-        if(this.creator == null) {
-            this.creator = creator;
-            this.disbandTeam(creator, false);
+    public boolean refreshLeader(@NotNull ServerPlayer leader) {
+        this.leader = ServerTime.minecraftServer.getPlayerList().getPlayer(this.leader.getUUID());
+        if(this.leader == null) {
+            this.leader = leader;
+            this.disbandTeam(leader, false);
         }
-        return this.creator.getScoreboardName().equalsIgnoreCase(creator.getScoreboardName());
+        return this.leader.getScoreboardName().equalsIgnoreCase(leader.getScoreboardName());
+    }
+
+
+    public boolean replaceLeader(@NotNull ServerPlayer executor, @NotNull ServerPlayer player, boolean message) {
+        Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor);
+
+        if(!this.refreshLeader(executor))  {
+            if(message) factoryExecutor.sendMessage(Component.text("You are not the leader!").color(ChatFormat.failColor));
+            return false;
+        }
+
+        if(executor == player || this.refreshLeader(player)) {
+            if(message) factoryExecutor.sendMessage(Component.text("You are the leader!").color(ChatFormat.failColor));
+            return false;
+        }
+
+        this.leader = player;
+        this.people.remove(player);
+        this.people.add(executor);
+
+        if(message) factoryExecutor.sendMessage(Component.text("You have promoted " + player.getScoreboardName() + " to the leader."));
+        for(ServerPlayer tPlayer : this.all) {
+            tPlayer.sendMessage(LegacyChatFormat.format("{s}{} is now the leader.", player.getScoreboardName()), Util.NIL_UUID);
+        }
+
+        return true;
     }
 
     public void refreshPeople() {
@@ -62,12 +95,12 @@ public class DuelsTeam {
     }
 
     public void refreshTeam() {
-        refreshCreator(this.creator);
+        refreshLeader(this.leader);
         refreshPeople();
 
         this.alive.clear();
         this.all.clear();
-        this.all.add(this.creator);
+        this.all.add(this.leader);
         this.all.addAll(this.people);
     }
 
@@ -75,8 +108,8 @@ public class DuelsTeam {
     public void disbandTeam(ServerPlayer executor, boolean message) {
         Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor);
 
-        if(!this.refreshCreator(executor)) {
-            if(message) factoryExecutor.sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
+        if(!this.refreshLeader(executor)) {
+            this.replaceLeader(executor, this.people.get(RandomUtil.randomInt(this.people.size())), false);
             return;
         }
 
@@ -88,7 +121,7 @@ public class DuelsTeam {
         this.people.clear();
         this.all.clear();
         this.alive.clear();
-        this.creator = null;
+        this.leader = null;
         this.invited.clear();
         if(message) factoryExecutor.sendMessage(Component.text("You have disbanded your own team.").color(ChatFormat.normalColor));
     }
@@ -96,17 +129,15 @@ public class DuelsTeam {
     public void leaveTeam(ServerPlayer player, boolean message) {
         Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
         PlayerData data = PlayerDataManager.get(player);
-        if(this.refreshCreator(player)) {
-            if(message) factoryPlayer.sendMessage(Component.text("You cannot leave your own team without disbanding it!").color(ChatFormat.failColor));
-            return;
-        }
+        if(this.refreshLeader(player)) this.leader = this.people.get(RandomUtil.randomInt(this.people.size()));
+
 
         data.duelsTeam = null;
         this.people.remove(player);
         this.all.remove(player);
         this.alive.remove(player);
 
-        if(message) factoryPlayer.sendMessage(Component.text("You have left " + this.creator.getScoreboardName() + "'s Team.").color(ChatFormat.normalColor));
+        if(message) factoryPlayer.sendMessage(Component.text("You have left " + this.leader.getScoreboardName() + "'s Team.").color(ChatFormat.normalColor));
         PlayerUtil.broadcast(this.all, LegacyChatFormat.format("§d{} §7has left the team.", player.getScoreboardName()));
     }
 
@@ -114,14 +145,14 @@ public class DuelsTeam {
         Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
         Player factoryInvitor = PlayerUtil.getFactoryPlayer(invitor);
 
-        boolean isCreator = this.refreshCreator(invitor);
+        boolean isLeader = this.refreshLeader(invitor);
 
-        if(!isCreator){
+        if(!isLeader){
             factoryInvitor.sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
             return;
         }
 
-        if(player == this.creator) {
+        if(player == this.leader) {
             factoryInvitor.sendMessage(Component.text("You cannot invite yourself!").color(ChatFormat.failColor));
             return;
         }
@@ -177,7 +208,7 @@ public class DuelsTeam {
     public void listTeam(ServerPlayer executor) {
         Player factoryPlayer = PlayerUtil.getFactoryPlayer(executor);
 
-        factoryPlayer.sendMessage(Component.text("People on " + this.creator.getScoreboardName() + "'s Team").color(ChatFormat.normalColor));
+        factoryPlayer.sendMessage(Component.text("People on " + this.leader.getScoreboardName() + "'s Team").color(ChatFormat.normalColor));
         for(ServerPlayer player : this.all) {
             factoryPlayer.sendMessage(Component.text("» ").color(ChatFormat.brandColor1).append(Component.text(player.getScoreboardName()).color(ChatFormat.normalColor)));
         }
@@ -188,8 +219,8 @@ public class DuelsTeam {
         Player factoryInviter = PlayerUtil.getFactoryPlayer(executor);
         PlayerData data = PlayerDataManager.get(player);
 
-        if(!this.refreshCreator(executor)) {
-            factoryInviter.sendMessage(Component.text("You are not the creator!").color(ChatFormat.failColor));
+        if(!this.refreshLeader(executor)) {
+            factoryInviter.sendMessage(Component.text("You are not the leader!").color(ChatFormat.failColor));
             return;
         }
 
@@ -215,7 +246,7 @@ public class DuelsTeam {
 
     public void joinTeam(ServerPlayer player) {
         Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
-        Player factoryInviter = PlayerUtil.getFactoryPlayer(this.creator);
+        Player factoryInviter = PlayerUtil.getFactoryPlayer(this.leader);
         PlayerData data = PlayerDataManager.get(player);
 
         if(data.duelsTeam != null) {
@@ -239,7 +270,7 @@ public class DuelsTeam {
 
     public void declineTeam(ServerPlayer player) {
         Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
-        Player factoryInviter = PlayerUtil.getFactoryPlayer(this.creator);
+        Player factoryInviter = PlayerUtil.getFactoryPlayer(this.leader);
         PlayerData data = PlayerDataManager.get(player);
 
         if(data.duelsTeam != null) {

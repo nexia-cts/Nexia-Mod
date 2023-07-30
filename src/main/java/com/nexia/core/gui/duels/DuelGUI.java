@@ -2,7 +2,7 @@ package com.nexia.core.gui.duels;
 
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
-import com.nexia.minigames.games.duels.DuelsMap;
+import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
@@ -108,7 +108,7 @@ public class DuelGUI extends SimpleGui {
                     this.kit = name.getString().substring(2).replaceAll(" ", "_");
                     setMapLayout(GamemodeHandler.identifyGamemode(this.kit));
                 } else {
-                    GamemodeHandler.challengePlayer(this.player, this.other, this.kit, name.getString().substring(2));
+                    GamemodeHandler.challengePlayer(this.player, this.other, this.kit, DuelsMap.identifyMap(name.getString().substring(2)));
                     this.close();
                 }
 

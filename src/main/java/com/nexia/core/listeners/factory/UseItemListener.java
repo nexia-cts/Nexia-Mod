@@ -33,11 +33,13 @@ public class UseItemListener {
             }
 
             if(sName.contains("prefix selector") && gameMode == PlayerGameMode.LOBBY){
-                PrefixGUI.openRankGUI(minecraftPlayer);
+                //PrefixGUI.openRankGUI(minecraftPlayer);
+                player.runCommand("/prefix", 0, false);
             }
 
             if(sName.contains("queue sword") && gameMode == PlayerGameMode.LOBBY) {
-                QueueGUI.openQueueGUI(minecraftPlayer);
+                //QueueGUI.openQueueGUI(minecraftPlayer);
+                player.runCommand("/queue", 0, false);
             }
 
             if(sName.contains("team axe") && gameMode == PlayerGameMode.LOBBY) {

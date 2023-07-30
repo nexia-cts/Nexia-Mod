@@ -89,7 +89,7 @@ public abstract class PlayerListMixin {
     private static Component joinFormat(Component original, ServerPlayer joinPlayer) {
         try {
             String name = String.valueOf(joinPlayer.getScoreboardName());
-            if(ChatFormat.hasWhiteSpacesOrSpaces(null, name)) { return original; }
+            if(ChatFormat.hasWhiteSpacesOrSpaces(name)) { return original; }
             if(joinPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) < 1) { return LegacyChatFormat.format("§8[§6!§8] §6{}", name); }
             return LegacyChatFormat.format("§8[§a+§8] §a{}", name);
         } catch (Exception var8) {
@@ -100,7 +100,7 @@ public abstract class PlayerListMixin {
     private static Component leaveFormat(Component original, ServerPlayer leavePlayer) {
         try {
             String name = String.valueOf(leavePlayer.getScoreboardName());
-            if(ChatFormat.hasWhiteSpacesOrSpaces(null, name)) { return original; }
+            if(ChatFormat.hasWhiteSpacesOrSpaces(name)) { return original; }
             return LegacyChatFormat.format("§8[§c-§8] §c{}", name);
         } catch (Exception var8) {
             return original;

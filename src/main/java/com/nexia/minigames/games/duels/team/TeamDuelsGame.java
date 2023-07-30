@@ -10,7 +10,7 @@ import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelGameMode;
-import com.nexia.minigames.games.duels.DuelsMap;
+import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
@@ -30,14 +30,18 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
-public class TeamDuelsGame { //implements Runnable{
+import java.util.UUID;
+
+public class TeamDuelsGame { // implements Runnable{
     public DuelsTeam team1;
 
     public DuelsTeam team2;
 
+    public UUID uuid;
+
     public DuelGameMode gameMode;
 
-    public String selectedMap;
+    public DuelsMap map;
 
     public boolean isEnding = false;
 
@@ -57,7 +61,6 @@ public class TeamDuelsGame { //implements Runnable{
 
     public ArrayList<ServerPlayer> spectators = new ArrayList<>();
 
-
     // Winner thingie
     public DuelsTeam winner = null;
 
@@ -65,26 +68,55 @@ public class TeamDuelsGame { //implements Runnable{
 
     private boolean shouldWait = false;
 
-    public TeamDuelsGame(DuelsTeam team1, DuelsTeam team2, DuelGameMode gameMode, String selectedMap, ServerLevel level, int endTime, int startTime){
+    public TeamDuelsGame(DuelsTeam team1, DuelsTeam team2, DuelGameMode gameMode, DuelsMap map, ServerLevel level,
+                         int endTime, int startTime) {
         this.team1 = team1;
         this.team2 = team2;
         this.gameMode = gameMode;
-        this.selectedMap = selectedMap;
+        this.map = map;
         this.endTime = endTime;
         this.startTime = startTime;
         this.level = level;
     }
 
-    public boolean detectBrokenGame() {
-        return (this.team1 == null || this.team1.creator == null || this.team2 == null || this.team2.creator == null) || (this.isEnding && ((this.winner == null || this.winner.creator == null) || (this.loser == null || this.loser.creator == null)));
+    public String detectBrokenGame() {
+        // return (this.team1 == null || this.team1.leader == null || this.team2 ==
+        // null || this.team2.leader == null) || (this.isEnding && ((this.winner ==
+        // null || this.winner.leader == null) || (this.loser == null ||
+        // this.loser.leader == null)));
+
+        if (this.team1 == null)
+            return "Team 1 is not set [NULL]";
+        if (this.team1.leader == null)
+            return "Team 1 Leader is not set [NULL]";
+
+        if (this.team2 == null)
+            return "Team 2 is not set [NULL]";
+        if (this.team2.leader == null)
+            return "Team 2 Leader is not set [NULL]";
+
+        if (this.isEnding) {
+            if (this.winner == null)
+                return "Winner Team is not set [NULL]";
+            if (this.winner.leader == null)
+                return "Winner Team Leader is not set [NULL]";
+
+            if (this.loser == null)
+                return "Loser Team is not set [NULL]";
+            if (this.loser.leader == null)
+                return "Loser Team Leader is not set [NULL]";
+        }
+
+        return null;
+
     }
 
-    public static TeamDuelsGame startGame(@NotNull DuelsTeam team1, @NotNull DuelsTeam team2, String stringGameMode, @Nullable String selectedMap){
+    public static TeamDuelsGame startGame(@NotNull DuelsTeam team1, @NotNull DuelsTeam team2, String stringGameMode, @Nullable DuelsMap selectedMap) {
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
-        if(gameMode == null){
+        if (gameMode == null) {
             gameMode = DuelGameMode.FFA;
-            stringGameMode = "FFA";
             System.out.printf("[ERROR] Nexia: Invalid duel gamemode ({0}) selected! Using fallback one.%n", stringGameMode);
+            stringGameMode = "FFA";
         }
 
         team1.alive.clear();
@@ -93,30 +125,32 @@ public class TeamDuelsGame { //implements Runnable{
         team2.alive.clear();
         team2.alive.addAll(team2.all);
 
-        ServerLevel duelLevel = DuelGameHandler.createWorld(gameMode.hasRegen);
-        if(selectedMap == null){
-            selectedMap = DuelsMap.stringDuelsMaps.get(RandomUtil.randomInt(0, DuelsMap.stringDuelsMaps.size()));
+        UUID gameUUID = UUID.fromString(UUID.randomUUID().toString().replaceAll("-", ""));
+
+        ServerLevel duelLevel = DuelGameHandler.createWorld(gameUUID.toString(), gameMode.hasRegen);
+        if (selectedMap == null) {
+            selectedMap = DuelsMap.duelsMaps.get(RandomUtil.randomInt(0, DuelsMap.duelsMaps.size()));
         }
-        String name = duelLevel.dimension().toString().replaceAll("]", "").split(":")[2];
 
+        String name = String.valueOf(gameUUID);
+
+        /*
         String mapid = "duels";
-
         String start = "/execute in " + mapid + ":" + name;
-
         ServerTime.factoryServer.runCommand(start + " run forceload add 0 0");
-        ServerTime.factoryServer.runCommand(start + " run " + DuelGameHandler.returnCommandMap(selectedMap));
+        ServerTime.factoryServer.runCommand(start + " run " + selectedMap.structureMap.returnCommand(duelLevel));
         ServerTime.factoryServer.runCommand(start + " run setblock 1 80 0 minecraft:redstone_block");
 
         ServerTime.factoryServer.runCommand(start + " if block 0 80 0 minecraft:structure_block run setblock 0 80 0 air");
         ServerTime.factoryServer.runCommand(start + " if block 1 80 0 minecraft:redstone_block run setblock 1 80 0 air");
+        */
 
-        float[] team1Pos = DuelGameHandler.returnPosMap(selectedMap, true);
-        float[] team2Pos = DuelGameHandler.returnPosMap(selectedMap, false);
+        selectedMap.structureMap.pasteMap(duelLevel);
 
         TeamDuelsGame game = new TeamDuelsGame(team1, team2, gameMode, selectedMap, duelLevel, 5, 5);
         DuelGameHandler.teamDuelsGames.add(game);
 
-        for(ServerPlayer player : team1.all) {
+        for (ServerPlayer player : team1.all) {
             PlayerData data = PlayerDataManager.get(player);
             Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
 
@@ -126,15 +160,20 @@ public class TeamDuelsGame { //implements Runnable{
             data.teamDuelsGame = game;
             data.inDuel = true;
 
-            player.teleportTo(duelLevel, team1Pos[0], team1Pos[1], team1Pos[2], team1Pos[3], team1Pos[4]);
             player.setGameMode(gameMode.gameMode);
+            selectedMap.p1Pos.teleportPlayer(duelLevel, player);
 
             factoryPlayer.sendMessage(ChatFormat.nexiaMessage
-                    .append(Component.text("Your opponent: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                            .append(Component.text(team2.creator.getScoreboardName() + "'s Team").color(ChatFormat.brandColor2))));
+                    .append(Component.text("Your opponent: ").color(ChatFormat.normalColor)
+                            .decoration(ChatFormat.bold, false)
+                            .append(Component.text(team2.leader.getScoreboardName() + "'s Team")
+                                    .color(ChatFormat.brandColor2))));
 
             factoryPlayer.runCommand("/loadinventory " + stringGameMode.toLowerCase(), 4, false);
 
+            if (!gameMode.hasSaturation) {
+                factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
+            }
 
             factoryPlayer.addTag(LobbyUtil.NO_DAMAGE_TAG);
             factoryPlayer.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
@@ -142,7 +181,7 @@ public class TeamDuelsGame { //implements Runnable{
             PlayerUtil.resetHealthStatus(factoryPlayer);
         }
 
-        for(ServerPlayer player : team2.all) {
+        for (ServerPlayer player : team2.all) {
             PlayerData data = PlayerDataManager.get(player);
             Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
 
@@ -152,49 +191,62 @@ public class TeamDuelsGame { //implements Runnable{
             data.teamDuelsGame = game;
             data.inDuel = true;
 
-            player.teleportTo(duelLevel, team2Pos[0], team2Pos[1], team2Pos[2], team2Pos[3], team2Pos[4]);
             player.setGameMode(gameMode.gameMode);
+            selectedMap.p2Pos.teleportPlayer(duelLevel, player);
 
             factoryPlayer.sendMessage(ChatFormat.nexiaMessage
-                    .append(Component.text("Your opponent: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                            .append(Component.text(team1.creator.getScoreboardName() + "'s Team").color(ChatFormat.brandColor2))));
+                    .append(Component.text("Your opponent: ").color(ChatFormat.normalColor)
+                            .decoration(ChatFormat.bold, false)
+                            .append(Component.text(team1.leader.getScoreboardName() + "'s Team")
+                                    .color(ChatFormat.brandColor2))));
 
             factoryPlayer.runCommand("/loadinventory " + stringGameMode.toLowerCase(), 4, false);
 
+            if (!gameMode.hasSaturation) {
+                factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
+            }
+
             factoryPlayer.addTag(LobbyUtil.NO_DAMAGE_TAG);
+
+            factoryPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
             factoryPlayer.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
             PlayerUtil.resetHealthStatus(factoryPlayer);
         }
 
-        game.spawnPositions.put(team1, team1Pos);
-        game.spawnPositions.put(team2, team2Pos);
-
+        game.uuid = gameUUID;
 
         return game;
     }
 
     public void duelSecond() {
-        if(this.detectBrokenGame()) {
+        String isBroken = this.detectBrokenGame();
+        if (isBroken != null) {
             Component error = ChatFormat.nexiaMessage
-                    .append(Component.text("The game you were in was identified as broken, please contact NotCoded or any other dev.")
-                            .color(ChatFormat.failColor)
-                    );
+                    .append(Component.text(
+                                    "The game you were in was identified as broken, please contact NotCoded or any other dev.")
+                            .color(ChatFormat.normalColor)
+                            .decoration(ChatFormat.bold, false));
 
-            for(ServerPlayer spectator : this.spectators) {
+            Component errormsg = Component.text("Cause: " + isBroken);
+
+            for (ServerPlayer spectator : this.spectators) {
                 Player factoryPlayer = PlayerUtil.getFactoryPlayer(spectator);
                 factoryPlayer.setGameMode(Minecraft.GameMode.ADVENTURE);
+                factoryPlayer.removeTag(LobbyUtil.NO_SATURATION_TAG);
                 factoryPlayer.getInventory().clear();
                 factoryPlayer.sendMessage(error);
+                factoryPlayer.sendMessage(errormsg);
                 factoryPlayer.runCommand("/hub", 0, false);
             }
 
-            for(ServerPlayer player : this.level.players()) {
+            for (ServerPlayer player : this.level.players()) {
                 Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
-                factoryPlayer.sendMessage(error);
                 factoryPlayer.setGameMode(Minecraft.GameMode.ADVENTURE);
+                factoryPlayer.removeTag(LobbyUtil.NO_SATURATION_TAG);
                 factoryPlayer.getInventory().clear();
-                DuelGameHandler.leave(player, true);
+                factoryPlayer.sendMessage(error);
+                factoryPlayer.sendMessage(errormsg);
                 factoryPlayer.runCommand("/hub", 0, false);
             }
 
@@ -202,66 +254,69 @@ public class TeamDuelsGame { //implements Runnable{
             this.hasStarted = true;
             this.isEnding = true;
 
-            if(canSafelyDelete) {
+            if (canSafelyDelete) {
                 this.isEnding = false;
-                DuelGameHandler.deleteWorld(this.level.dimension().toString().replaceAll("]", "").split(":")[2]);
+
+                DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
+
                 DuelGameHandler.teamDuelsGames.remove(this);
                 return;
             }
         }
-        if(this.isEnding) {
+        if (this.isEnding) {
             int color = 160 * 65536 + 248;
             // r * 65536 + g * 256 + b;
-            DuelGameHandler.winnerRockets(this.winner.alive.get(new Random().nextInt(this.winner.alive.size())), this.level, color);
+            DuelGameHandler.winnerRockets(this.winner.alive.get(new Random().nextInt(this.winner.alive.size())),
+                    this.level, color);
             this.currentEndTime++;
-            if(this.currentEndTime >= this.endTime || !this.shouldWait) {
+            if (this.currentEndTime >= this.endTime || !this.shouldWait) {
                 DuelsTeam winnerTeam = this.winner;
                 DuelsTeam loserTeam = this.loser;
 
-                for(ServerPlayer spectator : this.spectators) {
+                for (ServerPlayer spectator : this.spectators) {
                     PlayerUtil.getFactoryPlayer(spectator).runCommand("/hub", 0, false);
                 }
 
                 this.isEnding = false;
 
-                for(ServerPlayer player : loserTeam.all) {
+                for (ServerPlayer player : loserTeam.all) {
                     PlayerDataManager.get(player).teamDuelsGame = null;
                     PlayerUtil.getFactoryPlayer(player).runCommand("/hub", 0, false);
                 }
-                for(ServerPlayer player : winnerTeam.all) {
+                for (ServerPlayer player : winnerTeam.all) {
                     PlayerDataManager.get(player).teamDuelsGame = null;
                     PlayerUtil.getFactoryPlayer(player).runCommand("/hub", 0, false);
                 }
 
-                DuelGameHandler.deleteWorld(this.level.dimension().toString().replaceAll("]", "").split(":")[2]);
+                DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
                 this.team1.refreshTeam();
                 this.team2.refreshTeam();
                 DuelGameHandler.teamDuelsGames.remove(this);
                 return;
             }
         }
-        if(!this.hasStarted) {
-            float[] team1pos = this.spawnPositions.get(this.team1);
-            float[] team2pos = this.spawnPositions.get(this.team2);
+        if (!this.hasStarted) {
 
             this.currentStartTime--;
 
-            for(ServerPlayer player : this.team1.alive) {
-                player.teleportTo(this.level, team1pos[0], team1pos[1], team1pos[2], team1pos[3], team1pos[4]);
+            for (ServerPlayer player : this.team1.alive) {
+                this.map.p1Pos.teleportPlayer(this.level, player);
             }
-            for(ServerPlayer player : this.team2.alive) {
-                player.teleportTo(this.level, team2pos[0], team2pos[1], team2pos[2], team2pos[3], team2pos[4]);
+            for (ServerPlayer player : this.team2.alive) {
+                this.map.p2Pos.teleportPlayer(this.level, player);
             }
 
             if (this.startTime - this.currentStartTime >= this.startTime) {
 
-                for(ServerPlayer player : this.team1.alive) {
-                    PlayerUtil.sendSound(player, new EntityPos(player), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
+                for (ServerPlayer player : this.team1.alive) {
+                    PlayerUtil.sendSound(player, new EntityPos(player), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS,
+                            10, 2);
                     player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
                     player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
                 }
-                for(ServerPlayer player : this.team2.alive) {
-                    PlayerUtil.sendSound(player, new EntityPos(player), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
+                for (ServerPlayer player : this.team2.alive) {
+                    PlayerUtil.sendSound(player, new EntityPos(player), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS,
+                            10, 2);
                     player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
                     player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
                 }
@@ -272,21 +327,24 @@ public class TeamDuelsGame { //implements Runnable{
             Title title;
             TextColor color = NamedTextColor.GREEN;
 
-            if(this.currentStartTime <= 3 && this.currentStartTime > 1) {
+            if (this.currentStartTime <= 3 && this.currentStartTime > 1) {
                 color = NamedTextColor.YELLOW;
-            } else if(this.currentStartTime <= 1) {
+            } else if (this.currentStartTime <= 1) {
                 color = NamedTextColor.RED;
             }
 
-            title = Title.title(Component.text(this.currentStartTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
+            title = Title.title(Component.text(this.currentStartTime).color(color), Component.text(""),
+                    Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
 
-            for(ServerPlayer player : this.team1.alive) {
+            for (ServerPlayer player : this.team1.alive) {
                 PlayerUtil.getFactoryPlayer(player).sendTitle(title);
-                PlayerUtil.sendSound(player, new EntityPos(player), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+                PlayerUtil.sendSound(player, new EntityPos(player), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10,
+                        1);
             }
-            for(ServerPlayer player : this.team2.alive) {
+            for (ServerPlayer player : this.team2.alive) {
                 PlayerUtil.getFactoryPlayer(player).sendTitle(title);
-                PlayerUtil.sendSound(player, new EntityPos(player), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+                PlayerUtil.sendSound(player, new EntityPos(player), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10,
+                        1);
             }
         }
     }
@@ -295,27 +353,24 @@ public class TeamDuelsGame { //implements Runnable{
 
         this.winner = winnerTeam;
         this.loser = loserTeam;
-        if(winnerTeam == null) {
+        if (winnerTeam == null) {
             this.winner = this.team1;
-            if(loserTeam == this.team1) {
+            if (loserTeam == this.team1) {
                 this.winner = this.team2;
                 this.loser = this.team1;
-            } else if(loserTeam == this.team2){
+            } else if (loserTeam == this.team2) {
                 this.loser = this.team2;
             }
         }
-
 
         this.shouldWait = wait;
         this.hasStarted = true;
         this.isEnding = true;
 
-
         Component win = Component.text("The game was a ")
                 .color(ChatFormat.normalColor)
                 .append(Component.text("draw").color(ChatFormat.brandColor2))
-                .append(Component.text("!").color(ChatFormat.normalColor)
-                );
+                .append(Component.text("!").color(ChatFormat.normalColor));
 
         Component titleLose = Component.text("Draw")
                 .color(ChatFormat.brandColor2);
@@ -324,9 +379,8 @@ public class TeamDuelsGame { //implements Runnable{
         Component titleWin = titleLose;
         Component subtitleWin = win;
 
-
-        if (winnerTeam == null || winnerTeam.creator == null) {
-            for(ServerPlayer player : loserTeam.all) {
+        if (winnerTeam == null || winnerTeam.leader == null) {
+            for (ServerPlayer player : loserTeam.all) {
                 Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
                 factoryPlayer.sendTitle(Title.title(titleWin, subtitleWin));
                 factoryPlayer.sendMessage(win);
@@ -334,33 +388,29 @@ public class TeamDuelsGame { //implements Runnable{
             return;
         }
 
-
-        win = Component.text(winnerTeam.creator.getScoreboardName() + "'s Team").color(ChatFormat.brandColor2)
-                .append(Component.text(" has won the duel!").color(ChatFormat.normalColor)
-                );
+        win = Component.text(winnerTeam.leader.getScoreboardName() + "'s Team").color(ChatFormat.brandColor2)
+                .append(Component.text(" has won the duel!").color(ChatFormat.normalColor));
 
         titleLose = Component.text("You lost!").color(ChatFormat.brandColor2);
         subtitleLose = Component.text("You have lost against ")
                 .color(ChatFormat.normalColor)
-                .append(Component.text(winnerTeam.creator.getScoreboardName() + "'s Team")
-                        .color(ChatFormat.brandColor2)
-                );
+                .append(Component.text(winnerTeam.leader.getScoreboardName() + "'s Team")
+                        .color(ChatFormat.brandColor2));
 
         titleWin = Component.text("You won!").color(ChatFormat.brandColor2);
         subtitleWin = Component.text("You have won against ")
                 .color(ChatFormat.normalColor)
-                .append(Component.text(loserTeam.creator.getScoreboardName() + "'s Team")
-                        .color(ChatFormat.brandColor2)
-                );
+                .append(Component.text(loserTeam.leader.getScoreboardName() + "'s Team")
+                        .color(ChatFormat.brandColor2));
 
-        for(ServerPlayer player : loserTeam.all) {
+        for (ServerPlayer player : loserTeam.all) {
             Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
             PlayerDataManager.get(player).savedData.loss++;
             factoryPlayer.sendTitle(Title.title(titleLose, subtitleLose));
             factoryPlayer.sendMessage(win);
         }
 
-        for(ServerPlayer player : winnerTeam.all) {
+        for (ServerPlayer player : winnerTeam.all) {
             Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
             PlayerDataManager.get(player).savedData.wins++;
             factoryPlayer.sendTitle(Title.title(titleWin, subtitleWin));
@@ -368,37 +418,41 @@ public class TeamDuelsGame { //implements Runnable{
         }
     }
 
-    public void death(@NotNull ServerPlayer victim, @Nullable DamageSource source){
+    public void death(@NotNull ServerPlayer victim, @Nullable DamageSource source) {
         PlayerData victimData = PlayerDataManager.get(victim);
         DuelsTeam victimTeam = victimData.duelsTeam;
 
-        if(victimTeam == null) return;
-        if(this.isEnding) return;
+        if (victimTeam == null)
+            return;
+        if (this.isEnding)
+            return;
 
         victimTeam.alive.remove(victim);
 
         boolean isVictimTeamDead = victimTeam.alive.isEmpty();
 
-        if(source != null && source.getEntity() instanceof ServerPlayer attacker){
+        if (source != null && source.getEntity() instanceof ServerPlayer attacker) {
             PlayerData attackerData = PlayerDataManager.get(attacker);
-            if(attackerData.teamDuelsGame != null && attackerData.teamDuelsGame.equals(this) && isVictimTeamDead) {
+            if (attackerData.teamDuelsGame != null && attackerData.teamDuelsGame.equals(this) && isVictimTeamDead) {
                 this.endGame(victimTeam, attackerData.duelsTeam, true);
             }
             return;
         }
-        if((source == null || !(source.getEntity() instanceof ServerPlayer)) && isVictimTeamDead) {
+        if ((source == null || !(source.getEntity() instanceof ServerPlayer)) && isVictimTeamDead) {
 
-            if(this.team1 == victimTeam) this.endGame(victimTeam, this.team2, true);
-            else if(this.team2 == victimTeam) this.endGame(victimTeam, this.team1, true);
+            if (this.team1 == victimTeam)
+                this.endGame(victimTeam, this.team2, true);
+            else if (this.team2 == victimTeam)
+                this.endGame(victimTeam, this.team1, true);
 
             return;
         }
 
         /*
-        if(isVictimTeamDead){
-            this.endGame(victimTeam, null, false);
-        }
-
+         * if(isVictimTeamDead){
+         * this.endGame(victimTeam, null, false);
+         * }
+         *
          */
     }
 }
