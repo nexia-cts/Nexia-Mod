@@ -191,6 +191,7 @@ public class LobbyUtil {
             player.removeTag("duels");
             player.removeTag(LobbyUtil.NO_SATURATION_TAG);
         }
+        DuelGameHandler.leave(minecraftPlayer, true);
         if(game.equalsIgnoreCase("classic ffa")){
 
             player.addTag("ffa");
