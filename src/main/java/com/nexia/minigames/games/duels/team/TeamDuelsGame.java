@@ -23,6 +23,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -125,25 +126,12 @@ public class TeamDuelsGame { // implements Runnable{
         team2.alive.clear();
         team2.alive.addAll(team2.all);
 
-        UUID gameUUID = UUID.fromString(UUID.randomUUID().toString().replaceAll("-", ""));
+        UUID gameUUID = UUID.randomUUID()
 
         ServerLevel duelLevel = DuelGameHandler.createWorld(gameUUID.toString(), gameMode.hasRegen);
         if (selectedMap == null) {
             selectedMap = DuelsMap.duelsMaps.get(RandomUtil.randomInt(0, DuelsMap.duelsMaps.size()));
         }
-
-        String name = String.valueOf(gameUUID);
-
-        /*
-        String mapid = "duels";
-        String start = "/execute in " + mapid + ":" + name;
-        ServerTime.factoryServer.runCommand(start + " run forceload add 0 0");
-        ServerTime.factoryServer.runCommand(start + " run " + selectedMap.structureMap.returnCommand(duelLevel));
-        ServerTime.factoryServer.runCommand(start + " run setblock 1 80 0 minecraft:redstone_block");
-
-        ServerTime.factoryServer.runCommand(start + " if block 0 80 0 minecraft:structure_block run setblock 0 80 0 air");
-        ServerTime.factoryServer.runCommand(start + " if block 1 80 0 minecraft:redstone_block run setblock 1 80 0 air");
-        */
 
         selectedMap.structureMap.pasteMap(duelLevel);
 
@@ -160,7 +148,7 @@ public class TeamDuelsGame { // implements Runnable{
             data.teamDuelsGame = game;
             data.inDuel = true;
 
-            player.setGameMode(gameMode.gameMode);
+            player.setGameMode(GameType.ADVENTURE);
             selectedMap.p1Pos.teleportPlayer(duelLevel, player);
 
             factoryPlayer.sendMessage(ChatFormat.nexiaMessage
@@ -191,7 +179,7 @@ public class TeamDuelsGame { // implements Runnable{
             data.teamDuelsGame = game;
             data.inDuel = true;
 
-            player.setGameMode(gameMode.gameMode);
+            player.setGameMode(GameType.ADVENTURE);
             selectedMap.p2Pos.teleportPlayer(duelLevel, player);
 
             factoryPlayer.sendMessage(ChatFormat.nexiaMessage
@@ -311,12 +299,14 @@ public class TeamDuelsGame { // implements Runnable{
                 for (ServerPlayer player : this.team1.alive) {
                     PlayerUtil.sendSound(player, new EntityPos(player), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS,
                             10, 2);
+                    player.setGameMode(this.gameMode.gameMode);
                     player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
                     player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
                 }
                 for (ServerPlayer player : this.team2.alive) {
                     PlayerUtil.sendSound(player, new EntityPos(player), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS,
                             10, 2);
+                    player.setGameMode(this.gameMode.gameMode);
                     player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
                     player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
                 }
