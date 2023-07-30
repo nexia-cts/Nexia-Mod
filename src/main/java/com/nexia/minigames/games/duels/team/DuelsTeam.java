@@ -131,7 +131,7 @@ public class DuelsTeam {
         PlayerData data = PlayerDataManager.get(player);
 
         if(this.refreshLeader(player) && this.people.isEmpty()) {
-            this.disbandTeam(player, true);
+            this.disbandTeam(player, message);
             return;
         }
         if(this.refreshLeader(player) && !this.people.isEmpty()) this.leader = this.people.get(RandomUtil.randomInt(this.people.size()));

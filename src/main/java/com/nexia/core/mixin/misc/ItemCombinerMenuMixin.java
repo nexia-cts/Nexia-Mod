@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.Unique;
  */
 @Mixin(ItemCombinerMenu.class)
 public class ItemCombinerMenuMixin implements LevelAccessOwner {
+    @Unique
     ContainerLevelAccess access;
 
     @Unique
