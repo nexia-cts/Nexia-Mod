@@ -21,6 +21,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -142,8 +143,8 @@ public class DuelsGame { //implements Runnable{
         invitorData.spectatingPlayer = null;
         invitorData.duelPlayer = mcP2;
 
-        mcP1.setGameMode(gameMode.gameMode);
-        mcP2.setGameMode(gameMode.gameMode);
+        mcP1.setGameMode(GameType.ADVENTURE);
+        mcP2.setGameMode(GameType.ADVENTURE);
 
         removeQueue(mcP1, null, true);
         removeQueue(mcP2, null, true);
@@ -249,9 +250,11 @@ public class DuelsGame { //implements Runnable{
             if (this.startTime - this.currentStartTime >= this.startTime) {
                 PlayerUtil.sendSound(this.p1, new EntityPos(this.p1), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
                 PlayerUtil.sendSound(this.p2, new EntityPos(this.p2), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
+                this.p1.setGameMode(this.gameMode.gameMode);
                 this.p1.removeTag(LobbyUtil.NO_DAMAGE_TAG);
                 this.p1.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
+                this.p2.setGameMode(this.gameMode.gameMode);
                 this.p2.removeTag(LobbyUtil.NO_DAMAGE_TAG);
                 this.p2.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
                 this.hasStarted = true;
@@ -352,7 +355,7 @@ public class DuelsGame { //implements Runnable{
             PlayerData attackerData = PlayerDataManager.get(attacker);
 
             if((victimData.inDuel && attackerData.inDuel) && victimData.duelsGame == attackerData.duelsGame){
-                endGame(victim, attacker, true);
+                this.endGame(victim, attacker, true);
             }
             return;
         }
@@ -361,13 +364,13 @@ public class DuelsGame { //implements Runnable{
             PlayerData attackerData = PlayerDataManager.get(attacker);
 
             if ((victimData.inDuel && attackerData.inDuel) && (victimData.duelPlayer.getStringUUID().equalsIgnoreCase(attacker.getStringUUID())) && attackerData.duelPlayer.getStringUUID().equalsIgnoreCase(victim.getStringUUID())) {
-                endGame(victim, attacker, true);
+                this.endGame(victim, attacker, true);
             }
             return;
         }
 
         if(victimData.inDuel) {
-            endGame(victim, null, false);
+            this.endGame(victim, null, false);
         }
     }
 }
