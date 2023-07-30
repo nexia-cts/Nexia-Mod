@@ -126,7 +126,7 @@ public class TeamDuelsGame { // implements Runnable{
         team2.alive.clear();
         team2.alive.addAll(team2.all);
 
-        UUID gameUUID = UUID.randomUUID()
+        UUID gameUUID = UUID.randomUUID();
 
         ServerLevel duelLevel = DuelGameHandler.createWorld(gameUUID.toString(), gameMode.hasRegen);
         if (selectedMap == null) {
