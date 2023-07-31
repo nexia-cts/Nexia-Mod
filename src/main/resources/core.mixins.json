@@ -13,6 +13,7 @@
     "entity.EntityMixin",
     "entity.ItemFrameMixin",
     "entity.LivingEntityMixin",
+    "entity.MinecartTNTMixin",
     "entity.PrimedTntMixin",
     "entity.ThrownTridentMixin",
     "item.EnderPearlItemMixin",
