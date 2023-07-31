@@ -12,17 +12,6 @@ public class CommandLoader {
 
     public static void registerCommands() {
 
-        /*
-        CommandRegistrationCallback.EVENT.register((dispatcher, bl) -> {
-            for (CommandNode<CommandSourceStack> node : dispatcher.getRoot().getChildren()) {
-                NxCmdUtil.alterCommand(node);
-            }
-        });
-
-         */
-
-
-
         CommandRegistrationCallback.EVENT.register(DiscordCommand::register);
         CommandRegistrationCallback.EVENT.register(LeaveCommand::register);
 

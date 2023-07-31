@@ -9,7 +9,6 @@ public class ListenerHelper {
         PlayerLeaveListener.registerListener();
         PlayerBreakBlockListener.registerListener();
         UseItemListener.registerListener();
-        PlayerDeathListener.registerListener();
         PlayerDropItemListener.registerListener();
         PlayerRespawnListener.registerListener();
     }

@@ -244,9 +244,7 @@ public class TeamDuelsGame { // implements Runnable{
 
             if (canSafelyDelete) {
                 this.isEnding = false;
-
                 DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
-
                 DuelGameHandler.teamDuelsGames.remove(this);
                 return;
             }

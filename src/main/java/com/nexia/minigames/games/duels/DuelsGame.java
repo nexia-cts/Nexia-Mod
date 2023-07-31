@@ -6,7 +6,6 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.map.DuelsMap;
@@ -103,19 +102,6 @@ public class DuelsGame { //implements Runnable{
         if(selectedMap == null){
             selectedMap = DuelsMap.duelsMaps.get(RandomUtil.randomInt(0, DuelsMap.duelsMaps.size()));
         }
-
-        String name = String.valueOf(gameUUID);
-
-        /*
-        String mapid = "duels";
-        String start = "/execute in " + mapid + ":" + name;
-        ServerTime.factoryServer.runCommand(start + " run forceload add 0 0");
-        ServerTime.factoryServer.runCommand(start + " run " + selectedMap.structureMap.returnCommand(duelLevel));
-        ServerTime.factoryServer.runCommand(start + " run setblock 1 80 0 minecraft:redstone_block");
-
-        ServerTime.factoryServer.runCommand(start + " if block 0 80 0 minecraft:structure_block run setblock 0 80 0 air");
-        ServerTime.factoryServer.runCommand(start + " if block 1 80 0 minecraft:redstone_block run setblock 1 80 0 air");
-         */
 
         selectedMap.structureMap.pasteMap(duelLevel);
 

@@ -19,6 +19,7 @@
     "entity.LargeFireballMixin",
     "entity.LivingEntityMixin",
     "entity.PrimedTntMixin",
+    "entity.MinecartTNTMixin",
     "entity.ThrownEggMixin",
     "entity.ThrownEnderpearlMixin",
     "entity.ThrownTridentMixin",

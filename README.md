@@ -2,7 +2,7 @@
 
 Last Sync with [Main](https://github.com/nexia-cts/Nexia-Mod/tree/main):
 
-[f598b5c4d0a83528e432a74700ed746e9f08ccf1](https://github.com/nexia-cts/Nexia-Mod/commit/f598b5c4d0a83528e432a74700ed746e9f08ccf1)
+[74f26b623f0f235c20bfa688f1130094e6c608ca](https://github.com/nexia-cts/Nexia-Mod/commit/74f26b623f0f235c20bfa688f1130094e6c608ca)
 
 ### Requirements
 - Java 17
