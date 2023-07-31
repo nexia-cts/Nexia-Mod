@@ -7,10 +7,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemFrame.class)
@@ -26,6 +28,17 @@ public abstract class ItemFrameMixin extends Entity {
         // Disable interacting with armor stands in ffa
         if (FfaAreas.isFfaWorld(level) && !player.isCreative()) {
             cir.setReturnValue(InteractionResult.FAIL);
+            return;
+        }
+
+    }
+
+    @Inject(method = "removeFramedMap", cancellable = true, at = @At("HEAD"))
+    private void canTakeItem(ItemStack itemStack, CallbackInfo ci) {
+
+        // Disable interacting with item frames in ffa
+        if (FfaAreas.isFfaWorld(level) && !getTags().contains("removeFrameMap")) {
+            ci.cancel();
             return;
         }
 

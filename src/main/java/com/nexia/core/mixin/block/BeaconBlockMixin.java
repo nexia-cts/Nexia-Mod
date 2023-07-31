@@ -23,7 +23,7 @@ public class BeaconBlockMixin {
         if(!(player instanceof ServerPlayer))
             return;
 
-        if(FfaUtil.isFfaPlayer(player) && ((ServerPlayer) player).gameMode.getGameModeForPlayer() == GameType.ADVENTURE) {
+        if(FfaUtil.isFfaPlayer(player) && !player.isCreative()) {
             cir.setReturnValue(InteractionResult.FAIL);
         }
     }
