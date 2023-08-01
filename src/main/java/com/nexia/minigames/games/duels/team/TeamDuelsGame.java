@@ -48,8 +48,6 @@ public class TeamDuelsGame { // implements Runnable{
 
     public boolean hasStarted = false;
 
-    public HashMap<DuelsTeam, float[]> spawnPositions = new HashMap<>();
-
     public int startTime;
 
     private int currentStartTime = 5;
@@ -69,8 +67,7 @@ public class TeamDuelsGame { // implements Runnable{
 
     private boolean shouldWait = false;
 
-    public TeamDuelsGame(DuelsTeam team1, DuelsTeam team2, DuelGameMode gameMode, DuelsMap map, ServerLevel level,
-                         int endTime, int startTime) {
+    public TeamDuelsGame(DuelsTeam team1, DuelsTeam team2, DuelGameMode gameMode, DuelsMap map, ServerLevel level, int endTime, int startTime) {
         this.team1 = team1;
         this.team2 = team2;
         this.gameMode = gameMode;
@@ -220,36 +217,24 @@ public class TeamDuelsGame { // implements Runnable{
 
             for (ServerPlayer spectator : this.spectators) {
                 Player factoryPlayer = PlayerUtil.getFactoryPlayer(spectator);
-                factoryPlayer.setGameMode(Minecraft.GameMode.ADVENTURE);
-                factoryPlayer.removeTag(LobbyUtil.NO_SATURATION_TAG);
-                factoryPlayer.getInventory().clear();
                 factoryPlayer.sendMessage(error);
                 factoryPlayer.sendMessage(errormsg);
-                factoryPlayer.runCommand("/hub", 0, false);
             }
 
             for (ServerPlayer player : this.level.players()) {
                 Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
-                factoryPlayer.setGameMode(Minecraft.GameMode.ADVENTURE);
-                factoryPlayer.removeTag(LobbyUtil.NO_SATURATION_TAG);
-                factoryPlayer.getInventory().clear();
                 factoryPlayer.sendMessage(error);
                 factoryPlayer.sendMessage(errormsg);
-                factoryPlayer.runCommand("/hub", 0, false);
             }
 
-            boolean canSafelyDelete = this.level.players().isEmpty() && this.spectators.isEmpty();
             this.hasStarted = true;
             this.isEnding = true;
+            this.shouldWait = false;
 
-            if (canSafelyDelete) {
-                this.isEnding = false;
+            DuelsTeam notNullTeam = this.team1;
 
-                DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
-
-                DuelGameHandler.teamDuelsGames.remove(this);
-                return;
-            }
+            if(notNullTeam != null) notNullTeam = this.team2;
+            if(notNullTeam != null) this.endGame(notNullTeam, null, false);
         }
         if (this.isEnding) {
             int color = 160 * 65536 + 248;
@@ -369,7 +354,7 @@ public class TeamDuelsGame { // implements Runnable{
         Component titleWin = titleLose;
         Component subtitleWin = win;
 
-        if (winnerTeam == null || winnerTeam.leader == null) {
+        if ((winnerTeam == null || winnerTeam.leader == null)) {
             for (ServerPlayer player : loserTeam.all) {
                 Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
                 factoryPlayer.sendTitle(Title.title(titleWin, subtitleWin));

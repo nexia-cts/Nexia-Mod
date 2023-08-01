@@ -45,7 +45,7 @@ public class StructureMap {
 
         if(forceLoad) ServerTime.factoryServer.runCommand(start + " run forceload add 0 0");
 
-        if(stringRotation.trim().length() != 0 && this.rotation != Rotation.NO_ROTATION) {
+        if(!stringRotation.trim().isEmpty() && this.rotation != Rotation.NO_ROTATION) {
             ServerTime.factoryServer.runCommand(String.format("%s run setblock %s %s %s minecraft:structure_block{mode:'LOAD',name:'%s:%s',posX:%s,posY:%s,posZ:%s,rotation:\"%s\"}", start, placePos.getX(), placePos.getY(), placePos.getZ(), this.identifier.getNamespace(), this.identifier.getId(), pastePos.getX(), pastePos.getY(), pastePos.getZ(), stringRotation), 4, false);
         } else if(this.rotation == Rotation.NO_ROTATION){
             ServerTime.factoryServer.runCommand(String.format("%s run setblock %s %s %s minecraft:structure_block{mode:'LOAD',name:'%s:%s',posX:%s,posY:%s,posZ:%s}", start, placePos.getX(), placePos.getY(), placePos.getZ(), this.identifier.getNamespace(), this.identifier.getId(), pastePos.getX(), pastePos.getY(), pastePos.getZ()), 4, false);

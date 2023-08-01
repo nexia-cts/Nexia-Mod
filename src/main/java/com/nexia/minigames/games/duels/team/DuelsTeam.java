@@ -108,8 +108,14 @@ public class DuelsTeam {
     public void disbandTeam(ServerPlayer executor, boolean message) {
         Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor);
 
-        if(!this.refreshLeader(executor)) {
-            this.replaceLeader(executor, this.people.get(RandomUtil.randomInt(this.people.size())), false);
+        if(!this.refreshLeader(executor)){
+            factoryExecutor.sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
+            return;
+        }
+
+        if(!this.people.isEmpty()) {
+            this.leader = this.people.get(RandomUtil.randomInt(this.people.size()));
+            this.leaveTeam(executor, true);
             return;
         }
 
@@ -156,7 +162,7 @@ public class DuelsTeam {
             return;
         }
 
-        if(player == this.leader) {
+        if(player == invitor) {
             factoryInvitor.sendMessage(Component.text("You cannot invite yourself!").color(ChatFormat.failColor));
             return;
         }

@@ -55,11 +55,7 @@ public class DuelGameHandler {
         data.spectatingPlayer = null;
         if (leaveTeam) {
             if (data.duelsTeam != null) {
-                if (data.duelsTeam.refreshLeader(player)) {
-                    data.duelsTeam.disbandTeam(player, true);
-                } else {
-                    data.duelsTeam.leaveTeam(player, true);
-                }
+                data.duelsTeam.leaveTeam(player, true);
             }
             data.duelsTeam = null;
         }
@@ -105,19 +101,6 @@ public class DuelGameHandler {
             deleteWorld(deletion);
         }
     }
-
-    /*
-    public static String returnCommandMap(DuelsMap map) {
-        if (map.structureMap.rotation != Rotation.NO_ROTATION) {
-            return "setblock 0 80 0 minecraft:structure_block{mode:'LOAD',name:'duels:" + map.id + "'" + ",posX:"
-                    + map.structureMap.pastePos.getX() + ",posY:" + map.structureMap.pastePos.getY() + ",posZ:" + map.structureMap.pastePos.getZ() + ",rotation:\"" + map.structureMap.rotation.id + "\"}";
-        } else {
-            return "setblock 0 80 0 minecraft:structure_block{mode:'LOAD',name:'duels:" + map.id + "'" + ",posX:"
-                    + map.structureMap.pastePos.getX() + ",posY:" + map.structureMap.pastePos.getY() + ",posZ:" + map.structureMap.pastePos.getZ() + "}";
-        }
-
-    }
-     */
 
 
     public static ServerLevel createWorld(String uuid, boolean doRegeneration) {
