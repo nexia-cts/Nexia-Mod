@@ -1,9 +1,9 @@
 # gradle
 
-.gradle/
-build/
-out/
-classes/
+.gradle
+build
+out
+classes
 
 # text editors
 .obsidian
@@ -19,10 +19,13 @@ classes/
 *.ipr
 *.iws
 
+qodana.sarif.json
+qodana.yaml
+
 # vscode
 
-.settings/
-.vscode/
+.settings
+.vscode
 bin/
 .classpath
 .project

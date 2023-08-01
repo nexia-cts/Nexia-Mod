@@ -7,7 +7,6 @@ import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.duels.DuelGameMode;
-import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
@@ -22,24 +21,19 @@ import net.minecraft.world.item.enchantment.Enchantments;
 
 public class PlayGUI extends SimpleGui {
 
-    static final TextComponent title = new TextComponent("Game Menu");
-    static final TextComponent ffaTitle = new TextComponent("FFA Menu");
+    final TextComponent title = new TextComponent("Game Menu");
     public PlayGUI(MenuType<?> type, ServerPlayer player, boolean includePlayer) {
         super(type, player, includePlayer);
     }
 
-    private void fillEmptySlots(ItemStack itemStack, int slots){
-        for(int i = 0; i < slots; i++){
+    private void fillEmptySlots(ItemStack itemStack){
+        for(int i = 0; i < 9; i++){
             this.setSlot(i, itemStack);
-            /*
-            GuiElementInterface element = this.getSlot(i);
-            if(element != null && element.getItemStack().getItem() == null || element.getItemStack().getItem() == Items.AIR){
-                this.setSlot(i, itemStack);
-            }
-             */
         }
     }
     private void setMainLayout(){
+        this.setTitle(this.title);
+
         ItemStack ffa = new ItemStack(Items.NETHERITE_SWORD, 1);
         ffa.setHoverName(new TextComponent("§3FFA"));
         ItemDisplayUtil.addGlint(ffa);
@@ -51,10 +45,10 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(ffa, "§f", 3);
         ItemDisplayUtil.addLore(ffa, "§3◆ There are " + FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
 
-        ItemStack hub = new ItemStack(Items.DRAGON_BREATH, 1);
-        hub.setHoverName(new TextComponent("§5Hub"));
-        hub.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
-        ItemDisplayUtil.addLore(hub, "§7Return back to the hub.", 0);
+        ItemStack other = new ItemStack(Items.DRAGON_BREATH, 1);
+        other.setHoverName(new TextComponent("§5Other Games"));
+        other.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
+        ItemDisplayUtil.addLore(other, "§7Discover other games.", 0);
 
         ItemStack bedwars = new ItemStack(Items.RED_BED, 1);
         bedwars.setHoverName(new TextComponent("§cBedwars"));
@@ -68,17 +62,16 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(bedwars, "§f", 4);
         ItemDisplayUtil.addLore(bedwars, "§c◆ There are " + BwAreas.bedWarsWorld.players().size() + " people playing this gamemode.", 5);
 
-        ItemStack oitc = new ItemStack(Items.BOW, 1);
-        oitc.setHoverName(new TextComponent("§eOITC"));
-        ItemDisplayUtil.addGlint(oitc);
-        oitc.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
+        ItemStack skywars = new ItemStack(Items.GRASS_BLOCK, 1);
+        skywars.setHoverName(new TextComponent("§aSkywars"));
+        skywars.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
-        ItemDisplayUtil.addLore(oitc, "§5", 0);
-        ItemDisplayUtil.addLore(oitc, "§7One in the chamber.", 1);
-        ItemDisplayUtil.addLore(oitc, "§7Try to kill as many people as possible", 2);
-        ItemDisplayUtil.addLore(oitc, "§7to achieve victory!", 3);
-        ItemDisplayUtil.addLore(oitc, "§f", 4);
-        ItemDisplayUtil.addLore(oitc, "§e◆ There are " + PlayerGameMode.OITC.players + " people playing this gamemode.", 5);
+        ItemDisplayUtil.addLore(skywars, "§5", 0);
+        ItemDisplayUtil.addLore(skywars, "§7Fight players PLACEHOLDER", 1);
+        ItemDisplayUtil.addLore(skywars, "§7PLACEHOLDER", 2);
+        ItemDisplayUtil.addLore(skywars, "§7to achieve victory!", 3);
+        ItemDisplayUtil.addLore(skywars, "§f", 4);
+        ItemDisplayUtil.addLore(skywars, "§a◆ There are " + PlayerGameMode.SKYWARS.players + " people playing this gamemode.", 5);
 
         ItemStack duels = new ItemStack(Items.NETHERITE_AXE, 1);
         duels.setHoverName(new TextComponent("§9Duels"));
@@ -102,16 +95,15 @@ public class PlayGUI extends SimpleGui {
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
 
-        fillEmptySlots(emptySlot, 9);
+        fillEmptySlots(emptySlot);
         this.setSlot(2, ffa);
-        this.setSlot(4, hub);
+        this.setSlot(4, other);
         this.setSlot(6, duels);
-        this.setSlot(0, oitc);
+        this.setSlot(0, skywars);
         this.setSlot(8, bedwars);
     }
 
     private void setFFALayout(){
-        this.setTitle(ffaTitle);
         ItemStack enchanted_sword = new ItemStack(Items.NETHERITE_SWORD, 1);
         enchanted_sword.setHoverName(new TextComponent("§cClassic"));
         enchanted_sword.enchant(Enchantments.SHARPNESS, 1);
@@ -126,10 +118,45 @@ public class PlayGUI extends SimpleGui {
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
 
-        fillEmptySlots(emptySlot, 9);
+        fillEmptySlots(emptySlot);
         this.setSlot(3, unknown);
         this.setSlot(4, enchanted_sword);
         this.setSlot(5, unknown);
+    }
+
+    private void setOtherGamesLayout() {
+        ItemStack unknown = new ItemStack(Items.BARRIER, 1);
+        unknown.setHoverName(new TextComponent("§c???"));
+        ItemDisplayUtil.addGlint(unknown);
+        unknown.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
+
+        ItemStack back = new ItemStack(Items.DRAGON_BREATH, 1);
+        back.setHoverName(new TextComponent("§5Back"));
+        back.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
+        ItemDisplayUtil.addLore(back, "§7Go back to the main menu.", 0);
+
+        ItemStack oitc = new ItemStack(Items.BOW, 1);
+        oitc.setHoverName(new TextComponent("§eOITC"));
+        ItemDisplayUtil.addGlint(oitc);
+        oitc.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
+
+        ItemDisplayUtil.addLore(oitc, "§5", 0);
+        ItemDisplayUtil.addLore(oitc, "§7One in the chamber.", 1);
+        ItemDisplayUtil.addLore(oitc, "§7Try to kill as many people as possible", 2);
+        ItemDisplayUtil.addLore(oitc, "§7to achieve victory!", 3);
+        ItemDisplayUtil.addLore(oitc, "§f", 4);
+        ItemDisplayUtil.addLore(oitc, "§e◆ There are " + PlayerGameMode.OITC.players + " people playing this gamemode.", 5);
+
+        ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
+        emptySlot.setHoverName(new TextComponent(""));
+
+        fillEmptySlots(emptySlot);
+
+        this.setSlot(2, oitc);
+        this.setSlot(4, back);
+        this.setSlot(6, unknown);
+        this.setSlot(0, unknown);
+        this.setSlot(8, unknown);
     }
 
     public boolean click(int index, ClickType clickType, net.minecraft.world.inventory.ClickType action){
@@ -144,10 +171,17 @@ public class PlayGUI extends SimpleGui {
             if(name.getString().equalsIgnoreCase("§3FFA")){
                 this.setFFALayout();
             }
+
             if(name.getString().equalsIgnoreCase("§cBedwars")){
                 LobbyUtil.sendGame(this.player, "bedwars", true, true);
                 this.close();
             }
+
+            if(name.getString().equalsIgnoreCase("§aSkywars")){
+                LobbyUtil.sendGame(this.player, "skywars", true, true);
+                this.close();
+            }
+
             if(name.getString().equalsIgnoreCase("§eOITC")){
                 LobbyUtil.sendGame(this.player, "oitc", true, true);
                 this.close();
@@ -158,11 +192,15 @@ public class PlayGUI extends SimpleGui {
                 this.close();
             }
 
-            if(name.getString().toLowerCase().equalsIgnoreCase("§5Hub")){
-                LobbyUtil.leaveAllGames(this.player, true);
+            if(name.getString().toLowerCase().equalsIgnoreCase("§5Other Games")){
+                this.setOtherGamesLayout();
             }
 
-            if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR && itemStack.getItem() != Items.NETHERITE_SWORD && itemStack.getItem() != Items.COMPASS){
+            if(name.getString().toLowerCase().equalsIgnoreCase("§5Back")){
+                this.setMainLayout();
+            }
+
+            if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR && itemStack.getItem() != Items.NETHERITE_SWORD && itemStack.getItem() != Items.DRAGON_BREATH && itemStack.getItem() != Items.COMPASS){
                 this.close();
             }
         }
@@ -170,7 +208,6 @@ public class PlayGUI extends SimpleGui {
     }
     public static void openMainGUI(ServerPlayer player) {
         PlayGUI shop = new PlayGUI(MenuType.GENERIC_9x1, player, false);
-        shop.setTitle(title);
         shop.setMainLayout();
         shop.open();
     }

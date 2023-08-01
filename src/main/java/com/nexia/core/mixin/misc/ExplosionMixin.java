@@ -50,7 +50,7 @@ public class ExplosionMixin {
          */
 
         //return (!BwAreas.isBedWarsWorld(level) || BwUtil.shouldExplode(blockPos, blockState)) && instance.shouldBlockExplode(explosion, blockGetter, blockPos, blockState, resistance);
-        return BwAreas.isBedWarsWorld(level) && !BwUtil.shouldExplode(blockPos, blockState) ? false : instance.shouldBlockExplode(explosion, blockGetter, blockPos, blockState, resistance);
+        return (!BwAreas.isBedWarsWorld(level) || BwUtil.shouldExplode(blockPos, blockState)) && instance.shouldBlockExplode(explosion, blockGetter, blockPos, blockState, resistance);
     }
 
     @ModifyArgs(method = "explode", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/Vec3;add(DDD)Lnet/minecraft/world/phys/Vec3;"))

@@ -17,12 +17,10 @@ import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.oitc.OitcGame;
-import net.minecraft.Util;
+import com.nexia.minigames.games.skywars.SkywarsGame;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import xyz.nucleoid.fantasy.Fantasy;
-
-import java.util.ConcurrentModificationException;
 
 public class ServerTime {
 
@@ -55,6 +53,7 @@ public class ServerTime {
         fantasy = Fantasy.get(minecraftServer);
         LobbyUtil.setLobbyWorld(minecraftServer);
         FfaAreas.setFfaWorld(minecraftServer);
+        SkywarsGame.firstTick();
         OitcGame.firstTick(minecraftServer);
 
         BwLoadShop.loadBedWarsShop(true);
@@ -96,6 +95,7 @@ public class ServerTime {
     static void everySecond() {
         totalSecondCount++;
         OitcGame.second();
+        SkywarsGame.second();
         GameHandler.second();
         try {
             for (DuelsGame game : DuelGameHandler.duelsGames) {

@@ -31,10 +31,7 @@ public abstract class EntityMixin implements Nameable, CommandSource {
     private double modifyVoidY(Entity instance) {
         double voidY = -32;
 
-        if (instance.level instanceof ServerLevel) {
-        }
-
-        return instance.getY() + -64 - voidY;
+        return instance.getY() + 64 - voidY;
     }
 
 }

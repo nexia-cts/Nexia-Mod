@@ -77,7 +77,7 @@ public class BwPlayerTracker {
         ServerPlayer closestPlayer = null;
         double closestPos = Double.MAX_VALUE;
 
-        for (ServerPlayer trackable : player.getServer().getPlayerList().getPlayers()) {
+        for (ServerPlayer trackable : ServerTime.minecraftServer.getPlayerList().getPlayers()) {
             if (BwUtil.isBedWarsPlayer(trackable) && !trackable.getUUID().equals(player.getUUID())) {
 
                 double distance = (trackable.getX() - player.getX()) * (trackable.getX() - player.getX()) +

@@ -332,9 +332,6 @@ public class TeamDuelsGame { // implements Runnable{
             this.winner = this.team1;
             if (loserTeam == this.team1) {
                 this.winner = this.team2;
-                this.loser = this.team1;
-            } else if (loserTeam == this.team2) {
-                this.loser = this.team2;
             }
         }
 
@@ -349,7 +346,7 @@ public class TeamDuelsGame { // implements Runnable{
 
         Component titleLose = Component.text("Draw")
                 .color(ChatFormat.brandColor2);
-        Component subtitleLose = win;
+        Component subtitleLose;
 
         Component titleWin = titleLose;
         Component subtitleWin = win;

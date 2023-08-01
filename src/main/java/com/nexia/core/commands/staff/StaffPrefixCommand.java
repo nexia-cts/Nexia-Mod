@@ -35,7 +35,7 @@ public class StaffPrefixCommand {
                                             Player otherPlayer = PlayerUtil.getFactoryPlayer(mcOtherPlayer);
                                             String prefix = StringArgumentType.getString(context, "prefix");
 
-                                            ServerPlayer mcExecutor = null;
+                                            ServerPlayer mcExecutor;
                                             Player factoryExecutor = null;
 
                                             try {

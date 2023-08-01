@@ -17,6 +17,8 @@ import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.oitc.OitcGameMode;
+import com.nexia.minigames.games.skywars.SkywarsGame;
+import com.nexia.minigames.games.skywars.SkywarsGameMode;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -32,7 +34,7 @@ import net.minecraft.world.level.Level;
 
 public class LobbyUtil {
 
-    public static String[] statsGameModes = {"FFA", "BEDWARS", "OITC", "DUELS"};
+    public static String[] statsGameModes = {"FFA", "BEDWARS", "OITC", "DUELS", "SKYWARS"};
 
     public static ServerLevel lobbyWorld = null;
     public static EntityPos lobbySpawn = new EntityPos(Main.config.lobbyPos[0], Main.config.lobbyPos[1], Main.config.lobbyPos[2], 0, 0);
@@ -62,6 +64,7 @@ public class LobbyUtil {
             "in_bedwars",
             "ffa",
             "duels",
+            "skywars",
             "oitc",
             "in_oitc_game",
             NO_RANK_DISPLAY_TAG,
@@ -83,6 +86,10 @@ public class LobbyUtil {
         else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.OITC) {
             OitcGame.leave(minecraftPlayer);
             PlayerGameMode.OITC.players--;
+        }
+        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.SKYWARS) {
+            SkywarsGame.leave(minecraftPlayer);
+            PlayerGameMode.SKYWARS.players--;
         }
 
         BwScoreboard.removeScoreboardFor(minecraftPlayer);
@@ -224,11 +231,9 @@ public class LobbyUtil {
             FfaUtil.setInventory(minecraftPlayer);
         }
         if(game.equalsIgnoreCase("bedwars")){
-            PlayerGameMode.BEDWARS.players++;
             if(message){ player.sendActionBarMessage(Component.text("You have joined §b\uD83E\uDE93 §c§lBedwars §e⚡"));}
             BwPlayerEvents.tryToJoin(minecraftPlayer, false);
         }
-
 
         if(game.equalsIgnoreCase("duels")){
             LobbyUtil.leaveAllGames(minecraftPlayer, tp);
@@ -253,6 +258,19 @@ public class LobbyUtil {
             OitcGame.joinQueue(minecraftPlayer);
 
             if(message){player.sendActionBarMessage(Component.text("You have joined §7\uD83D\uDDE1 §f§lOITC §7\uD83C\uDFF9"));}
+        }
+
+        if(game.equalsIgnoreCase("skywars")){
+            player.addTag("skywars");
+            PlayerGameMode.SKYWARS.players++;
+            PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.SKYWARS;
+            OitcGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
+
+            com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(minecraftPlayer).gameMode = SkywarsGameMode.LOBBY;
+
+            SkywarsGame.joinQueue(minecraftPlayer);
+
+            if(message){player.sendActionBarMessage(Component.text("You have joined §7\uD83D\uDDE1 §aSkywars §7\uD83D\uDDE1"));}
         }
     }
 

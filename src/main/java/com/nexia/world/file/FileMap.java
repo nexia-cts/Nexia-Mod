@@ -69,10 +69,7 @@ public class FileMap {
             for(File file : new File(this.poiPath).listFiles()) {
                 Files.copy(Paths.get(file.getPath()), Paths.get(poiPath), StandardCopyOption.REPLACE_EXISTING);
             }
-        } catch (Exception ignored) {
-            ignored.printStackTrace();
-            return false;
-        }
+        } catch (Exception ignored) { return false; }
 
 
         return true;

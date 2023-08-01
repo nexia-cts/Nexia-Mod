@@ -1,33 +1,28 @@
-
-
-package com.nexia.ffa.utilities.player;
+package com.nexia.minigames.games.skywars.util.player;
 
 import com.google.gson.Gson;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.world.entity.player.Player;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.UUID;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.world.entity.player.Player;
 
 public class PlayerDataManager {
-    static String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/ffa";
-    static String playerDataDirectory;
-    static HashMap<UUID, PlayerData> allPlayerData;
 
+    static String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/skywars";
+    static String playerDataDirectory = dataDirectory + "/playerdata";
 
-
-    public PlayerDataManager() {
-    }
+    static HashMap<UUID, PlayerData> allPlayerData = new HashMap<>();
 
     public static PlayerData get(Player player) {
         if (!allPlayerData.containsKey(player.getUUID())) {
             addPlayerData(player);
         }
-
-        return (PlayerData)allPlayerData.get(player.getUUID());
+        return allPlayerData.get(player.getUUID());
     }
 
     public static void addPlayerData(Player player) {
@@ -36,45 +31,46 @@ public class PlayerDataManager {
     }
 
     public static void removePlayerData(Player player) {
-        if (allPlayerData.containsKey(player.getUUID())) {
-            savePlayerData(player);
-            allPlayerData.remove(player.getUUID());
-        }
+        if (!allPlayerData.containsKey(player.getUUID())) return;
+        savePlayerData(player);
+        allPlayerData.remove(player.getUUID());
     }
 
     private static void savePlayerData(Player player) {
         try {
+
             PlayerData playerData = get(player);
             Gson gson = new Gson();
             String json = gson.toJson(playerData.savedData);
+
             String directory = getDataDir();
-            FileWriter fileWriter = new FileWriter(directory + "/" + player.getUUID() + ".json");
+            FileWriter fileWriter = new FileWriter(directory + "/" +  player.getUUID() + ".json");
             fileWriter.write(json);
             fileWriter.close();
-        } catch (Exception var6) {
-            var6.printStackTrace();
-        }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static SavedPlayerData loadPlayerData(Player player) {
         try {
+
             String directory = getDataDir();
             String json = Files.readString(Path.of(directory + "/" + player.getUUID() + ".json"));
+
             Gson gson = new Gson();
             return gson.fromJson(json, SavedPlayerData.class);
-        } catch (Exception var4) {
+
+        } catch (Exception e) {
             return new SavedPlayerData();
         }
     }
 
     private static String getDataDir() {
-        (new File(playerDataDirectory)).mkdirs();
+        new File(playerDataDirectory).mkdirs();
         return playerDataDirectory;
     }
 
-    static {
-        playerDataDirectory = dataDirectory + "/playerdata";
-        allPlayerData = new HashMap();
-    }
+
 }

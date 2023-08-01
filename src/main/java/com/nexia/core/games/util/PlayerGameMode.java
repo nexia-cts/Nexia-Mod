@@ -8,6 +8,7 @@ public class PlayerGameMode {
     public static final PlayerGameMode LOBBY = new PlayerGameMode("lobby", 0);
     public static final PlayerGameMode BEDWARS = new PlayerGameMode("bedwars", 0);
 
+    public static final PlayerGameMode SKYWARS = new PlayerGameMode("skywars", 0);
     public static final PlayerGameMode OITC = new PlayerGameMode("oitc", 0);
     public static final PlayerGameMode FFA = new PlayerGameMode("ffa", 0);
 

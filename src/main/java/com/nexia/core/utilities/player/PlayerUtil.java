@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesPacket;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
+import net.minecraft.server.bossevents.CustomBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -52,6 +53,10 @@ public class PlayerUtil {
             player.connection.send(titlePacket);
             player.connection.send(subtitlePacket);
         }
+    }
+
+    public static boolean sendBossbar(CustomBossEvent customBossEvent, Collection<ServerPlayer> collection) {
+        return customBossEvent.setPlayers(collection);
     }
 
     private static void sendDefaultTitleLength(ServerPlayer player) {

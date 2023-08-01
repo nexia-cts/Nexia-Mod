@@ -120,13 +120,12 @@ public class BwTeam {
     }
 
     public static void spreadIntoTeams(ArrayList<ServerPlayer> queueList) {
-        ArrayList<BwTeam> availableTeams = new ArrayList<>();
         ServerScoreboard scoreboard = ServerTime.minecraftServer.getScoreboard();
         Random random = BwAreas.bedWarsWorld.getRandom();
 
-        availableTeams.addAll(teamsInOrder);
+        ArrayList<BwTeam> availableTeams = new ArrayList<>(teamsInOrder);
 
-        while (queueList.size() > 0 && availableTeams.size() > 0) {
+        while (!queueList.isEmpty() && !availableTeams.isEmpty()) {
             ServerPlayer player = queueList.get(0);
 
             BwTeam team = availableTeams.get(random.nextInt(availableTeams.size()));

@@ -13,6 +13,7 @@ import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.DimensionArgument;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -37,7 +38,7 @@ public class MapCommand {
                 })
                 .then(Commands.argument("type", StringArgumentType.string())
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest((new String[]{"delete", "create", "tp"}), builder)))
-                        .then(Commands.argument("map", StringArgumentType.greedyString())
+                        .then(Commands.argument("map", DimensionArgument.dimension())
                                 .executes(MapCommand::run)
                         )
                 )
@@ -49,9 +50,9 @@ public class MapCommand {
         Player player = PlayerUtil.getFactoryPlayer(mcPlayer);
 
         String type = StringArgumentType.getString(context, "type");
-        String map = StringArgumentType.getString(context, "map");
+        ServerLevel level = DimensionArgument.getDimension(context, "map");
 
-        if(ChatFormat.hasWhiteSpacesOrSpaces(map) || ChatFormat.hasWhiteSpacesOrSpaces(type)) {
+        if(level == null) {
             player.sendMessage(
                     ChatFormat.nexiaMessage
                                     .append(Component.text("Invalid name!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
@@ -60,24 +61,10 @@ public class MapCommand {
             return 1;
         }
 
+        String map = level.dimension().toString().replaceAll("dimension / ", "").replaceAll("]", "");
         String[] mapname = map.split(":");
 
         if(type.equalsIgnoreCase("create")){
-
-            ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), (
-                    new RuntimeWorldConfig()
-                    .setDimensionType(FfaAreas.ffaWorld.dimensionType())
-                    .setGenerator(FfaAreas.ffaWorld.getChunkSource().getGenerator())
-                    .setDifficulty(Difficulty.HARD)
-                    .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
-                    .setGameRule(GameRules.RULE_MOBGRIEFING, false)
-                    .setGameRule(GameRules.RULE_WEATHER_CYCLE, false)
-                    .setGameRule(GameRules.RULE_DAYLIGHT, false)
-                    .setGameRule(GameRules.RULE_DO_IMMEDIATE_RESPAWN, false)
-                    .setGameRule(GameRules.RULE_DOMOBSPAWNING, false)
-                    .setGameRule(GameRules.RULE_SHOWDEATHMESSAGES, false)
-                    .setGameRule(GameRules.RULE_SPAWN_RADIUS, 0))).asWorld();
-
             mcPlayer.teleportTo(level, 0, 80, 0, 0, 0);
 
             player.sendMessage(
@@ -104,7 +91,6 @@ public class MapCommand {
         }
 
         if(type.equalsIgnoreCase("tp")) {
-            ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), null).asWorld();
             mcPlayer.teleportTo(level, 0, 80, 0, 0, 0);
 
             player.sendMessage(
