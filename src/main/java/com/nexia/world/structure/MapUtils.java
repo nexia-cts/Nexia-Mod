@@ -6,6 +6,6 @@ import java.io.File;
 
 public class MapUtils {
     public boolean deleteStructure(Identifier identifier) {
-        return new File(identifier.getId() + ".json", String.format("/world/generated/%s/structures", identifier.getNamespace())).delete();
+        return new File(String.format("/world/generated/%s/structures", identifier.getNamespace()), identifier.getId() + ".nbt").delete();
     }
 }
