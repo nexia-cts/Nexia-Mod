@@ -92,7 +92,9 @@ public class LobbyUtil {
             PlayerGameMode.SKYWARS.players--;
         }
 
+        PlayerUtil.sendBossbar(SkywarsGame.BOSSBAR, minecraftPlayer, true);
         BwScoreboard.removeScoreboardFor(minecraftPlayer);
+        minecraftPlayer.setGlowing(false);
 
         for(int i = 0; i < LobbyUtil.removedTags.length; i++){
             if(player.hasTag(LobbyUtil.removedTags[i])){
@@ -116,6 +118,7 @@ public class LobbyUtil {
         minecraftPlayer.abilities.mayfly = false;
         minecraftPlayer.abilities.flying = false;
         minecraftPlayer.onUpdateAbilities();
+        minecraftPlayer.setGlowing(false);
 
         PlayerUtil.resetHealthStatus(player);
         minecraftPlayer.setGameMode(GameType.ADVENTURE);
@@ -123,6 +126,7 @@ public class LobbyUtil {
         player.getInventory().clear();
         minecraftPlayer.inventory.setCarried(ItemStack.EMPTY);
         minecraftPlayer.getEnderChestInventory().clearContent();
+        minecraftPlayer.setExperiencePoints(0);
 
         // Duels shit
         player.addTag("duels");
@@ -264,13 +268,13 @@ public class LobbyUtil {
             player.addTag("skywars");
             PlayerGameMode.SKYWARS.players++;
             PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.SKYWARS;
-            OitcGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
+            SkywarsGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
 
             com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(minecraftPlayer).gameMode = SkywarsGameMode.LOBBY;
 
             SkywarsGame.joinQueue(minecraftPlayer);
 
-            if(message){player.sendActionBarMessage(Component.text("You have joined §7\uD83D\uDDE1 §aSkywars §7\uD83D\uDDE1"));}
+            if(message){player.sendActionBarMessage(Component.text("You have joined §7☐ §aSkywars §7\uD83D\uDDE1"));}
         }
     }
 

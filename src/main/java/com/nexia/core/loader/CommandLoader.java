@@ -67,5 +67,6 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(BwReloadShopCommand::register);
         CommandRegistrationCallback.EVENT.register(BwReloadTeamColorsCommand::register);
         CommandRegistrationCallback.EVENT.register(BwSkipQueueCommand::register);
+        CommandRegistrationCallback.EVENT.register(SwSkipQueueCommand::register);
     }
 }

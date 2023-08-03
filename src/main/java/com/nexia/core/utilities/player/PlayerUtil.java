@@ -21,6 +21,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -55,10 +56,23 @@ public class PlayerUtil {
         }
     }
 
-    public static boolean sendBossbar(CustomBossEvent customBossEvent, Collection<ServerPlayer> collection) {
+    public static boolean sendBossbar(CustomBossEvent customBossEvent, @Nullable Collection<ServerPlayer> collection) {
+        if(collection == null) {
+            customBossEvent.removeAllPlayers();
+            return true;
+        }
         return customBossEvent.setPlayers(collection);
     }
 
+    public static boolean sendBossbar(CustomBossEvent customBossEvent, ServerPlayer player, boolean remove) {
+        if(remove) {
+            customBossEvent.removePlayer(player);
+            return true;
+        }
+        if(customBossEvent.getPlayers().contains(player)) return false;
+        customBossEvent.addPlayer(player);
+        return true;
+    }
     private static void sendDefaultTitleLength(ServerPlayer player) {
         player.connection.send(new ClientboundSetTitlesPacket(10, 60, 20));
     }
@@ -102,6 +116,13 @@ public class PlayerUtil {
         player.clearEffects();
         player.setHealth(20);
         player.setFoodLevel(20);
+    }
+
+    public static void resetHealthStatus(@NotNull net.minecraft.world.entity.player.Player player) {
+        player.setInvulnerable(false);
+        player.removeAllEffects();
+        player.setHealth(player.getMaxHealth());
+        player.getFoodData().setFoodLevel(20);
     }
 
     public static void sendActionbar(ServerPlayer player, String string){

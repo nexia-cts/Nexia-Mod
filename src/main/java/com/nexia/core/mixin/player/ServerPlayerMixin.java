@@ -11,6 +11,7 @@ import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.oitc.OitcGame;
+import com.nexia.minigames.games.skywars.SkywarsGame;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -64,6 +65,9 @@ public abstract class ServerPlayerMixin extends Player {
         }
         else if(gameMode == PlayerGameMode.OITC){
             OitcGame.death(player, damageSource);
+        }
+        else if(gameMode == PlayerGameMode.SKYWARS) {
+            SkywarsGame.death(player, damageSource);
         }
         else if(gameMode == PlayerGameMode.LOBBY && duelsData.duelsGame != null){
             duelsData.duelsGame.death(player, damageSource);

@@ -129,6 +129,26 @@ public class StatsCommand {
                     .append(Component.text(data.kills).color(ChatFormat.failColor))
             );
         }
+
+        if(executerData.gameMode == PlayerGameMode.SKYWARS){
+            message = ChatFormat.separatorLine("SkyWars Stats");
+            com.nexia.minigames.games.skywars.util.player.SavedPlayerData data = com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(mcPlayer).savedData;
+
+            player.sendMessage(message);
+            player.sendMessage(user);
+            player.sendMessage(start
+                    .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(data.wins).color(ChatFormat.greenColor))
+            );
+            player.sendMessage(start
+                    .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(data.losses).color(ChatFormat.failColor))
+            );
+            player.sendMessage(start
+                    .append(Component.text(" Kills: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(data.kills).color(ChatFormat.failColor))
+            );
+        }
         player.sendMessage(ChatFormat.separatorLine(null));
         return 1;
     }
@@ -226,6 +246,26 @@ public class StatsCommand {
             player.sendMessage(start
                     .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
                     .append(Component.text(data.loss).color(ChatFormat.failColor))
+            );
+            player.sendMessage(start
+                    .append(Component.text(" Kills: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(data.kills).color(ChatFormat.failColor))
+            );
+        }
+
+        if(gamemode.equalsIgnoreCase("skywars")){
+            message = ChatFormat.separatorLine("SkyWars Stats");
+            com.nexia.minigames.games.skywars.util.player.SavedPlayerData data = com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(otherPlayer).savedData;
+
+            player.sendMessage(message);
+            player.sendMessage(user);
+            player.sendMessage(start
+                    .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(data.wins).color(ChatFormat.greenColor))
+            );
+            player.sendMessage(start
+                    .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(data.losses).color(ChatFormat.failColor))
             );
             player.sendMessage(start
                     .append(Component.text(" Kills: ").color(ChatFormat.brandColor2))

@@ -399,6 +399,8 @@ public class TeamDuelsGame { // implements Runnable{
         if (this.isEnding)
             return;
 
+        victim.destroyVanishingCursedItems();
+        victim.inventory.dropAll();
         victimTeam.alive.remove(victim);
 
         boolean isVictimTeamDead = victimTeam.alive.isEmpty();

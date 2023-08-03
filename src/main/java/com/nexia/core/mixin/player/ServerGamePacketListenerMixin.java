@@ -109,7 +109,7 @@ public class ServerGamePacketListenerMixin {
     }
 
 
-    @Inject(at = @At("INVOKE"), method = "onDisconnect")
+    @Inject(at = @At("HEAD"), method = "onDisconnect")
     private void getLeavePlayer(Component component, CallbackInfo ci) {
         ServerTime.leavePlayer = player;
     }
