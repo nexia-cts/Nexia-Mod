@@ -212,6 +212,7 @@ public class SkywarsGame {
             player.addTag("skywars");
             player.addTag(LobbyUtil.NO_SATURATION_TAG);
             player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+            player.setGameMode(GameType.SURVIVAL);
             pos.teleportPlayer(SkywarsGame.world, player);
 
             positions.remove(pos);
