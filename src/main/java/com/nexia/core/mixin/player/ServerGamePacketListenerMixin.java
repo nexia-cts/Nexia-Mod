@@ -13,6 +13,7 @@ import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.oitc.OitcGame;
+import com.nexia.minigames.games.skywars.SkywarsGame;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.*;
@@ -139,6 +140,19 @@ public class ServerGamePacketListenerMixin {
         }
 
         if(FfaUtil.isFfaPlayer(player)) {
+            for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
+                Entity entity = packet.getEntity(serverLevel);
+                if (!(entity instanceof ServerPlayer target)) continue;
+
+                if (!FfaUtil.isFfaPlayer(target)) {
+                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
+                    ci.cancel();
+                    return;
+                }
+            }
+        }
+
+        if(SkywarsGame.isSkywarsPlayer(player)) {
             for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
                 Entity entity = packet.getEntity(serverLevel);
                 if (!(entity instanceof ServerPlayer target)) continue;

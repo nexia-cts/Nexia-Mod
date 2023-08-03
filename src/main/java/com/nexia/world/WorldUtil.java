@@ -27,7 +27,7 @@ public class WorldUtil {
 
     public static Identifier getWorldName(String name) {
         String[] splitName = name.split(":");
-        return new Identifier(splitName[0], splitName[1]);
+        return new Identifier(splitName[1], splitName[2]);
     }
 
     public static void deleteWorld(Identifier identifier) {

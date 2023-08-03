@@ -89,7 +89,6 @@ public class LobbyUtil {
         }
         else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.SKYWARS) {
             SkywarsGame.leave(minecraftPlayer);
-            PlayerGameMode.SKYWARS.players--;
         }
 
         PlayerUtil.sendBossbar(SkywarsGame.BOSSBAR, minecraftPlayer, true);
@@ -266,7 +265,6 @@ public class LobbyUtil {
 
         if(game.equalsIgnoreCase("skywars")){
             player.addTag("skywars");
-            PlayerGameMode.SKYWARS.players++;
             PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.SKYWARS;
             SkywarsGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
 

@@ -8,6 +8,7 @@ import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import com.nexia.minigames.games.skywars.SkywarsGame;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
@@ -71,7 +72,7 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(skywars, "§7PLACEHOLDER", 2);
         ItemDisplayUtil.addLore(skywars, "§7to achieve victory!", 3);
         ItemDisplayUtil.addLore(skywars, "§f", 4);
-        ItemDisplayUtil.addLore(skywars, "§a◆ There are " + PlayerGameMode.SKYWARS.players + " people playing this gamemode.", 5);
+        ItemDisplayUtil.addLore(skywars, "§a◆ There are " + SkywarsGame.world.players().size() + " people playing this gamemode.", 5);
 
         ItemStack duels = new ItemStack(Items.NETHERITE_AXE, 1);
         duels.setHoverName(new TextComponent("§9Duels"));

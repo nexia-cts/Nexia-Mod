@@ -35,15 +35,15 @@ public class SkywarsMap {
     public StructureMap structureMap;
 
     public static SkywarsMap RELIC = new SkywarsMap("relic", 8, new ArrayList<>(Arrays.asList(
-            new EntityPos(-9,91,-41),
-            new EntityPos(9,91,-41),
-            new EntityPos(41,91,-9),
-            new EntityPos(41,91,9),
-            new EntityPos(9,91,41),
-            new EntityPos(-9,91,41),
-            new EntityPos(-41,91,9),
-            new EntityPos(-41,91,-9))
-    ), new StructureMap(new Identifier("skywars", "relic"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-45, -7, -45), true));
+            new EntityPos(11,92,39),
+            new EntityPos(-11,92,39),
+            new EntityPos(-39,92,11),
+            new EntityPos(-39,92,-11),
+            new EntityPos(-11,92,-39),
+            new EntityPos(11,92,-39),
+            new EntityPos(39,92,-11),
+            new EntityPos(39,92,11))
+    ), new StructureMap(new Identifier("skywars", "relic"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-43, -7, -43), true));
 
     public static SkywarsMap SKYHENGE = new SkywarsMap("skyhenge", 12, new ArrayList<>(Arrays.asList(
             new EntityPos(72, 82, 0),

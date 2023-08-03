@@ -190,6 +190,7 @@ public class SkywarsGame {
                 new ResourceLocation("skywars", SkywarsGame.id)).asWorld();
 
         SkywarsGame.map.structureMap.pasteMap(level);
+        ServerTime.factoryServer.runCommand(String.format("execute in skywars:%s run worldborder set 200", SkywarsGame.id));
         SkywarsMap.spawnQueueBuild(level);
         SkywarsGame.world = level;
     }
