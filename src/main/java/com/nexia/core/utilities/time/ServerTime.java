@@ -3,6 +3,7 @@ package com.nexia.core.utilities.time;
 import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.scheduler.TaskScheduler;
+import com.combatreforged.factory.api.util.Identifier;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
@@ -18,9 +19,14 @@ import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
+import com.nexia.world.WorldUtil;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import xyz.nucleoid.fantasy.Fantasy;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServerTime {
 
@@ -55,6 +61,22 @@ public class ServerTime {
         FfaAreas.setFfaWorld(minecraftServer);
         SkywarsGame.firstTick();
         OitcGame.firstTick(minecraftServer);
+
+        List<Identifier> toDelete = new ArrayList<>();
+
+        for (ServerLevel level : ServerTime.minecraftServer.getAllLevels()) {
+            String[] split = level.dimension().toString().replaceAll("]", "").split(":");
+            if (split[1].toLowerCase().contains("duels")) {
+                toDelete.add(new Identifier("duels", split[2]));
+            }
+            if(split[1].toLowerCase().contains("skywars")) {
+                toDelete.add(new Identifier("skywars", split[2]));
+            }
+        }
+
+        for (Identifier deletion : toDelete) {
+            WorldUtil.deleteWorld(deletion);
+        }
 
         BwLoadShop.loadBedWarsShop(true);
         BwDimension.register();

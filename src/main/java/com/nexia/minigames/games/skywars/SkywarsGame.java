@@ -75,14 +75,11 @@ public class SkywarsGame {
     public static int gameEnd = 600;
     public static int queueTime = 15;
 
-    private static int boxTime = 5;
-
     public static ArrayList<ServerPlayer> queue = new ArrayList<>();
 
     public static boolean isStarted = false;
 
     public static boolean isEnding = false;
-    public static boolean isBoxing = false;
     public static boolean isGlowingActive = false;
 
     private static ServerPlayer winner = null;
@@ -144,7 +141,6 @@ public class SkywarsGame {
                     SkywarsGame.gameEnd--;
                 }
 
-                if(SkywarsGame.isBoxing) SkywarsGame.doBoxing();
                 if(SkywarsGame.gameEnd == 60) SkywarsGame.sendCenterWarning();
                 if(SkywarsGame.gameEnd <= 0) SkywarsGame.winNearestCenter();
             }
@@ -202,9 +198,7 @@ public class SkywarsGame {
         SkywarsGame.isStarted = true;
         SkywarsGame.isGlowingActive = false;
         SkywarsGame.isEnding = false;
-        SkywarsGame.isBoxing = true;
         SkywarsGame.winner = null;
-        SkywarsGame.boxTime = 5;
         SkywarsGame.glowingTime = 300;
         SkywarsGame.gameEnd = 600;
         SkywarsGame.alive.addAll(SkywarsGame.queue);
@@ -213,7 +207,6 @@ public class SkywarsGame {
 
         for (ServerPlayer player : SkywarsGame.alive) {
             EntityPos pos = positions.get(RandomUtil.randomInt(positions.size()));
-            //SkywarsMap.createGlassBox(SkywarsGame.world, pos);
 
             PlayerDataManager.get(player).gameMode = SkywarsGameMode.PLAYING;
             player.addTag("skywars");
@@ -234,9 +227,7 @@ public class SkywarsGame {
         SkywarsGame.isStarted = false;
         SkywarsGame.isGlowingActive = false;
         SkywarsGame.glowingTime = 300;
-        SkywarsGame.isBoxing = false;
         SkywarsGame.isEnding = false;
-        SkywarsGame.boxTime = 5;
         SkywarsGame.gameEnd = 600;
         SkywarsGame.endTime = 5;
         SkywarsGame.queueTime = 15;
@@ -265,42 +256,6 @@ public class SkywarsGame {
                     .append(Component.text("]").color(ChatFormat.lineColor))
             ));
         }
-    }
-
-    public static void doBoxing() {
-
-        for(ServerPlayer player : SkywarsGame.getViewers()) {
-            Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
-
-            Title title;
-            TextColor color = NamedTextColor.GREEN;
-
-            if(SkywarsGame.boxTime <= 3 && SkywarsGame.boxTime > 1) {
-                color = NamedTextColor.YELLOW;
-            } else if(SkywarsGame.boxTime <= 1) {
-                color = NamedTextColor.RED;
-            }
-
-            PlayerUtil.sendSound(player, new EntityPos(player), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
-            title = Title.title(Component.text(SkywarsGame.boxTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
-            factoryPlayer.sendTitle(title);
-        }
-
-        if(SkywarsGame.boxTime <= 1) {
-            /*
-            for(EntityPos pos : SkywarsGame.map.positions) {
-                SkywarsMap.removeGlassBox(SkywarsGame.world, pos);
-            }
-
-             */
-            for(ServerPlayer player : SkywarsGame.alive) {
-                player.setGameMode(GameType.SURVIVAL);
-            }
-            SkywarsGame.isBoxing = false;
-            return;
-        }
-
-        SkywarsGame.boxTime--;
     }
 
     public static void updateInfo() {

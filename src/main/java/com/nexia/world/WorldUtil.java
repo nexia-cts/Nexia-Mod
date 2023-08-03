@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
@@ -17,15 +18,23 @@ import java.io.File;
 
 public class WorldUtil {
     public static World getWorld(@NotNull Level level) {
-        String[] name = level.dimension().toString().replaceAll("dimension / ", "").replaceAll("]", "").split(":");
-        return ServerTime.factoryServer.getWorld(new Identifier(name[1], name[2]));
+        return ServerTime.factoryServer.getWorld(WorldUtil.getWorldName(WorldUtil.getWorldName(level)));
+    }
+
+    public static String getWorldName(@NotNull Level level) {
+        return level.dimension().toString().replaceAll("dimension / ", "").replaceAll("]", "");
+    }
+
+    public static Identifier getWorldName(String name) {
+        String[] splitName = name.split(":");
+        return new Identifier(splitName[0], splitName[1]);
     }
 
     public static void deleteWorld(Identifier identifier) {
         RuntimeWorldHandle worldHandle;
         try {
             worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(
-                    ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(identifier.getNamespace(), identifier.getId())).location(),
+                    new ResourceLocation(identifier.getNamespace(), identifier.getId()),
                     new RuntimeWorldConfig());
             ServerTime.factoryServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getId(), false);
             FileUtils.forceDeleteOnExit(new File("/world/dimensions/" + identifier.getNamespace(), identifier.getId()));

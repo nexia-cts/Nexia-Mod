@@ -87,19 +87,6 @@ public class DuelGameHandler {
 
         DuelGameHandler.duelsGames.clear();
         DuelGameHandler.teamDuelsGames.clear();
-
-        List<String> toDelete = new ArrayList<>();
-
-        for (ServerLevel level : ServerTime.minecraftServer.getAllLevels()) {
-            String[] split = level.dimension().toString().replaceAll("]", "").split(":");
-            if (split[1].toLowerCase().contains("duels")) {
-                toDelete.add(split[2]);
-            }
-        }
-
-        for (String deletion : toDelete) {
-            deleteWorld(deletion);
-        }
     }
 
     public static ServerLevel createWorld(String uuid, boolean doRegeneration) {
