@@ -16,6 +16,9 @@ import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.oitc.OitcGameMode;
+import com.nexia.minigames.games.skywars.SkywarsGame;
+import com.nexia.minigames.games.skywars.SkywarsGameMode;
+import com.nexia.world.WorldUtil;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Random;
@@ -57,6 +60,22 @@ public class PlayerRespawnListener {
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
                 respawnEvent.setSpawnpoint(new Location(respawn[0], respawn[1], respawn[2], ServerTime.factoryServer.getWorld(new Identifier("oitc", OitcGame.world.dimension().toString().replaceAll("]", "").split(":")[2]))));
                 return;
+            }
+
+            if(data.gameMode == PlayerGameMode.SKYWARS) {
+                double[] respawn = {0, 100, 0};
+                boolean isPlaying = com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(player).gameMode == SkywarsGameMode.PLAYING;
+                if(player.getLastDamageSource() != null && PlayerUtil.getPlayerAttacker(player.getLastDamageSource().getEntity()) != null) {
+                    ServerPlayer serverPlayer = PlayerUtil.getPlayerAttacker(player.getLastDamageSource().getEntity());
+                    if(isPlaying) {
+                        respawn[0] = serverPlayer.getX();
+                        respawn[1] = serverPlayer.getY();
+                        respawn[2] = serverPlayer.getZ();
+                    }
+                }
+
+                respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
+                respawnEvent.setSpawnpoint(new Location(respawn[0], respawn[1], respawn[2], WorldUtil.getWorld(SkywarsGame.world)));
             }
             
             if(duelsGame != null && duelsGame.isEnding && duelsGame.winner != null) {

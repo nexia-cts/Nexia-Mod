@@ -45,6 +45,21 @@ public class SkywarsMap {
             new EntityPos(-41,91,-9))
     ), new StructureMap(new Identifier("skywars", "relic"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-45, -7, -45), true));
 
+    public static SkywarsMap SKYHENGE = new SkywarsMap("skyhenge", 12, new ArrayList<>(Arrays.asList(
+            new EntityPos(72, 82, 0),
+            new EntityPos(49,82,-23),
+            new EntityPos(23,82,-49),
+            new EntityPos(0,82,-72),
+            new EntityPos(-23,82,-49),
+            new EntityPos(-49,82,-23),
+            new EntityPos(-72,82,0),
+            new EntityPos(-49,82,23),
+            new EntityPos(-23,82,49),
+            new EntityPos(0,82,72),
+            new EntityPos(23,82,49),
+            new EntityPos(49,82,23))
+    ), new StructureMap(new Identifier("skywars", "skyhenge"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-77, -7, -77), true));
+
 
     public static SkywarsMap identifyMap(String name) {
         for(SkywarsMap map : SkywarsMap.skywarsMaps) {
@@ -53,48 +68,7 @@ public class SkywarsMap {
         return null;
     }
 
-    public static void createGlassBox(ServerLevel level, EntityPos pos) {
-        BlockVec3 posC1 = pos.toBlockVec3().add(1, 2, 1);
-        BlockVec3 posC2 = pos.toBlockVec3().add(-1, -1, -1);
-
-        // for loop is crashing the server
-
-        for (BlockPos pos1 : BlockPos.betweenClosed(
-                posC1.x, posC1.y, posC1.z,
-                posC2.x, posC2.y, posC2.z)) {
-            if (posC1.x == pos1.getX() || posC2.x == pos1.getX() ||
-                    posC1.y == pos1.getY() || posC2.y == pos1.getY() ||
-                    posC1.z == pos1.getZ() || posC2.z == pos1.getZ()) {
-                level.setBlock(pos1, Blocks.GLASS.defaultBlockState(), 3);
-            }
-        }
-
-        level.setBlock(pos.toBlockPos(), Blocks.AIR.defaultBlockState(), 3);
-        level.setBlock(pos.add(0, 1, 0).toBlockPos(), Blocks.AIR.defaultBlockState(), 3);
-    }
-
-    public static void removeGlassBox(ServerLevel level, EntityPos pos) {
-        BlockVec3 posC1 = pos.toBlockVec3().add(1, 2, 1);
-        BlockVec3 posC2 = pos.toBlockVec3().add(-1, -1, -1);
-
-        for (BlockPos pos1 : BlockPos.betweenClosed(
-                posC1.x, posC1.y, posC1.z,
-                posC2.x, posC2.y, posC2.z)) {
-
-            if (level.getBlockState(pos1).getBlock() != Blocks.AIR && (
-                    posC1.x == pos1.getX() || posC2.x == pos1.getX() ||
-                            posC1.y == pos1.getY() || posC2.y == pos1.getY() ||
-                            posC1.z == pos1.getZ() || posC2.z == pos1.getZ() )) {
-
-                level.setBlock(pos1, Blocks.AIR.defaultBlockState(), 3);
-            }
-        }
-    }
-
     public static void spawnQueueBuild(ServerLevel level) {
-
-        // this doesnt crash it?
-
         for (BlockPos pos : BlockPos.betweenClosed(
                 queueC1.x, queueC1.y, queueC1.z,
                 queueC2.x, queueC2.y, queueC2.z)) {

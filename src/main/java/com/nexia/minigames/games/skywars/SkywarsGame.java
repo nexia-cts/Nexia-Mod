@@ -149,7 +149,7 @@ public class SkywarsGame {
         } else {
             if(SkywarsGame.queue.size() >= 2) {
                 for(ServerPlayer player : SkywarsGame.queue){
-                    PlayerUtil.sendActionbar(player, String.format("§7Map » §5§l%s §7(%s/%s) §8| §7Time » §5§l%s §8| §cTeaming is not allowed!", SkywarsGame.map.id, SkywarsGame.queue.size(), SkywarsGame.map.maxPlayers, queueTime));
+                    PlayerUtil.sendActionbar(player, String.format("§7Map » §5§l%s §7(%s/%s) §8| §7Time » §5§l%s §8| §cTeaming is not allowed!", SkywarsGame.map.id.toUpperCase(), SkywarsGame.queue.size(), SkywarsGame.map.maxPlayers, queueTime));
                 }
                 if(SkywarsGame.queueTime <= 5 || SkywarsGame.queueTime == 10 || SkywarsGame.queueTime == 15) PlayerUtil.broadcast(SkywarsGame.queue, "§7The game will start in §5" + SkywarsGame.queueTime + " §7seconds.");
                 SkywarsGame.queueTime--;
@@ -263,7 +263,7 @@ public class SkywarsGame {
         CustomBossEvent bossbar = SkywarsGame.BOSSBAR;
 
         for(ServerPlayer player : SkywarsGame.getViewers()) {
-            PlayerUtil.sendActionbar(player, String.format("§7Map » §5§l%s §8| §7Players » §5§l%s §8| §cTeaming is not allowed!", SkywarsGame.map.id, SkywarsGame.alive.size()));
+            PlayerUtil.sendActionbar(player, String.format("§7Map » §5§l%s §8| §7Players » §5§l%s §8| §cTeaming is not allowed!", SkywarsGame.map.id.toUpperCase(), SkywarsGame.alive.size()));
         }
 
         if(!SkywarsGame.isGlowingActive) {
@@ -356,7 +356,8 @@ public class SkywarsGame {
 
             victimData.savedData.losses++;
             SkywarsGame.alive.remove(victim);
-            SkywarsGame.joinQueue(victim);
+            SkywarsGame.spectator.add(victim);
+            PlayerDataManager.get(victim).gameMode = SkywarsGameMode.SPECTATOR;
 
             String mainColor = LegacyChatFormat.chatColor2;
             String message = mainColor + victim.getCombatTracker().getDeathMessage().getString();

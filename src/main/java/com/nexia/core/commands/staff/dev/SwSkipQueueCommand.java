@@ -25,10 +25,10 @@ public class SwSkipQueueCommand {
     private static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
 
-        if (SkywarsGame.isStarted || SkywarsGame.queueTime <= 2) {
+        if (SkywarsGame.isStarted || SkywarsGame.queueTime <= 1) {
             player.sendMessage(new TextComponent("Epic queue skip failure"), Util.NIL_UUID);
         } else {
-            SkywarsGame.queueTime = 2;
+            SkywarsGame.queueTime = 1;
             player.sendMessage(new TextComponent("Skipped queue"), Util.NIL_UUID);
         }
 
