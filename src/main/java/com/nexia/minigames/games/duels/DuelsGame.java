@@ -336,6 +336,9 @@ public class DuelsGame { //implements Runnable{
         if(victimData.duelsGame == null) return;
         if(victimData.duelsGame.isEnding) return;
 
+        victim.destroyVanishingCursedItems();
+        victim.inventory.dropAll();
+
         if(source != null && source.getEntity() instanceof ServerPlayer attacker){
             PlayerData attackerData = PlayerDataManager.get(attacker);
 

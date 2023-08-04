@@ -465,7 +465,6 @@ public class GamemodeHandler {
         if (map == null) {
             map = DuelsMap.duelsMaps.get(RandomUtil.randomInt(DuelsMap.duelsMaps.size()));
         } else {
-            map = selectedmap;
             if (!DuelsMap.duelsMaps.contains(map)) {
                 executor.sendMessage(Component.text("Invalid map!").color(ChatFormat.failColor));
                 return;

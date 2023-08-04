@@ -59,12 +59,7 @@ public class BanHandler {
     }
 
     public static boolean removeBanFromList(GameProfile profile){
-        File file = new File(new File(dataDirectory), profile.getId().toString() + ".json");
-        if(file.exists()) {
-            file.delete();
-            return true;
-        } else { return false; }
-
+        return new File(new File(dataDirectory), profile.getId().toString() + ".json").delete();
     }
 
     static HashMap<String, Integer> units = new HashMap<>();

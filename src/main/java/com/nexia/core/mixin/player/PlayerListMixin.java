@@ -138,7 +138,7 @@ public abstract class PlayerListMixin {
         } catch(Exception ignored) { }
     }
 
-    @Inject(method = "placeNewPlayer", at = @At("INVOKE"))
+    @Inject(method = "placeNewPlayer", at = @At("HEAD"))
     private void setJoinMessage(Connection connection, ServerPlayer serverPlayer, CallbackInfo ci){
         joinPlayer = serverPlayer;
     }

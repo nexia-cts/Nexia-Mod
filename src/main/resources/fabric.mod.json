@@ -21,6 +21,7 @@
   "icon": "assets/nexia/logo.png",
 
   "environment": "server",
+  "accessWidener": "nexia.accesswidener",
   "entrypoints": {
     "main": [
       "com.nexia.core.Main",

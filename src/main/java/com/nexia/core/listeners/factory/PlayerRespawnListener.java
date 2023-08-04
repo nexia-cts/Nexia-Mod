@@ -35,6 +35,22 @@ public class PlayerRespawnListener {
             DuelsGame duelsGame = duelsData.duelsGame;
             TeamDuelsGame teamDuelsGame = duelsData.teamDuelsGame;
 
+            if(com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.SKYWARS) {
+                double[] respawn = {0, 100, 0};
+                boolean isPlaying = com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(player).gameMode == SkywarsGameMode.PLAYING;
+                if(player.getLastDamageSource() != null && PlayerUtil.getPlayerAttacker(player.getLastDamageSource().getEntity()) != null) {
+                    ServerPlayer serverPlayer = PlayerUtil.getPlayerAttacker(player.getLastDamageSource().getEntity());
+                    if(isPlaying) {
+                        respawn[0] = serverPlayer.getX();
+                        respawn[1] = serverPlayer.getY();
+                        respawn[2] = serverPlayer.getZ();
+                    }
+                }
+
+                respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
+                respawnEvent.setSpawnpoint(new Location(respawn[0], respawn[1], respawn[2], WorldUtil.getWorld(SkywarsGame.world)));
+            }
+
             if(duelsGame != null && duelsGame.isEnding && duelsGame.winner != null) {
 
                 factoryPlayer.getInventory().clear();

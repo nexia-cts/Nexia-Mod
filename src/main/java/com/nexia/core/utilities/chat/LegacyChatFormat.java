@@ -121,19 +121,6 @@ public class LegacyChatFormat {
         }
     }
 
-    public static boolean hasWhiteSpacesOrSpaces(@Nullable String[] strings, @Nullable String string){
-        if(strings == null && string != null){
-            return string.matches(".*\\s+.*") || string.matches("");
-        } else {
-            for (String s : strings) {
-                if (s.matches(".*\\s+.*") || s.matches("")) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public static String removeColors(String string) {
         StringBuilder stringBuilder = new StringBuilder(string);
 

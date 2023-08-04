@@ -4,6 +4,7 @@ import com.nexia.core.commands.player.*;
 import com.nexia.core.commands.player.duels.*;
 import com.nexia.core.commands.player.ffa.*;
 import com.nexia.core.commands.staff.*;
+import com.nexia.core.commands.staff.dev.*;
 import com.nexia.discord.commands.minecraft.LinkCommand;
 import com.nexia.discord.commands.minecraft.UnLinkCommand;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
@@ -55,6 +56,8 @@ public class CommandLoader {
 
         CommandRegistrationCallback.EVENT.register(MessageCommand::registerMsg);
         CommandRegistrationCallback.EVENT.register(MessageCommand::registerReply);
+
+        CommandRegistrationCallback.EVENT.register(SwSkipQueueCommand::register);
 
         CommandRegistrationCallback.EVENT.register(HealCommand::register);
     }

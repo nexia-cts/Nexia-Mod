@@ -1,13 +1,12 @@
 package com.nexia.core.gui;
 
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.minigames.games.duels.DuelGameMode;
-import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import com.nexia.minigames.games.skywars.SkywarsGame;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
@@ -22,20 +21,13 @@ import net.minecraft.world.item.enchantment.Enchantments;
 public class PlayGUI extends SimpleGui {
 
     static final TextComponent title = new TextComponent("Game Menu");
-    static final TextComponent ffaTitle = new TextComponent("FFA Menu");
     public PlayGUI(MenuType<?> type, ServerPlayer player, boolean includePlayer) {
         super(type, player, includePlayer);
     }
 
-    private void fillEmptySlots(ItemStack itemStack, int slots){
-        for(int i = 0; i < slots; i++){
+    private void fillEmptySlots(ItemStack itemStack){
+        for(int i = 0; i < 9; i++){
             this.setSlot(i, itemStack);
-            /*
-            GuiElementInterface element = this.getSlot(i);
-            if(element != null && element.getItemStack().getItem() == null || element.getItemStack().getItem() == Items.AIR){
-                this.setSlot(i, itemStack);
-            }
-             */
         }
     }
     private void setMainLayout(){
@@ -73,18 +65,28 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(duels, "§f", 4);
         ItemDisplayUtil.addLore(duels, "§9◆ There are " + (LobbyUtil.lobbyWorld.players().size() + duelsPlayers) + " people playing this gamemode.", 5);
 
+        ItemStack skywars = new ItemStack(Items.GRASS_BLOCK, 1);
+        skywars.setHoverName(new TextComponent("§aSkywars"));
+        skywars.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
+
+        ItemDisplayUtil.addLore(skywars, "§5", 0);
+        ItemDisplayUtil.addLore(skywars, "§7Battle against others on", 1);
+        ItemDisplayUtil.addLore(skywars, "§7sky islands and be the", 2);
+        ItemDisplayUtil.addLore(skywars, "§7last one standing to win!", 3);
+        ItemDisplayUtil.addLore(skywars, "§f", 4);
+        ItemDisplayUtil.addLore(skywars, "§a◆ There are " + SkywarsGame.world.players().size() + " people playing this gamemode.", 5);
 
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
 
-        fillEmptySlots(emptySlot, 9);
+        fillEmptySlots(emptySlot);
+        this.setSlot(0, skywars);
         this.setSlot(2, ffa);
         this.setSlot(4, hub);
         this.setSlot(6, duels);
     }
 
     private void setFFALayout(){
-        this.setTitle(ffaTitle);
         ItemStack enchanted_sword = new ItemStack(Items.NETHERITE_SWORD, 1);
         enchanted_sword.setHoverName(new TextComponent("§cClassic"));
         enchanted_sword.enchant(Enchantments.SHARPNESS, 1);
@@ -99,7 +101,7 @@ public class PlayGUI extends SimpleGui {
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
 
-        fillEmptySlots(emptySlot, 9);
+        fillEmptySlots(emptySlot);
         this.setSlot(3, unknown);
         this.setSlot(4, enchanted_sword);
         this.setSlot(5, unknown);
@@ -117,6 +119,11 @@ public class PlayGUI extends SimpleGui {
 
             if(name.getString().equalsIgnoreCase("§9Duels")) {
                 LobbyUtil.sendGame(this.player, "duels", true, true);
+            }
+
+            if(name.getString().equalsIgnoreCase("§aSkywars")){
+                LobbyUtil.sendGame(this.player, "skywars", true, true);
+                this.close();
             }
 
             if(name.getString().equalsIgnoreCase("§3FFA")){

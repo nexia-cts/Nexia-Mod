@@ -233,14 +233,13 @@ public class TeamDuelsGame { // implements Runnable{
 
             DuelsTeam notNullTeam = this.team1;
 
-            if(notNullTeam != null) notNullTeam = this.team2;
+            if(notNullTeam == null) notNullTeam = this.team2;
             if(notNullTeam != null) this.endGame(notNullTeam, null, false);
         }
         if (this.isEnding) {
             int color = 160 * 65536 + 248;
             // r * 65536 + g * 256 + b;
-            DuelGameHandler.winnerRockets(this.winner.alive.get(new Random().nextInt(this.winner.alive.size())),
-                    this.level, color);
+            DuelGameHandler.winnerRockets(this.winner.alive.get(new Random().nextInt(this.winner.alive.size())), this.level, color);
             this.currentEndTime++;
             if (this.currentEndTime >= this.endTime || !this.shouldWait) {
                 DuelsTeam winnerTeam = this.winner;
@@ -332,9 +331,6 @@ public class TeamDuelsGame { // implements Runnable{
             this.winner = this.team1;
             if (loserTeam == this.team1) {
                 this.winner = this.team2;
-                this.loser = this.team1;
-            } else if (loserTeam == this.team2) {
-                this.loser = this.team2;
             }
         }
 
@@ -349,7 +345,7 @@ public class TeamDuelsGame { // implements Runnable{
 
         Component titleLose = Component.text("Draw")
                 .color(ChatFormat.brandColor2);
-        Component subtitleLose = win;
+        Component subtitleLose;
 
         Component titleWin = titleLose;
         Component subtitleWin = win;
@@ -402,6 +398,8 @@ public class TeamDuelsGame { // implements Runnable{
         if (this.isEnding)
             return;
 
+        victim.destroyVanishingCursedItems();
+        victim.inventory.dropAll();
         victimTeam.alive.remove(victim);
 
         boolean isVictimTeamDead = victimTeam.alive.isEmpty();

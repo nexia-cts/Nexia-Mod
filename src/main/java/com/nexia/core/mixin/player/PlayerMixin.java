@@ -68,6 +68,8 @@ public abstract class PlayerMixin extends LivingEntity {
     private void beforeHurt(DamageSource damageSource, float damage, CallbackInfoReturnable<Boolean> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
 
+        if(player.getLevel().equals(LobbyUtil.lobbyWorld) && damageSource == DamageSource.OUT_OF_WORLD) LobbyUtil.lobbySpawn.teleportPlayer(LobbyUtil.lobbyWorld, player);
+
         if (player.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
             cir.setReturnValue(false);
             return;

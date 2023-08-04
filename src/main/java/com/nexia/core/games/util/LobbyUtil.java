@@ -12,6 +12,8 @@ import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
+import com.nexia.minigames.games.skywars.SkywarsGame;
+import com.nexia.minigames.games.skywars.SkywarsGameMode;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -27,7 +29,7 @@ import net.minecraft.world.level.Level;
 
 public class LobbyUtil {
 
-    public static String[] statsGameModes = {"FFA", "DUELS"};
+    public static String[] statsGameModes = {"FFA", "DUELS", "SKYWARS"};
 
     public static ServerLevel lobbyWorld = null;
     public static EntityPos lobbySpawn = new EntityPos(Main.config.lobbyPos[0], Main.config.lobbyPos[1], Main.config.lobbyPos[2], 0, 0);
@@ -56,6 +58,7 @@ public class LobbyUtil {
     public static String[] removedTags = {
             "ffa",
             "duels",
+            "skywars",
             NO_RANK_DISPLAY_TAG,
             NO_SATURATION_TAG,
             NO_FALL_DAMAGE_TAG
@@ -65,13 +68,19 @@ public class LobbyUtil {
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
         if (FfaUtil.isFfaPlayer(minecraftPlayer)) {
             FfaUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
-        } else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(minecraftPlayer, false);
-
+        } else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) {
+            DuelGameHandler.leave(minecraftPlayer, false);
+        } else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.SKYWARS) {
+            SkywarsGame.leave(minecraftPlayer);
+        }
         for(int i = 0; i < LobbyUtil.removedTags.length; i++){
             if(player.hasTag(LobbyUtil.removedTags[i])){
                 player.removeTag(LobbyUtil.removedTags[i]);
             }
         }
+
+        PlayerUtil.sendBossbar(SkywarsGame.BOSSBAR, minecraftPlayer, true);
+        minecraftPlayer.setGlowing(false);
 
         returnToLobby(minecraftPlayer, tp);
     }
@@ -89,6 +98,7 @@ public class LobbyUtil {
         minecraftPlayer.abilities.mayfly = false;
         minecraftPlayer.abilities.flying = false;
         minecraftPlayer.onUpdateAbilities();
+        minecraftPlayer.setGlowing(false);
 
         PlayerUtil.resetHealthStatus(player);
         minecraftPlayer.setGameMode(GameType.ADVENTURE);
@@ -96,6 +106,7 @@ public class LobbyUtil {
         player.getInventory().clear();
         minecraftPlayer.inventory.setCarried(ItemStack.EMPTY);
         minecraftPlayer.getEnderChestInventory().clearContent();
+        minecraftPlayer.setExperiencePoints(0);
 
         // Duels shit
         player.addTag("duels");
@@ -207,6 +218,17 @@ public class LobbyUtil {
             FfaUtil.setInventory(minecraftPlayer);
         }
 
+        if(game.equalsIgnoreCase("skywars")){
+            player.addTag("skywars");
+            PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.SKYWARS;
+            SkywarsGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
+
+            com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(minecraftPlayer).gameMode = SkywarsGameMode.LOBBY;
+
+            SkywarsGame.joinQueue(minecraftPlayer);
+
+            if(message){player.sendActionBarMessage(Component.text("You have joined §7☐ §aSkywars §7\uD83D\uDDE1"));}
+        }
 
         if(game.equalsIgnoreCase("duels")){
             LobbyUtil.leaveAllGames(minecraftPlayer, tp);

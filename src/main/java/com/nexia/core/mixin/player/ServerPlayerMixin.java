@@ -8,6 +8,7 @@ import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
+import com.nexia.minigames.games.skywars.SkywarsGame;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -57,6 +58,8 @@ public abstract class ServerPlayerMixin extends Player {
 
         if (FfaUtil.isFfaPlayer(player)) {
             FfaUtil.leaveOrDie(player, damageSource, false);
+        } else if(gameMode == PlayerGameMode.SKYWARS) {
+            SkywarsGame.death(player, damageSource);
         } else if(gameMode == PlayerGameMode.LOBBY && duelsData.duelsGame != null){
             duelsData.duelsGame.death(player, damageSource);
         } else if(gameMode == PlayerGameMode.LOBBY && duelsData.teamDuelsGame != null) {

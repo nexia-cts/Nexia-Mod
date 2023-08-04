@@ -9,6 +9,7 @@ import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaUtil;
+import com.nexia.minigames.games.skywars.SkywarsGame;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.level.ServerLevel;
@@ -86,6 +87,19 @@ public class ServerGamePacketListenerMixin {
         if(PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY){
             ci.cancel();
             return;
+        }
+
+        if(SkywarsGame.isSkywarsPlayer(player)) {
+            for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
+                Entity entity = packet.getEntity(serverLevel);
+                if (!(entity instanceof ServerPlayer target)) continue;
+
+                if (!FfaUtil.isFfaPlayer(target)) {
+                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
+                    ci.cancel();
+                    return;
+                }
+            }
         }
 
         if(FfaUtil.isFfaPlayer(player)) {

@@ -48,7 +48,7 @@ public class TempBanCommand {
             player = PlayerUtil.getFactoryPlayer(mcPlayer);
         }
 
-        int durationInSeconds = 0;
+        int durationInSeconds;
         try {
             durationInSeconds = BanHandler.parseTimeArg(durationArg);
         } catch (Exception e) {

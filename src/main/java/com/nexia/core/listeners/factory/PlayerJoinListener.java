@@ -166,6 +166,7 @@ public class PlayerJoinListener {
         com.nexia.ffa.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.discord.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer.getUUID());
         com.nexia.minigames.games.duels.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
+        com.nexia.minigames.games.skywars.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         LobbyUtil.leaveAllGames(minecraftPlayer, true);
         runCommands(player, minecraftPlayer);
         checkBooster(minecraftPlayer);
