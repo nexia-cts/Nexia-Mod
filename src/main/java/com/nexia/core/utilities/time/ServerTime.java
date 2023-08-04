@@ -52,11 +52,8 @@ public class ServerTime {
 
         ServerTime.serverType = ServerType.returnServer();
 
-
-
         fantasy = Fantasy.get(minecraftServer);
         LobbyUtil.setLobbyWorld(minecraftServer);
-        SkywarsGame.firstTick();
         FfaAreas.setFfaWorld(minecraftServer);
 
         List<Identifier> toDelete = new ArrayList<>();
@@ -76,6 +73,7 @@ public class ServerTime {
         }
 
 
+        SkywarsGame.firstTick();
         DuelGameHandler.starting();
     }
 
@@ -120,6 +118,7 @@ public class ServerTime {
 
     static void everySecond() {
         totalSecondCount++;
+        SkywarsGame.second();
         try {
             for (DuelsGame game : DuelGameHandler.duelsGames) {
                 if (game == null) return;
