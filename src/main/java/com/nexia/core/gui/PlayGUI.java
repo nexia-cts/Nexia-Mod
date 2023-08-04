@@ -68,9 +68,9 @@ public class PlayGUI extends SimpleGui {
         skywars.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         ItemDisplayUtil.addLore(skywars, "§5", 0);
-        ItemDisplayUtil.addLore(skywars, "§7Fight players PLACEHOLDER", 1);
-        ItemDisplayUtil.addLore(skywars, "§7PLACEHOLDER", 2);
-        ItemDisplayUtil.addLore(skywars, "§7to achieve victory!", 3);
+        ItemDisplayUtil.addLore(skywars, "§7Battle against others on", 1);
+        ItemDisplayUtil.addLore(skywars, "§7sky islands and be the", 2);
+        ItemDisplayUtil.addLore(skywars, "§7last one standing to win!", 3);
         ItemDisplayUtil.addLore(skywars, "§f", 4);
         ItemDisplayUtil.addLore(skywars, "§a◆ There are " + SkywarsGame.world.players().size() + " people playing this gamemode.", 5);
 
