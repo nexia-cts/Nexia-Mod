@@ -22,19 +22,19 @@ public class WorldUtil {
     }
 
     public static String getWorldName(@NotNull Level level) {
-        return level.dimension().toString().replaceAll("dimension / ", "").replaceAll("]", "");
+        return level.dimension().toString().replaceAll("dimension / ", "").replaceAll("]", "").replaceAll("ResourceKey\\[minecraft:", "");
     }
 
     public static Identifier getWorldName(String name) {
         String[] splitName = name.split(":");
-        return new Identifier(splitName[1], splitName[2]);
+        return new Identifier(splitName[0], splitName[1]);
     }
 
     public static void deleteWorld(Identifier identifier) {
         RuntimeWorldHandle worldHandle;
         try {
             worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(
-                    new ResourceLocation(identifier.getNamespace(), identifier.getId()),
+                    ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(identifier.getNamespace(), identifier.getId())).location(),
                     new RuntimeWorldConfig());
             ServerTime.factoryServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getId(), false);
             FileUtils.forceDeleteOnExit(new File("/world/dimensions/" + identifier.getNamespace(), identifier.getId()));

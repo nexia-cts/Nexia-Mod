@@ -57,10 +57,6 @@ public class ServerTime {
         serverType = ServerType.returnServer();
 
         fantasy = Fantasy.get(minecraftServer);
-        LobbyUtil.setLobbyWorld(minecraftServer);
-        FfaAreas.setFfaWorld(minecraftServer);
-        SkywarsGame.firstTick();
-        OitcGame.firstTick(minecraftServer);
 
         List<Identifier> toDelete = new ArrayList<>();
 
@@ -69,12 +65,19 @@ public class ServerTime {
             if (split[1].toLowerCase().contains("duels")) {
                 toDelete.add(new Identifier("duels", split[2]));
             }
+            if (split[1].toLowerCase().contains("skywars")) {
+                toDelete.add(new Identifier("skywars", split[2]));
+            }
         }
 
         for (Identifier deletion : toDelete) {
             WorldUtil.deleteWorld(deletion);
         }
 
+        LobbyUtil.setLobbyWorld(minecraftServer);
+        FfaAreas.setFfaWorld(minecraftServer);
+        SkywarsGame.firstTick();
+        OitcGame.firstTick(minecraftServer);
         BwLoadShop.loadBedWarsShop(true);
         BwDimension.register();
         BwGame.firstTick();
@@ -94,7 +97,7 @@ public class ServerTime {
                 if (split[1].toLowerCase().contains("duels")) {
                     toDelete.add(new Identifier("duels", split[2]));
                 }
-                if(split[1].toLowerCase().contains("skywars")) {
+                if (split[1].toLowerCase().contains("skywars")) {
                     toDelete.add(new Identifier("skywars", split[2]));
                 }
             }

@@ -157,7 +157,7 @@ public class ServerGamePacketListenerMixin {
                 Entity entity = packet.getEntity(serverLevel);
                 if (!(entity instanceof ServerPlayer target)) continue;
 
-                if (!FfaUtil.isFfaPlayer(target)) {
+                if (!SkywarsGame.isSkywarsPlayer(target)) {
                     PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
                     ci.cancel();
                     return;
