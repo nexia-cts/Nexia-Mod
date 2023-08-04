@@ -16,8 +16,9 @@ import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.skywars.util.player.PlayerData;
 import com.nexia.minigames.games.skywars.util.player.PlayerDataManager;
-import com.nexia.world.WorldUtil;
+import net.fabricmc.loader.impl.util.StringUtil;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import net.minecraft.core.BlockPos;
@@ -36,6 +37,7 @@ import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -146,9 +148,36 @@ public class SkywarsGame {
         } else {
             if(SkywarsGame.queue.size() >= 2) {
                 for(ServerPlayer player : SkywarsGame.queue){
-                    PlayerUtil.sendActionbar(player, String.format("§7Map » §5§l%s §7(%s/%s) §8| §7Time » §5§l%s §8| §cTeaming is not allowed!", SkywarsGame.map.id.toUpperCase(), SkywarsGame.queue.size(), SkywarsGame.map.maxPlayers, queueTime));
+                    Player fPlayer = PlayerUtil.getFactoryPlayer(player);
+
+                    if(SkywarsGame.queueTime <= 5) {
+                        TextColor color = NamedTextColor.GREEN;
+
+                        if(SkywarsGame.queueTime <= 3 && SkywarsGame.queueTime > 1) {
+                            color = NamedTextColor.YELLOW;
+                        } else if(SkywarsGame.queueTime <= 1) {
+                            color = NamedTextColor.RED;
+                        }
+
+                        Title title = Title.title(Component.text(SkywarsGame.queueTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
+
+                        PlayerUtil.getFactoryPlayer(player).sendTitle(title);
+                        PlayerUtil.sendSound(player, new EntityPos(player), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+                    }
+
+                    fPlayer.sendActionBarMessage(
+                            Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
+                                    .append(Component.text(StringUtil.capitalize(SkywarsGame.map.id)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                                    .append(Component.text(" (" + SkywarsGame.queue.size() + "/" + SkywarsGame.map.maxPlayers + ")").color(TextColor.fromHexString("#b3b3b3")))
+                                    .append(Component.text(" | ").color(ChatFormat.lineColor))
+                                    .append(Component.text("Time » ").color(TextColor.fromHexString("#b3b3b3")))
+                                    .append(Component.text(SkywarsGame.queueTime).color(ChatFormat.brandColor2))
+                                    .append(Component.text(" | ").color(ChatFormat.lineColor))
+                                    .append(Component.text("Teaming is not allowed!").color(ChatFormat.failColor))
+                    );
                 }
                 if(SkywarsGame.queueTime <= 5 || SkywarsGame.queueTime == 10 || SkywarsGame.queueTime == 15) PlayerUtil.broadcast(SkywarsGame.queue, "§7The game will start in §5" + SkywarsGame.queueTime + " §7seconds.");
+
                 SkywarsGame.queueTime--;
             } else {
                 SkywarsGame.queueTime = 15;
@@ -178,7 +207,9 @@ public class SkywarsGame {
     }
 
     public static void resetMap() {
-        WorldUtil.deleteWorld(new Identifier("skywars", SkywarsGame.id));
+
+        SkywarsMap.deleteWorld(SkywarsGame.id);
+
         SkywarsGame.id = UUID.randomUUID().toString();
 
         SkywarsGame.map = SkywarsMap.skywarsMaps.get(RandomUtil.randomInt(SkywarsMap.skywarsMaps.size()));
@@ -261,7 +292,15 @@ public class SkywarsGame {
         CustomBossEvent bossbar = SkywarsGame.BOSSBAR;
 
         for(ServerPlayer player : SkywarsGame.getViewers()) {
-            PlayerUtil.sendActionbar(player, String.format("§7Map » §5§l%s §8| §7Players » §5§l%s §8| §cTeaming is not allowed!", SkywarsGame.map.id.toUpperCase(), SkywarsGame.alive.size()));
+            PlayerUtil.getFactoryPlayer(player).sendActionBarMessage(
+                    Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
+                            .append(Component.text(StringUtil.capitalize(SkywarsGame.map.id)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                            .append(Component.text(" | ").color(ChatFormat.lineColor))
+                            .append(Component.text("Players » ").color(TextColor.fromHexString("#b3b3b3")))
+                            .append(Component.text(SkywarsGame.alive.size()).color(ChatFormat.brandColor2))
+                            .append(Component.text(" | ").color(ChatFormat.lineColor))
+                            .append(Component.text("Teaming is not allowed!").color(ChatFormat.failColor))
+            );
         }
 
         if(!SkywarsGame.isGlowingActive) {
@@ -359,9 +398,6 @@ public class SkywarsGame {
 
             String mainColor = LegacyChatFormat.chatColor2;
             String message = mainColor + victim.getCombatTracker().getDeathMessage().getString();
-
-            message = BwUtil.replaceDisplayName(message, mainColor, victim);
-            if(attacker != null) message = BwUtil.replaceDisplayName(message, mainColor, attacker);
 
             PlayerUtil.broadcast(SkywarsGame.getViewers(), message);
 

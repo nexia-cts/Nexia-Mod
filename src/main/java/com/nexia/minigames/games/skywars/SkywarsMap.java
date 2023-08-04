@@ -1,14 +1,23 @@
 package com.nexia.minigames.games.skywars;
 
 import com.combatreforged.factory.api.util.Identifier;
+import com.nexia.core.Main;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
+import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.world.structure.Rotation;
 import com.nexia.world.structure.StructureMap;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
+import org.apache.commons.io.FileUtils;
+import xyz.nucleoid.fantasy.RuntimeWorldConfig;
+import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,15 +42,15 @@ public class SkywarsMap {
     public StructureMap structureMap;
 
     public static SkywarsMap RELIC = new SkywarsMap("relic", 8, new ArrayList<>(Arrays.asList(
-            new EntityPos(11,92,39),
-            new EntityPos(-11,92,39),
-            new EntityPos(-39,92,11),
-            new EntityPos(-39,92,-11),
-            new EntityPos(-11,92,-39),
-            new EntityPos(11,92,-39),
-            new EntityPos(39,92,-11),
-            new EntityPos(39,92,11))
-    ), new StructureMap(new Identifier("skywars", "relic"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-43, -7, -43), true));
+            new EntityPos(59,92,-14),
+            new EntityPos(59,92,14),
+            new EntityPos(14,92,59),
+            new EntityPos(-14,92,59),
+            new EntityPos(-59,92,14),
+            new EntityPos(-59,92,-14),
+            new EntityPos(-14,92,-59),
+            new EntityPos(14,92,-59))
+    ), new StructureMap(new Identifier("skywars", "relic"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-63,-7,-63), true));
 
     public static SkywarsMap SKYHENGE = new SkywarsMap("skyhenge", 12, new ArrayList<>(Arrays.asList(
             new EntityPos(72, 82, 0),
@@ -79,6 +88,21 @@ public class SkywarsMap {
                 level.setBlock(pos, Blocks.GLASS.defaultBlockState(), 3);
             }
         }
+    }
+
+    public static void deleteWorld(String id) {
+        RuntimeWorldHandle worldHandle;
+        try {
+            worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(
+                    ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("skywars", id)).location(),
+                    new RuntimeWorldConfig());
+            ServerTime.factoryServer.unloadWorld("skywars:" + id, false);
+            FileUtils.forceDeleteOnExit(new File("/world/dimensions/skywars", id));
+        } catch (Exception ignored) {
+            Main.logger.error("Error occurred while deleting world: skywars:" + id);
+            return;
+        }
+        worldHandle.delete();
     }
 
     public SkywarsMap(String id, int maxPlayers, ArrayList<EntityPos> positions, StructureMap structureMap) {

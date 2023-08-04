@@ -9,6 +9,7 @@
     "block.DispenserBlockMixin",
     "block.GrindstoneBlockMixin",
     "block.SignBlockMixin",
+    "item.CraftingMixin",
     "entity.ArmorStandMixin",
     "entity.EntityMixin",
     "entity.ItemFrameMixin",
