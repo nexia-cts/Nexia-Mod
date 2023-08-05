@@ -105,6 +105,10 @@ public class StatsCommand {
                     .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
                     .append(Component.text(data.loss).color(ChatFormat.failColor))
             );
+            player.sendMessage(start
+                    .append(Component.text(" Beds broken: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(data.bedsBroken).color(ChatFormat.failColor))
+            );
         }
 
         if(executerData.gameMode == PlayerGameMode.SKYWARS){
@@ -193,6 +197,11 @@ public class StatsCommand {
             player.sendMessage(start
                     .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
                     .append(Component.text(data.loss).color(ChatFormat.failColor))
+            );
+
+            player.sendMessage(start
+                    .append(Component.text(" Beds broken: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(data.bedsBroken).color(ChatFormat.failColor))
             );
         }
 

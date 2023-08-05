@@ -220,6 +220,7 @@ public class BwPlayerEvents {
             if (team.bedLocation == null) continue;
 
             if (new EntityPos(team.bedLocation).isInRadius(new EntityPos(blockPos), 1)) {
+                com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.get(player).savedData.bedsBroken++;
                 team.announceBedBreak(player, blockPos);
                 break;
             }
