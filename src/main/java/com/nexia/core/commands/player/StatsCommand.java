@@ -108,6 +108,10 @@ public class StatsCommand {
                     .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
                     .append(Component.text(data.loss).color(ChatFormat.failColor))
             );
+            player.sendMessage(start
+                    .append(Component.text(" Beds broken: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(data.bedsBroken).color(ChatFormat.failColor))
+            );
         }
 
         if(executerData.gameMode == PlayerGameMode.OITC){
@@ -163,7 +167,7 @@ public class StatsCommand {
         ServerPlayer mcPlayer = context.getSource().getPlayerOrException();
         Player player = PlayerUtil.getFactoryPlayer(mcPlayer);
 
-        Component start = Component.text("  »").color(ChatFormat.arrowColor);
+        Component start = Component.text("  »").color(NamedTextColor.GRAY);
 
         Component user = start
                 .append(Component.text(" User: ").color(ChatFormat.brandColor2))
@@ -230,6 +234,10 @@ public class StatsCommand {
             player.sendMessage(start
                     .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
                     .append(Component.text(data.loss).color(ChatFormat.failColor))
+            );
+            player.sendMessage(start
+                    .append(Component.text(" Beds broken: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(data.bedsBroken).color(ChatFormat.failColor))
             );
         }
 
