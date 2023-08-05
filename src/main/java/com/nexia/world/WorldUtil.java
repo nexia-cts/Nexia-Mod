@@ -17,6 +17,8 @@ import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WorldUtil {
     public static World getWorld(@NotNull Level level) {
@@ -48,14 +50,25 @@ public class WorldUtil {
     }
 
     public static void deleteTempWorlds() {
+        List<String> skywarsDelete = new ArrayList<>();
+        List<String> duelsDelete = new ArrayList<>();
+
         for (ServerLevel level : ServerTime.minecraftServer.getAllLevels()) {
             String[] split = level.dimension().toString().replaceAll("]", "").split(":");
             if (split[1].toLowerCase().contains("duels")) {
-                DuelGameHandler.deleteWorld(split[2]);
+                duelsDelete.add(split[2]);
             }
             if (split[1].toLowerCase().contains("skywars")) {
-                SkywarsMap.deleteWorld(split[2]);
+                skywarsDelete.add(split[2]);
             }
+        }
+
+        for(String deletion : skywarsDelete) {
+            SkywarsMap.deleteWorld(deletion);
+        }
+
+        for(String deletion : duelsDelete) {
+            DuelGameHandler.deleteWorld(deletion);
         }
     }
 }

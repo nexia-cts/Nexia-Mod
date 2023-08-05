@@ -207,7 +207,6 @@ public class SkywarsGame {
     }
 
     public static void resetMap() {
-
         SkywarsMap.deleteWorld(SkywarsGame.id);
 
         SkywarsGame.id = UUID.randomUUID().toString();

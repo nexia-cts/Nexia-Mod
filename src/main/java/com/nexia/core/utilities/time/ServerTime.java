@@ -19,6 +19,7 @@ import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
+import com.nexia.minigames.games.skywars.SkywarsMap;
 import com.nexia.world.WorldUtil;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -32,7 +33,6 @@ public class ServerTime {
 
     public static int totalTickCount = -1;
     public static int totalSecondCount = -1;
-
 
     public static MinecraftServer minecraftServer = null;
 
@@ -51,21 +51,22 @@ public class ServerTime {
     public static Fantasy fantasy = null;
 
     public static void firstTick(MinecraftServer server) {
-        minecraftServer = server;
+        ServerTime.minecraftServer = server;
         Main.server = server;
 
         serverType = ServerType.returnServer();
         fantasy = Fantasy.get(minecraftServer);
 
-        WorldUtil.deleteTempWorlds();
-
         LobbyUtil.setLobbyWorld(minecraftServer);
         FfaAreas.setFfaWorld(minecraftServer);
-        SkywarsGame.firstTick();
-        OitcGame.firstTick(minecraftServer);
         BwLoadShop.loadBedWarsShop(true);
         BwDimension.register();
         BwGame.firstTick();
+
+        WorldUtil.deleteTempWorlds();
+
+        SkywarsGame.firstTick();
+        OitcGame.firstTick(minecraftServer);
         DuelGameHandler.starting();
     }
 
@@ -75,10 +76,10 @@ public class ServerTime {
                 player.connection.disconnect(LegacyChatFormat.formatFail("The server is restarting!"));
             }
 
-            WorldUtil.deleteTempWorlds();
-
             DuelGameHandler.starting();
             BwAreas.clearQueueBuild();
+
+            WorldUtil.deleteTempWorlds();
         } catch (Exception e) {
             e.printStackTrace();
         }
