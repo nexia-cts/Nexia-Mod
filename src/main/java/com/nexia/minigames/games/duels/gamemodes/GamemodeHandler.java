@@ -24,7 +24,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Random;
 
 public class GamemodeHandler {
 
@@ -112,7 +111,6 @@ public class GamemodeHandler {
         }
 
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
-
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
 
         if (gameMode == null) {
@@ -139,14 +137,11 @@ public class GamemodeHandler {
 
         removeQueue(minecraftPlayer, stringGameMode, true);
 
-        for(DuelGameMode duelGameMode : DuelGameMode.duelGameModes) {
-            if(gameMode.equals(duelGameMode)) {
-                duelGameMode.queue.add(minecraftPlayer);
-                if(duelGameMode.queue.size() >= 2) {
-                    GamemodeHandler.joinGamemode(minecraftPlayer, duelGameMode.queue.get(0), stringGameMode, null, false);
-                }
-            }
+        gameMode.queue.add(minecraftPlayer);
+        if (gameMode.queue.size() >= 2) {
+            GamemodeHandler.joinGamemode(minecraftPlayer, gameMode.queue.get(0), stringGameMode, null, false);
         }
+
     }
 
     public static void removeQueue(ServerPlayer minecraftPlayer, @Nullable String stringGameMode, boolean silent) {

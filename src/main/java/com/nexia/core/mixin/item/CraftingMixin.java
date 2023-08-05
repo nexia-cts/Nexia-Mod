@@ -28,12 +28,11 @@ public class CraftingMixin {
         }
     }
 
-    // Disable crafting for bedwars players
     @ModifyArg(method = "slotChangedCraftingGrid", index = 1, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/ResultContainer;setItem(ILnet/minecraft/world/item/ItemStack;)V"))
     private static ItemStack setCraftResult(ItemStack itemStack) {
         if (crafter == null) return itemStack;
 
-        if (PlayerDataManager.get(crafter).gameMode == PlayerGameMode.LOBBY || PlayerDataManager.get(crafter).gameMode == PlayerGameMode.SKYWARS) {
+        if (PlayerDataManager.get(crafter).gameMode == PlayerGameMode.LOBBY) {
             ItemStackUtil.sendInventoryRefreshPacket(crafter);
             return ItemStack.EMPTY;
         }
@@ -45,7 +44,7 @@ public class CraftingMixin {
     private static ItemStack setCraftResultPacketItem(ItemStack itemStack) {
         if (crafter == null) return itemStack;
 
-        if (PlayerDataManager.get(crafter).gameMode == PlayerGameMode.LOBBY || PlayerDataManager.get(crafter).gameMode == PlayerGameMode.SKYWARS) return ItemStack.EMPTY;
+        if (PlayerDataManager.get(crafter).gameMode == PlayerGameMode.LOBBY) return ItemStack.EMPTY;
 
         return itemStack;
     }

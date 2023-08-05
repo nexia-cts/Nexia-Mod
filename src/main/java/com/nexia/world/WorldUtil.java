@@ -4,9 +4,13 @@ import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.world.World;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.minigames.games.duels.DuelGameHandler;
+import com.nexia.minigames.games.skywars.SkywarsGame;
+import com.nexia.minigames.games.skywars.SkywarsMap;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.text.WordUtils;
@@ -15,6 +19,8 @@ import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WorldUtil {
     public static World getWorld(@NotNull Level level) {
@@ -43,5 +49,17 @@ public class WorldUtil {
             return;
         }
         worldHandle.delete();
+    }
+
+    public static void deleteTempWorlds() {
+        for (ServerLevel level : ServerTime.minecraftServer.getAllLevels()) {
+            String[] split = level.dimension().toString().replaceAll("]", "").split(":");
+            if (split[1].toLowerCase().contains("duels")) {
+                DuelGameHandler.deleteWorld(split[2]);
+            }
+            if (split[1].toLowerCase().contains("skywars")) {
+                SkywarsMap.deleteWorld(split[2]);
+            }
+        }
     }
 }

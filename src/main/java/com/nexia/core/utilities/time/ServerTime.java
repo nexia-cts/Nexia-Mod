@@ -56,21 +56,7 @@ public class ServerTime {
         LobbyUtil.setLobbyWorld(minecraftServer);
         FfaAreas.setFfaWorld(minecraftServer);
 
-        List<Identifier> toDelete = new ArrayList<>();
-
-        for (ServerLevel level : ServerTime.minecraftServer.getAllLevels()) {
-            String[] split = level.dimension().toString().replaceAll("]", "").split(":");
-            if (split[1].toLowerCase().contains("duels")) {
-                toDelete.add(new Identifier("duels", split[2]));
-            }
-            if (split[1].toLowerCase().contains("skywars")) {
-                toDelete.add(new Identifier("skywars", split[2]));
-            }
-        }
-
-        for (Identifier deletion : toDelete) {
-            WorldUtil.deleteWorld(deletion);
-        }
+        WorldUtil.deleteTempWorlds();
 
 
         SkywarsGame.firstTick();
@@ -82,21 +68,7 @@ public class ServerTime {
             for(ServerPlayer player : ServerTime.minecraftServer.getPlayerList().getPlayers()){
                 player.connection.disconnect(LegacyChatFormat.formatFail("The server is restarting!"));
             }
-            List<Identifier> toDelete = new ArrayList<>();
-
-            for (ServerLevel level : ServerTime.minecraftServer.getAllLevels()) {
-                String[] split = level.dimension().toString().replaceAll("]", "").split(":");
-                if (split[1].toLowerCase().contains("duels")) {
-                    toDelete.add(new Identifier("duels", split[2]));
-                }
-                if (split[1].toLowerCase().contains("skywars")) {
-                    toDelete.add(new Identifier("skywars", split[2]));
-                }
-            }
-
-            for (Identifier deletion : toDelete) {
-                WorldUtil.deleteWorld(deletion);
-            }
+            WorldUtil.deleteTempWorlds();
             DuelGameHandler.starting();
         } catch (Exception e) {
             e.printStackTrace();

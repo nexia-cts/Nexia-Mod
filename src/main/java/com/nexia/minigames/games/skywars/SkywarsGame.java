@@ -1,6 +1,5 @@
 package com.nexia.minigames.games.skywars;
 
-import com.combatreforged.factory.api.util.Identifier;
 import  com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
