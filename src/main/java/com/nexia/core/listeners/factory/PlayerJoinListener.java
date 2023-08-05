@@ -62,12 +62,15 @@ public class PlayerJoinListener {
 
     private static void runCommands(Player player, ServerPlayer minecraftPlayer){
         if(minecraftPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) <= 1) {
+
+            ServerTime.factoryServer.runCommand("/rank " + minecraftPlayer.getScoreboardName() + " default", 4, false);
+
             if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.playerFirstJoinCommands)) {
                 for (String command : Main.config.events.playerFirstJoinCommands) {
                     ServerTime.factoryServer.runCommand(command);
                 }
             }
-            if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.playerFirstJoinCommands)){
+            if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.serverFirstJoinCommands)){
                 for(String command : Main.config.events.serverFirstJoinCommands){
                     player.runCommand(command);
                 }

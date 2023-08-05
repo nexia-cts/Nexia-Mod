@@ -18,6 +18,7 @@ import com.nexia.minigames.games.bedwars.util.BwGen;
 import com.nexia.minigames.games.bedwars.util.BwPlayerTracker;
 import com.nexia.minigames.games.bedwars.util.BwScoreboard;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
+import com.nexia.minigames.games.bedwars.util.player.PlayerDataManager;
 import net.minecraft.Util;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -270,9 +271,13 @@ public class BwGame {
             BwTeam winnerTeam = aliveTeams.get(0);
             String whoWon;
             if (winnerTeam.players.size() == 1) {
+                PlayerDataManager.get(winnerTeam.players.stream().findFirst().get()).savedData.wins++;
                 whoWon = winnerTeam.textColor + winnerTeam.players.get(0).getScoreboardName();
             } else {
                 whoWon = winnerTeam.textColor + winnerTeam.displayName + " team";
+                for(ServerPlayer player : winnerTeam.players) {
+                    PlayerDataManager.get(player).savedData.wins++;
+                }
             }
 
             String subtitle = whoWon + "\2477 has won the game!";

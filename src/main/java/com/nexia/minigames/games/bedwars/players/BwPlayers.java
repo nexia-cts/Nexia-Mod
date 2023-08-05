@@ -70,6 +70,7 @@ public class BwPlayers {
             String eliminationMessage = team.textColor + player.getScoreboardName() + " \2477has been eliminated";
             PlayerUtil.broadcast(getPlayers(), eliminationMessage);
 
+            com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.get(player).savedData.loss++;
             team.players.remove(player);
 
             ServerLevel world = BwAreas.bedWarsWorld;

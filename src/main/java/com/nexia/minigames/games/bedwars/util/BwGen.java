@@ -1,6 +1,5 @@
 package com.nexia.minigames.games.bedwars.util;
 
-import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.pos.EntityPos;

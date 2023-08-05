@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.minigames.games.bedwars.shop.BwLoadShop;
 import net.minecraft.commands.CommandSourceStack;
@@ -23,11 +24,11 @@ public class BwReloadShopCommand {
                 BwLoadShop.loadBedWarsShop(false);
 
         if (success) {
-            String message = ChatFormat.brandColor1 + "Reloaded Bedwars shop successfully!";
+            String message = LegacyChatFormat.brandColor1 + "Reloaded Bedwars shop successfully!";
             context.getSource().sendSuccess(new TextComponent(message), false);
 
         } else {
-            String message = ChatFormat.brandColor2 + "Failed to reload Bedwars shop.";
+            String message = LegacyChatFormat.brandColor2 + "Failed to reload Bedwars shop.";
             context.getSource().sendFailure(new TextComponent(message));
         }
 

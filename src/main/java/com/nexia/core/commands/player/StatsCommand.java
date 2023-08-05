@@ -97,7 +97,7 @@ public class StatsCommand {
 
         if(executerData.gameMode == PlayerGameMode.BEDWARS){
             message = ChatFormat.separatorLine("Bedwars Stats");
-            com.nexia.minigames.games.duels.util.player.SavedPlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(mcPlayer).savedData;
+            com.nexia.minigames.games.bedwars.util.player.SavedPlayerData data = com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.get(mcPlayer).savedData;
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
@@ -220,7 +220,7 @@ public class StatsCommand {
 
         if(gamemode.equalsIgnoreCase("bedwars")){
             message = ChatFormat.separatorLine("Bedwars Stats");
-            com.nexia.minigames.games.duels.util.player.SavedPlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(otherPlayer).savedData;
+            com.nexia.minigames.games.bedwars.util.player.SavedPlayerData data = com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.get(otherPlayer).savedData;
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
