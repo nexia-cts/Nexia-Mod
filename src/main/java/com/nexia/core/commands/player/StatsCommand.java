@@ -181,7 +181,7 @@ public class StatsCommand {
             );
         }
 
-        if (gamemode.equalsIgnoreCase("skywars")) {
+        if (gamemode.equalsIgnoreCase("bedwars")) {
             message = ChatFormat.separatorLine("BedWars Stats");
             com.nexia.minigames.games.bedwars.util.player.SavedPlayerData data = com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.get(otherPlayer).savedData;
             player.sendMessage(message);

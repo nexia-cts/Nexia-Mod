@@ -11,6 +11,9 @@ import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaUtil;
+import com.nexia.minigames.games.bedwars.BwGame;
+import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
+import com.nexia.minigames.games.bedwars.players.BwPlayers;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import net.minecraft.server.level.ServerPlayer;
@@ -59,6 +62,7 @@ public class PlayerLeaveListener {
             FfaUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
         } else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(minecraftPlayer, true);
         else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.SKYWARS) SkywarsGame.leave(minecraftPlayer);
+        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.BEDWARS) BwPlayerEvents.leaveInBedWars(minecraftPlayer);
         PlayerDataManager.removePlayerData(minecraftPlayer);
         com.nexia.ffa.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer);
         com.nexia.discord.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer.getUUID());
