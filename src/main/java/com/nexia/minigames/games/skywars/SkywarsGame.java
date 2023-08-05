@@ -67,10 +67,10 @@ public class SkywarsGame {
             .setTimeOfDay(6000);
 
     // Both timers counted in seconds.
-    public static int glowingTime = 300;
+    public static int glowingTime = 180;
 
     public static String id = UUID.randomUUID().toString();
-    public static int gameEnd = 600;
+    public static int gameEnd = 360;
     public static int queueTime = 15;
 
     public static ArrayList<ServerPlayer> queue = new ArrayList<>();
@@ -227,8 +227,8 @@ public class SkywarsGame {
         SkywarsGame.isGlowingActive = false;
         SkywarsGame.isEnding = false;
         SkywarsGame.winner = null;
-        SkywarsGame.glowingTime = 300;
-        SkywarsGame.gameEnd = 600;
+        SkywarsGame.glowingTime = 180;
+        SkywarsGame.gameEnd = 360;
         SkywarsGame.alive.addAll(SkywarsGame.queue);
 
         ArrayList<EntityPos> positions = new ArrayList<>(SkywarsGame.map.positions);
@@ -255,9 +255,9 @@ public class SkywarsGame {
     public static void resetAll() {
         SkywarsGame.isStarted = false;
         SkywarsGame.isGlowingActive = false;
-        SkywarsGame.glowingTime = 300;
         SkywarsGame.isEnding = false;
-        SkywarsGame.gameEnd = 600;
+        SkywarsGame.gameEnd = 360;
+        SkywarsGame.glowingTime = 180;
         SkywarsGame.endTime = 5;
         SkywarsGame.queueTime = 15;
 
