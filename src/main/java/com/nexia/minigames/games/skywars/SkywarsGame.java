@@ -1,6 +1,5 @@
 package com.nexia.minigames.games.skywars;
 
-import com.combatreforged.factory.api.util.Identifier;
 import  com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
@@ -17,7 +16,6 @@ import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.skywars.util.player.PlayerData;
 import com.nexia.minigames.games.skywars.util.player.PlayerDataManager;
-import com.nexia.world.WorldUtil;
 import net.fabricmc.loader.impl.util.StringUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;

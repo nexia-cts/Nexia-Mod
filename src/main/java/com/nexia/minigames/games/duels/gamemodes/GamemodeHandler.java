@@ -139,13 +139,9 @@ public class GamemodeHandler {
 
         removeQueue(minecraftPlayer, stringGameMode, true);
 
-        for(DuelGameMode duelGameMode : DuelGameMode.duelGameModes) {
-            if(gameMode.equals(duelGameMode)) {
-                duelGameMode.queue.add(minecraftPlayer);
-                if(duelGameMode.queue.size() >= 2) {
-                    GamemodeHandler.joinGamemode(minecraftPlayer, duelGameMode.queue.get(0), stringGameMode, null, false);
-                }
-            }
+        gameMode.queue.add(minecraftPlayer);
+        if (gameMode.queue.size() >= 2) {
+            GamemodeHandler.joinGamemode(minecraftPlayer, gameMode.queue.get(0), stringGameMode, null, false);
         }
     }
 
