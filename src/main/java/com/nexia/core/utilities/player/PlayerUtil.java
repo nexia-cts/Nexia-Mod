@@ -56,12 +56,6 @@ public class PlayerUtil {
         }
     }
 
-    public static void broadcastSound(List<ServerPlayer> players, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch) {
-        for (ServerPlayer player : players) {
-            sendSound(player, soundEvent, soundSource, volume, pitch);
-        }
-    }
-
     public static boolean sendBossbar(CustomBossEvent customBossEvent, @Nullable Collection<ServerPlayer> collection) {
         if(collection == null) {
             customBossEvent.removeAllPlayers();
@@ -79,14 +73,15 @@ public class PlayerUtil {
         customBossEvent.addPlayer(player);
         return true;
     }
-
-    public static void resetHealthStatus(@NotNull net.minecraft.world.entity.player.Player player) {
-        player.setInvulnerable(false);
-        player.removeAllEffects();
-        player.setHealth(player.getMaxHealth());
-        player.getFoodData().setFoodLevel(20);
+    private static void sendDefaultTitleLength(ServerPlayer player) {
+        player.connection.send(new ClientboundSetTitlesPacket(10, 60, 20));
     }
 
+    public static void broadcastSound(List<ServerPlayer> players, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch) {
+        for (ServerPlayer player : players) {
+            sendSound(player, soundEvent, soundSource, volume, pitch);
+        }
+    }
 
     public static Player getFactoryPlayer(@NotNull ServerPlayer minecraftPlayer) {
         Player fPlayer = cachedFactoryPlayers.get(minecraftPlayer);
@@ -95,41 +90,6 @@ public class PlayerUtil {
             cachedFactoryPlayers.put(minecraftPlayer, fPlayer);
         }
         return fPlayer;
-    }
-
-    private static void sendDefaultTitleLength(ServerPlayer player) {
-        player.connection.send(new ClientboundSetTitlesPacket(10, 60, 20));
-    }
-
-    public static void sendActionbar(ServerPlayer player, String string){
-        player.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.ACTIONBAR,
-                LegacyChatFormat.format(string)));
-    }
-
-    public static Player getFactoryPlayerFromName(@NotNull String player) {
-        if(player.trim().length() == 0) return null;
-        return ServerTime.factoryServer.getPlayer(player);
-    }
-
-    public static void sendTitle(ServerPlayer player, String title, String sub, int in, int stay, int out) {
-        player.connection.send(new ClientboundSetTitlesPacket(in, stay, out));
-        player.connection.send(new ClientboundSetTitlesPacket(
-                ClientboundSetTitlesPacket.Type.TITLE, new TextComponent(title)));
-        player.connection.send(new ClientboundSetTitlesPacket(
-                ClientboundSetTitlesPacket.Type.SUBTITLE, new TextComponent(sub)));
-    }
-
-    public static void broadcastTitle(List<ServerPlayer> players, String title, String subtitle) {
-        ClientboundSetTitlesPacket titlePacket = new ClientboundSetTitlesPacket(
-                ClientboundSetTitlesPacket.Type.TITLE, new TextComponent(title));
-        ClientboundSetTitlesPacket subtitlePacket = new ClientboundSetTitlesPacket(
-                ClientboundSetTitlesPacket.Type.SUBTITLE, new TextComponent(subtitle));
-
-        for (ServerPlayer player : players) {
-            sendDefaultTitleLength(player);
-            player.connection.send(titlePacket);
-            player.connection.send(subtitlePacket);
-        }
     }
 
     public static ServerPlayer getMinecraftPlayer(@NotNull Player player){
@@ -152,6 +112,22 @@ public class PlayerUtil {
         player.setHealth(20);
         player.setFoodLevel(20);
     }
+
+    public static void resetHealthStatus(@NotNull net.minecraft.world.entity.player.Player player) {
+        player.setInvulnerable(false);
+        player.removeAllEffects();
+        player.setHealth(player.getMaxHealth());
+        player.getFoodData().setFoodLevel(20);
+    }
+
+    public static void sendTitle(ServerPlayer player, String title, String sub, int in, int stay, int out) {
+        player.connection.send(new ClientboundSetTitlesPacket(in, stay, out));
+        player.connection.send(new ClientboundSetTitlesPacket(
+                ClientboundSetTitlesPacket.Type.TITLE, new TextComponent(title)));
+        player.connection.send(new ClientboundSetTitlesPacket(
+                ClientboundSetTitlesPacket.Type.SUBTITLE, new TextComponent(sub)));
+    }
+
     public static boolean hasPermission(@NotNull CommandSourceStack permission, @NotNull String command, int level) {
         return me.lucko.fabric.api.permissions.v0.Permissions.check(permission, command, level);
     }
@@ -170,6 +146,38 @@ public class PlayerUtil {
         return null;
     }
 
+    public static boolean couldCrit(ServerPlayer player) {
+        return !player.isOnGround() && player.fallDistance > 0.0f && !player.hasEffect(MobEffects.BLINDNESS)
+                && !player.onClimbable() && !player.isInWater() && !player.isPassenger();
+    }
+
+    public static void removeItem(ServerPlayer player, Item item, int count) {
+        for (ItemStack itemStack : ItemStackUtil.getInvItems(player)) {
+            if (itemStack.getItem() != item) continue;
+
+            if (itemStack.getCount() >= count) {
+                itemStack.shrink(count);
+                break;
+            } else {
+                count -= itemStack.getCount();
+                itemStack.shrink(itemStack.getCount());
+            }
+        }
+    }
+
+    public static void broadcastTitle(List<ServerPlayer> players, String title, String subtitle) {
+        ClientboundSetTitlesPacket titlePacket = new ClientboundSetTitlesPacket(
+                ClientboundSetTitlesPacket.Type.TITLE, new TextComponent(title));
+        ClientboundSetTitlesPacket subtitlePacket = new ClientboundSetTitlesPacket(
+                ClientboundSetTitlesPacket.Type.SUBTITLE, new TextComponent(subtitle));
+
+        for (ServerPlayer player : players) {
+            sendDefaultTitleLength(player);
+            player.connection.send(titlePacket);
+            player.connection.send(subtitlePacket);
+        }
+    }
+
     public static void sendSound(ServerPlayer player, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch) {
         sendSound(player, new EntityPos(player), soundEvent, soundSource, volume, pitch);
     }
@@ -183,5 +191,4 @@ public class PlayerUtil {
         player.connection.send(new ClientboundSoundPacket(soundEvent, soundSource,
                 position.x, position.y, position.z, 16f * volume, pitch));
     }
-
 }

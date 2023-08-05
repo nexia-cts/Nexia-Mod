@@ -14,11 +14,17 @@ public class PlayCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
         dispatcher.register(Commands.literal("play").executes(PlayCommand::openGUI)
                 .then(Commands.literal("skywars").executes(PlayCommand::playSkywars))
+                .then(Commands.literal("sw").executes(PlayCommand::playSkywars))
+                .then(Commands.literal("bedwars").executes(PlayCommand::playBedwars))
+                .then(Commands.literal("bw").executes(PlayCommand::playBedwars))
                 .then(Commands.literal("ffa").executes(PlayCommand::openGUI)
                         .then(Commands.literal("classic").executes(PlayCommand::playNormalFFA)))
                 .then(Commands.literal("duels").executes(PlayCommand::playDuels)));
         dispatcher.register(Commands.literal("join").executes(PlayCommand::openGUI)
                 .then(Commands.literal("skywars").executes(PlayCommand::playSkywars))
+                .then(Commands.literal("sw").executes(PlayCommand::playSkywars))
+                .then(Commands.literal("bedwars").executes(PlayCommand::playBedwars))
+                .then(Commands.literal("bw").executes(PlayCommand::playBedwars))
                 .then(Commands.literal("ffa").executes(PlayCommand::openGUI)
                         .then(Commands.literal("classic").executes(PlayCommand::playNormalFFA)))
                 .then(Commands.literal("duels").executes(PlayCommand::playDuels))
@@ -34,6 +40,12 @@ public class PlayCommand {
     private static int playNormalFFA(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         LobbyUtil.sendGame(player, "classic ffa", true, true);
+        return 1;
+    }
+
+    private static int playBedwars(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        LobbyUtil.sendGame(player, "bedwars", true, true);
         return 1;
     }
 

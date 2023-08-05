@@ -92,6 +92,21 @@ public class StatsCommand {
             );
         }
 
+        if (executerData.gameMode == PlayerGameMode.BEDWARS) {
+            message = ChatFormat.separatorLine("BedWars Stats");
+            com.nexia.minigames.games.bedwars.util.player.SavedPlayerData data = com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.get(mcPlayer).savedData;
+            player.sendMessage(message);
+            player.sendMessage(user);
+            player.sendMessage(start
+                    .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(data.wins).color(ChatFormat.greenColor))
+            );
+            player.sendMessage(start
+                    .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(data.loss).color(ChatFormat.failColor))
+            );
+        }
+
         if(executerData.gameMode == PlayerGameMode.SKYWARS){
             message = ChatFormat.separatorLine("SkyWars Stats");
             com.nexia.minigames.games.skywars.util.player.SavedPlayerData data = com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(mcPlayer).savedData;
@@ -165,6 +180,22 @@ public class StatsCommand {
                     .append(Component.text(data.bestKillstreak).color(TextColor.fromHexString("#f5bc42")))
             );
         }
+
+        if (gamemode.equalsIgnoreCase("skywars")) {
+            message = ChatFormat.separatorLine("BedWars Stats");
+            com.nexia.minigames.games.bedwars.util.player.SavedPlayerData data = com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.get(otherPlayer).savedData;
+            player.sendMessage(message);
+            player.sendMessage(user);
+            player.sendMessage(start
+                    .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(data.wins).color(ChatFormat.greenColor))
+            );
+            player.sendMessage(start
+                    .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(data.loss).color(ChatFormat.failColor))
+            );
+        }
+
 
         if(gamemode.equalsIgnoreCase("skywars")){
             message = ChatFormat.separatorLine("SkyWars Stats");

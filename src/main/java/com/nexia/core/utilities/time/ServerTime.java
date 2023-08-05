@@ -10,6 +10,10 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.ffa.utilities.FfaUtil;
+import com.nexia.minigames.games.bedwars.BwGame;
+import com.nexia.minigames.games.bedwars.areas.BwAreas;
+import com.nexia.minigames.games.bedwars.areas.BwDimension;
+import com.nexia.minigames.games.bedwars.shop.BwLoadShop;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
@@ -55,6 +59,9 @@ public class ServerTime {
         fantasy = Fantasy.get(minecraftServer);
         LobbyUtil.setLobbyWorld(minecraftServer);
         FfaAreas.setFfaWorld(minecraftServer);
+        BwLoadShop.loadBedWarsShop(true);
+        BwDimension.register();
+        BwGame.firstTick();
 
         WorldUtil.deleteTempWorlds();
 
@@ -68,8 +75,10 @@ public class ServerTime {
             for(ServerPlayer player : ServerTime.minecraftServer.getPlayerList().getPlayers()){
                 player.connection.disconnect(LegacyChatFormat.formatFail("The server is restarting!"));
             }
-            WorldUtil.deleteTempWorlds();
+            BwAreas.clearQueueBuild();
             DuelGameHandler.starting();
+
+            WorldUtil.deleteTempWorlds();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -77,6 +86,9 @@ public class ServerTime {
 
     public static void everyTick() {
         totalTickCount++;
+
+        BwGame.tick();
+
         if (totalTickCount % 5 == 0) {
             FfaUtil.fiveTick();
         }
@@ -85,6 +97,7 @@ public class ServerTime {
         switch (totalTickCount % 20) {
             case 0 -> everySecond();
             case 2 -> FfaUtil.ffaSecond();
+            case 6 -> BwGame.bedWarsSecond();
         }
     }
 

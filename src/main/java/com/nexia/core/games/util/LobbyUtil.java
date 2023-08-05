@@ -11,6 +11,9 @@ import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.ffa.utilities.FfaUtil;
+import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
+import com.nexia.minigames.games.bedwars.util.BwScoreboard;
+import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.minigames.games.skywars.SkywarsGameMode;
@@ -29,7 +32,7 @@ import net.minecraft.world.level.Level;
 
 public class LobbyUtil {
 
-    public static String[] statsGameModes = {"FFA", "DUELS", "SKYWARS"};
+    public static String[] statsGameModes = {"FFA", "DUELS", "SKYWARS", "BEDWARS"};
 
     public static ServerLevel lobbyWorld = null;
     public static EntityPos lobbySpawn = new EntityPos(Main.config.lobbyPos[0], Main.config.lobbyPos[1], Main.config.lobbyPos[2], 0, 0);
@@ -59,6 +62,7 @@ public class LobbyUtil {
             "ffa",
             "duels",
             "skywars",
+            "in_bedwars",
             NO_RANK_DISPLAY_TAG,
             NO_SATURATION_TAG,
             NO_FALL_DAMAGE_TAG
@@ -66,7 +70,9 @@ public class LobbyUtil {
 
     public static void leaveAllGames(ServerPlayer minecraftPlayer, boolean tp) {
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
-        if (FfaUtil.isFfaPlayer(minecraftPlayer)) {
+        if (BwUtil.isInBedWars(minecraftPlayer)) {
+            BwPlayerEvents.leaveInBedWars(minecraftPlayer);
+        } else if (FfaUtil.isFfaPlayer(minecraftPlayer)) {
             FfaUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
         } else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) {
             DuelGameHandler.leave(minecraftPlayer, false);
@@ -80,6 +86,7 @@ public class LobbyUtil {
         }
 
         PlayerUtil.sendBossbar(SkywarsGame.BOSSBAR, minecraftPlayer, true);
+        BwScoreboard.removeScoreboardFor(minecraftPlayer);
         minecraftPlayer.setGlowing(false);
 
         returnToLobby(minecraftPlayer, tp);
@@ -229,6 +236,12 @@ public class LobbyUtil {
 
             if(message){player.sendActionBarMessage(Component.text("You have joined §7☐ §aSkywars §7\uD83D\uDDE1"));}
         }
+
+        if(game.equalsIgnoreCase("bedwars")){
+            if(message){ player.sendActionBarMessage(Component.text("You have joined §b\uD83E\uDE93 §c§lBedwars §e⚡"));}
+            BwPlayerEvents.tryToJoin(minecraftPlayer, false);
+        }
+
 
         if(game.equalsIgnoreCase("duels")){
             LobbyUtil.leaveAllGames(minecraftPlayer, tp);

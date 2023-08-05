@@ -3,6 +3,7 @@ package com.nexia.core.mixin.item;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -28,11 +29,12 @@ public class CraftingMixin {
         }
     }
 
+    // Disable crafting for bedwars players
     @ModifyArg(method = "slotChangedCraftingGrid", index = 1, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/ResultContainer;setItem(ILnet/minecraft/world/item/ItemStack;)V"))
     private static ItemStack setCraftResult(ItemStack itemStack) {
         if (crafter == null) return itemStack;
 
-        if (PlayerDataManager.get(crafter).gameMode == PlayerGameMode.LOBBY) {
+        if (BwUtil.isInBedWars(crafter) || PlayerDataManager.get(crafter).gameMode == PlayerGameMode.LOBBY) {
             ItemStackUtil.sendInventoryRefreshPacket(crafter);
             return ItemStack.EMPTY;
         }
@@ -44,7 +46,7 @@ public class CraftingMixin {
     private static ItemStack setCraftResultPacketItem(ItemStack itemStack) {
         if (crafter == null) return itemStack;
 
-        if (PlayerDataManager.get(crafter).gameMode == PlayerGameMode.LOBBY) return ItemStack.EMPTY;
+        if (BwUtil.isInBedWars(crafter) || PlayerDataManager.get(crafter).gameMode == PlayerGameMode.LOBBY) return ItemStack.EMPTY;
 
         return itemStack;
     }

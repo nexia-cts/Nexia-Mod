@@ -9,6 +9,8 @@ import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.player.BanHandler;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
+import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import me.lucko.fabric.api.permissions.v0.Permissions;
@@ -84,6 +86,8 @@ public abstract class PlayerListMixin {
             LobbyUtil.giveItems(player);
             player.setGameMode(GameType.ADVENTURE);
         }
+
+        if (BwUtil.isInBedWars(player)) { BwPlayerEvents.respawned(player); }
     }
 
     private static Component joinFormat(Component original, ServerPlayer joinPlayer) {

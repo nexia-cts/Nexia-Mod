@@ -4,6 +4,7 @@ import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaAreas;
+import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import com.nexia.minigames.games.skywars.SkywarsGame;
@@ -47,6 +48,18 @@ public class PlayGUI extends SimpleGui {
         hub.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
         ItemDisplayUtil.addLore(hub, "§7Return back to the hub.", 0);
 
+        ItemStack bedwars = new ItemStack(Items.RED_BED, 1);
+        bedwars.setHoverName(new TextComponent("§cBedwars"));
+        ItemDisplayUtil.addGlint(bedwars);
+        bedwars.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
+
+        ItemDisplayUtil.addLore(bedwars, "§5", 0);
+        ItemDisplayUtil.addLore(bedwars, "§7Protect your bed and", 1);
+        ItemDisplayUtil.addLore(bedwars, "§7destroy other's beds, kill your", 2);
+        ItemDisplayUtil.addLore(bedwars, "§7opponents to win!", 3);
+        ItemDisplayUtil.addLore(bedwars, "§f", 4);
+        ItemDisplayUtil.addLore(bedwars, "§c◆ There are " + BwAreas.bedWarsWorld.players().size() + " people playing this gamemode.", 5);
+
         ItemStack duels = new ItemStack(Items.NETHERITE_AXE, 1);
         duels.setHoverName(new TextComponent("§9Duels"));
         ItemDisplayUtil.addGlint(duels);
@@ -84,6 +97,7 @@ public class PlayGUI extends SimpleGui {
         this.setSlot(2, ffa);
         this.setSlot(4, hub);
         this.setSlot(6, duels);
+        this.setSlot(8, bedwars);
     }
 
     private void setFFALayout(){
@@ -119,6 +133,11 @@ public class PlayGUI extends SimpleGui {
 
             if(name.getString().equalsIgnoreCase("§9Duels")) {
                 LobbyUtil.sendGame(this.player, "duels", true, true);
+            }
+
+            if(name.getString().equalsIgnoreCase("§cBedwars")){
+                LobbyUtil.sendGame(this.player, "bedwars", true, true);
+                this.close();
             }
 
             if(name.getString().equalsIgnoreCase("§aSkywars")){

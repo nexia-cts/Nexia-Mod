@@ -7,6 +7,8 @@ import com.nexia.core.gui.duels.DuelGUI;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.utilities.FfaUtil;
+import com.nexia.minigames.games.bedwars.areas.BwAreas;
+import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import net.minecraft.core.BlockPos;
@@ -64,6 +66,8 @@ public abstract class ServerPlayerMixin extends Player {
             duelsData.duelsGame.death(player, damageSource);
         } else if(gameMode == PlayerGameMode.LOBBY && duelsData.teamDuelsGame != null) {
             duelsData.teamDuelsGame.death(player, damageSource);
+        } else if (BwAreas.isBedWarsWorld(getLevel())) {
+            BwPlayerEvents.death(player);
         }
     }
 

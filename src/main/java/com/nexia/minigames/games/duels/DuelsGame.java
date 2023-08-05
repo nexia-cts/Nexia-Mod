@@ -6,6 +6,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
+import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.map.DuelsMap;
@@ -102,6 +103,7 @@ public class DuelsGame { //implements Runnable{
         if(selectedMap == null){
             selectedMap = DuelsMap.duelsMaps.get(RandomUtil.randomInt(0, DuelsMap.duelsMaps.size()));
         }
+
 
         selectedMap.structureMap.pasteMap(duelLevel);
 

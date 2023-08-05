@@ -9,7 +9,11 @@ import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.utilities.FfaUtil;
+import com.nexia.minigames.games.bedwars.areas.BwAreas;
+import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
+import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.skywars.SkywarsGame;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.level.ServerLevel;
@@ -23,6 +27,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerGamePacketListenerImpl.class)
@@ -51,6 +56,14 @@ public class ServerGamePacketListenerMixin {
             }
         }
 
+        if (BwUtil.isBedWarsPlayer(player)) {
+            if (!BwPlayerEvents.containerClick(player, clickPacket)) {
+                ItemStackUtil.sendInventoryRefreshPacket(player);
+                ci.cancel();
+                return;
+            }
+        }
+
         if (FfaUtil.isFfaPlayer(player)) {
             // If clicks on crafting slot
             if (containerId == 0 && slot >= 1 && slot <= 4) {
@@ -60,6 +73,57 @@ public class ServerGamePacketListenerMixin {
             }
         }
 
+    }
+
+
+    // Thank you, our lord and saviour
+    //   _____  _          _____            _
+    // |  __ \(_)        / ____|          | |
+    // | |__) |_ _______| |     ___   ___ | | _____ _   _
+    // |  _  /| |_  / _ \ |    / _ \ / _ \| |/ / _ \ | | |
+    // | | \ \| |/ /  __/ |___| (_) | (_) |   <  __/ |_| |
+    // |_|  \_\_/___\___|\_____\___/ \___/|_|\_\___|\__, |
+    //                                               __/ |
+    //                                              |___/
+    @Redirect(method = "handleInteract", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;getCurrentAttackReach(F)F"))
+    public float redirectReachLonger(ServerPlayer playerEntity, float f) {
+        return playerEntity.getCurrentAttackReach(f) + 0.75F;
+    }
+
+
+
+    @Inject(method = "handleInteract", cancellable = true, at = @At("HEAD"))
+    private void mobInteract(ServerboundInteractPacket packet, CallbackInfo ci) {
+        ServerLevel level = player.getLevel();
+
+        if (BwAreas.isBedWarsWorld(level) && !BwPlayerEvents.interact(player, packet)) {
+            ci.cancel();
+
+        }
+    }
+
+    @Inject(method = "handleUseItemOn", at = @At("HEAD"), cancellable = true)
+    private void handleUseItemOn(ServerboundUseItemOnPacket packet, CallbackInfo ci) {
+
+        if (BwUtil.isInBedWars(player)) {
+            if (!BwPlayerEvents.useItem(player, packet.getHand())) {
+                ci.cancel();
+                BlockPos blockPos = packet.getHitResult().getBlockPos().relative(packet.getHitResult().getDirection());
+                player.connection.send(new ClientboundBlockUpdatePacket(blockPos, player.level.getBlockState(blockPos)));
+                return;
+            }
+        }
+
+    }
+
+    @Inject(method = "handleUseItem", at = @At("HEAD"), cancellable = true)
+    private void handleUseItem(ServerboundUseItemPacket serverboundUseItemPacket, CallbackInfo ci) {
+
+        if (BwUtil.isInBedWars(player)) {
+            if (!BwPlayerEvents.useItem(player, serverboundUseItemPacket.getHand())) {
+                ci.cancel();
+            }
+        }
     }
 
 
@@ -87,6 +151,13 @@ public class ServerGamePacketListenerMixin {
         if(PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY){
             ci.cancel();
             return;
+        }
+
+        if (BwUtil.isInBedWars(player)) {
+            if (!BwPlayerEvents.spectatorTeleport(player, packet)) {
+                ci.cancel();
+                return;
+            }
         }
 
         if(SkywarsGame.isSkywarsPlayer(player)) {

@@ -63,6 +63,7 @@ public class PlayerLeaveListener {
         com.nexia.ffa.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer);
         com.nexia.discord.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer.getUUID());
         com.nexia.minigames.games.duels.util.player.PlayerDataManager.removePlayerData(minecraftPlayer);
+        com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.removePlayerData(minecraftPlayer);
         com.nexia.minigames.games.skywars.util.player.PlayerDataManager.removePlayerData(minecraftPlayer);
 
         //LobbyUtil.leaveAllGames(minecraftPlayer, true);
