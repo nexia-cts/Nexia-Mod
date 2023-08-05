@@ -35,6 +35,7 @@
     "misc.CommandSourceStackMixin",
     "misc.ItemCombinerMenuMixin",
     "misc.ExplosionMixin",
+    "player.ServerPlayerGameModeMixin",
     "misc.MinecraftServerMixin",
     "misc.ServerLevelMixin",
     "misc.commands.BanCommandMixin",
