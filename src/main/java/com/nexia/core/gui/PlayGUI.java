@@ -8,6 +8,7 @@ import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
@@ -22,7 +23,7 @@ import net.minecraft.world.item.enchantment.Enchantments;
 
 public class PlayGUI extends SimpleGui {
 
-    final TextComponent title = new TextComponent("Game Menu");
+    static final TextComponent title = new TextComponent("Game Menu");
     public PlayGUI(MenuType<?> type, ServerPlayer player, boolean includePlayer) {
         super(type, player, includePlayer);
     }
@@ -33,8 +34,6 @@ public class PlayGUI extends SimpleGui {
         }
     }
     private void setMainLayout(){
-        this.setTitle(this.title);
-
         ItemStack ffa = new ItemStack(Items.NETHERITE_SWORD, 1);
         ffa.setHoverName(new TextComponent("§3FFA"));
         ItemDisplayUtil.addGlint(ffa);
@@ -146,7 +145,7 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(oitc, "§7Try to kill as many people as possible", 2);
         ItemDisplayUtil.addLore(oitc, "§7to achieve victory!", 3);
         ItemDisplayUtil.addLore(oitc, "§f", 4);
-        ItemDisplayUtil.addLore(oitc, "§e◆ There are " + PlayerGameMode.OITC.players + " people playing this gamemode.", 5);
+        ItemDisplayUtil.addLore(oitc, "§e◆ There are " + OitcGame.world.players().size() + " people playing this gamemode.", 5);
 
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
@@ -209,6 +208,7 @@ public class PlayGUI extends SimpleGui {
     }
     public static void openMainGUI(ServerPlayer player) {
         PlayGUI shop = new PlayGUI(MenuType.GENERIC_9x1, player, false);
+        shop.setTitle(title);
         shop.setMainLayout();
         shop.open();
     }

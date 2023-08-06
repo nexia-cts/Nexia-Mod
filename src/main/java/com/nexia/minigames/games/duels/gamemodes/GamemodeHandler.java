@@ -50,10 +50,6 @@ public class GamemodeHandler {
             return DuelGameMode.NETH_POT;
         }
 
-        if (gameMode.equalsIgnoreCase("og_vanilla")) {
-            return DuelGameMode.OG_VANILLA;
-        }
-
         if (gameMode.equalsIgnoreCase("uhc_shield")) {
             return DuelGameMode.UHC_SHIELD;
         }

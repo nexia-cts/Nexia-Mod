@@ -28,7 +28,7 @@ public class QueueCommand {
                 })
                 .executes(context -> QueueGUI.openQueueGUI(context.getSource().getPlayerOrException()))
                 .then(Commands.argument("gamemode", StringArgumentType.string())
-                        .suggests(((context, builder) -> SharedSuggestionProvider.suggest((DuelGameMode.duels), builder)))
+                        .suggests(((context, builder) -> SharedSuggestionProvider.suggest((DuelGameMode.stringDuelGameModes), builder)))
                         .executes(context -> QueueCommand.queue(context, StringArgumentType.getString(context, "gamemode"))))
         );
     }

@@ -47,7 +47,7 @@ public class QueueGUI extends SimpleGui {
         }
         int i1 = 0;
         ItemStack item;
-        for(String duel : DuelGameMode.duels){
+        for(String duel : DuelGameMode.stringDuelGameModes){
             if(slot == 17) {
                 slot = 19;
             }
@@ -55,10 +55,10 @@ public class QueueGUI extends SimpleGui {
                 slot = 28;
             }
 
-            item = DuelGameMode.duelsItems.get(i1);
-            item.setHoverName(new TextComponent("§f" + duel.toUpperCase().replaceAll("_", " ")));
 
+            item = DuelGameMode.duelsItems.get(i1).setHoverName(new TextComponent("§f" + duel.toUpperCase().replaceAll("_", " ")));
             DuelGameMode gameMode = GamemodeHandler.identifyGamemode(duel);
+
             ItemDisplayUtil.removeLore(item, 0);
             ItemDisplayUtil.addLore(item, "§7There are §7§l" + gameMode.queue.size() + " §7people queued up.", 0);
 
