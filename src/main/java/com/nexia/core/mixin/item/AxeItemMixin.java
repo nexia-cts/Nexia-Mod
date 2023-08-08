@@ -18,8 +18,7 @@ public class AxeItemMixin {
     @Inject(method = "useOn", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/context/UseOnContext;getPlayer()Lnet/minecraft/world/entity/player/Player;"))
     private void stripeWood(UseOnContext context, CallbackInfoReturnable<InteractionResult> cir) {
         Player playerEntity = context.getPlayer();
-        if (!(playerEntity instanceof ServerPlayer)) return;
-        ServerPlayer player = (ServerPlayer) playerEntity;
+        if (!(playerEntity instanceof ServerPlayer player)) return;
 
         if (BwAreas.isBedWarsWorld(context.getLevel())) {
             if (!BwPlayerEvents.beforeStripWood(player, context)) {

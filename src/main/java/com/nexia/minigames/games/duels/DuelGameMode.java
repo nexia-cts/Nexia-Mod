@@ -27,7 +27,7 @@ public class DuelGameMode {
     public static ArrayList<String> stringDuelGameModes = new ArrayList<>();
 
 
-    public static final DuelGameMode FFA = new DuelGameMode("ffa", true, true, GameType.ADVENTURE, new ItemStack(Items.NETHERITE_SWORD));
+    public static final DuelGameMode CLASSIC = new DuelGameMode("classic", true, true, GameType.ADVENTURE, new ItemStack(Items.NETHERITE_SWORD));
     public static final DuelGameMode SWORD_ONLY = new DuelGameMode("sword_only", true, true, GameType.ADVENTURE, new ItemStack(Items.DIAMOND_SWORD));
     public static final DuelGameMode TRIDENT_ONLY = new DuelGameMode("trident_only", true, true, GameType.ADVENTURE, new ItemStack(Items.TRIDENT));
     public static final DuelGameMode HOE_ONLY = new DuelGameMode("hoe_only", true, true, GameType.ADVENTURE, new ItemStack(Items.NETHERITE_HOE));

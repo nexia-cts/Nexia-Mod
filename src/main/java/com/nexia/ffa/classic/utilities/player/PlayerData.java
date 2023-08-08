@@ -1,4 +1,4 @@
-package com.nexia.ffa.utilities.player;
+package com.nexia.ffa.classic.utilities.player;
 
 import net.minecraft.world.entity.player.Inventory;
 

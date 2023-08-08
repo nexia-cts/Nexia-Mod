@@ -44,5 +44,8 @@ public class ModConfig implements ConfigData {
 
         @Comment("Modifies the pearl cooldown in ticks (20 ticks = 1 second).")
         public int enderpearlCooldown = 20;
+
+        @Comment("Remove Projectiles going through players [EXPERIMENTAL]")
+        public boolean projectilePatch = false;
     }
 }

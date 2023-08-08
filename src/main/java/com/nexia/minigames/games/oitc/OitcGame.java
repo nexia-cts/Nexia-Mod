@@ -3,17 +3,12 @@ package com.nexia.minigames.games.oitc;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.ffa.utilities.FfaAreas;
-import com.nexia.minigames.Main;
 import com.nexia.minigames.games.oitc.util.OitcScoreboard;
 import com.nexia.minigames.games.oitc.util.player.PlayerData;
 import com.nexia.minigames.games.oitc.util.player.PlayerDataManager;
-import net.blumbo.blfscheduler.BlfScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -27,7 +22,6 @@ import net.minecraft.world.level.GameType;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class OitcGame {
     public static ArrayList<ServerPlayer> alive = new ArrayList<>();

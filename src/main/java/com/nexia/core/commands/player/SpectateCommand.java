@@ -10,8 +10,9 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.ffa.utilities.FfaAreas;
-import com.nexia.ffa.utilities.FfaUtil;
+import com.nexia.ffa.FfaUtil;
+import com.nexia.ffa.classic.utilities.FfaAreas;
+import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import me.lucko.fabric.api.permissions.v0.Permissions;
@@ -111,6 +112,16 @@ public class SpectateCommand {
             );
         }
 
+        if(PlayerDataManager.get(executor).gameMode != PlayerGameMode.FFA) {
+            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
+                    Component.text("This can only be used in FFA!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
+            ));
+            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
+                    Component.text("If you are in duels then you do /spectate <player>.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
+            ));
+            return 0;
+        }
+
         if(!FfaUtil.isFfaPlayer(player)) {
             factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("That player is not in FFA!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
@@ -127,7 +138,7 @@ public class SpectateCommand {
         }
 
         factoryExecutor.setGameMode(Minecraft.GameMode.SPECTATOR);
-        executor.teleportTo(FfaAreas.ffaWorld, player.getX(), player.getY(), player.getZ(), 0, 0);
+        executor.teleportTo(player.getLevel(), player.getX(), player.getY(), player.getZ(), 0, 0);
 
         return 1;
     }

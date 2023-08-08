@@ -1,4 +1,4 @@
-package com.nexia.ffa.utilities;
+package com.nexia.ffa.classic.utilities;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.PlayerGameMode;
@@ -6,9 +6,11 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.ffa.utilities.player.PlayerData;
-import com.nexia.ffa.utilities.player.PlayerDataManager;
-import com.nexia.ffa.utilities.player.SavedPlayerData;
+import com.nexia.ffa.FfaGameMode;
+import com.nexia.ffa.FfaUtil;
+import com.nexia.ffa.classic.utilities.player.PlayerData;
+import com.nexia.ffa.classic.utilities.player.PlayerDataManager;
+import com.nexia.ffa.classic.utilities.player.SavedPlayerData;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,19 +27,14 @@ import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.function.Predicate;
 
-import static com.nexia.ffa.utilities.FfaAreas.*;
+import static com.nexia.ffa.classic.utilities.FfaAreas.*;
 
-public class FfaUtil {
+public class FfaClassicUtil {
     public static ArrayList<UUID> wasInSpawn = new ArrayList<>();
     public static HashMap<Integer, ItemStack> invItems;
-
-    public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
-        return player.getTags().contains("ffa") && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.FFA;
-    }
 
     public static void ffaSecond() {
         if (ffaWorld == null) return;
@@ -52,8 +49,13 @@ public class FfaUtil {
         }
     }
 
+    public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
+        com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
+        return player.getTags().contains("ffa_classic") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.CLASSIC;
+    }
+
     public static boolean canGoToSpawn(ServerPlayer player) {
-        if(!FfaUtil.isFfaPlayer(player) || FfaUtil.wasInSpawn.contains(player.getUUID())) return true;
+        if(!FfaClassicUtil.isFfaPlayer(player) || FfaClassicUtil.wasInSpawn.contains(player.getUUID())) return true;
         return !(player.getHealth() < 20);
     }
 
@@ -87,7 +89,7 @@ public class FfaUtil {
 
         if(data.killstreak % 5 == 0){
             for(ServerPlayer serverPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()){
-                if(FfaUtil.isFfaPlayer(serverPlayer)) {
+                if(FfaClassicUtil.isFfaPlayer(serverPlayer)) {
                     PlayerUtil.getFactoryPlayer(serverPlayer).sendMessage(
                             Component.text("[").color(ChatFormat.lineColor)
                                     .append(Component.text("☠").color(ChatFormat.failColor))
@@ -123,27 +125,6 @@ public class FfaUtil {
 
      */
 
-    public static float calculateHealth(float health){
-        float fixedHealth = Float.parseFloat(new DecimalFormat("#.#").format(health / 2));
-
-        if(fixedHealth <= 0){
-            return 0.5f;
-        }
-        if(fixedHealth >= 10){
-            return 10f;
-        }
-
-        if(!(fixedHealth % 1 == 0)){ return fixedHealth; }
-
-        if(Float.parseFloat(new DecimalFormat("#.5").format(fixedHealth)) >= 10.5){
-            return 10f;
-        }
-        if(((fixedHealth / 2) % 1) >= .5){
-            return Float.parseFloat(new DecimalFormat("#.5").format(fixedHealth));
-        }
-        return Float.parseFloat(new DecimalFormat("#.0").format(fixedHealth));
-    }
-
     public static void calculateDeath(ServerPlayer player){
         SavedPlayerData data = PlayerDataManager.get(player).savedData;
         data.deaths++;
@@ -153,7 +134,7 @@ public class FfaUtil {
 
         if(data.killstreak >= 5) {
             for (ServerPlayer serverPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()) {
-                if (FfaUtil.isFfaPlayer(serverPlayer)) {
+                if (FfaClassicUtil.isFfaPlayer(serverPlayer)) {
                     PlayerUtil.getFactoryPlayer(serverPlayer).sendMessage(
                             Component.text("[").color(ChatFormat.lineColor)
                                     .append(Component.text("☠").color(ChatFormat.failColor))
@@ -171,11 +152,11 @@ public class FfaUtil {
 
     public static void setDeathMessage(@NotNull ServerPlayer minecraftPlayer, @Nullable DamageSource source){
         boolean attackerNull = source == null || !(source.getEntity() instanceof ServerPlayer);
-        boolean victimTag = FfaUtil.isFfaPlayer(minecraftPlayer);
+        boolean victimTag = FfaClassicUtil.isFfaPlayer(minecraftPlayer);
 
         if((attackerNull && victimTag) || (!attackerNull && source.getEntity() == minecraftPlayer && victimTag)){
             for(Player player : ServerTime.factoryServer.getPlayers()){
-                if(player.hasTag("ffa")){
+                if(player.hasTag("ffa_classic")){
 
                     // §7Wow, §c☠ {} §7somehow killed themselves.
                     Component msg = Component.text("Wow,").color(ChatFormat.chatColor2)
@@ -188,7 +169,7 @@ public class FfaUtil {
                                 .append(Component.text(" took a ride to the void.").color(ChatFormat.chatColor2));
                     }
 
-                    if(source == DamageSource.IN_FIRE || source == DamageSource.ON_FIRE || source == DamageSource.LAVA) {
+                    if(source == DamageSource.ON_FIRE || source == DamageSource.LAVA) {
                         //msg = LegacyChatFormat.format("§c\uD83D\uDD25 {} §7was deepfried in lava.", minecraftPlayer.getScoreboardName());
                         msg = Component.text("\uD83D\uDD25 " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
                                 .append(Component.text(" was deepfried in lava.").color(ChatFormat.chatColor2));
@@ -200,6 +181,11 @@ public class FfaUtil {
                                 .append(Component.text(" stepped on hot legos.").color(ChatFormat.chatColor2));
                     }
 
+                    if(source == DamageSource.IN_FIRE || source == DamageSource.ON_FIRE) {
+                        msg = Component.text("\uD83D\uDD25 " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
+                                .append(Component.text(" met a fiery end.").color(ChatFormat.chatColor2));
+                    }
+
                     if(source == DamageSource.CACTUS) {
                         //msg = LegacyChatFormat.format("§7ʕっ·ᴥ·ʔっ §c☠ {} §7hugged a cactus.", minecraftPlayer.getScoreboardName());
                         msg = Component.text("ʕっ·ᴥ·ʔっ ").color(ChatFormat.chatColor2)
@@ -207,6 +193,10 @@ public class FfaUtil {
                                 .append(Component.text(" hugged a cactus.").color(ChatFormat.chatColor2));
                     }
 
+                    if(source == DamageSource.DROWN || source == DamageSource.DRY_OUT) {
+                        msg = Component.text("\uD83C\uDF0A " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
+                                .append(Component.text(" forgot to breathe air.").color(ChatFormat.chatColor2));
+                    }
                     player.sendMessage(msg);
                 }
             }
@@ -217,7 +207,7 @@ public class FfaUtil {
         }
         if(attackerNull) { return; }
         ServerPlayer minecraftAttacker = (ServerPlayer) source.getEntity();
-        boolean attackerTag = FfaUtil.isFfaPlayer(minecraftAttacker);
+        boolean attackerTag = FfaClassicUtil.isFfaPlayer(minecraftAttacker);
 
         if(attackerTag && victimTag){
             String symbol = "◆";
@@ -231,13 +221,13 @@ public class FfaUtil {
                 symbol = "\uD83E\uDE93";
             }
             for(Player player : ServerTime.factoryServer.getPlayers()){
-                if(player.hasTag("ffa")){
+                if(player.hasTag("ffa_classic")){
                     //player.sendMessage(new TextComponent("§c☠ " + minecraftPlayer.getScoreboardName() + " §7was killed by §a" + symbol + " " +  minecraftAttacker.getScoreboardName() + " §7with §c" + calculateHealth(minecraftAttacker.getHealth()) + "❤ §7left."), Util.NIL_UUID);
                     player.sendMessage(Component.text("☠ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
                             .append(Component.text(" was killed by ").color(ChatFormat.chatColor2))
                             .append(Component.text(symbol + " " + minecraftAttacker.getScoreboardName()).color(ChatFormat.greenColor))
                             .append(Component.text(" with ").color(ChatFormat.chatColor2))
-                            .append(Component.text(calculateHealth(minecraftAttacker.getHealth()) + "❤").color(ChatFormat.failColor))
+                            .append(Component.text(FfaUtil.calculateHealth(minecraftAttacker.getHealth()) + "❤").color(ChatFormat.failColor))
                             .append(Component.text(" left.").color(ChatFormat.chatColor2))
                     );
                 }
@@ -247,45 +237,6 @@ public class FfaUtil {
         if(attackerTag){
             calculateKill(minecraftAttacker);
         }
-    }
-
-
-    public static void leaveOrDie(@NotNull ServerPlayer player, @Nullable DamageSource source, boolean leaving) {
-        player.inventory.setCarried(ItemStack.EMPTY);
-        clearThrownTridents(player);
-
-        ServerPlayer attacker = null;
-
-        if (source != null && source.getEntity() != null && source.getEntity() instanceof net.minecraft.world.entity.player.Player) {
-            attacker = PlayerUtil.getPlayerAttacker(source.getEntity());
-        }
-
-        if (attacker != null) {
-            clearThrownTridents(attacker);
-            setInventory(attacker);
-        }
-
-        if(!leaving){
-            setDeathMessage(player, source);
-        }
-
-        FfaUtil.setInventory(player);
-        FfaUtil.wasInSpawn.add(player.getUUID());
-    }
-
-    private static boolean addFromOldInv(ServerPlayer player, ItemStack itemStack) {
-        PlayerData playerData = PlayerDataManager.get(player);
-        Inventory invLayout = playerData.FfaInventory;
-        if (invLayout == null) return false;
-
-        for (int i = 0; i < 41; i++) {
-            Item item = invLayout.getItem(i).getItem();
-            if (itemStack.getItem() == item && player.inventory.getItem(i).isEmpty()) {
-                player.inventory.setItem(i, itemStack);
-                return true;
-            }
-        }
-        return false;
     }
 
     public static void setInventory(ServerPlayer player){
@@ -345,6 +296,27 @@ public class FfaUtil {
             }
         }
     }
+
+    public static void leaveOrDie(@NotNull ServerPlayer player, @Nullable DamageSource source, boolean leaving) {
+        ServerPlayer attacker = null;
+
+        if (source != null && source.getEntity() != null && source.getEntity() instanceof net.minecraft.world.entity.player.Player) {
+            attacker = PlayerUtil.getPlayerAttacker(source.getEntity());
+        }
+
+        if (attacker != null) {
+            FfaClassicUtil.clearThrownTridents(attacker);
+            FfaClassicUtil.setInventory(attacker);
+        }
+
+        if(!leaving){
+            FfaClassicUtil.setDeathMessage(player, source);
+        }
+
+        FfaClassicUtil.setInventory(player);
+        FfaClassicUtil.wasInSpawn.add(player.getUUID());
+    }
+
     static {
         invItems = new HashMap<>();
         ItemStack sword = new ItemStack(Items.NETHERITE_SWORD);

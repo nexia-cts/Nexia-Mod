@@ -6,7 +6,8 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.ffa.utilities.FfaAreas;
+import com.nexia.minigames.games.oitc.OitcGame;
+import com.nexia.minigames.games.skywars.SkywarsGame;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -41,12 +42,13 @@ public class DevExperimentalMapCommand {
         ServerPlayer player = context.getSource().getPlayerOrException();
 
         String argument = StringArgumentType.getString(context, "argument");
+        String name = argument.split("-")[1];
 
-        if(argument.equalsIgnoreCase("cffa")){
-            ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("ffa", "map")).location(), (
+        if(argument.contains("cffa")){
+            ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("ffa", name)).location(), (
                     new RuntimeWorldConfig()
-                            .setDimensionType(LobbyUtil.lobbyWorld.dimensionType())
-                            .setGenerator(LobbyUtil.lobbyWorld.getChunkSource().getGenerator())
+                            .setDimensionType(SkywarsGame.world.dimensionType())
+                            .setGenerator(SkywarsGame.world.getChunkSource().getGenerator())
                             .setDifficulty(Difficulty.HARD)
                             .setGameRule(GameRules.RULE_KEEPINVENTORY, true)
                             .setGameRule(GameRules.RULE_MOBGRIEFING, false)
@@ -62,6 +64,8 @@ public class DevExperimentalMapCommand {
 
             player.teleportTo(level, 0, 80, 0, 0, 0);
         }
+
+
 
         return 1;
     }

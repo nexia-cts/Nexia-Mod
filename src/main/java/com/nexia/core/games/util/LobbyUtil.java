@@ -9,8 +9,11 @@ import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.ffa.utilities.FfaAreas;
-import com.nexia.ffa.utilities.FfaUtil;
+import com.nexia.ffa.FfaGameMode;
+import com.nexia.ffa.FfaUtil;
+import com.nexia.ffa.classic.utilities.FfaAreas;
+import com.nexia.ffa.classic.utilities.FfaClassicUtil;
+import com.nexia.ffa.kits.utilities.FfaKitsUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwScoreboard;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
@@ -34,7 +37,7 @@ import net.minecraft.world.level.Level;
 
 public class LobbyUtil {
 
-    public static String[] statsGameModes = {"FFA", "BEDWARS", "OITC", "DUELS", "SKYWARS"};
+    public static String[] statsGameModes = {"FFA CLASSIC", "KIT FFA", "BEDWARS", "OITC", "DUELS", "SKYWARS"};
 
     public static ServerLevel lobbyWorld = null;
     public static EntityPos lobbySpawn = new EntityPos(Main.config.lobbyPos[0], Main.config.lobbyPos[1], Main.config.lobbyPos[2], 0, 0);
@@ -63,6 +66,8 @@ public class LobbyUtil {
     public static String[] removedTags = {
             "in_bedwars",
             "ffa",
+            "ffa_classic",
+            "ffa_kits",
             "duels",
             "skywars",
             "oitc",
@@ -85,7 +90,6 @@ public class LobbyUtil {
         }
         else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.OITC) {
             OitcGame.leave(minecraftPlayer);
-            PlayerGameMode.OITC.players--;
         }
         else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.SKYWARS) {
             SkywarsGame.leave(minecraftPlayer);
@@ -134,20 +138,6 @@ public class LobbyUtil {
         if (tp) {
             minecraftPlayer.setRespawnPosition(lobbyWorld.dimension(), lobbySpawn.toBlockPos(), lobbySpawn.yaw, true, false);
             minecraftPlayer.teleportTo(lobbyWorld, lobbySpawn.x, lobbySpawn.y, lobbySpawn.z, lobbySpawn.pitch, lobbySpawn.yaw);
-
-            if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter")) {
-                ItemStack elytra = new ItemStack(Items.ELYTRA);
-                elytra.setHoverName(new TextComponent("§5§lSupporter Elytra"));
-                ItemDisplayUtil.addGlint(elytra);
-                elytra.getOrCreateTag().putBoolean("Unbreakable", true);
-                ItemDisplayUtil.addLore(elytra, "§7Thanks for supporting the server!", 0);
-                elytra.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
-
-                minecraftPlayer.abilities.mayfly = true;
-                minecraftPlayer.onUpdateAbilities();
-
-                minecraftPlayer.setItemSlot(EquipmentSlot.CHEST, elytra);
-            }
 
             LobbyUtil.giveItems(minecraftPlayer);
         }
@@ -198,10 +188,12 @@ public class LobbyUtil {
         minecraftPlayer.abilities.mayfly = false;
         minecraftPlayer.onUpdateAbilities();
 
-        if(game.equalsIgnoreCase("classic ffa") && !FfaUtil.canGoToSpawn(minecraftPlayer)) {
+        if((game.equalsIgnoreCase("classic ffa") && !FfaClassicUtil.canGoToSpawn(minecraftPlayer)) || (game.equalsIgnoreCase("kits ffa") && !FfaKitsUtil.canGoToSpawn(minecraftPlayer))) {
             player.sendMessage(Component.text("You must be fully healed to go to spawn!").color(ChatFormat.failColor));
             return;
         }
+
+        DuelGameHandler.leave(minecraftPlayer, true);
 
         if (!LobbyUtil.isLobbyWorld(minecraftPlayer.getLevel())) {
             LobbyUtil.leaveAllGames(minecraftPlayer, false);
@@ -220,19 +212,39 @@ public class LobbyUtil {
             player.removeTag("duels");
             player.removeTag(LobbyUtil.NO_SATURATION_TAG);
         }
-        if(game.equalsIgnoreCase("classic ffa")){
+
+        if(game.equalsIgnoreCase("classic ffa") || game.equalsIgnoreCase("kits ffa")) {
             player.addTag("ffa");
-            FfaUtil.wasInSpawn.add(player.getUUID());
             PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.FFA;
+            if(message){ player.sendActionBarMessage(Component.text("You have joined §8🗡 §7§lFFA §b🔱")); }
+        }
+
+        if(game.equalsIgnoreCase("classic ffa")){
+            player.addTag("ffa_classic");
+            FfaClassicUtil.wasInSpawn.add(player.getUUID());
+            PlayerDataManager.get(minecraftPlayer).ffaGameMode = FfaGameMode.CLASSIC;
             if(tp){
                 minecraftPlayer.teleportTo(FfaAreas.ffaWorld, FfaAreas.spawn.x, FfaAreas.spawn.y, FfaAreas.spawn.z, FfaAreas.spawn.yaw, FfaAreas.spawn.pitch);
                 minecraftPlayer.setRespawnPosition(FfaAreas.ffaWorld.dimension(), FfaAreas.spawn.toBlockPos(), FfaAreas.spawn.yaw, true, false);
             }
 
-            FfaUtil.clearThrownTridents(minecraftPlayer);
-            if(message){ player.sendActionBarMessage(Component.text("You have joined §8🗡 §7§lFFA §b🔱")); }
-            FfaUtil.setInventory(minecraftPlayer);
+            FfaClassicUtil.clearThrownTridents(minecraftPlayer);
+            FfaClassicUtil.setInventory(minecraftPlayer);
         }
+
+        if(game.equalsIgnoreCase("kits ffa")){
+            player.addTag("ffa_kits");
+            FfaKitsUtil.wasInSpawn.add(player.getUUID());
+            PlayerDataManager.get(minecraftPlayer).ffaGameMode = FfaGameMode.KITS;
+            if(tp){
+                FfaKitsUtil.sendToSpawn(minecraftPlayer);
+                minecraftPlayer.setRespawnPosition(com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld.dimension(), com.nexia.ffa.kits.utilities.FfaAreas.spawn.toBlockPos(), com.nexia.ffa.kits.utilities.FfaAreas.spawn.yaw, true, false);
+            }
+
+            FfaKitsUtil.clearThrownTridents(minecraftPlayer);
+            FfaKitsUtil.clearArrows(minecraftPlayer);
+        }
+
         if(game.equalsIgnoreCase("bedwars")){
             if(message){ player.sendActionBarMessage(Component.text("You have joined §b\uD83E\uDE93 §c§lBedwars §e⚡"));}
             BwPlayerEvents.tryToJoin(minecraftPlayer, false);
@@ -252,7 +264,6 @@ public class LobbyUtil {
 
         if(game.equalsIgnoreCase("oitc")){
             player.addTag("oitc");
-            PlayerGameMode.OITC.players++;
             PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.OITC;
             OitcGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
 

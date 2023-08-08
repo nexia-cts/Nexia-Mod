@@ -3,12 +3,12 @@ package com.nexia.core.utilities.time;
 import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.scheduler.TaskScheduler;
-import com.combatreforged.factory.api.util.Identifier;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
-import com.nexia.ffa.utilities.FfaAreas;
-import com.nexia.ffa.utilities.FfaUtil;
+import com.nexia.ffa.classic.utilities.FfaAreas;
+import com.nexia.ffa.classic.utilities.FfaClassicUtil;
+import com.nexia.ffa.kits.utilities.FfaKitsUtil;
 import com.nexia.minigames.GameHandler;
 import com.nexia.minigames.games.bedwars.BwGame;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
@@ -19,15 +19,10 @@ import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
-import com.nexia.minigames.games.skywars.SkywarsMap;
 import com.nexia.world.WorldUtil;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import xyz.nucleoid.fantasy.Fantasy;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ServerTime {
 
@@ -58,7 +53,10 @@ public class ServerTime {
         fantasy = Fantasy.get(minecraftServer);
 
         LobbyUtil.setLobbyWorld(minecraftServer);
+
         FfaAreas.setFfaWorld(minecraftServer);
+        com.nexia.ffa.kits.utilities.FfaAreas.setFfaWorld(minecraftServer);
+
         BwLoadShop.loadBedWarsShop(true);
         BwDimension.register();
         BwGame.firstTick();
@@ -91,13 +89,17 @@ public class ServerTime {
         BwGame.tick();
 
         if (totalTickCount % 5 == 0) {
-            FfaUtil.fiveTick();
+            FfaClassicUtil.fiveTick();
+            FfaKitsUtil.fiveTick();
         }
 
         // Most second methods are also handled here to avoid too many methods from being executed at the same time
         switch (totalTickCount % 20) {
             case 0 -> everySecond();
-            case 2 -> FfaUtil.ffaSecond();
+            case 2 -> {
+                FfaClassicUtil.ffaSecond();
+                FfaKitsUtil.ffaSecond();
+            }
             case 4 -> {}
             case 6 -> BwGame.bedWarsSecond();
         }

@@ -1,4 +1,4 @@
-package com.nexia.ffa.utilities.player;
+package com.nexia.ffa.kits.utilities.player;
 
 public class SavedPlayerData {
 

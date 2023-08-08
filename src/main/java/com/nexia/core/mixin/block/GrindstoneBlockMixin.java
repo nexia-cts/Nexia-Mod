@@ -23,8 +23,7 @@ public class GrindstoneBlockMixin {
 
     @Inject(method = "use", cancellable = true, at = @At("HEAD"))
     private void use(BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult, CallbackInfoReturnable<InteractionResult> cir) {
-        if (!(player instanceof ServerPlayer)) return;
-        ServerPlayer serverPlayer = (ServerPlayer) player;
+        if (!(player instanceof ServerPlayer serverPlayer)) return;
         PlayerData playerData = PlayerDataManager.get(serverPlayer);
 
         if (BwUtil.isInBedWars(serverPlayer) || (playerData.duelsGame != null || playerData.teamDuelsGame != null) || LobbyUtil.isLobbyWorld(serverPlayer.getLevel())) {

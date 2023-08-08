@@ -49,7 +49,7 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(UnMuteCommand::register);
 
         CommandRegistrationCallback.EVENT.register(PlayCommand::register);
-
+        CommandRegistrationCallback.EVENT.register(KitCommand::register);
 
         CommandRegistrationCallback.EVENT.register(BanCommand::register);
         CommandRegistrationCallback.EVENT.register(UnBanCommand::register);

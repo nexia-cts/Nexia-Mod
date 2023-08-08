@@ -9,7 +9,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.ffa.utilities.FfaUtil;
+import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
@@ -58,18 +58,20 @@ public class PlayerLeaveListener {
     private static void processDisconnect(Player player, ServerPlayer minecraftPlayer){
 
         if (BwUtil.isInBedWars(minecraftPlayer)) BwPlayerEvents.leaveInBedWars(minecraftPlayer);
-        else if (FfaUtil.isFfaPlayer(minecraftPlayer)) {
-            FfaUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
+        else if (FfaClassicUtil.isFfaPlayer(minecraftPlayer)) {
+            FfaClassicUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
         }
         else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(minecraftPlayer, true);
         else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.SKYWARS) SkywarsGame.leave(minecraftPlayer);
         else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.OITC) OitcGame.leave(minecraftPlayer);
 
         PlayerDataManager.removePlayerData(minecraftPlayer);
-        com.nexia.ffa.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer);
+        com.nexia.ffa.classic.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer);
+        com.nexia.ffa.kits.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer);
         com.nexia.discord.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer.getUUID());
         com.nexia.minigames.games.duels.util.player.PlayerDataManager.removePlayerData(minecraftPlayer);
         com.nexia.minigames.games.oitc.util.player.PlayerDataManager.removePlayerData(minecraftPlayer);
+        com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.removePlayerData(minecraftPlayer);
         com.nexia.minigames.games.skywars.util.player.PlayerDataManager.removePlayerData(minecraftPlayer);
 
 

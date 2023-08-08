@@ -78,8 +78,8 @@ public class GamemodeHandler {
             return DuelGameMode.SWORD_ONLY;
         }
 
-        if (gameMode.equalsIgnoreCase("ffa")) {
-            return DuelGameMode.FFA;
+        if (gameMode.equalsIgnoreCase("classic")) {
+            return DuelGameMode.CLASSIC;
         }
 
         if (gameMode.equalsIgnoreCase("hoe_only")) {

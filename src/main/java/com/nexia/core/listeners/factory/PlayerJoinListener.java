@@ -13,7 +13,6 @@ import com.nexia.discord.utilities.player.PlayerData;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -167,9 +166,11 @@ public class PlayerJoinListener {
 
     private static void processJoin(Player player, ServerPlayer minecraftPlayer) {
         PlayerDataManager.addPlayerData(minecraftPlayer);
-        com.nexia.ffa.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
+        com.nexia.ffa.classic.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
+        com.nexia.ffa.kits.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.discord.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer.getUUID());
         com.nexia.minigames.games.duels.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
+        com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.minigames.games.oitc.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.minigames.games.skywars.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         LobbyUtil.leaveAllGames(minecraftPlayer, true);
