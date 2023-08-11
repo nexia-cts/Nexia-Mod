@@ -22,7 +22,6 @@ public class PlayerData {
     public ResourceKey<Level> spawnWorld;
     public EntityPos spawnPoint;
 
-    public ServerPlayer combatTagPlayer;
     public LocalDateTime combatTagEnd;
 
     public boolean isReportBanned;
@@ -32,7 +31,6 @@ public class PlayerData {
     public PlayerData(SavedPlayerData savedData) {
         this.savedData = savedData;
 
-        this.combatTagPlayer = null;
         this.combatTagEnd = LocalDateTime.now();
 
         this.isReportBanned = false;

@@ -3,6 +3,7 @@ package com.nexia.core.mixin.item;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
+import com.nexia.ffa.pot.utilities.FfaPotUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,8 +33,8 @@ public class PotionItemMixin {
     private void finishUsingItem(ItemStack itemStack, Level level, LivingEntity livingEntity, CallbackInfoReturnable<ItemStack> cir) {
         if (livingEntity instanceof ServerPlayer) {
             this.player = (ServerPlayer) livingEntity;
-            if(FfaKitsUtil.isFfaPlayer(player) && FfaKitsUtil.wasInSpawn.contains(player.getUUID())) {
-                cir.cancel();
+            if((FfaKitsUtil.isFfaPlayer(player) && FfaKitsUtil.wasInSpawn.contains(player.getUUID())) || (FfaPotUtil.isFfaPlayer(player) && FfaPotUtil.wasInSpawn.contains(player.getUUID()))) {
+                cir.setReturnValue(itemStack);
                 ItemStackUtil.sendInventoryRefreshPacket(player);
             }
         }
@@ -54,7 +55,7 @@ public class PotionItemMixin {
     private ItemStack setItemAfterDrink(ItemLike itemLike) {
         if (player == null) return new ItemStack(Items.GLASS_BOTTLE);
 
-        if (BwUtil.isBedWarsPlayer(player)) {
+        if (BwUtil.isBedWarsPlayer(player) || FfaPotUtil.isFfaPlayer(player)) {
             ItemStackUtil.sendInventoryRefreshPacket(player);
             return ItemStack.EMPTY;
         }

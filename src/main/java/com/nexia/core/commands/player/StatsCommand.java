@@ -71,6 +71,24 @@ public class StatsCommand {
                 bestKillstreak = kData.bestKillstreak;
             }
 
+            if(executerData.ffaGameMode == FfaGameMode.UHC) {
+                message = ChatFormat.separatorLine("UHC FFA Stats");
+                com.nexia.ffa.uhc.utilities.player.SavedPlayerData kData = com.nexia.ffa.uhc.utilities.player.PlayerDataManager.get(mcPlayer).savedData;
+                kills = kData.kills;
+                deaths = kData.deaths;
+                killstreak = kData.killstreak;
+                bestKillstreak = kData.bestKillstreak;
+            }
+
+            if(executerData.ffaGameMode == FfaGameMode.POT) {
+                message = ChatFormat.separatorLine("Pot FFA Stats");
+                com.nexia.ffa.pot.utilities.player.SavedPlayerData kData = com.nexia.ffa.pot.utilities.player.PlayerDataManager.get(mcPlayer).savedData;
+                kills = kData.kills;
+                deaths = kData.deaths;
+                killstreak = kData.killstreak;
+                bestKillstreak = kData.bestKillstreak;
+            }
+
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
@@ -206,6 +224,24 @@ public class StatsCommand {
             if(gamemode.equalsIgnoreCase("kit ffa")) {
                 message = ChatFormat.separatorLine("Kit FFA Stats");
                 com.nexia.ffa.kits.utilities.player.SavedPlayerData kData = com.nexia.ffa.kits.utilities.player.PlayerDataManager.get(otherPlayer).savedData;
+                kills = kData.kills;
+                deaths = kData.deaths;
+                killstreak = kData.killstreak;
+                bestKillstreak = kData.bestKillstreak;
+            }
+
+            if(gamemode.equalsIgnoreCase("pot ffa")) {
+                message = ChatFormat.separatorLine("Pot FFA Stats");
+                com.nexia.ffa.pot.utilities.player.SavedPlayerData kData = com.nexia.ffa.pot.utilities.player.PlayerDataManager.get(otherPlayer).savedData;
+                kills = kData.kills;
+                deaths = kData.deaths;
+                killstreak = kData.killstreak;
+                bestKillstreak = kData.bestKillstreak;
+            }
+
+            if(gamemode.equalsIgnoreCase("uhc ffa")) {
+                message = ChatFormat.separatorLine("UHC FFA Stats");
+                com.nexia.ffa.uhc.utilities.player.SavedPlayerData kData = com.nexia.ffa.uhc.utilities.player.PlayerDataManager.get(otherPlayer).savedData;
                 kills = kData.kills;
                 deaths = kData.deaths;
                 killstreak = kData.killstreak;

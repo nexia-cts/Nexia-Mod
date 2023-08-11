@@ -212,7 +212,7 @@ public class OitcGame {
         player.teleportTo(world, pos[0], pos[1], pos[2], pos[3], pos[4]);
     }
 
-    public static boolean isOITCPlayer(ServerPlayer player){
+    public static boolean isOITCPlayer(net.minecraft.world.entity.player.Player player){
         return com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.OITC || player.getTags().contains("oitc");
     }
 

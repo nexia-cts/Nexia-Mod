@@ -9,6 +9,9 @@ import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.ffa.classic.utilities.FfaAreas;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
+import com.nexia.ffa.pot.utilities.FfaPotUtil;
+import com.nexia.ffa.uhc.FfaUhcBlocks;
+import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.GameHandler;
 import com.nexia.minigames.games.bedwars.BwGame;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
@@ -47,7 +50,6 @@ public class ServerTime {
 
     public static void firstTick(MinecraftServer server) {
         ServerTime.minecraftServer = server;
-        Main.server = server;
 
         serverType = ServerType.returnServer();
         fantasy = Fantasy.get(minecraftServer);
@@ -56,6 +58,8 @@ public class ServerTime {
 
         FfaAreas.setFfaWorld(minecraftServer);
         com.nexia.ffa.kits.utilities.FfaAreas.setFfaWorld(minecraftServer);
+        com.nexia.ffa.uhc.utilities.FfaAreas.setFfaWorld(minecraftServer);
+        com.nexia.ffa.pot.utilities.FfaAreas.setFfaWorld(minecraftServer);
 
         BwLoadShop.loadBedWarsShop(true);
         BwDimension.register();
@@ -87,10 +91,13 @@ public class ServerTime {
         totalTickCount++;
 
         BwGame.tick();
+        FfaUhcBlocks.tick();
 
         if (totalTickCount % 5 == 0) {
             FfaClassicUtil.fiveTick();
             FfaKitsUtil.fiveTick();
+            FfaPotUtil.fiveTick();
+            FfaUhcUtil.fiveTick();
         }
 
         // Most second methods are also handled here to avoid too many methods from being executed at the same time
@@ -99,6 +106,8 @@ public class ServerTime {
             case 2 -> {
                 FfaClassicUtil.ffaSecond();
                 FfaKitsUtil.ffaSecond();
+                FfaPotUtil.ffaSecond();
+                FfaUhcUtil.ffaSecond();
             }
             case 4 -> {}
             case 6 -> BwGame.bedWarsSecond();

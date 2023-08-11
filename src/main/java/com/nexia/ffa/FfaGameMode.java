@@ -8,6 +8,10 @@ public class FfaGameMode {
 
     public static final FfaGameMode KITS = new FfaGameMode("Kit FFA", "kits");
 
+    public static final FfaGameMode POT = new FfaGameMode("Pot FFA", "kits");
+
+    public static final FfaGameMode UHC = new FfaGameMode("UHC FFA", "kits");
+
     public FfaGameMode(String name, String id) {
         this.name = name;
         this.id = id;

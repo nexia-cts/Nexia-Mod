@@ -42,19 +42,6 @@ public class PlayerLeaveListener {
 
 
 
-    private static void runCommands(Player player){
-        if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.playerLeaveCommands)) {
-            for (String command : Main.config.events.playerLeaveCommands) {
-                ServerTime.factoryServer.runCommand(command);
-            }
-        }
-        if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.serverLeaveCommands)){
-            for(String command : Main.config.events.serverLeaveCommands){
-                player.runCommand(command);
-            }
-        }
-    }
-
     private static void processDisconnect(Player player, ServerPlayer minecraftPlayer){
 
         if (BwUtil.isInBedWars(minecraftPlayer)) BwPlayerEvents.leaveInBedWars(minecraftPlayer);
@@ -66,8 +53,12 @@ public class PlayerLeaveListener {
         else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.OITC) OitcGame.leave(minecraftPlayer);
 
         PlayerDataManager.removePlayerData(minecraftPlayer);
+
         com.nexia.ffa.classic.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer);
         com.nexia.ffa.kits.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer);
+        com.nexia.ffa.uhc.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer);
+        com.nexia.ffa.pot.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer);
+
         com.nexia.discord.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer.getUUID());
         com.nexia.minigames.games.duels.util.player.PlayerDataManager.removePlayerData(minecraftPlayer);
         com.nexia.minigames.games.oitc.util.player.PlayerDataManager.removePlayerData(minecraftPlayer);
@@ -76,9 +67,5 @@ public class PlayerLeaveListener {
 
 
         //LobbyUtil.leaveAllGames(minecraftPlayer, true);
-
-
-        runCommands(player);
-
     }
 }

@@ -120,7 +120,7 @@ public abstract class PlayerMixin extends LivingEntity {
     }
 
 
-    @Inject(method = "drop*", cancellable = true, at = @At("HEAD"))
+    @Inject(method = "drop(Z)Z", cancellable = true, at = @At("HEAD"))
     private void drop1(boolean dropAll, CallbackInfoReturnable<Boolean> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
 

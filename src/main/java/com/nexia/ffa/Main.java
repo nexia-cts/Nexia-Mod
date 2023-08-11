@@ -11,6 +11,10 @@ public class Main implements ModInitializer {
 
 	public static com.nexia.ffa.kits.config.ModConfig kits;
 
+	public static com.nexia.ffa.pot.config.ModConfig pot;
+
+	public static com.nexia.ffa.uhc.config.ModConfig uhc;
+
 	@Override
 	public void onInitialize() {
 		AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
@@ -18,5 +22,11 @@ public class Main implements ModInitializer {
 
 		AutoConfig.register(com.nexia.ffa.kits.config.ModConfig.class, GsonConfigSerializer::new);
 		kits = AutoConfig.getConfigHolder(com.nexia.ffa.kits.config.ModConfig.class).getConfig();
+
+		AutoConfig.register(com.nexia.ffa.pot.config.ModConfig.class, GsonConfigSerializer::new);
+		pot = AutoConfig.getConfigHolder(com.nexia.ffa.pot.config.ModConfig.class).getConfig();
+
+		AutoConfig.register(com.nexia.ffa.uhc.config.ModConfig.class, GsonConfigSerializer::new);
+		uhc = AutoConfig.getConfigHolder(com.nexia.ffa.uhc.config.ModConfig.class).getConfig();
 	}
 }

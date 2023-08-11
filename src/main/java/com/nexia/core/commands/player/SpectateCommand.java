@@ -77,7 +77,7 @@ public class SpectateCommand {
 
         if(factoryExecutor.getHealth() < 20) {
             factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
-                    Component.text("You must be fully healed to go into spectator!").decoration(ChatFormat.bold, false))
+                    Component.text("You must be fully healed to go into spectator!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
             );
             return 0;
         }
@@ -132,7 +132,7 @@ public class SpectateCommand {
 
         if(factoryExecutor.getHealth() < 20) {
             factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
-                    Component.text("You must be fully healed to go into spectator!").decoration(ChatFormat.bold, false))
+                    Component.text("You must be fully healed to go into spectator!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
             );
             return 0;
         }

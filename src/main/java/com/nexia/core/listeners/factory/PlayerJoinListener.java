@@ -32,9 +32,6 @@ public class PlayerJoinListener {
             processJoin(player, minecraftPlayer);
 
             /*
-            if(!Main.config.events.statusMessages) { return; }
-
-
             if(minecraftPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) <= 1) {
                 playerJoinEvent.setJoinMessage(
                         Component.text("[").color(ChatFormat.lineColor)
@@ -57,36 +54,6 @@ public class PlayerJoinListener {
         });
     }
 
-
-
-    private static void runCommands(Player player, ServerPlayer minecraftPlayer){
-        if(minecraftPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) <= 1) {
-
-            ServerTime.factoryServer.runCommand("/rank " + minecraftPlayer.getScoreboardName() + " default", 4, false);
-
-            if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.playerFirstJoinCommands)) {
-                for (String command : Main.config.events.playerFirstJoinCommands) {
-                    ServerTime.factoryServer.runCommand(command);
-                }
-            }
-            if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.serverFirstJoinCommands)){
-                for(String command : Main.config.events.serverFirstJoinCommands){
-                    player.runCommand(command);
-                }
-            }
-        }
-
-        if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.playerJoinCommands)) {
-            for (String command : Main.config.events.playerJoinCommands) {
-                ServerTime.factoryServer.runCommand(command);
-            }
-        }
-        if(!ChatFormat.hasWhiteSpacesOrSpaces(Main.config.events.serverJoinCommands)){
-            for(String command : Main.config.events.serverJoinCommands){
-                player.runCommand(command);
-            }
-        }
-    }
 
     private static void sendJoinMessage(Player player){
         player.sendMessage(ChatFormat.separatorLine("Welcome"));
@@ -166,15 +133,18 @@ public class PlayerJoinListener {
 
     private static void processJoin(Player player, ServerPlayer minecraftPlayer) {
         PlayerDataManager.addPlayerData(minecraftPlayer);
+
         com.nexia.ffa.classic.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.ffa.kits.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
+        com.nexia.ffa.uhc.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
+        com.nexia.ffa.pot.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
+
         com.nexia.discord.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer.getUUID());
         com.nexia.minigames.games.duels.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.minigames.games.oitc.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.minigames.games.skywars.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         LobbyUtil.leaveAllGames(minecraftPlayer, true);
-        runCommands(player, minecraftPlayer);
         checkBooster(minecraftPlayer);
         sendJoinMessage(player);
     }

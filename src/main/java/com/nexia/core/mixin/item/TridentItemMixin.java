@@ -37,7 +37,10 @@ public class TridentItemMixin {
     @Inject(method = "releaseUsing", at = @At(value = "HEAD"), cancellable = true)
     public void changeHoldTime(ItemStack itemStack, Level level, LivingEntity livingEntity, int i, CallbackInfo ci) {
         if(livingEntity instanceof Player player){
-            if((FfaAreas.isFfaWorld(player.level) && FfaAreas.isInFfaSpawn(player)) || (com.nexia.ffa.kits.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(player))) { ci.cancel(); }
+            if((FfaAreas.isFfaWorld(player.level) && FfaAreas.isInFfaSpawn(player)) ||
+                    (com.nexia.ffa.kits.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(player) ||
+                            (com.nexia.ffa.pot.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.pot.utilities.FfaAreas.isInFfaSpawn(player) ||
+                                    (com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(player))))) { ci.cancel(); }
         }
     }
 }

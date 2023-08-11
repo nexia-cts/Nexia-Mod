@@ -44,9 +44,8 @@ public class EnderPearlItemMixin extends Item {
 
         DuelGameMode duelGameMode = PlayerDataManager.get(thrower).gameMode;
         FfaGameMode ffaGameMode = com.nexia.core.utilities.player.PlayerDataManager.get(thrower).ffaGameMode;
-        // Check if ffa gamemode is pot.
 
-        if(duelGameMode.equals(DuelGameMode.POT) || duelGameMode.equals(DuelGameMode.NETH_POT)) time = 300;
+        if(duelGameMode.equals(DuelGameMode.POT) || duelGameMode.equals(DuelGameMode.NETH_POT) || ffaGameMode.equals(FfaGameMode.POT)) time = 300;
 
         return time;
     }

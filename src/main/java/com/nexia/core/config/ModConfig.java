@@ -7,27 +7,6 @@ import me.sargunvohra.mcmods.autoconfig1u.shadowed.blue.endless.jankson.Comment;
 @Config(name = "nexia-core")
 public class ModConfig implements ConfigData {
 
-    public Events events = new Events();
-    public static class Events {
-        @Comment("The server commands that get run whenever a player leaves the server.")
-        public String[] serverLeaveCommands = {""};
-        @Comment("The player commands that get run whenever a player leaves the server.")
-        public String[] playerLeaveCommands = {""};
-
-        @Comment("The server commands that get run whenever a player joins the server.")
-        public String[] serverJoinCommands = {""};
-        @Comment("The player commands that get run whenever a player joins the server.")
-        public String[] playerJoinCommands = {""};
-
-        @Comment("The server commands that get run whenever a player joins the server for the first time.")
-        public String[] serverFirstJoinCommands = {""};
-        @Comment("The player commands that get run whenever a player joins the server for the first time.")
-        public String[] playerFirstJoinCommands = {""};
-
-        @Comment("Toggles if the join and leave messages show.")
-        public boolean statusMessages = true;
-    }
-
     @Comment("List of ranks.")
     public String[] ranks = {""};
     public double[] lobbyPos = {

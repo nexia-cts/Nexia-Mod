@@ -1,57 +1,53 @@
-package com.nexia.ffa.kits.utilities;
+package com.nexia.ffa.uhc.utilities;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.gui.ffa.KitGUI;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.kits.FfaKit;
-import com.nexia.ffa.kits.utilities.player.PlayerData;
-import com.nexia.ffa.kits.utilities.player.PlayerDataManager;
-import com.nexia.ffa.kits.utilities.player.SavedPlayerData;
-import net.blumbo.blfscheduler.BlfRunnable;
-import net.blumbo.blfscheduler.BlfScheduler;
+import com.nexia.ffa.uhc.FfaUhcBlocks;
+import com.nexia.ffa.uhc.utilities.player.PlayerData;
+import com.nexia.ffa.uhc.utilities.player.PlayerDataManager;
+import com.nexia.ffa.uhc.utilities.player.SavedPlayerData;
+import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.title.Title;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.projectile.Arrow;
-import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.SpectralArrow;
-import net.minecraft.world.entity.projectile.ThrownTrident;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.projectile.*;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.*;
 import java.util.function.Predicate;
 
-import static com.nexia.ffa.kits.utilities.FfaAreas.*;
+import static com.nexia.ffa.uhc.utilities.FfaAreas.*;
 
-public class FfaKitsUtil {
+public class FfaUhcUtil {
 
+    public static String ffaUhcDir = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/ffa/uhc";
     public static ArrayList<UUID> wasInSpawn = new ArrayList<>();
+
+    public static HashMap<Integer, ItemStack> invItems;
 
     public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
         com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
-        return player.getTags().contains("ffa_kits") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.KITS;
+        return player.getTags().contains("ffa_uhc") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.UHC;
     }
 
     public static void ffaSecond() {
@@ -76,9 +72,8 @@ public class FfaKitsUtil {
         data.kills++;
         player.heal(player.getMaxHealth());
 
-        FfaKitsUtil.clearArrows(player);
-        FfaKitsUtil.clearSpectralArrows(player);
-        FfaKitsUtil.clearThrownTridents(player);
+        FfaUhcUtil.clearArrows(player);
+        FfaUhcUtil.clearTrident(player);
 
         if(data.killstreak % 5 == 0) {
             for (ServerPlayer serverPlayer : FfaAreas.ffaWorld.players()) {
@@ -97,20 +92,79 @@ public class FfaKitsUtil {
 
     public static void fiveTick() {
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
-
-            if(!com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(minecraftPlayer) && PlayerDataManager.get(minecraftPlayer).kit == null) {
-                PlayerUtil.getFactoryPlayer(minecraftPlayer).sendTitle(Title.title(Component.text("No kit selected!").color(ChatFormat.failColor), Component.text("You need to select a kit!").color(ChatFormat.failColor)));
-                PlayerUtil.sendSound(minecraftPlayer, new EntityPos(minecraftPlayer), SoundEvents.NOTE_BLOCK_DIDGERIDOO, SoundSource.BLOCKS, 10, 1);
-                FfaKitsUtil.sendToSpawn(minecraftPlayer);
-                return;
-            }
-
-            if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(minecraftPlayer)){
+            if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !FfaAreas.isInFfaSpawn(minecraftPlayer)){
                 Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
                 wasInSpawn.remove(minecraftPlayer.getUUID());
-                player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your kit was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
+                saveInventory(minecraftPlayer);
+                player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your inventory layout was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
             }
         }
+    }
+
+    public static void saveInventory(ServerPlayer minecraftPlayer){
+        PlayerData playerData = PlayerDataManager.get(minecraftPlayer);
+        Inventory newInv = playerData.ffaInventory = new Inventory(minecraftPlayer);
+
+        for(int i = 0; i < newInv.getContainerSize(); ++i) {
+            newInv.setItem(i, minecraftPlayer.inventory.getItem(i).copy());
+        }
+    }
+
+    public static void setInventory(ServerPlayer player){
+        HashMap<Integer, ItemStack> availableItems = (HashMap)invItems.clone();
+        Inventory newInv = new Inventory(player);
+        Inventory oldInv = PlayerDataManager.get(player).ffaInventory;
+        int i;
+
+        if (oldInv != null) {
+            for(i = 0; i < oldInv.getContainerSize(); ++i) {
+                Item item = oldInv.getItem(i).getItem();
+
+                Iterator<Map.Entry<Integer, ItemStack>> it = availableItems.entrySet().iterator();
+
+                while(it.hasNext()) {
+                    Map.Entry<Integer, ItemStack> entry = it.next();
+                    if (entry.getValue().getItem() == item) {
+                        ItemStack itemStack = entry.getValue().copy();
+                        newInv.setItem(i, itemStack);
+                        it.remove();
+                        break;
+                    }
+                }
+            }
+        }
+
+
+        for (Map.Entry<Integer, ItemStack> integerItemStackEntry : availableItems.entrySet()) {
+            ItemStack itemStack = integerItemStackEntry.getValue().copy();
+            if (newInv.getItem(integerItemStackEntry.getKey()).isEmpty()) {
+                newInv.setItem(integerItemStackEntry.getKey(), itemStack);
+            } else {
+                newInv.add(itemStack);
+            }
+        }
+
+        for(i = 0; i < newInv.getContainerSize(); ++i) {
+            ItemStack itemStack = newInv.getItem(i);
+            if (itemStack == null) {
+                itemStack = ItemStack.EMPTY;
+            }
+
+            player.inventory.setItem(i, itemStack);
+        }
+
+        ItemStackUtil.sendInventoryRefreshPacket(player);
+    }
+
+    public static boolean beforeBuild(ServerPlayer player, BlockPos blockPos) {
+        if (player.isCreative()) return true;
+        if (wasInSpawn.contains(player.getUUID())) return false;
+        if(blockPos.getY() >= FfaAreas.buildLimitY) return false;
+        return FfaAreas.canBuild(player, blockPos);
+    }
+
+    public static void afterPlace(ServerPlayer player, BlockPos blockPos, InteractionHand hand, boolean isFluid) {
+        if (!player.isCreative()) FfaUhcBlocks.placeBlock(blockPos, isFluid);
     }
 
     public static void calculateDeath(ServerPlayer player){
@@ -136,18 +190,6 @@ public class FfaKitsUtil {
         data.killstreak = 0;
     }
 
-    public static void clearThrownTridents(ServerPlayer player) {
-        BlockPos c1 = ffaCorner1.offset(-10, -ffaCorner1.getY(), -10);
-        BlockPos c2 = ffaCorner2.offset(10, 319 - ffaCorner2.getY(), 10);
-        AABB aabb = new AABB(c1, c2);
-        Predicate<Entity> predicate = o -> true;
-        for (ThrownTrident trident : ffaWorld.getEntities(EntityType.TRIDENT, aabb, predicate)) {
-            if (trident.getOwner() != null && trident.getOwner().getUUID().equals(player.getUUID())) {
-                trident.remove();
-            }
-        }
-    }
-
     public static void clearArrows(ServerPlayer player) {
         BlockPos c1 = ffaCorner1.offset(-10, -ffaCorner1.getY(), -10);
         BlockPos c2 = ffaCorner2.offset(10, 319 - ffaCorner2.getY(), 10);
@@ -160,18 +202,17 @@ public class FfaKitsUtil {
         }
     }
 
-    public static void clearSpectralArrows(ServerPlayer player) {
+    public static void clearTrident(ServerPlayer player) {
         BlockPos c1 = ffaCorner1.offset(-10, -ffaCorner1.getY(), -10);
         BlockPos c2 = ffaCorner2.offset(10, 319 - ffaCorner2.getY(), 10);
         AABB aabb = new AABB(c1, c2);
         Predicate<Entity> predicate = o -> true;
-        for (SpectralArrow arrow : ffaWorld.getEntities(EntityType.SPECTRAL_ARROW, aabb, predicate)) {
-            if (arrow.getOwner() != null && arrow.getOwner().getUUID().equals(player.getUUID())) {
-                arrow.remove();
+        for (ThrownTrident trident : ffaWorld.getEntities(EntityType.TRIDENT, aabb, predicate)) {
+            if (trident.getOwner() != null && trident.getOwner().getUUID().equals(player.getUUID())) {
+                trident.remove();
             }
         }
     }
-
 
     public static void leaveOrDie(@NotNull ServerPlayer player, @Nullable DamageSource source, boolean leaving) {
         ServerPlayer attacker = null;
@@ -180,21 +221,21 @@ public class FfaKitsUtil {
             attacker = PlayerUtil.getPlayerAttacker(source.getEntity());
         }
 
-        if(!leaving) FfaKitsUtil.setDeathMessage(player, source);
 
         if (attacker != null) {
-            FfaKitsUtil.clearThrownTridents(attacker);
-            FfaKitsUtil.clearArrows(attacker);
-            FfaKitsUtil.clearSpectralArrows(attacker);
-            FfaKit ffaKit = PlayerDataManager.get(attacker).kit;
-            if(ffaKit != null) ffaKit.giveKit(attacker, false);
+            FfaUhcUtil.clearArrows(attacker);
+            FfaUhcUtil.clearTrident(attacker);
+            FfaUhcUtil.setInventory(attacker);
         }
 
-        if(!leaving) FfaKitsUtil.sendToSpawn(player);
+        if(!leaving){
+            FfaUhcUtil.setDeathMessage(player, source);
+            FfaUhcUtil.sendToSpawn(player);
+        }
     }
 
     public static boolean canGoToSpawn(ServerPlayer player) {
-        if(!FfaKitsUtil.isFfaPlayer(player) || FfaKitsUtil.wasInSpawn.contains(player.getUUID())) return true;
+        if(!FfaUhcUtil.isFfaPlayer(player) || FfaUhcUtil.wasInSpawn.contains(player.getUUID())) return true;
         return !(player.getHealth() < 20);
     }
 
@@ -293,22 +334,99 @@ public class FfaKitsUtil {
         }
 
         for (Player player : ServerTime.factoryServer.getPlayers()) {
-            if (player.hasTag("ffa_kits")) player.sendMessage(msg);
+            if (player.hasTag("ffa_uhc")) player.sendMessage(msg);
         }
     }
 
     public static void sendToSpawn(ServerPlayer player) {
-        PlayerData data = PlayerDataManager.get(player);
-
         player.inventory.clearContent();
-        FfaKitsUtil.clearThrownTridents(player);
-        FfaKitsUtil.clearArrows(player);
-        FfaKitsUtil.clearSpectralArrows(player);
-        FfaKitsUtil.wasInSpawn.add(player.getUUID());
+        FfaUhcUtil.clearArrows(player);
+        FfaUhcUtil.clearTrident(player);
+        FfaUhcUtil.setInventory(player);
+        FfaUhcUtil.wasInSpawn.add(player.getUUID());
 
-        player.setGameMode(GameType.ADVENTURE);
+        player.removeAllEffects();
+        player.setGameMode(GameType.SURVIVAL);
         FfaAreas.spawn.teleportPlayer(FfaAreas.ffaWorld, player);
-        if(data.kit != null) data.kit.giveKit(player, true);
-        else KitGUI.openKitGUI(player);
+    }
+
+    static {
+        invItems = new HashMap<>();
+
+        ItemStack sword = new ItemStack(Items.DIAMOND_SWORD);
+        sword.enchant(Enchantments.SHARPNESS, 2);
+
+        ItemStack trident = new ItemStack(Items.TRIDENT);
+        trident.enchant(Enchantments.IMPALING, 1);
+
+        ItemStack axe = new ItemStack(Items.DIAMOND_AXE);
+        axe.enchant(Enchantments.CLEAVING, 1);
+
+        ItemStack lava_bucket = new ItemStack(Items.LAVA_BUCKET);
+        ItemStack water_bucket = new ItemStack(Items.WATER_BUCKET);
+
+        ItemStack cobblestone = new ItemStack(Items.COBBLESTONE);
+        cobblestone.setCount(64);
+
+        ItemStack oak_log = new ItemStack(Items.OAK_LOG);
+        oak_log.setCount(64);
+
+        ItemStack crossbow = new ItemStack(Items.CROSSBOW);
+        crossbow.enchant(Enchantments.PIERCING, 1);
+
+        ItemStack golden_apples = new ItemStack(Items.GOLDEN_APPLE);
+        golden_apples.setCount(8);
+
+        ItemStack cobwebs = new ItemStack(Items.COBWEB);
+        cobwebs.setCount(10);
+
+        ItemStack bow = new ItemStack(Items.BOW);
+        bow.enchant(Enchantments.POWER_ARROWS, 1);
+
+        ItemStack pickaxe = new ItemStack(Items.DIAMOND_PICKAXE);
+        pickaxe.enchant(Enchantments.DIGGING_EFFICIENCY, 1);
+
+        ItemStack arrows = new ItemStack(Items.ARROW);
+        arrows.setCount(8);
+
+        ItemStack helmet = new ItemStack(Items.DIAMOND_HELMET);
+        helmet.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 1);
+
+        ItemStack chestplate = new ItemStack(Items.DIAMOND_CHESTPLATE);
+        chestplate.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 2);
+
+        ItemStack leggings = new ItemStack(Items.DIAMOND_LEGGINGS);
+        leggings.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 2);
+
+        ItemStack boots = new ItemStack(Items.DIAMOND_BOOTS);
+        boots.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 1);
+
+        invItems.put(0, sword);
+        invItems.put(1, trident);
+        invItems.put(2, axe);
+        invItems.put(3, lava_bucket);
+        invItems.put(4, water_bucket);
+        invItems.put(5, cobblestone);
+        invItems.put(6, crossbow);
+        invItems.put(7, cobwebs);
+        invItems.put(8, bow);
+
+        invItems.put(30, lava_bucket);
+        invItems.put(13, water_bucket);
+        invItems.put(32, cobblestone);
+        invItems.put(35, pickaxe);
+
+        invItems.put(22, water_bucket);
+        invItems.put(23, oak_log);
+
+        invItems.put(31, water_bucket);
+        invItems.put(17, arrows);
+
+        invItems.put(36, boots);
+        invItems.put(37, leggings);
+        invItems.put(38, chestplate);
+        invItems.put(39, helmet);
+
+        invItems.put(40, golden_apples);
     }
 }

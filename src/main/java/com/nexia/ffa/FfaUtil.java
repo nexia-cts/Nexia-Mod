@@ -5,6 +5,8 @@ import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
+import com.nexia.ffa.pot.utilities.FfaPotUtil;
+import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.ItemStack;
@@ -14,8 +16,9 @@ import org.jetbrains.annotations.Nullable;
 import java.text.DecimalFormat;
 
 public class FfaUtil {
+
     public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
-        return player.getTags().contains("ffa") || player.getTags().contains("ffa_classic") || player.getTags().contains("ffa_kits") && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.FFA;
+        return player.getTags().contains("ffa") || player.getTags().contains("ffa_classic") || player.getTags().contains("ffa_kits") || player.getTags().contains("ffa_pot") || player.getTags().contains("ffa_uhc") && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.FFA;
     }
 
     public static float calculateHealth(float health){
@@ -50,6 +53,16 @@ public class FfaUtil {
 
         if(data.ffaGameMode == FfaGameMode.KITS) {
             FfaKitsUtil.leaveOrDie(player, source, leaving);
+            return;
+        }
+
+        if(data.ffaGameMode == FfaGameMode.POT) {
+            FfaPotUtil.leaveOrDie(player, source, leaving);
+            return;
+        }
+
+        if(data.ffaGameMode == FfaGameMode.UHC) {
+            FfaUhcUtil.leaveOrDie(player, source, leaving);
             return;
         }
 

@@ -15,6 +15,8 @@ public class PlayCommand {
         dispatcher.register(Commands.literal("play").executes(PlayCommand::openGUI)
                 .then(Commands.literal("ffa").executes(PlayCommand::openGUI)
                         .then(Commands.literal("kits").executes(PlayCommand::playKitFFA))
+                        .then(Commands.literal("pot").executes(PlayCommand::playPotFFA))
+                        .then(Commands.literal("uhc").executes(PlayCommand::playUhcFFA))
                         .then(Commands.literal("classic").executes(PlayCommand::playNormalFFA)))
                 .then(Commands.literal("bedwars").executes(PlayCommand::playBedWars))
                 .then(Commands.literal("duels").executes(PlayCommand::playDuels))
@@ -25,6 +27,8 @@ public class PlayCommand {
         dispatcher.register(Commands.literal("join").executes(PlayCommand::openGUI)
                 .then(Commands.literal("ffa").executes(PlayCommand::openGUI)
                         .then(Commands.literal("kits").executes(PlayCommand::playKitFFA))
+                        .then(Commands.literal("pot").executes(PlayCommand::playPotFFA))
+                        .then(Commands.literal("uhc").executes(PlayCommand::playUhcFFA))
                         .then(Commands.literal("classic").executes(PlayCommand::playNormalFFA)))
                 .then(Commands.literal("bedwars").executes(PlayCommand::playBedWars))
                 .then(Commands.literal("duels").executes(PlayCommand::playDuels))
@@ -50,6 +54,18 @@ public class PlayCommand {
     private static int playKitFFA(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         LobbyUtil.sendGame(player, "kits ffa", true, true);
+        return 1;
+    }
+
+    private static int playUhcFFA(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        LobbyUtil.sendGame(player, "uhc ffa", true, true);
+        return 1;
+    }
+
+    private static int playPotFFA(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        LobbyUtil.sendGame(player, "pot ffa", true, true);
         return 1;
     }
 

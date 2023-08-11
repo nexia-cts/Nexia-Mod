@@ -18,6 +18,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -151,91 +152,83 @@ public class FfaClassicUtil {
     }
 
     public static void setDeathMessage(@NotNull ServerPlayer minecraftPlayer, @Nullable DamageSource source){
-        boolean attackerNull = source == null || !(source.getEntity() instanceof ServerPlayer);
-        boolean victimTag = FfaClassicUtil.isFfaPlayer(minecraftPlayer);
+        ServerPlayer attacker = null;
+        Entity fAttacker = null;
 
-        if((attackerNull && victimTag) || (!attackerNull && source.getEntity() == minecraftPlayer && victimTag)){
-            for(Player player : ServerTime.factoryServer.getPlayers()){
-                if(player.hasTag("ffa_classic")){
-
-                    // §7Wow, §c☠ {} §7somehow killed themselves.
-                    Component msg = Component.text("Wow,").color(ChatFormat.chatColor2)
-                            .append(Component.text(" ☠ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor))
-                            .append(Component.text(" somehow killed themselves.").color(ChatFormat.chatColor2));
-
-                    if(source == DamageSource.OUT_OF_WORLD) {
-                        //msg = LegacyChatFormat.format("§c⚐ {} §7took a ride to the void.", minecraftPlayer.getScoreboardName());
-                        msg = Component.text("⚐ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
-                                .append(Component.text(" took a ride to the void.").color(ChatFormat.chatColor2));
-                    }
-
-                    if(source == DamageSource.ON_FIRE || source == DamageSource.LAVA) {
-                        //msg = LegacyChatFormat.format("§c\uD83D\uDD25 {} §7was deepfried in lava.", minecraftPlayer.getScoreboardName());
-                        msg = Component.text("\uD83D\uDD25 " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
-                                .append(Component.text(" was deepfried in lava.").color(ChatFormat.chatColor2));
-                    }
-
-                    if(source == DamageSource.HOT_FLOOR) {
-                        //msg = LegacyChatFormat.format("§c\uD83D\uDD25 {} §7stepped on hot legos.", minecraftPlayer.getScoreboardName());
-                        msg = Component.text("\uD83D\uDD25 " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
-                                .append(Component.text(" stepped on hot legos.").color(ChatFormat.chatColor2));
-                    }
-
-                    if(source == DamageSource.IN_FIRE || source == DamageSource.ON_FIRE) {
-                        msg = Component.text("\uD83D\uDD25 " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
-                                .append(Component.text(" met a fiery end.").color(ChatFormat.chatColor2));
-                    }
-
-                    if(source == DamageSource.CACTUS) {
-                        //msg = LegacyChatFormat.format("§7ʕっ·ᴥ·ʔっ §c☠ {} §7hugged a cactus.", minecraftPlayer.getScoreboardName());
-                        msg = Component.text("ʕっ·ᴥ·ʔっ ").color(ChatFormat.chatColor2)
-                                .append(Component.text("☠ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor))
-                                .append(Component.text(" hugged a cactus.").color(ChatFormat.chatColor2));
-                    }
-
-                    if(source == DamageSource.DROWN || source == DamageSource.DRY_OUT) {
-                        msg = Component.text("\uD83C\uDF0A " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
-                                .append(Component.text(" forgot to breathe air.").color(ChatFormat.chatColor2));
-                    }
-                    player.sendMessage(msg);
-                }
-            }
-            return;
+        if (source != null && source.getEntity() != null) {
+            fAttacker = source.getEntity();
+            if(PlayerUtil.getPlayerAttacker(source.getEntity()) != null) attacker = PlayerUtil.getPlayerAttacker(source.getEntity());
         }
-        if(victimTag){
-            calculateDeath(minecraftPlayer);
-        }
-        if(attackerNull) { return; }
-        ServerPlayer minecraftAttacker = (ServerPlayer) source.getEntity();
-        boolean attackerTag = FfaClassicUtil.isFfaPlayer(minecraftAttacker);
 
-        if(attackerTag && victimTag){
+        calculateDeath(minecraftPlayer);
+
+        Component invalid = Component.text("Wow,").color(ChatFormat.chatColor2)
+                .append(Component.text(" ☠ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor))
+                .append(Component.text(" somehow killed themselves.").color(ChatFormat.chatColor2));
+
+        Component msg = invalid;
+
+        if (source == DamageSource.OUT_OF_WORLD) {
+            //msg = LegacyChatFormat.format("§c⚐ {} §7took a ride to the void.", minecraftPlayer.getScoreboardName());
+            msg = Component.text("⚐ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
+                    .append(Component.text(" took a ride to the void.").color(ChatFormat.chatColor2));
+        }
+
+        if (source == DamageSource.ON_FIRE || source == DamageSource.LAVA) {
+            //msg = LegacyChatFormat.format("§c\uD83D\uDD25 {} §7was deepfried in lava.", minecraftPlayer.getScoreboardName());
+            msg = Component.text("\uD83D\uDD25 " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
+                    .append(Component.text(" was deepfried in lava.").color(ChatFormat.chatColor2));
+        }
+
+        if (source == DamageSource.HOT_FLOOR) {
+            //msg = LegacyChatFormat.format("§c\uD83D\uDD25 {} §7stepped on hot legos.", minecraftPlayer.getScoreboardName());
+            msg = Component.text("\uD83D\uDD25 " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
+                    .append(Component.text(" stepped on hot legos.").color(ChatFormat.chatColor2));
+        }
+
+        if (source == DamageSource.IN_FIRE || source == DamageSource.ON_FIRE) {
+            msg = Component.text("\uD83D\uDD25 " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
+                    .append(Component.text(" comBusted.").color(ChatFormat.chatColor2));
+        }
+
+        if (source == DamageSource.CACTUS) {
+            //msg = LegacyChatFormat.format("§7ʕっ·ᴥ·ʔっ §c☠ {} §7hugged a cactus.", minecraftPlayer.getScoreboardName());
+            msg = Component.text("ʕっ·ᴥ·ʔっ ").color(ChatFormat.chatColor2)
+                    .append(Component.text("☠ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor))
+                    .append(Component.text(" hugged a cactus.").color(ChatFormat.chatColor2));
+        }
+
+        if (source == DamageSource.DROWN || source == DamageSource.DRY_OUT) {
+            msg = Component.text("\uD83C\uDF0A " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
+                    .append(Component.text(" had a bit too much to drink.").color(ChatFormat.chatColor2));
+        }
+
+
+        if(attacker != null && msg == invalid && attacker != minecraftPlayer) {
+
             String symbol = "◆";
-            Item handItem = minecraftAttacker.getMainHandItem().getItem();
+            Item handItem = attacker.getMainHandItem().getItem();
 
-            if(handItem == Items.NETHERITE_SWORD){
+            if (handItem == Items.NETHERITE_SWORD) {
                 symbol = "\uD83D\uDDE1";
-            } else if(handItem == Items.TRIDENT){
+            } else if (handItem == Items.TRIDENT) {
                 symbol = "\uD83D\uDD31";
-            } else if(handItem == Items.NETHERITE_AXE) {
+            } else if (handItem == Items.NETHERITE_AXE) {
                 symbol = "\uD83E\uDE93";
             }
-            for(Player player : ServerTime.factoryServer.getPlayers()){
-                if(player.hasTag("ffa_classic")){
-                    //player.sendMessage(new TextComponent("§c☠ " + minecraftPlayer.getScoreboardName() + " §7was killed by §a" + symbol + " " +  minecraftAttacker.getScoreboardName() + " §7with §c" + calculateHealth(minecraftAttacker.getHealth()) + "❤ §7left."), Util.NIL_UUID);
-                    player.sendMessage(Component.text("☠ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
-                            .append(Component.text(" was killed by ").color(ChatFormat.chatColor2))
-                            .append(Component.text(symbol + " " + minecraftAttacker.getScoreboardName()).color(ChatFormat.greenColor))
-                            .append(Component.text(" with ").color(ChatFormat.chatColor2))
-                            .append(Component.text(FfaUtil.calculateHealth(minecraftAttacker.getHealth()) + "❤").color(ChatFormat.failColor))
-                            .append(Component.text(" left.").color(ChatFormat.chatColor2))
-                    );
-                }
-            }
+
+            msg = Component.text("☠ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
+                    .append(Component.text(" was killed by ").color(ChatFormat.chatColor2))
+                    .append(Component.text(symbol + " " + attacker.getScoreboardName()).color(ChatFormat.greenColor))
+                    .append(Component.text(" with ").color(ChatFormat.chatColor2))
+                    .append(Component.text(FfaUtil.calculateHealth(attacker.getHealth()) + "❤").color(ChatFormat.failColor))
+                    .append(Component.text(" left.").color(ChatFormat.chatColor2));
+
+            calculateKill(attacker);
         }
 
-        if(attackerTag){
-            calculateKill(minecraftAttacker);
+        for (Player player : ServerTime.factoryServer.getPlayers()) {
+            if (player.hasTag("ffa_kits")) player.sendMessage(msg);
         }
     }
 
@@ -314,6 +307,7 @@ public class FfaClassicUtil {
         }
 
         FfaClassicUtil.setInventory(player);
+        FfaClassicUtil.clearThrownTridents(player);
         FfaClassicUtil.wasInSpawn.add(player.getUUID());
     }
 

@@ -1,6 +1,6 @@
 
 
-package com.nexia.ffa.kits.utilities.player;
+package com.nexia.ffa.pot.utilities.player;
 
 import com.google.gson.Gson;
 import net.fabricmc.loader.api.FabricLoader;
@@ -14,11 +14,9 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class PlayerDataManager {
-    static String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/ffa/kits";
+    static String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/ffa/uhc";
     static String playerDataDirectory;
     static HashMap<UUID, PlayerData> allPlayerData;
-
-
 
     public PlayerDataManager() {
     }

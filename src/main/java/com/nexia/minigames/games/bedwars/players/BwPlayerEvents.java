@@ -3,7 +3,7 @@ package com.nexia.minigames.games.bedwars.players;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
-import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.minigames.games.bedwars.util.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;

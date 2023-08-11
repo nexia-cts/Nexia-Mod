@@ -25,10 +25,9 @@ public class CommandSourceStackMixin {
     private void broadcastToAdmins(Component component, CallbackInfo ci) {
 
         // If sourced from datapack
-        if (source instanceof MinecraftServer && !(entity instanceof Player)) {
+        if (source instanceof MinecraftServer && entity != null) {
             ci.cancel();
             return;
         }
-
     }
 }
