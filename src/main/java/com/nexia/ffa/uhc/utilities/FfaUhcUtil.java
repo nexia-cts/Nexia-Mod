@@ -163,8 +163,8 @@ public class FfaUhcUtil {
         return FfaAreas.canBuild(player, blockPos);
     }
 
-    public static void afterPlace(ServerPlayer player, BlockPos blockPos, InteractionHand hand, boolean isFluid) {
-        if (!player.isCreative()) FfaUhcBlocks.placeBlock(blockPos, isFluid);
+    public static void afterPlace(ServerPlayer player, BlockPos blockPos, InteractionHand hand) {
+        if (!player.isCreative()) FfaUhcBlocks.placeBlock(blockPos);
     }
 
     public static void calculateDeath(ServerPlayer player){

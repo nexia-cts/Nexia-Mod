@@ -16,12 +16,9 @@ public class FfaUhcBlocks {
         public BlockPos blockPos;
         public int ticks;
 
-        public boolean isFluid;
-
-        public FfaUhcBlock(BlockPos blockPos, int ticks, boolean isFluid) {
+        public FfaUhcBlock(BlockPos blockPos, int ticks) {
             this.blockPos = blockPos;
             this.ticks = ticks;
-            this.isFluid = isFluid;
         }
     }
 
@@ -53,17 +50,8 @@ public class FfaUhcBlocks {
 
     }
 
-    public static void placeBlock(BlockPos blockPos, boolean isFluid) {
-
-        if(isFluid) {
-            blockPos = new BlockPos(
-                    blockPos.getX(),
-                    blockPos.getY() + 1,
-                    blockPos.getZ()
-            );
-        }
-
-        playerPlacedBlocks.add(new FfaUhcBlock(blockPos, ticks + placedBlockTime, isFluid));
+    public static void placeBlock(BlockPos blockPos) {
+        playerPlacedBlocks.add(new FfaUhcBlock(blockPos, ticks + placedBlockTime));
     }
 
     private static boolean contains(Queue<FfaUhcBlock> blocks, BlockPos blockPos) {
@@ -81,9 +69,8 @@ public class FfaUhcBlocks {
         ServerLevel world = FfaAreas.ffaWorld;
         BlockState blockState = world.getBlockState(blockPos);
 
-        boolean isFluid = blockState.getBlock() != null && blockState.getBlock() == Blocks.WATER && world.getFluidState(blockPos).isSource();
 
-        disappearingBlocks.add(new FfaUhcBlock(blockPos, ticks + disappearingBlockTime, isFluid));
+        disappearingBlocks.add(new FfaUhcBlock(blockPos, ticks + disappearingBlockTime));
         world.setBlock(blockPos, blockState, 3);
 
     }

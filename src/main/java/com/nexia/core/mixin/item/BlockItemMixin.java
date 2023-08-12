@@ -41,7 +41,8 @@ public abstract class BlockItemMixin {
     private void afterPlace(BlockPlaceContext context, CallbackInfoReturnable<InteractionResult> cir) {
         ServerPlayer player = (ServerPlayer)context.getPlayer();
         if (player == null) return;
+
         BlockPos blockPos = context.getClickedPos();
-        FfaUhcUtil.afterPlace(player, blockPos, context.getHand(), false);
+        FfaUhcUtil.afterPlace(player, blockPos, context.getHand());
     }
 }

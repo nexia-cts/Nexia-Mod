@@ -57,7 +57,7 @@ public class BucketItemMixin extends Item {
             cir.setReturnValue(new InteractionResultHolder<>(InteractionResult.FAIL, player.getItemInHand(interactionHand)));
             ItemStackUtil.sendInventoryRefreshPacket(serverPlayer);
         } else if(FfaAreas.isFfaWorld(level) && FfaUhcUtil.beforeBuild(serverPlayer, blockPos3)) {
-            FfaUhcUtil.afterPlace(serverPlayer, blockPos, player.getUsedItemHand(), true);
+            FfaUhcUtil.afterPlace(serverPlayer, blockPos3, player.getUsedItemHand());
         }
     }
 }

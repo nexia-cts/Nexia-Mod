@@ -70,6 +70,16 @@ public abstract class PlayerMixin extends LivingEntity {
         return true;
     }
 
+    @Inject(method = "canEat", cancellable = true, at = @At("HEAD"))
+    private void preventFFAUsers(boolean bl, CallbackInfoReturnable<Boolean> cir) {
+        if (!((Object) this instanceof ServerPlayer player)) return;
+        if(com.nexia.ffa.pot.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.pot.utilities.FfaAreas.isInFfaSpawn(player) ||
+                com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(player)) {
+            cir.setReturnValue(false);
+            ItemStackUtil.sendInventoryRefreshPacket(player);
+        }
+    }
+
     @Inject(method = "hurt", cancellable = true, at = @At("HEAD"))
     private void beforeHurt(DamageSource damageSource, float damage, CallbackInfoReturnable<Boolean> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
