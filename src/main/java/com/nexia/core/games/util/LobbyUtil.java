@@ -9,8 +9,13 @@ import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.ffa.utilities.FfaAreas;
-import com.nexia.ffa.utilities.FfaUtil;
+import com.nexia.ffa.FfaGameMode;
+import com.nexia.ffa.FfaUtil;
+import com.nexia.ffa.classic.utilities.FfaAreas;
+import com.nexia.ffa.classic.utilities.FfaClassicUtil;
+import com.nexia.ffa.kits.utilities.FfaKitsUtil;
+import com.nexia.ffa.pot.utilities.FfaPotUtil;
+import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwScoreboard;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
@@ -32,7 +37,7 @@ import net.minecraft.world.level.Level;
 
 public class LobbyUtil {
 
-    public static String[] statsGameModes = {"FFA", "DUELS", "SKYWARS", "BEDWARS"};
+    public static String[] statsGameModes = {"FFA CLASSIC", "POT FFA", "UHC FFA", "KIT FFA", "DUELS", "SKYWARS", "BEDWARS"};
 
     public static ServerLevel lobbyWorld = null;
     public static EntityPos lobbySpawn = new EntityPos(Main.config.lobbyPos[0], Main.config.lobbyPos[1], Main.config.lobbyPos[2], 0, 0);
@@ -60,6 +65,10 @@ public class LobbyUtil {
 
     public static String[] removedTags = {
             "ffa",
+            "ffa_classic",
+            "ffa_kits",
+            "ffa_pot",
+            "ffa_uhc",
             "duels",
             "skywars",
             "in_bedwars",
@@ -183,15 +192,22 @@ public class LobbyUtil {
     public static void sendGame(ServerPlayer minecraftPlayer, String game, boolean message, boolean tp){
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
 
-        if(game.equalsIgnoreCase("classic ffa") && !FfaUtil.canGoToSpawn(minecraftPlayer)) {
+        minecraftPlayer.setInvulnerable(false);
+        minecraftPlayer.abilities.mayfly = false;
+        minecraftPlayer.onUpdateAbilities();
+
+        if((game.equalsIgnoreCase("classic ffa") && !FfaClassicUtil.canGoToSpawn(minecraftPlayer)) ||
+                (game.equalsIgnoreCase("kits ffa") && !FfaKitsUtil.canGoToSpawn(minecraftPlayer) ||
+                        (game.equalsIgnoreCase("pot ffa") && !FfaPotUtil.canGoToSpawn(minecraftPlayer) ||
+                                (game.equalsIgnoreCase("uhc ffa") && !FfaUhcUtil.canGoToSpawn(minecraftPlayer))))) {
+
             player.sendMessage(Component.text("You must be fully healed to go to spawn!").color(ChatFormat.failColor));
             return;
         }
 
+        DuelGameHandler.leave(minecraftPlayer, true);
 
-        minecraftPlayer.setInvulnerable(false);
-        minecraftPlayer.abilities.mayfly = false;
-        minecraftPlayer.onUpdateAbilities();
+
         if (!LobbyUtil.isLobbyWorld(minecraftPlayer.getLevel())) {
             LobbyUtil.leaveAllGames(minecraftPlayer, false);
         } else{
@@ -210,19 +226,67 @@ public class LobbyUtil {
             player.removeTag(LobbyUtil.NO_SATURATION_TAG);
         }
         DuelGameHandler.leave(minecraftPlayer, true);
-        if(game.equalsIgnoreCase("classic ffa")){
-
+        if(game.equalsIgnoreCase("classic ffa") ||
+                game.equalsIgnoreCase("kits ffa") ||
+                game.equalsIgnoreCase("pot ffa") ||
+                game.equalsIgnoreCase("uhc ffa")) {
             player.addTag("ffa");
-            FfaUtil.wasInSpawn.add(player.getUUID());
+
             PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.FFA;
-            if(tp){
-                minecraftPlayer.teleportTo(FfaAreas.ffaWorld, FfaAreas.spawn.x, FfaAreas.spawn.y, FfaAreas.spawn.z, FfaAreas.spawn.yaw, FfaAreas.spawn.pitch);
-                minecraftPlayer.setRespawnPosition(FfaAreas.ffaWorld.dimension(), FfaAreas.spawn.toBlockPos(), FfaAreas.spawn.yaw, true, false);
+            if(message){ player.sendActionBarMessage(Component.text("You have joined §8🗡 §7§lFFA §b🔱")); }
+
+            if(game.equalsIgnoreCase("classic ffa")) {
+                player.addTag("ffa_classic");
+                FfaClassicUtil.wasInSpawn.add(player.getUUID());
+                PlayerDataManager.get(minecraftPlayer).ffaGameMode = FfaGameMode.CLASSIC;
+                if(tp){
+                    minecraftPlayer.teleportTo(FfaAreas.ffaWorld, FfaAreas.spawn.x, FfaAreas.spawn.y, FfaAreas.spawn.z, FfaAreas.spawn.yaw, FfaAreas.spawn.pitch);
+                    minecraftPlayer.setRespawnPosition(FfaAreas.ffaWorld.dimension(), FfaAreas.spawn.toBlockPos(), FfaAreas.spawn.yaw, true, false);
+                }
+                FfaClassicUtil.clearThrownTridents(minecraftPlayer);
+                FfaClassicUtil.setInventory(minecraftPlayer);
             }
 
-            FfaUtil.clearThrownTridents(minecraftPlayer);
-            if(message){ player.sendActionBarMessage(Component.text("You have joined §8🗡 §7§lFFA §b🔱")); }
-            FfaUtil.setInventory(minecraftPlayer);
+
+            if(game.equalsIgnoreCase("kits ffa")){
+                player.addTag("ffa_kits");
+                FfaKitsUtil.wasInSpawn.add(player.getUUID());
+                PlayerDataManager.get(minecraftPlayer).ffaGameMode = FfaGameMode.KITS;
+                if(tp){
+                    FfaKitsUtil.sendToSpawn(minecraftPlayer);
+                    minecraftPlayer.setRespawnPosition(com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld.dimension(), com.nexia.ffa.kits.utilities.FfaAreas.spawn.toBlockPos(), com.nexia.ffa.kits.utilities.FfaAreas.spawn.yaw, true, false);
+                }
+
+                FfaKitsUtil.clearThrownTridents(minecraftPlayer);
+                FfaKitsUtil.clearArrows(minecraftPlayer);
+                FfaKitsUtil.clearSpectralArrows(minecraftPlayer);
+            }
+
+            if(game.equalsIgnoreCase("pot ffa")){
+                player.addTag("ffa_pot");
+                FfaPotUtil.wasInSpawn.add(player.getUUID());
+                PlayerDataManager.get(minecraftPlayer).ffaGameMode = FfaGameMode.POT;
+                if(tp){
+                    FfaPotUtil.sendToSpawn(minecraftPlayer);
+                    minecraftPlayer.setRespawnPosition(com.nexia.ffa.pot.utilities.FfaAreas.ffaWorld.dimension(), com.nexia.ffa.pot.utilities.FfaAreas.spawn.toBlockPos(), com.nexia.ffa.pot.utilities.FfaAreas.spawn.yaw, true, false);
+                }
+
+                FfaPotUtil.clearEnderpearls(minecraftPlayer);
+                FfaPotUtil.clearExperience(minecraftPlayer, true);
+            }
+
+            if(game.equalsIgnoreCase("uhc ffa")){
+                player.addTag("ffa_uhc");
+                FfaUhcUtil.wasInSpawn.add(player.getUUID());
+                PlayerDataManager.get(minecraftPlayer).ffaGameMode = FfaGameMode.UHC;
+                if(tp){
+                    FfaUhcUtil.sendToSpawn(minecraftPlayer);
+                    minecraftPlayer.setRespawnPosition(com.nexia.ffa.uhc.utilities.FfaAreas.ffaWorld.dimension(), com.nexia.ffa.uhc.utilities.FfaAreas.spawn.toBlockPos(), com.nexia.ffa.uhc.utilities.FfaAreas.spawn.yaw, true, false);
+                }
+
+                FfaUhcUtil.clearArrows(minecraftPlayer);
+                FfaUhcUtil.clearTrident(minecraftPlayer);
+            }
         }
 
         if(game.equalsIgnoreCase("skywars")){

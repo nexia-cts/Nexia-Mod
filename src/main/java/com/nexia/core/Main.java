@@ -18,8 +18,6 @@ import org.apache.logging.log4j.Logger;
 
 public class Main implements ModInitializer, FactoryPlugin {
 
-	public static MinecraftServer server;
-
 	public static ModConfig config;
 
 	public static final String MOD_NAME = "Nexia";

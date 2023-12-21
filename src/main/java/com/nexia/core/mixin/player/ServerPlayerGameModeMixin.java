@@ -1,6 +1,8 @@
 package com.nexia.core.mixin.player;
 
 import com.nexia.core.utilities.item.BlockUtil;
+import com.nexia.ffa.uhc.utilities.FfaAreas;
+import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
@@ -30,6 +32,8 @@ public class ServerPlayerGameModeMixin {
     private void destroyBlock(BlockPos blockPos, CallbackInfoReturnable<Boolean> cir) {
 
         if (BwAreas.isBedWarsWorld(level) && !BwPlayerEvents.beforeBreakBlock(player, blockPos)) {
+            cir.setReturnValue(false);
+        } else if (FfaAreas.isFfaWorld(level) && !FfaUhcUtil.beforeBuild(player, blockPos)) {
             cir.setReturnValue(false);
         }
 

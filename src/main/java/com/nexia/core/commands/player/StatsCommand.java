@@ -10,8 +10,9 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.ffa.utilities.player.PlayerDataManager;
-import com.nexia.ffa.utilities.player.SavedPlayerData;
+import com.nexia.ffa.FfaGameMode;
+import com.nexia.ffa.classic.utilities.player.PlayerDataManager;
+import com.nexia.ffa.classic.utilities.player.SavedPlayerData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -36,7 +37,7 @@ public class StatsCommand {
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 
         ServerPlayer mcPlayer = context.getSource().getPlayerOrException();
-        PlayerData executerData = com.nexia.core.utilities.player.PlayerDataManager.get(mcPlayer);
+        PlayerData executorData = com.nexia.core.utilities.player.PlayerDataManager.get(mcPlayer);
         Player player = PlayerUtil.getFactoryPlayer(mcPlayer);
 
 
@@ -49,35 +50,67 @@ public class StatsCommand {
 
         Component message;
 
-        if (executerData.gameMode == PlayerGameMode.FFA) {
-            message = ChatFormat.separatorLine("FFA Stats");
+        if (executorData.gameMode == PlayerGameMode.FFA) {
+            message = ChatFormat.separatorLine("FFA Classic Stats");
             SavedPlayerData data = PlayerDataManager.get(mcPlayer).savedData;
+
+            int kills = data.kills;
+            int deaths = data.deaths;
+            int killstreak = data.killstreak;
+            int bestKillstreak = data.bestKillstreak;
+
+            if(executorData.ffaGameMode == FfaGameMode.KITS) {
+                message = ChatFormat.separatorLine("Kit FFA Stats");
+                com.nexia.ffa.kits.utilities.player.SavedPlayerData kData = com.nexia.ffa.kits.utilities.player.PlayerDataManager.get(mcPlayer).savedData;
+                kills = kData.kills;
+                deaths = kData.deaths;
+                killstreak = kData.killstreak;
+                bestKillstreak = kData.bestKillstreak;
+            }
+
+            if(executorData.ffaGameMode == FfaGameMode.UHC) {
+                message = ChatFormat.separatorLine("UHC FFA Stats");
+                com.nexia.ffa.uhc.utilities.player.SavedPlayerData kData = com.nexia.ffa.uhc.utilities.player.PlayerDataManager.get(mcPlayer).savedData;
+                kills = kData.kills;
+                deaths = kData.deaths;
+                killstreak = kData.killstreak;
+                bestKillstreak = kData.bestKillstreak;
+            }
+
+            if(executorData.ffaGameMode == FfaGameMode.POT) {
+                message = ChatFormat.separatorLine("Pot FFA Stats");
+                com.nexia.ffa.pot.utilities.player.SavedPlayerData kData = com.nexia.ffa.pot.utilities.player.PlayerDataManager.get(mcPlayer).savedData;
+                kills = kData.kills;
+                deaths = kData.deaths;
+                killstreak = kData.killstreak;
+                bestKillstreak = kData.bestKillstreak;
+            }
 
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
                     .append(Component.text(" Kills: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.kills).color(ChatFormat.greenColor))
+                    .append(Component.text(kills).color(ChatFormat.greenColor))
             );
             player.sendMessage(start
                     .append(Component.text(" Deaths: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.deaths).color(ChatFormat.failColor))
+                    .append(Component.text(deaths).color(ChatFormat.failColor))
             );
 
             player.sendMessage(start
                     .append(Component.text(" KDR: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(calculateKDR(data.kills, data.deaths)).color(ChatFormat.greenColor))
+                    .append(Component.text(calculateKDR(kills, deaths)).color(ChatFormat.greenColor))
             );
 
             player.sendMessage(start
                     .append(Component.text(" Killstreak: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.killstreak).color(TextColor.fromHexString("#f5bc42")))
+                    .append(Component.text(killstreak).color(TextColor.fromHexString("#f5bc42")))
                     .append(Component.text("/").color(ChatFormat.arrowColor))
-                    .append(Component.text(data.bestKillstreak).color(TextColor.fromHexString("#f5bc42")))
+                    .append(Component.text(bestKillstreak).color(TextColor.fromHexString("#f5bc42")))
             );
         }
 
-        if (executerData.gameMode == PlayerGameMode.LOBBY) {
+        if (executorData.gameMode == PlayerGameMode.LOBBY) {
             message = ChatFormat.separatorLine("Duels Stats");
             com.nexia.minigames.games.duels.util.player.SavedPlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(mcPlayer).savedData;
             player.sendMessage(message);
@@ -92,7 +125,7 @@ public class StatsCommand {
             );
         }
 
-        if (executerData.gameMode == PlayerGameMode.BEDWARS) {
+        if (executorData.gameMode == PlayerGameMode.BEDWARS) {
             message = ChatFormat.separatorLine("BedWars Stats");
             com.nexia.minigames.games.bedwars.util.player.SavedPlayerData data = com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.get(mcPlayer).savedData;
             player.sendMessage(message);
@@ -111,7 +144,7 @@ public class StatsCommand {
             );
         }
 
-        if(executerData.gameMode == PlayerGameMode.SKYWARS){
+        if(executorData.gameMode == PlayerGameMode.SKYWARS){
             message = ChatFormat.separatorLine("SkyWars Stats");
             com.nexia.minigames.games.skywars.util.player.SavedPlayerData data = com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(mcPlayer).savedData;
 
@@ -157,31 +190,64 @@ public class StatsCommand {
 
         Component message;
 
-        if(gamemode.equalsIgnoreCase("ffa")){
-            message = ChatFormat.separatorLine("FFA Stats");
+
+        if(gamemode.equalsIgnoreCase("ffa classic") || gamemode.equalsIgnoreCase("kit ffa")){
+            message = ChatFormat.separatorLine("FFA Classic Stats");
             SavedPlayerData data = PlayerDataManager.get(otherPlayer).savedData;
+
+            int kills = data.kills;
+            int deaths = data.deaths;
+            int killstreak = data.killstreak;
+            int bestKillstreak = data.bestKillstreak;
+
+            if(gamemode.equalsIgnoreCase("kit ffa")) {
+                message = ChatFormat.separatorLine("Kit FFA Stats");
+                com.nexia.ffa.kits.utilities.player.SavedPlayerData kData = com.nexia.ffa.kits.utilities.player.PlayerDataManager.get(otherPlayer).savedData;
+                kills = kData.kills;
+                deaths = kData.deaths;
+                killstreak = kData.killstreak;
+                bestKillstreak = kData.bestKillstreak;
+            }
+
+            if(gamemode.equalsIgnoreCase("pot ffa")) {
+                message = ChatFormat.separatorLine("Pot FFA Stats");
+                com.nexia.ffa.pot.utilities.player.SavedPlayerData kData = com.nexia.ffa.pot.utilities.player.PlayerDataManager.get(otherPlayer).savedData;
+                kills = kData.kills;
+                deaths = kData.deaths;
+                killstreak = kData.killstreak;
+                bestKillstreak = kData.bestKillstreak;
+            }
+
+            if(gamemode.equalsIgnoreCase("uhc ffa")) {
+                message = ChatFormat.separatorLine("UHC FFA Stats");
+                com.nexia.ffa.uhc.utilities.player.SavedPlayerData kData = com.nexia.ffa.uhc.utilities.player.PlayerDataManager.get(otherPlayer).savedData;
+                kills = kData.kills;
+                deaths = kData.deaths;
+                killstreak = kData.killstreak;
+                bestKillstreak = kData.bestKillstreak;
+            }
 
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
                     .append(Component.text(" Kills: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.kills).color(ChatFormat.greenColor))
+                    .append(Component.text(kills).color(ChatFormat.greenColor))
             );
             player.sendMessage(start
                     .append(Component.text(" Deaths: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.deaths).color(ChatFormat.failColor))
+                    .append(Component.text(deaths).color(ChatFormat.failColor))
             );
 
             player.sendMessage(start
                     .append(Component.text(" KDR: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(calculateKDR(data.kills, data.deaths)).color(ChatFormat.greenColor))
+                    .append(Component.text(calculateKDR(kills, deaths)).color(ChatFormat.greenColor))
             );
 
             player.sendMessage(start
                     .append(Component.text(" Killstreak: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.killstreak).color(TextColor.fromHexString("#f5bc42")))
+                    .append(Component.text(killstreak).color(TextColor.fromHexString("#f5bc42")))
                     .append(Component.text("/").color(ChatFormat.arrowColor))
-                    .append(Component.text(data.bestKillstreak).color(TextColor.fromHexString("#f5bc42")))
+                    .append(Component.text(bestKillstreak).color(TextColor.fromHexString("#f5bc42")))
             );
         }
 

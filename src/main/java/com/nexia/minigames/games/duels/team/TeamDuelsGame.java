@@ -110,9 +110,9 @@ public class TeamDuelsGame { // implements Runnable{
     public static TeamDuelsGame startGame(@NotNull DuelsTeam team1, @NotNull DuelsTeam team2, String stringGameMode, @Nullable DuelsMap selectedMap) {
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
         if (gameMode == null) {
-            gameMode = DuelGameMode.FFA;
+            gameMode = DuelGameMode.CLASSIC;
             System.out.printf("[ERROR] Nexia: Invalid duel gamemode ({0}) selected! Using fallback one.%n", stringGameMode);
-            stringGameMode = "FFA";
+            stringGameMode = "CLASSIC";
         }
 
         team1.alive.clear();

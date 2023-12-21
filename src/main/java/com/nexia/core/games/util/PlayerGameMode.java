@@ -3,17 +3,15 @@ public class PlayerGameMode {
 
     String id;
 
-    public int players;
 
-    public static final PlayerGameMode LOBBY = new PlayerGameMode("lobby", 0);
-    public static final PlayerGameMode SKYWARS = new PlayerGameMode("skywars", 0);
+    public static final PlayerGameMode LOBBY = new PlayerGameMode("lobby");
+    public static final PlayerGameMode SKYWARS = new PlayerGameMode("skywars");
 
-    public static final PlayerGameMode BEDWARS = new PlayerGameMode("bedwars", 0);
-    public static final PlayerGameMode FFA = new PlayerGameMode("ffa", 0);
+    public static final PlayerGameMode BEDWARS = new PlayerGameMode("bedwars");
+    public static final PlayerGameMode FFA = new PlayerGameMode("ffa");
 
-    PlayerGameMode(String id, int players) {
+    PlayerGameMode(String id) {
         this.id = id;
-        this.players = players;
     }
 
 }

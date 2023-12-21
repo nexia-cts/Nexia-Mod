@@ -1,23 +1,22 @@
 
 
-package com.nexia.ffa.utilities.player;
+package com.nexia.ffa.uhc.utilities.player;
 
 import com.google.gson.Gson;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.world.entity.player.Player;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.UUID;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.world.entity.player.Player;
 
 public class PlayerDataManager {
-    static String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/ffa";
+    static String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/ffa/uhc";
     static String playerDataDirectory;
     static HashMap<UUID, PlayerData> allPlayerData;
-
-
 
     public PlayerDataManager() {
     }
@@ -62,7 +61,7 @@ public class PlayerDataManager {
             String directory = getDataDir();
             String json = Files.readString(Path.of(directory + "/" + player.getUUID() + ".json"));
             Gson gson = new Gson();
-            return (SavedPlayerData)gson.fromJson(json, SavedPlayerData.class);
+            return gson.fromJson(json, SavedPlayerData.class);
         } catch (Exception var4) {
             return new SavedPlayerData();
         }

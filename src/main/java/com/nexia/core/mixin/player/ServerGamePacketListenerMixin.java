@@ -8,7 +8,11 @@ import com.nexia.core.utilities.misc.EventUtil;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.ffa.utilities.FfaUtil;
+import com.nexia.ffa.FfaUtil;
+import com.nexia.ffa.classic.utilities.FfaClassicUtil;
+import com.nexia.ffa.kits.utilities.FfaKitsUtil;
+import com.nexia.ffa.pot.utilities.FfaPotUtil;
+import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
@@ -173,12 +177,51 @@ public class ServerGamePacketListenerMixin {
             }
         }
 
-        if(FfaUtil.isFfaPlayer(player)) {
+        if(FfaClassicUtil.isFfaPlayer(player)) {
             for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
                 Entity entity = packet.getEntity(serverLevel);
                 if (!(entity instanceof ServerPlayer target)) continue;
 
-                if (!FfaUtil.isFfaPlayer(target)) {
+                if (!FfaClassicUtil.isFfaPlayer(target)) {
+                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
+                    ci.cancel();
+                    return;
+                }
+            }
+        }
+
+        if(FfaUhcUtil.isFfaPlayer(player)) {
+            for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
+                Entity entity = packet.getEntity(serverLevel);
+                if (!(entity instanceof ServerPlayer target)) continue;
+
+                if (!FfaUhcUtil.isFfaPlayer(target)) {
+                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
+                    ci.cancel();
+                    return;
+                }
+            }
+        }
+
+        if(FfaPotUtil.isFfaPlayer(player)) {
+            for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
+                Entity entity = packet.getEntity(serverLevel);
+                if (!(entity instanceof ServerPlayer target)) continue;
+
+                if (!FfaPotUtil.isFfaPlayer(target)) {
+                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
+                    ci.cancel();
+                    return;
+                }
+            }
+        }
+
+        if(FfaKitsUtil.isFfaPlayer(player)) {
+            for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
+                Entity entity = packet.getEntity(serverLevel);
+                if (!(entity instanceof ServerPlayer target)) continue;
+
+                if (!FfaKitsUtil.isFfaPlayer(target)) {
                     PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
                     ci.cancel();
                     return;

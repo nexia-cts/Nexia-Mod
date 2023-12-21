@@ -1,8 +1,11 @@
 package com.nexia.core.mixin.player;
 
+import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
+import com.nexia.minigames.games.duels.DuelGameMode;
+import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
@@ -39,9 +42,18 @@ public abstract class FoodDataMixin {
     private void modifyHunger(Player player, CallbackInfo ci) {
         if (!(player instanceof ServerPlayer serverPlayer)) return;
 
+        FoodData data = (FoodData)(Object)this;
+
         if (BwUtil.isInBedWars(serverPlayer)) {
-            BwPlayerEvents.afterHungerTick((FoodData)(Object)this);
+            BwPlayerEvents.afterHungerTick(data);
         }
+
+        // Duels
+        DuelGameMode duelGameMode = PlayerDataManager.get(player).gameMode;
+        PlayerGameMode gameMode = com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode;
+        if(gameMode.equals(PlayerGameMode.LOBBY) && !duelGameMode.hasSaturation) return;
+
+        data.setFoodLevel(20);
     }
 
 }

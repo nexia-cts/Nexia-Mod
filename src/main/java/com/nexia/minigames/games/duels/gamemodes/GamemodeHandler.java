@@ -49,10 +49,6 @@ public class GamemodeHandler {
             return DuelGameMode.NETH_POT;
         }
 
-        if (gameMode.equalsIgnoreCase("og_vanilla")) {
-            return DuelGameMode.OG_VANILLA;
-        }
-
         if (gameMode.equalsIgnoreCase("uhc_shield")) {
             return DuelGameMode.UHC_SHIELD;
         }
@@ -81,8 +77,8 @@ public class GamemodeHandler {
             return DuelGameMode.SWORD_ONLY;
         }
 
-        if (gameMode.equalsIgnoreCase("ffa")) {
-            return DuelGameMode.FFA;
+        if (gameMode.equalsIgnoreCase("classic")) {
+            return DuelGameMode.CLASSIC;
         }
 
         if (gameMode.equalsIgnoreCase("hoe_only")) {

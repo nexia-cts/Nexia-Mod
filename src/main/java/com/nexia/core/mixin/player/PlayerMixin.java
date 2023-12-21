@@ -6,7 +6,8 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.ffa.utilities.FfaUtil;
+import com.nexia.ffa.FfaUtil;
+import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.team.DuelsTeam;
@@ -15,10 +16,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.CombatRules;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -131,7 +129,17 @@ public abstract class PlayerMixin extends LivingEntity {
         return damage;
     }
 
-    @Inject(method = "drop*", cancellable = true, at = @At("HEAD"))
+    @Inject(method = "canEat", cancellable = true, at = @At("HEAD"))
+    private void preventFFAUsers(boolean bl, CallbackInfoReturnable<Boolean> cir) {
+        if (!((Object) this instanceof ServerPlayer player)) return;
+        if(com.nexia.ffa.pot.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.pot.utilities.FfaAreas.isInFfaSpawn(player) ||
+                com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(player)) {
+            cir.setReturnValue(false);
+            ItemStackUtil.sendInventoryRefreshPacket(player);
+        }
+    }
+
+    @Inject(method = "drop(Z)Z", cancellable = true, at = @At("HEAD"))
     private void drop1(boolean dropAll, CallbackInfoReturnable<Boolean> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
 

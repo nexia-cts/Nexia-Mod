@@ -5,12 +5,10 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.ffa.SpawnGUI;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.ffa.utilities.FfaUtil;
+import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -22,7 +20,7 @@ public class BiomeCommand {
         dispatcher.register(Commands.literal("biome")
                 .executes(context -> {
                     ServerPlayer player = context.getSource().getPlayerOrException();
-                    if(!FfaUtil.canGoToSpawn(player)) {
+                    if(!FfaClassicUtil.canGoToSpawn(player)) {
                         PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You must be fully healed to change biomes!").color(ChatFormat.failColor));
                         return 1;
                     }
@@ -34,7 +32,7 @@ public class BiomeCommand {
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest(SpawnGUI.mapLocations.keySet(), builder)))
                         .executes(context -> {
                             ServerPlayer player = context.getSource().getPlayerOrException();
-                            if(!FfaUtil.canGoToSpawn(player)) {
+                            if(!FfaClassicUtil.canGoToSpawn(player)) {
                                 PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You must be fully healed to change biomes!").color(ChatFormat.failColor));
                                 return 1;
                             }
@@ -47,7 +45,7 @@ public class BiomeCommand {
         dispatcher.register(Commands.literal("spawn")
                 .executes(context -> {
                     ServerPlayer player = context.getSource().getPlayerOrException();
-                    if(!FfaUtil.canGoToSpawn(player)) {
+                    if(!FfaClassicUtil.canGoToSpawn(player)) {
                         PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You must be fully healed to change biomes!").color(ChatFormat.failColor));
                         return 1;
                     }
@@ -59,7 +57,7 @@ public class BiomeCommand {
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest(SpawnGUI.mapLocations.keySet(), builder)))
                         .executes(context -> {
                             ServerPlayer player = context.getSource().getPlayerOrException();
-                            if(!FfaUtil.canGoToSpawn(player)) {
+                            if(!FfaClassicUtil.canGoToSpawn(player)) {
                                 PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You must be fully healed to change biomes!").color(ChatFormat.failColor));
                                 return 1;
                             }

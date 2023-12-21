@@ -49,7 +49,7 @@ public class BwAreas {
     };
     public static ProtectionBlock notListedMapBlock =
             new ProtectionBlock(null, false, "You can only break blocks placed by players.");
-    public static String outsideMessage = "You have reached the build limit";
+    public static String outsideMessage = "You have reached the build limit.";
 
     public static ProtectionMap protectionMap = ProtectionMap.importMap(
             protMapFilePath, protMapBlocks, notListedMapBlock, outsideMessage);

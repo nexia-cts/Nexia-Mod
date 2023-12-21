@@ -3,7 +3,8 @@ package com.nexia.minigames.games.duels;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.ffa.utilities.FfaAreas;
+import com.nexia.minigames.games.bedwars.areas.BwAreas;
+import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
@@ -92,8 +93,8 @@ public class DuelGameHandler {
 
     public static ServerLevel createWorld(String uuid, boolean doRegeneration) {
         RuntimeWorldConfig config = new RuntimeWorldConfig()
-                .setDimensionType(FfaAreas.ffaWorld.dimensionType())
-                .setGenerator(FfaAreas.ffaWorld.getChunkSource().getGenerator())
+                .setDimensionType(BwAreas.bedWarsWorld.dimensionType())
+                .setGenerator(BwAreas.bedWarsWorld.getChunkSource().getGenerator())
                 .setDifficulty(Difficulty.HARD)
                 .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
                 .setGameRule(GameRules.RULE_MOBGRIEFING, false)

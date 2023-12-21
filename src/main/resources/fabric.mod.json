@@ -6,11 +6,13 @@
   "name": "Nexia",
   "description": "The mod for the Nexia CTS server.",
   "authors": [
-    "NotCoded"
+    "NotCoded",
+    "Blumbo"
   ],
   "contributors": [
     "Shinkume",
-    "betterclient"
+    "betterclient",
+    "r6653116"
   ],
   "contact": {
     "homepage": "https://nexia.mcserver.us/",

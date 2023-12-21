@@ -2,8 +2,8 @@ package com.nexia.core.utilities.misc;
 
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.gui.ffa.SpawnGUI;
-import com.nexia.ffa.utilities.FfaAreas;
-import com.nexia.ffa.utilities.FfaUtil;
+import com.nexia.ffa.FfaUtil;
+import com.nexia.ffa.classic.utilities.FfaAreas;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
