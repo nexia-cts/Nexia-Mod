@@ -38,7 +38,7 @@ public abstract class ItemFrameMixin extends Entity {
     private void canTakeItem(ItemStack itemStack, CallbackInfo ci) {
 
         // Disable interacting with item frames in ffa
-        if ((FfaAreas.isFfaWorld(level) || com.nexia.ffa.kits.utilities.FfaAreas.isFfaWorld(level)) && !getTags().contains("removeFrameMap")) {
+        if ((FfaAreas.isFfaWorld(level) || com.nexia.ffa.kits.utilities.FfaAreas.isFfaWorld(level) || com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(level) || com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(level)) && !getTags().contains("removeFrameMap")) {
             ci.cancel();
             return;
         }

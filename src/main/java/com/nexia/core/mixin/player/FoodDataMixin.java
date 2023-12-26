@@ -1,6 +1,7 @@
 package com.nexia.core.mixin.player;
 
 import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
@@ -21,7 +22,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(FoodData.class)
 public abstract class FoodDataMixin {
 
-    @Shadow private int foodLevel;
     @Unique
     Player player;
     @Inject(at = @At("HEAD"), method = "tick")
@@ -38,7 +38,7 @@ public abstract class FoodDataMixin {
             return 0.5f;
         }
 
-        if(OitcGame.isOITCPlayer(serverPlayer)) {
+        if(OitcGame.isOITCPlayer(serverPlayer) || FfaUhcUtil.isFfaPlayer(serverPlayer)) {
             return 0.0f;
         }
 

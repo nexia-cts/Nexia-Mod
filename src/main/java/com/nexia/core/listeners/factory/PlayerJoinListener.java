@@ -3,7 +3,6 @@ package com.nexia.core.listeners.factory;
 import com.combatreforged.factory.api.event.player.PlayerJoinEvent;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
-import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerDataManager;
@@ -18,7 +17,6 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.stats.Stats;
 
 import static com.nexia.discord.Main.jda;
 
@@ -137,7 +135,7 @@ public class PlayerJoinListener {
         com.nexia.ffa.classic.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.ffa.kits.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.ffa.uhc.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
-        com.nexia.ffa.pot.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
+        com.nexia.ffa.sky.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
 
         com.nexia.discord.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer.getUUID());
         com.nexia.minigames.games.duels.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);

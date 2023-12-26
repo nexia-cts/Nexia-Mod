@@ -13,9 +13,8 @@ import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.classic.utilities.FfaAreas;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
-import com.nexia.ffa.kits.FfaKit;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
-import com.nexia.ffa.pot.utilities.FfaPotUtil;
+import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwScoreboard;
@@ -212,7 +211,7 @@ public class LobbyUtil {
 
         if((game.equalsIgnoreCase("classic ffa") && !FfaClassicUtil.canGoToSpawn(minecraftPlayer)) ||
                 (game.equalsIgnoreCase("kits ffa") && !FfaKitsUtil.canGoToSpawn(minecraftPlayer) ||
-                        (game.equalsIgnoreCase("pot ffa") && !FfaPotUtil.canGoToSpawn(minecraftPlayer) ||
+                        (game.equalsIgnoreCase("pot ffa") && !FfaSkyUtil.canGoToSpawn(minecraftPlayer) ||
                                 (game.equalsIgnoreCase("uhc ffa") && !FfaUhcUtil.canGoToSpawn(minecraftPlayer))))) {
 
             player.sendMessage(Component.text("You must be fully healed to go to spawn!").color(ChatFormat.failColor));
@@ -263,15 +262,15 @@ public class LobbyUtil {
 
         if(game.equalsIgnoreCase("pot ffa")){
             player.addTag("ffa_pot");
-            FfaPotUtil.wasInSpawn.add(player.getUUID());
+            FfaSkyUtil.wasInSpawn.add(player.getUUID());
             PlayerDataManager.get(minecraftPlayer).ffaGameMode = FfaGameMode.POT;
             if(tp){
-                FfaPotUtil.sendToSpawn(minecraftPlayer);
-                minecraftPlayer.setRespawnPosition(com.nexia.ffa.pot.utilities.FfaAreas.ffaWorld.dimension(), com.nexia.ffa.pot.utilities.FfaAreas.spawn.toBlockPos(), com.nexia.ffa.pot.utilities.FfaAreas.spawn.yaw, true, false);
+                FfaSkyUtil.sendToSpawn(minecraftPlayer);
+                minecraftPlayer.setRespawnPosition(com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld.dimension(), com.nexia.ffa.sky.utilities.FfaAreas.spawn.toBlockPos(), com.nexia.ffa.sky.utilities.FfaAreas.spawn.yaw, true, false);
             }
 
-            FfaPotUtil.clearEnderpearls(minecraftPlayer);
-            FfaPotUtil.clearExperience(minecraftPlayer, true);
+            FfaSkyUtil.clearEnderpearls(minecraftPlayer);
+            FfaSkyUtil.clearExperience(minecraftPlayer, true);
         }
 
         if(game.equalsIgnoreCase("uhc ffa")){

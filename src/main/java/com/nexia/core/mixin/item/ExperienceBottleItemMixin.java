@@ -1,7 +1,7 @@
 package com.nexia.core.mixin.item;
 
 import com.nexia.core.utilities.item.ItemStackUtil;
-import com.nexia.ffa.pot.utilities.FfaPotUtil;
+import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class ExperienceBottleItemMixin {
     @Inject(method = "use", at = @At(value = "HEAD"), cancellable = true)
     public void preventPotPlayers(Level level, Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
-        if(FfaPotUtil.isFfaPlayer(player) && FfaPotUtil.wasInSpawn.contains(player.getUUID())) {
+        if(FfaSkyUtil.isFfaPlayer(player) && FfaSkyUtil.wasInSpawn.contains(player.getUUID())) {
             cir.setReturnValue(new InteractionResultHolder<>(InteractionResult.FAIL, player.getItemInHand(interactionHand)));
             ItemStackUtil.sendInventoryRefreshPacket((ServerPlayer) player);
         }

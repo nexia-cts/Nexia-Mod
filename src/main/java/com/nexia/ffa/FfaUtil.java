@@ -5,7 +5,7 @@ import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
-import com.nexia.ffa.pot.utilities.FfaPotUtil;
+import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -56,8 +56,9 @@ public class FfaUtil {
             return;
         }
 
-        if(data.ffaGameMode == FfaGameMode.POT) {
-            FfaPotUtil.leaveOrDie(player, source, leaving);
+        if(data.ffaGameMode == FfaGameMode.SKY) {
+            FfaSkyUtil.wasInSpawn.remove(player.getUUID());
+            FfaSkyUtil.leaveOrDie(player, source, leaving);
             return;
         }
 

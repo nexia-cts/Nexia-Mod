@@ -35,7 +35,7 @@ public class PlayGUI extends SimpleGui {
 
         int players = FfaAreas.ffaWorld.players().size();
         players = players + com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld.players().size();
-        players = players + com.nexia.ffa.pot.utilities.FfaAreas.ffaWorld.players().size();
+        players = players + com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld.players().size();
         players = players + com.nexia.ffa.uhc.utilities.FfaAreas.ffaWorld.players().size();
 
         ItemStack ffa = new ItemStack(Items.NETHERITE_SWORD, 1);
@@ -141,7 +141,7 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(pot, "§7The classic snapshot", 1);
         ItemDisplayUtil.addLore(pot, "§7Free For All gamemodes.", 2);
         ItemDisplayUtil.addLore(pot, "§5", 3);
-        ItemDisplayUtil.addLore(pot, "§d◆ There are " + com.nexia.ffa.pot.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
+        ItemDisplayUtil.addLore(pot, "§d◆ There are " + com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
 
 
 

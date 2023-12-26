@@ -3,12 +3,9 @@ package com.nexia.core.listeners.factory;
 import com.combatreforged.factory.api.event.player.PlayerDisconnectEvent;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
-import com.nexia.core.Main;
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
@@ -57,7 +54,7 @@ public class PlayerLeaveListener {
         com.nexia.ffa.classic.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer);
         com.nexia.ffa.kits.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer);
         com.nexia.ffa.uhc.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer);
-        com.nexia.ffa.pot.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer);
+        com.nexia.ffa.sky.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer);
 
         com.nexia.discord.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer.getUUID());
         com.nexia.minigames.games.duels.util.player.PlayerDataManager.removePlayerData(minecraftPlayer);

@@ -1,4 +1,4 @@
-package com.nexia.ffa.pot.utilities;
+package com.nexia.ffa.sky.utilities;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
@@ -7,16 +7,28 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.pot.utilities.player.PlayerData;
-import com.nexia.ffa.pot.utilities.player.PlayerDataManager;
-import com.nexia.ffa.pot.utilities.player.SavedPlayerData;
+import com.nexia.ffa.kits.utilities.FfaKitsUtil;
+import com.nexia.ffa.sky.SkyFfaBlocks;
+import com.nexia.ffa.sky.utilities.player.PlayerData;
+import com.nexia.ffa.sky.utilities.player.PlayerDataManager;
+import com.nexia.ffa.sky.utilities.player.SavedPlayerData;
+import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -28,7 +40,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
-import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.AABB;
@@ -38,28 +49,47 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 
-import static com.nexia.ffa.pot.utilities.FfaAreas.*;
+import static com.nexia.ffa.sky.utilities.FfaAreas.*;
 
-public class FfaPotUtil {
+public class FfaSkyUtil {
+
+    public static String ffaSkyDir = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/ffa/sky";
+    public static HashMap<UUID, Integer> fallInvulnerable = new HashMap<>();
 
     public static ArrayList<UUID> wasInSpawn = new ArrayList<>();
 
+    public static final Item[] coloredWool = {Items.RED_WOOL, Items.ORANGE_WOOL, Items.YELLOW_WOOL,
+            Items.LIME_WOOL, Items.LIGHT_BLUE_WOOL, Items.MAGENTA_WOOL};
+    public static int woolId = 0;
+    public static final HashMap<Integer, ItemStack> killRewards = new HashMap<>();
     public static HashMap<Integer, ItemStack> invItems;
 
     public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
         com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
-        return player.getTags().contains("ffa_pot") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.POT;
+        return player.getTags().contains("ffa_sky") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.SKY;
+    }
+
+    public static void join(ServerPlayer player) {
+        ServerLevel spawnWorld = ffaWorld;
+        EntityPos spawn = FfaAreas.spawn;
+        player.setRespawnPosition(spawnWorld.dimension(), spawn.toBlockPos(), spawn.yaw, true, false);
+        spawn.teleportPlayer(spawnWorld, player);
+
+        joinOrRespawn(player);
     }
 
     public static void ffaSecond() {
-        if (ffaWorld == null || ffaWorld.players().isEmpty()) return;
+        Iterator<UUID> it = fallInvulnerable.keySet().iterator();
+        while (it.hasNext()) {
+            UUID uuid = it.next();
+            Integer time = fallInvulnerable.get(uuid);
+            time--;
+            if (time <= 0) it.remove();
+            else fallInvulnerable.put(uuid, time);
+        }
         for (ServerPlayer player : ffaWorld.players()) {
-            if (!isFfaPlayer(player)) continue;
-
             if (FfaAreas.isInFfaSpawn(player)) {
-                player.addTag(LobbyUtil.NO_DAMAGE_TAG);
-            } else {
-                player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                fallInvulnerable.put(player.getUUID(), 4);
             }
         }
     }
@@ -73,8 +103,8 @@ public class FfaPotUtil {
         data.kills++;
         player.heal(player.getMaxHealth());
 
-        FfaPotUtil.clearExperience(player, true);
-        FfaPotUtil.clearEnderpearls(player);
+        FfaSkyUtil.clearExperience(player, true);
+        FfaSkyUtil.clearEnderpearls(player);
 
         if(data.killstreak % 5 == 0) {
             for (ServerPlayer serverPlayer : FfaAreas.ffaWorld.players()) {
@@ -96,6 +126,7 @@ public class FfaPotUtil {
             if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !FfaAreas.isInFfaSpawn(minecraftPlayer)){
                 Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
                 wasInSpawn.remove(minecraftPlayer.getUUID());
+                minecraftPlayer.getCooldowns().addCooldown(Items.ENDER_PEARL, 10);
                 saveInventory(minecraftPlayer);
                 player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your inventory layout was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
             }
@@ -112,21 +143,19 @@ public class FfaPotUtil {
     }
 
     public static void setInventory(ServerPlayer player){
-        HashMap<Integer, ItemStack> availableItems = (HashMap)invItems.clone();
+        HashMap<Integer, ItemStack> availableItems = (HashMap<Integer, ItemStack>)invItems.clone();
         Inventory newInv = new Inventory(player);
-        Inventory oldInv = com.nexia.ffa.uhc.utilities.player.PlayerDataManager.get(player).ffaInventory;
-        int i;
+        Inventory oldInv = PlayerDataManager.get(player).ffaInventory;
 
         if (oldInv != null) {
-            for(i = 0; i < oldInv.getContainerSize(); ++i) {
+            // Attempt to match new given items with previous inventory layout
+            for (int i = 0; i < 41; i++) {
                 Item item = oldInv.getItem(i).getItem();
-
-                Iterator<Map.Entry<Integer, ItemStack>> it = availableItems.entrySet().iterator();
-
-                while(it.hasNext()) {
+                if (item.toString().endsWith("_wool")) item = Items.WHITE_WOOL;
+                for (Iterator<Map.Entry<Integer, ItemStack>> it = availableItems.entrySet().iterator(); it.hasNext();) {
                     Map.Entry<Integer, ItemStack> entry = it.next();
                     if (entry.getValue().getItem() == item) {
-                        ItemStack itemStack = entry.getValue().copy();
+                        ItemStack itemStack = setWoolColor(entry.getValue().copy());
                         newInv.setItem(i, itemStack);
                         it.remove();
                         break;
@@ -135,25 +164,42 @@ public class FfaPotUtil {
             }
         }
 
-        for (Map.Entry<Integer, ItemStack> integerItemStackEntry : availableItems.entrySet()) {
-            ItemStack itemStack = integerItemStackEntry.getValue().copy();
-            if (newInv.getItem(integerItemStackEntry.getKey()).isEmpty()) {
-                newInv.setItem(integerItemStackEntry.getKey(), itemStack);
+
+        // Add items that could not be matched
+        for (Map.Entry<Integer, ItemStack> entry : availableItems.entrySet()) {
+            ItemStack itemStack = setWoolColor(entry.getValue().copy());
+            if (newInv.getItem(entry.getKey()).isEmpty()) {
+                newInv.setItem(entry.getKey(), itemStack);
             } else {
                 newInv.add(itemStack);
             }
         }
-
-        for(i = 0; i < newInv.getContainerSize(); ++i) {
+        // Give player the items
+        for (int i = 0; i < 41; i++) {
             ItemStack itemStack = newInv.getItem(i);
-            if (itemStack == null) {
-                itemStack = ItemStack.EMPTY;
-            }
-
+            if (itemStack == null) itemStack = ItemStack.EMPTY;
             player.inventory.setItem(i, itemStack);
         }
 
         ItemStackUtil.sendInventoryRefreshPacket(player);
+    }
+
+    public static void joinOrRespawn(ServerPlayer player) {
+        PlayerUtil.resetHealthStatus(player);
+        fallInvulnerable.put(player.getUUID(), 4);
+        wasInSpawn.add(player.getUUID());
+        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1000000, 0, true, false, false));
+        player.setGameMode(GameType.SURVIVAL);
+        setInventory(player);
+    }
+
+    private static ItemStack setWoolColor(ItemStack itemStack) {
+        if (itemStack.getItem() != Items.WHITE_WOOL) return itemStack;
+
+        if (woolId >= coloredWool.length) woolId = 0;
+        itemStack = new ItemStack(coloredWool[woolId], itemStack.getCount());
+        woolId++;
+        return itemStack;
     }
 
     public static void calculateDeath(ServerPlayer player){
@@ -217,22 +263,81 @@ public class FfaPotUtil {
 
 
         if (attacker != null) {
-            FfaPotUtil.clearEnderpearls(attacker);
-            FfaPotUtil.clearExperience(attacker, true);
-            FfaPotUtil.setInventory(attacker);
-            attacker.removeAllEffects();
+            FfaSkyUtil.killHeal(attacker);
+            FfaSkyUtil.giveKillLoot(attacker);
+            FfaSkyUtil.clearEnderpearls(player);
+            FfaKitsUtil.clearArrows(player);
         }
 
         if(!leaving){
-            FfaPotUtil.setDeathMessage(player, source);
-            FfaPotUtil.sendToSpawn(player);
+            FfaSkyUtil.setDeathMessage(player, source);
+            FfaSkyUtil.sendToSpawn(player);
         }
 
 
     }
 
+    public static void giveKillLoot(ServerPlayer player) {
+        HashMap<Integer, ItemStack> availableRewards = (HashMap<Integer, ItemStack>) killRewards.clone();
+        ArrayList<ItemStack> givenRewards = new ArrayList<>();
+
+
+        for (int i = 0; i < Math.min(2, availableRewards.size()); i++) {
+            // Pick reward
+            int randomIndex = player.getRandom().nextInt(availableRewards.size());
+            int killRewardIndex = (Integer)availableRewards.keySet().toArray()[randomIndex];
+            ItemStack reward = availableRewards.get(killRewardIndex);
+            availableRewards.remove(killRewardIndex);
+
+            // Give reward
+            if (player.inventory.contains(reward) || !addFromOldInv(player, reward.copy())) {
+                player.inventory.add(reward.copy());
+            }
+            givenRewards.add(reward.copy());
+        }
+
+        // Inform player about given rewards
+        for (ItemStack givenReward : givenRewards) {
+            String itemName = LegacyChatFormat.removeColors(givenReward.getHoverName().getString());
+            if (givenReward.getCount() > 1) itemName += "s";
+            player.sendMessage(LegacyChatFormat.format("\247a+{} \247e{}", givenReward.getCount(), itemName), Util.NIL_UUID);
+        }
+        PlayerUtil.sendSound(player, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.MASTER, 0.75f, 1f);
+    }
+
+    public static void killHeal(ServerPlayer player) {
+        int minHeal = 4;
+        int maxHeal = 11;
+        float maxHealth = player.getMaxHealth();
+        float lostHearts = maxHealth - player.getHealth();
+
+        int heal = (int)(minHeal + (lostHearts - minHeal) * (maxHeal - minHeal) / (maxHealth - minHeal));
+
+        if (player.hasEffect(MobEffects.REGENERATION)) {
+            player.heal(heal);
+        } else {
+            player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, heal, 5, false, false));
+        }
+    }
+
+
+    private static boolean addFromOldInv(ServerPlayer player, ItemStack itemStack) {
+        PlayerData playerData = PlayerDataManager.get(player);
+        Inventory invLayout = playerData.ffaInventory;
+        if (invLayout == null) return false;
+
+        for (int i = 0; i < 41; i++) {
+            Item item = invLayout.getItem(i).getItem();
+            if (itemStack.getItem() == item && player.inventory.getItem(i).isEmpty()) {
+                player.inventory.setItem(i, itemStack);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean canGoToSpawn(ServerPlayer player) {
-        if(!FfaPotUtil.isFfaPlayer(player) || FfaPotUtil.wasInSpawn.contains(player.getUUID())) return true;
+        if(!FfaSkyUtil.isFfaPlayer(player) || FfaSkyUtil.wasInSpawn.contains(player.getUUID())) return true;
         return !(player.getHealth() < 20);
     }
 
@@ -327,130 +432,75 @@ public class FfaPotUtil {
          if(attacker != null) calculateKill(attacker);
 
         for (Player player : ServerTime.factoryServer.getPlayers()) {
-            if (player.hasTag("ffa_pot")) player.sendMessage(msg);
+            if (player.hasTag("ffa_sky")) player.sendMessage(msg);
         }
     }
 
     public static void sendToSpawn(ServerPlayer player) {
         player.inventory.clearContent();
-        FfaPotUtil.clearExperience(player, true);
-        FfaPotUtil.clearEnderpearls(player);
+        FfaSkyUtil.clearExperience(player, true);
+        FfaSkyUtil.clearEnderpearls(player);
         player.removeAllEffects();
-        FfaPotUtil.wasInSpawn.add(player.getUUID());
+        FfaSkyUtil.wasInSpawn.add(player.getUUID());
 
         player.setGameMode(GameType.ADVENTURE);
         FfaAreas.spawn.teleportPlayer(FfaAreas.ffaWorld, player);
-        FfaPotUtil.setInventory(player);
+        FfaSkyUtil.setInventory(player);
     }
 
     static {
         invItems = new HashMap<>();
 
-        ItemStack healing_potion = new ItemStack(Items.SPLASH_POTION);
-        healing_potion.setHoverName(LegacyChatFormat.format("\247fSplash Potion of Healing"));
-        healing_potion.getOrCreateTag().putInt("CustomPotionColor", PotionUtils.getColor(Potions.STRONG_HEALING));
-        PotionUtils.setPotion(healing_potion, Potions.STRONG_HEALING);
+        invItems.put(0, new ItemStack(Items.IRON_SWORD));
+        invItems.put(1, new ItemStack(Items.WHITE_WOOL, 64));
+        invItems.put(2, new ItemStack(Items.BOW));
+        killRewards.put(3, gApplePotion());
+        killRewards.put(4, new ItemStack(Items.ENDER_PEARL, 1));
+        killRewards.put(5, new ItemStack(Items.COBWEB, 2));
+        invItems.put(8, shears());
 
-        // r * 65536 + g * 256 + b;
+        killRewards.put(9, new ItemStack(Items.ARROW, 4));
 
-        ItemStack strength_splash_potion = new ItemStack(Items.SPLASH_POTION);
-        strength_splash_potion.setHoverName(LegacyChatFormat.format("\247fSplash Potion of Strength"));
-        strength_splash_potion.getOrCreateTag().putInt("CustomPotionColor", PotionUtils.getColor(Potions.STRONG_STRENGTH));
-        PotionUtils.setPotion(strength_splash_potion, Potions.STRONG_STRENGTH);
-
-        ItemStack speed_splash_potion = new ItemStack(Items.SPLASH_POTION);
-        speed_splash_potion.setHoverName(LegacyChatFormat.format("\247fSplash Potion of Swiftness"));
-        speed_splash_potion.getOrCreateTag().putInt("CustomPotionColor", PotionUtils.getColor(Potions.STRONG_SWIFTNESS));
-        PotionUtils.setPotion(speed_splash_potion, Potions.STRONG_SWIFTNESS);
-
-
-        ItemStack strength_potion = new ItemStack(Items.POTION);
-        strength_potion.setHoverName(LegacyChatFormat.format("\247fPotion of Strength"));
-        strength_potion.getOrCreateTag().putInt("CustomPotionColor", PotionUtils.getColor(Potions.STRONG_STRENGTH));
-        PotionUtils.setPotion(strength_potion, Potions.STRONG_STRENGTH);
-
-        ItemStack speed_potion = new ItemStack(Items.POTION);
-
-        speed_potion.setHoverName(LegacyChatFormat.format("\247fPotion of Swiftness"));
-        speed_potion.getOrCreateTag().putInt("CustomPotionColor", PotionUtils.getColor(Potions.STRONG_SWIFTNESS));
-        PotionUtils.setPotion(speed_potion, Potions.STRONG_SWIFTNESS);
-
-        strength_potion.setCount(16);
-        speed_potion.setCount(16);
-
-        ItemStack experience_bottles = new ItemStack(Items.EXPERIENCE_BOTTLE);
-        experience_bottles.setCount(64);
-
-        for (int i = 0; i < 35; i++) {
-            invItems.put(i, healing_potion);
+        for (Map.Entry<Integer, ItemStack> killReward : killRewards.entrySet()) {
+            invItems.put(killReward.getKey(), killReward.getValue().copy());
         }
 
-        ItemStack goldenApple = new ItemStack(Items.GOLDEN_APPLE);
-        goldenApple.setCount(64);
+        for (ItemStack itemStack : invItems.values()) {
+            if (itemStack.isDamageableItem()) itemStack.getOrCreateTag().putBoolean("Unbreakable", true);
+        }
+    }
 
-        ItemStack no_kb = new ItemStack(Items.NETHERITE_SWORD);
-        no_kb.enchant(Enchantments.SHARPNESS, 5);
-        no_kb.enchant(Enchantments.SWEEPING_EDGE, 3);
-        no_kb.enchant(Enchantments.UNBREAKING, 3);
-        no_kb.enchant(Enchantments.MOB_LOOTING, 3);
-        no_kb.enchant(Enchantments.MENDING, 1);
+    private static ItemStack gApplePotion() {
+        ItemStack potion = new ItemStack(Items.POTION);
+        potion.setHoverName(new TextComponent("\247bPiss Juice²"));
+        potion.getOrCreateTag().putInt("CustomPotionColor", 16771584);
 
-        ItemStack kb = new ItemStack(Items.NETHERITE_SWORD);
-        kb.enchant(Enchantments.SHARPNESS, 5);
-        kb.enchant(Enchantments.SWEEPING_EDGE, 3);
-        kb.enchant(Enchantments.UNBREAKING, 3);
-        kb.enchant(Enchantments.MOB_LOOTING, 3);
-        kb.enchant(Enchantments.MENDING, 1);
-        kb.enchant(Enchantments.KNOCKBACK, 1);
+        ArrayList<MobEffectInstance> effects = new ArrayList<>();
+        effects.add(new MobEffectInstance(MobEffects.REGENERATION, 80, 2));
+        effects.add(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 0));
+        PotionUtils.setCustomEffects(potion, effects);
 
-        ItemStack helmet = new ItemStack(Items.NETHERITE_HELMET);
-        helmet.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 3);
-        helmet.enchant(Enchantments.UNBREAKING, 3);
-        helmet.enchant(Enchantments.MENDING, 1);
+        return potion;
+    }
 
-        ItemStack chestplate = new ItemStack(Items.NETHERITE_CHESTPLATE);
-        chestplate.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 4);
-        chestplate.enchant(Enchantments.UNBREAKING, 3);
-        chestplate.enchant(Enchantments.MENDING, 1);
+    public static boolean beforeBuild(ServerPlayer player, BlockPos blockPos) {
+        if (player.isCreative()) return true;
+        return FfaAreas.canBuild(player, blockPos);
+    }
 
-        ItemStack leggings = new ItemStack(Items.NETHERITE_LEGGINGS);
-        leggings.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 4);
-        leggings.enchant(Enchantments.UNBREAKING, 3);
-        leggings.enchant(Enchantments.MENDING, 1);
+    public static void afterPlace(ServerPlayer player, BlockPos blockPos, InteractionHand hand) {
+        if (!player.isCreative()) {
+            if (player.getItemInHand(hand).getItem().toString().endsWith("_wool")) {
+                player.getItemInHand(hand).setCount(64);
+                ItemStackUtil.sendInventoryRefreshPacket(player);
+            }
+            SkyFfaBlocks.placeBlock(blockPos);
+        }
+    }
 
-        ItemStack boots = new ItemStack(Items.NETHERITE_BOOTS);
-        boots.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 3);
-        boots.enchant(Enchantments.UNBREAKING, 3);
-        boots.enchant(Enchantments.FALL_PROTECTION, 4);
-        boots.enchant(Enchantments.DEPTH_STRIDER, 3);
-        boots.enchant(Enchantments.MENDING, 1);
-
-
-
-
-        invItems.put(9, no_kb);
-        invItems.put(1, goldenApple);
-
-        invItems.put(7, strength_potion);
-        invItems.put(8, speed_potion);
-
-        invItems.put(34, strength_splash_potion);
-        invItems.put(35, speed_splash_potion);
-
-        invItems.put(25, strength_splash_potion);
-        invItems.put(26, speed_splash_potion);
-
-        invItems.put(16, experience_bottles);
-        invItems.put(17, experience_bottles);
-
-
-        invItems.put(36, boots);
-        invItems.put(37, leggings);
-        invItems.put(38, chestplate);
-        invItems.put(39, helmet);
-
-        invItems.put(40, new ItemStack(Items.TOTEM_OF_UNDYING));
-
-        invItems.put(0, kb);
+    private static ItemStack shears() {
+        ItemStack shears = new ItemStack(Items.SHEARS);
+        shears.enchant(Enchantments.DIGGING_EFFICIENCY, 4);
+        return shears;
     }
 }

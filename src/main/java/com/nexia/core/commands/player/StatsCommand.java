@@ -82,7 +82,7 @@ public class StatsCommand {
 
             if(executerData.ffaGameMode == FfaGameMode.POT) {
                 message = ChatFormat.separatorLine("Pot FFA Stats");
-                com.nexia.ffa.pot.utilities.player.SavedPlayerData kData = com.nexia.ffa.pot.utilities.player.PlayerDataManager.get(mcPlayer).savedData;
+                com.nexia.ffa.sky.utilities.player.SavedPlayerData kData = com.nexia.ffa.sky.utilities.player.PlayerDataManager.get(mcPlayer).savedData;
                 kills = kData.kills;
                 deaths = kData.deaths;
                 killstreak = kData.killstreak;
@@ -232,7 +232,7 @@ public class StatsCommand {
 
             if(gamemode.equalsIgnoreCase("pot ffa")) {
                 message = ChatFormat.separatorLine("Pot FFA Stats");
-                com.nexia.ffa.pot.utilities.player.SavedPlayerData kData = com.nexia.ffa.pot.utilities.player.PlayerDataManager.get(otherPlayer).savedData;
+                com.nexia.ffa.sky.utilities.player.SavedPlayerData kData = com.nexia.ffa.sky.utilities.player.PlayerDataManager.get(otherPlayer).savedData;
                 kills = kData.kills;
                 deaths = kData.deaths;
                 killstreak = kData.killstreak;

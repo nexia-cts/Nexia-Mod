@@ -6,7 +6,8 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.ffa.classic.utilities.FfaClassicUtil;
+import com.nexia.ffa.FfaUtil;
+import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.team.DuelsTeam;
@@ -73,7 +74,7 @@ public abstract class PlayerMixin extends LivingEntity {
     @Inject(method = "canEat", cancellable = true, at = @At("HEAD"))
     private void preventFFAUsers(boolean bl, CallbackInfoReturnable<Boolean> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
-        if(com.nexia.ffa.pot.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.pot.utilities.FfaAreas.isInFfaSpawn(player) ||
+        if(com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.sky.utilities.FfaAreas.isInFfaSpawn(player) ||
                 com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(player)) {
             cir.setReturnValue(false);
             ItemStackUtil.sendInventoryRefreshPacket(player);
@@ -136,7 +137,7 @@ public abstract class PlayerMixin extends LivingEntity {
 
         ItemStack dropped = inventory.getItem(inventory.selected);
 
-        if (FfaClassicUtil.isFfaPlayer(player)) {
+        if (FfaUtil.isFfaPlayer(player) && !FfaUhcUtil.isFfaPlayer(player)) {
             cir.setReturnValue(false);
             return;
         }

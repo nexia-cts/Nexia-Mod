@@ -3,13 +3,12 @@ package com.nexia.core.utilities.time;
 import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.scheduler.TaskScheduler;
-import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.ffa.classic.utilities.FfaAreas;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
-import com.nexia.ffa.pot.utilities.FfaPotUtil;
+import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.FfaUhcBlocks;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.GameHandler;
@@ -59,7 +58,7 @@ public class ServerTime {
         FfaAreas.setFfaWorld(minecraftServer);
         com.nexia.ffa.kits.utilities.FfaAreas.setFfaWorld(minecraftServer);
         com.nexia.ffa.uhc.utilities.FfaAreas.setFfaWorld(minecraftServer);
-        com.nexia.ffa.pot.utilities.FfaAreas.setFfaWorld(minecraftServer);
+        com.nexia.ffa.sky.utilities.FfaAreas.setFfaWorld(minecraftServer);
 
         BwLoadShop.loadBedWarsShop(true);
         BwDimension.register();
@@ -80,6 +79,7 @@ public class ServerTime {
 
             DuelGameHandler.starting();
             BwAreas.clearQueueBuild();
+            FfaUhcBlocks.removeAllBlocks();
 
             WorldUtil.deleteTempWorlds();
         } catch (Exception e) {
@@ -96,7 +96,7 @@ public class ServerTime {
         if (totalTickCount % 5 == 0) {
             FfaClassicUtil.fiveTick();
             FfaKitsUtil.fiveTick();
-            FfaPotUtil.fiveTick();
+            FfaSkyUtil.fiveTick();
             FfaUhcUtil.fiveTick();
         }
 
@@ -106,7 +106,7 @@ public class ServerTime {
             case 2 -> {
                 FfaClassicUtil.ffaSecond();
                 FfaKitsUtil.ffaSecond();
-                FfaPotUtil.ffaSecond();
+                FfaSkyUtil.ffaSecond();
                 FfaUhcUtil.ffaSecond();
             }
             case 4 -> {}

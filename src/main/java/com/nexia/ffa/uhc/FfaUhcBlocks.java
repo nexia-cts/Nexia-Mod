@@ -12,7 +12,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class FfaUhcBlocks {
-    private static class FfaUhcBlock {
+    public static class FfaUhcBlock {
+
         public BlockPos blockPos;
         public int ticks;
 
@@ -50,8 +51,36 @@ public class FfaUhcBlocks {
 
     }
 
+    public static void removeAllBlocks() {
+
+        while (!playerPlacedBlocks.isEmpty()) {
+            FfaUhcBlock firstBlock = playerPlacedBlocks.peek();
+            playerPlacedBlocks.remove();
+            setDisappearingBlock(firstBlock.blockPos);
+        }
+
+        while (!disappearingBlocks.isEmpty()) {
+            FfaUhcBlock firstBlock = disappearingBlocks.peek();
+            disappearingBlocks.remove();
+            blockDisappear(firstBlock.blockPos);
+        }
+    }
+
     public static void placeBlock(BlockPos blockPos) {
         playerPlacedBlocks.add(new FfaUhcBlock(blockPos, ticks + placedBlockTime));
+    }
+
+    public static FfaUhcBlock getBlock(BlockPos blockPos) {
+
+        for(FfaUhcBlock playerPlacedBlock : playerPlacedBlocks) {
+            if(playerPlacedBlock.blockPos.equals(blockPos)) return playerPlacedBlock;
+        }
+
+        for(FfaUhcBlock disappearingBlock : disappearingBlocks) {
+            if(disappearingBlock.blockPos.equals(blockPos)) return disappearingBlock;
+        }
+
+        return null;
     }
 
     private static boolean contains(Queue<FfaUhcBlock> blocks, BlockPos blockPos) {

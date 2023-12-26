@@ -70,7 +70,7 @@ public class FfaUhcUtil {
             data.bestKillstreak = data.killstreak;
         }
         data.kills++;
-        player.heal(player.getMaxHealth());
+        //player.heal(player.getMaxHealth());
 
         FfaUhcUtil.clearArrows(player);
         FfaUhcUtil.clearTrident(player);
@@ -217,15 +217,19 @@ public class FfaUhcUtil {
     public static void leaveOrDie(@NotNull ServerPlayer player, @Nullable DamageSource source, boolean leaving) {
         ServerPlayer attacker = null;
 
+        if(player.getLevel().equals(ffaWorld) && !FfaAreas.isInFfaSpawn(player)) {
+            player.destroyVanishingCursedItems();
+            player.inventory.dropAll();
+        }
+
         if (source != null && source.getEntity() != null && source.getEntity() instanceof net.minecraft.world.entity.player.Player) {
             attacker = PlayerUtil.getPlayerAttacker(source.getEntity());
         }
 
-
         if (attacker != null) {
             FfaUhcUtil.clearArrows(attacker);
             FfaUhcUtil.clearTrident(attacker);
-            FfaUhcUtil.setInventory(attacker);
+            //FfaUhcUtil.setInventory(attacker);
         }
 
         if(!leaving){
