@@ -1,6 +1,7 @@
 package com.nexia.core.mixin.player;
 
 import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
@@ -34,7 +35,7 @@ public abstract class FoodDataMixin {
     private float heal(float par1) {
         if (!(player instanceof ServerPlayer serverPlayer)) return 1f;
 
-        if (BwAreas.isBedWarsWorld(serverPlayer.level)) {
+        if (BwAreas.isBedWarsWorld(serverPlayer.level) || FfaSkyUtil.isFfaPlayer(serverPlayer)) {
             return 0.5f;
         }
 

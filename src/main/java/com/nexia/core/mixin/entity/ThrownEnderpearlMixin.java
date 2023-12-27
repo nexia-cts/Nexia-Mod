@@ -1,5 +1,6 @@
 package com.nexia.core.mixin.entity;
 
+import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
@@ -23,6 +24,9 @@ public abstract class ThrownEnderpearlMixin extends ThrowableItemProjectile {
 
             if (BwUtil.isInBedWars(thrower)) {
                 return BwUtil.getPearlDamage();
+            }
+            if (FfaSkyUtil.isFfaPlayer(thrower)) {
+                return 0;
             }
 
         }

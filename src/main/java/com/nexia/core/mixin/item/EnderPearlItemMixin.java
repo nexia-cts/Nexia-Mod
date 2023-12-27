@@ -1,8 +1,11 @@
 package com.nexia.core.mixin.item;
 
 import com.nexia.core.Main;
+import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.ffa.FfaGameMode;
+import com.nexia.ffa.sky.utilities.FfaAreas;
+import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,9 +35,18 @@ public class EnderPearlItemMixin extends Item {
 
     @Inject(method = "use", at = @At(value = "HEAD"))
     private void setPlayer(Level level, Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
-        if (player instanceof ServerPlayer) {
-            thrower = (ServerPlayer) player;
+        if (player instanceof ServerPlayer serverPlayer) {
+            thrower = serverPlayer;
+
+            if (FfaAreas.isFfaWorld(serverPlayer.getLevel()) && !FfaSkyUtil.wasInSpawn.contains(serverPlayer.getUUID())) {
+                cir.setReturnValue(InteractionResultHolder.pass(serverPlayer.getItemInHand(interactionHand)));
+                InventoryUtil.sendHandItemPacket(serverPlayer, interactionHand);
+                return;
+            }
+
         }
+
+
     }
 
     @ModifyArg(method = "use", index = 1, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemCooldowns;addCooldown(Lnet/minecraft/world/item/Item;I)V"))
@@ -43,9 +55,9 @@ public class EnderPearlItemMixin extends Item {
         if (thrower == null) return time;
 
         DuelGameMode duelGameMode = PlayerDataManager.get(thrower).gameMode;
-        FfaGameMode ffaGameMode = com.nexia.core.utilities.player.PlayerDataManager.get(thrower).ffaGameMode;
 
-        if(duelGameMode.equals(DuelGameMode.POT) || duelGameMode.equals(DuelGameMode.NETH_POT) || ffaGameMode.equals(FfaGameMode.POT)) time = 300;
+        if(duelGameMode.equals(DuelGameMode.POT) || duelGameMode.equals(DuelGameMode.NETH_POT)) time = 300;
+        if (FfaSkyUtil.isFfaPlayer(thrower)) time = 10;
 
         return time;
     }

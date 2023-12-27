@@ -120,7 +120,7 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(classic, "§c◆ There are " + FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
 
         ItemStack kit = new ItemStack(Items.DIAMOND_SWORD, 1);
-        kit.setHoverName(new TextComponent("§bKit FFA"));
+        kit.setHoverName(new TextComponent("§aKit FFA"));
         ItemDisplayUtil.addGlint(classic);
         kit.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
@@ -128,20 +128,20 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(kit, "§7Fight against players", 1);
         ItemDisplayUtil.addLore(kit, "§7with various kits!", 2);
         ItemDisplayUtil.addLore(kit, "§f", 3);
-        ItemDisplayUtil.addLore(kit, "§b◆ There are " + com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
+        ItemDisplayUtil.addLore(kit, "§a◆ There are " + com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
 
 
 
         ItemStack pot = new ItemStack(Items.POTION, 1);
-        pot.setHoverName(new TextComponent("§dPot FFA"));
+        pot.setHoverName(new TextComponent("§bSky FFA"));
         ItemDisplayUtil.addGlint(pot);
         pot.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         ItemDisplayUtil.addLore(pot, "§5", 0);
-        ItemDisplayUtil.addLore(pot, "§7The classic snapshot", 1);
-        ItemDisplayUtil.addLore(pot, "§7Free For All gamemodes.", 2);
+        ItemDisplayUtil.addLore(pot, "§7guys", 1);
+        ItemDisplayUtil.addLore(pot, "§7i kinda need a description.", 2);
         ItemDisplayUtil.addLore(pot, "§5", 3);
-        ItemDisplayUtil.addLore(pot, "§d◆ There are " + com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
+        ItemDisplayUtil.addLore(pot, "§b◆ There are " + com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
 
 
 
@@ -214,13 +214,13 @@ public class PlayGUI extends SimpleGui {
                 this.close();
             }
 
-            if(name.getString().equalsIgnoreCase("§bKit FFA")){
+            if(name.getString().equalsIgnoreCase("§aKit FFA")){
                 LobbyUtil.sendGame(this.player, "kits ffa", true, true);
                 this.close();
             }
 
-            if(name.getString().equalsIgnoreCase("§dPot FFA")){
-                LobbyUtil.sendGame(this.player, "pot ffa", true, true);
+            if(name.getString().equalsIgnoreCase("§bSky FFA")){
+                LobbyUtil.sendGame(this.player, "sky ffa", true, true);
                 this.close();
             }
 

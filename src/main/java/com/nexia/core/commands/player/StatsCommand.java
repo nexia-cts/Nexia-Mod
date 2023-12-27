@@ -80,8 +80,8 @@ public class StatsCommand {
                 bestKillstreak = kData.bestKillstreak;
             }
 
-            if(executerData.ffaGameMode == FfaGameMode.POT) {
-                message = ChatFormat.separatorLine("Pot FFA Stats");
+            if(executerData.ffaGameMode == FfaGameMode.SKY) {
+                message = ChatFormat.separatorLine("Sky FFA Stats");
                 com.nexia.ffa.sky.utilities.player.SavedPlayerData kData = com.nexia.ffa.sky.utilities.player.PlayerDataManager.get(mcPlayer).savedData;
                 kills = kData.kills;
                 deaths = kData.deaths;
@@ -212,7 +212,7 @@ public class StatsCommand {
 
         Component message;
 
-        if(gamemode.equalsIgnoreCase("ffa classic") || gamemode.equalsIgnoreCase("kit ffa")){
+        if(gamemode.equalsIgnoreCase("ffa classic") || gamemode.equalsIgnoreCase("kit ffa") || gamemode.equalsIgnoreCase("sky ffa") || gamemode.equalsIgnoreCase("uhc ffa")){
             message = ChatFormat.separatorLine("FFA Classic Stats");
             SavedPlayerData data = PlayerDataManager.get(otherPlayer).savedData;
 
@@ -230,8 +230,8 @@ public class StatsCommand {
                 bestKillstreak = kData.bestKillstreak;
             }
 
-            if(gamemode.equalsIgnoreCase("pot ffa")) {
-                message = ChatFormat.separatorLine("Pot FFA Stats");
+            if(gamemode.equalsIgnoreCase("sky ffa")) {
+                message = ChatFormat.separatorLine("Sky FFA Stats");
                 com.nexia.ffa.sky.utilities.player.SavedPlayerData kData = com.nexia.ffa.sky.utilities.player.PlayerDataManager.get(otherPlayer).savedData;
                 kills = kData.kills;
                 deaths = kData.deaths;

@@ -22,7 +22,7 @@ import java.util.List;
 public class EventUtil {
 
     public static boolean dropItem(Player player, ItemStack itemStack) {
-        return !(player.getTags().contains("ffa") || player.getTags().contains("ffa_classic") || player.getTags().contains("ffa_kits") || player.getTags().contains("ffa_pot")) || !LobbyUtil.isLobbyWorld(player.level) || !OitcGame.isOITCPlayer(player);
+        return !(player.getTags().contains("ffa") || player.getTags().contains("ffa_classic") || player.getTags().contains("ffa_kits") || player.getTags().contains("ffa_sky")) || !LobbyUtil.isLobbyWorld(player.level) || !OitcGame.isOITCPlayer(player);
     }
 
     public static void onSignClick(CallbackInfoReturnable<InteractionResult> ci, BlockPos signPos, Level level, ServerPlayer p) {

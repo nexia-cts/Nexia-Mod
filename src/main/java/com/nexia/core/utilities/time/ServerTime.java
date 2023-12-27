@@ -8,6 +8,7 @@ import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.ffa.classic.utilities.FfaAreas;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
+import com.nexia.ffa.sky.SkyFfaBlocks;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.FfaUhcBlocks;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
@@ -92,6 +93,7 @@ public class ServerTime {
 
         BwGame.tick();
         FfaUhcBlocks.tick();
+        SkyFfaBlocks.tick();
 
         if (totalTickCount % 5 == 0) {
             FfaClassicUtil.fiveTick();

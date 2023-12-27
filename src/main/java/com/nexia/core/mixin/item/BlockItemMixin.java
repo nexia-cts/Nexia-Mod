@@ -1,6 +1,7 @@
 package com.nexia.core.mixin.item;
 
 import com.nexia.core.utilities.item.ItemStackUtil;
+import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaAreas;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
@@ -35,6 +36,11 @@ public abstract class BlockItemMixin {
             cir.setReturnValue(InteractionResult.PASS);
             ItemStackUtil.sendInventoryRefreshPacket(player);
         }
+
+        if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(level) && !FfaSkyUtil.beforeBuild(player, blockPos)) {
+            cir.setReturnValue(InteractionResult.PASS);
+            return;
+        }
     }
 
     @Inject(method = "place", at = @At(value = "TAIL"))
@@ -43,6 +49,13 @@ public abstract class BlockItemMixin {
         if (player == null) return;
 
         BlockPos blockPos = context.getClickedPos();
-        FfaUhcUtil.afterPlace(player, blockPos, context.getHand());
+
+        if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(player.getLevel())) {
+            FfaSkyUtil.afterPlace(player, blockPos, context.getHand());
+        }
+
+        if (FfaAreas.isFfaWorld(player.getLevel())) {
+            FfaUhcUtil.afterPlace(player, blockPos, context.getHand());
+        }
     }
 }

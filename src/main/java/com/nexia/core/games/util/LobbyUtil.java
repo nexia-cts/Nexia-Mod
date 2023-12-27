@@ -39,7 +39,7 @@ import net.minecraft.world.level.Level;
 
 public class LobbyUtil {
 
-    public static String[] statsGameModes = {"FFA CLASSIC", "POT FFA", "UHC FFA", "KIT FFA", "BEDWARS", "OITC", "DUELS", "SKYWARS"};
+    public static String[] statsGameModes = {"FFA CLASSIC", "SKY FFA", "UHC FFA", "KIT FFA", "BEDWARS", "OITC", "DUELS", "SKYWARS"};
 
     public static ServerLevel lobbyWorld = null;
     public static EntityPos lobbySpawn = new EntityPos(Main.config.lobbyPos[0], Main.config.lobbyPos[1], Main.config.lobbyPos[2], 0, 0);
@@ -70,7 +70,7 @@ public class LobbyUtil {
             "ffa",
             "ffa_classic",
             "ffa_kits",
-            "ffa_pot",
+            "ffa_sky",
             "ffa_uhc",
             "duels",
             "skywars",
@@ -211,7 +211,7 @@ public class LobbyUtil {
 
         if((game.equalsIgnoreCase("classic ffa") && !FfaClassicUtil.canGoToSpawn(minecraftPlayer)) ||
                 (game.equalsIgnoreCase("kits ffa") && !FfaKitsUtil.canGoToSpawn(minecraftPlayer) ||
-                        (game.equalsIgnoreCase("pot ffa") && !FfaSkyUtil.canGoToSpawn(minecraftPlayer) ||
+                        (game.equalsIgnoreCase("sky ffa") && !FfaSkyUtil.canGoToSpawn(minecraftPlayer) ||
                                 (game.equalsIgnoreCase("uhc ffa") && !FfaUhcUtil.canGoToSpawn(minecraftPlayer))))) {
 
             player.sendMessage(Component.text("You must be fully healed to go to spawn!").color(ChatFormat.failColor));
@@ -240,7 +240,7 @@ public class LobbyUtil {
 
         if(game.equalsIgnoreCase("classic ffa") ||
                 game.equalsIgnoreCase("kits ffa") ||
-                game.equalsIgnoreCase("pot ffa") ||
+                game.equalsIgnoreCase("sky ffa") ||
                 game.equalsIgnoreCase("uhc ffa")) {
             player.addTag("ffa");
             PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.FFA;
@@ -260,17 +260,16 @@ public class LobbyUtil {
             FfaClassicUtil.setInventory(minecraftPlayer);
         }
 
-        if(game.equalsIgnoreCase("pot ffa")){
-            player.addTag("ffa_pot");
+        if(game.equalsIgnoreCase("sky ffa")){
+            player.addTag("ffa_sky");
             FfaSkyUtil.wasInSpawn.add(player.getUUID());
-            PlayerDataManager.get(minecraftPlayer).ffaGameMode = FfaGameMode.POT;
+            PlayerDataManager.get(minecraftPlayer).ffaGameMode = FfaGameMode.SKY;
             if(tp){
                 FfaSkyUtil.sendToSpawn(minecraftPlayer);
                 minecraftPlayer.setRespawnPosition(com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld.dimension(), com.nexia.ffa.sky.utilities.FfaAreas.spawn.toBlockPos(), com.nexia.ffa.sky.utilities.FfaAreas.spawn.yaw, true, false);
             }
 
-            FfaSkyUtil.clearEnderpearls(minecraftPlayer);
-            FfaSkyUtil.clearExperience(minecraftPlayer, true);
+            FfaSkyUtil.joinOrRespawn(minecraftPlayer);
         }
 
         if(game.equalsIgnoreCase("uhc ffa")){

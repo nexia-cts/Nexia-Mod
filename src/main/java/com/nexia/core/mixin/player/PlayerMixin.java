@@ -7,6 +7,7 @@ import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.ffa.FfaUtil;
+import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
@@ -84,6 +85,11 @@ public abstract class PlayerMixin extends LivingEntity {
     @Inject(method = "hurt", cancellable = true, at = @At("HEAD"))
     private void beforeHurt(DamageSource damageSource, float damage, CallbackInfoReturnable<Boolean> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
+
+        if (FfaSkyUtil.isFfaPlayer(player) && !FfaSkyUtil.beforeDamage(player, damageSource)) {
+            cir.setReturnValue(false);
+            return;
+        }
 
         if(player.getLevel().equals(LobbyUtil.lobbyWorld) && damageSource == DamageSource.OUT_OF_WORLD) LobbyUtil.lobbySpawn.teleportPlayer(LobbyUtil.lobbyWorld, player);
 

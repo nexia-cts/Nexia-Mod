@@ -68,16 +68,6 @@ public class FfaSkyUtil {
         com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
         return player.getTags().contains("ffa_sky") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.SKY;
     }
-
-    public static void join(ServerPlayer player) {
-        ServerLevel spawnWorld = ffaWorld;
-        EntityPos spawn = FfaAreas.spawn;
-        player.setRespawnPosition(spawnWorld.dimension(), spawn.toBlockPos(), spawn.yaw, true, false);
-        spawn.teleportPlayer(spawnWorld, player);
-
-        joinOrRespawn(player);
-    }
-
     public static void ffaSecond() {
         Iterator<UUID> it = fallInvulnerable.keySet().iterator();
         while (it.hasNext()) {
@@ -101,10 +91,6 @@ public class FfaSkyUtil {
             data.bestKillstreak = data.killstreak;
         }
         data.kills++;
-        player.heal(player.getMaxHealth());
-
-        FfaSkyUtil.clearExperience(player, true);
-        FfaSkyUtil.clearEnderpearls(player);
 
         if(data.killstreak % 5 == 0) {
             for (ServerPlayer serverPlayer : FfaAreas.ffaWorld.players()) {
@@ -225,21 +211,6 @@ public class FfaSkyUtil {
         data.killstreak = 0;
     }
 
-    public static void clearExperience(ServerPlayer player, boolean clear) {
-        BlockPos c1 = ffaCorner1.offset(-10, -ffaCorner1.getY(), -10);
-        BlockPos c2 = ffaCorner2.offset(10, 319 - ffaCorner2.getY(), 10);
-        AABB aabb = new AABB(c1, c2);
-        Predicate<Entity> predicate = o -> true;
-        for (ThrownExperienceBottle bottle : ffaWorld.getEntities(EntityType.EXPERIENCE_BOTTLE, aabb, predicate)) {
-            if (bottle.getOwner() != null && bottle.getOwner().getUUID().equals(player.getUUID())) {
-                bottle.remove();
-            }
-        }
-        for (ExperienceOrb orb : ffaWorld.getEntities(EntityType.EXPERIENCE_ORB, aabb, predicate)) {
-            orb.remove();
-        }
-        if(clear) player.setExperiencePoints(0);
-    }
 
     public static void clearEnderpearls(ServerPlayer player) {
         BlockPos c1 = ffaCorner1.offset(-10, -ffaCorner1.getY(), -10);
@@ -259,6 +230,7 @@ public class FfaSkyUtil {
 
         if (source != null && source.getEntity() != null && source.getEntity() instanceof net.minecraft.world.entity.player.Player) {
             attacker = PlayerUtil.getPlayerAttacker(source.getEntity());
+            if(attacker == null && player.getKillCredit() instanceof ServerPlayer) attacker = (ServerPlayer) player.getKillCredit();
         }
 
 
@@ -438,7 +410,7 @@ public class FfaSkyUtil {
 
     public static void sendToSpawn(ServerPlayer player) {
         player.inventory.clearContent();
-        FfaSkyUtil.clearExperience(player, true);
+        FfaKitsUtil.clearArrows(player);
         FfaSkyUtil.clearEnderpearls(player);
         player.removeAllEffects();
         FfaSkyUtil.wasInSpawn.add(player.getUUID());
@@ -486,6 +458,21 @@ public class FfaSkyUtil {
     public static boolean beforeBuild(ServerPlayer player, BlockPos blockPos) {
         if (player.isCreative()) return true;
         return FfaAreas.canBuild(player, blockPos);
+    }
+
+    public static boolean beforeDamage(ServerPlayer player, DamageSource damageSource) {
+        if (damageSource == DamageSource.OUT_OF_WORLD) return true;
+
+        if (FfaAreas.isInFfaSpawn(player)) {
+            return false;
+        }
+
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(damageSource.getEntity());
+        if (attacker != null && FfaAreas.isInFfaSpawn(attacker)) {
+            return false;
+        }
+
+        return damageSource != DamageSource.FALL || !FfaSkyUtil.fallInvulnerable.containsKey(player.getUUID());
     }
 
     public static void afterPlace(ServerPlayer player, BlockPos blockPos, InteractionHand hand) {
