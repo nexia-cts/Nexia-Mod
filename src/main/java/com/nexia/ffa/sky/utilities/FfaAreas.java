@@ -20,11 +20,11 @@ import java.util.function.Predicate;
 public class FfaAreas {
     public static ServerLevel ffaWorld = null;
     public static EntityPos spawn = new EntityPos(Main.sky.spawnCoordinates[0], Main.sky.spawnCoordinates[1], Main.sky.spawnCoordinates[2], 0, 0);
-    public static BlockPos spawnCorner1 = spawn.toBlockPos().offset(-12, -12, -12);
-    public static BlockPos spawnCorner2 = spawn.toBlockPos().offset(12, 12, 12);
+    public static BlockPos spawnCorner1 = spawn.toBlockPos().offset(-6, -5, -6);
+    public static BlockPos spawnCorner2 = spawn.toBlockPos().offset(6, 5, 6);
 
-    public static BlockPos ffaCorner1 = spawn.toBlockPos().offset(99, -spawn.y, 132);
-    public static BlockPos ffaCorner2 = spawn.toBlockPos().offset(-100, spawn.y + 255, -98);
+    public static BlockPos ffaCorner1 = spawn.toBlockPos().offset(25, -spawn.y, 25);
+    public static BlockPos ffaCorner2 = spawn.toBlockPos().offset(-25, spawn.y + 255, -25);
 
     public FfaAreas() {
     }

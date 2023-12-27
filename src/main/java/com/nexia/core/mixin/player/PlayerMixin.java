@@ -143,7 +143,7 @@ public abstract class PlayerMixin extends LivingEntity {
 
         ItemStack dropped = inventory.getItem(inventory.selected);
 
-        if (FfaUtil.isFfaPlayer(player) && !FfaUhcUtil.isFfaPlayer(player)) {
+        if (FfaUtil.isFfaPlayer(player)) {
             cir.setReturnValue(false);
             return;
         }

@@ -19,6 +19,7 @@ public class ProtectionMapCommand {
                 .then(Commands.literal("bedwars").executes(ProtectionMapCommand::bedwars))
                 .then(Commands.literal("ffa")
                         .then(Commands.literal("uhc").executes(ProtectionMapCommand::ffa_uhc))
+                        .then(Commands.literal("sky").executes(ProtectionMapCommand::ffa_sky))
                 )
         );
     }
@@ -35,4 +36,9 @@ public class ProtectionMapCommand {
         return 1;
     }
 
+    public static int ffa_sky(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        com.nexia.ffa.sky.utilities.FfaAreas.createProtectionMap(player);
+        return 1;
+    }
 }

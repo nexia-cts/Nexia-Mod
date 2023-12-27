@@ -26,5 +26,8 @@ public class ModConfig implements ConfigData {
 
         @Comment("Remove Projectiles going through players [EXPERIMENTAL]")
         public boolean projectilePatch = false;
+
+        @Comment("Fix Tridents doing 8 damage when thrown, instead of 6")
+        public boolean tridentDamagePatch = false;
     }
 }

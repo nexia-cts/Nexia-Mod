@@ -228,7 +228,7 @@ public class FfaClassicUtil {
         }
 
         for (Player player : ServerTime.factoryServer.getPlayers()) {
-            if (player.hasTag("ffa_kits")) player.sendMessage(msg);
+            if (player.hasTag("ffa_classic")) player.sendMessage(msg);
         }
     }
 
@@ -313,7 +313,8 @@ public class FfaClassicUtil {
 
     static {
         invItems = new HashMap<>();
-        ItemStack sword = new ItemStack(Items.NETHERITE_SWORD);
+        ItemStack sword = new ItemStack(Items.DIAMOND_SWORD);
+        sword.enchant(Enchantments.SHARPNESS, 1);
         sword.getOrCreateTag().putBoolean("Unbreakable", true);
         invItems.put(0, sword);
 
@@ -321,7 +322,8 @@ public class FfaClassicUtil {
         trident.getOrCreateTag().putBoolean("Unbreakable", true);
         invItems.put(1, trident);
 
-        ItemStack axe = new ItemStack(Items.NETHERITE_AXE);
+        ItemStack axe = new ItemStack(Items.DIAMOND_AXE);
+        axe.enchant(Enchantments.CLEAVING, 1);
         axe.getOrCreateTag().putBoolean("Unbreakable", true);
         invItems.put(2, axe);
 

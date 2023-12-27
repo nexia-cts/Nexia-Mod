@@ -239,7 +239,7 @@ public class FfaUhcUtil {
     }
 
     public static boolean canGoToSpawn(ServerPlayer player) {
-        if(!FfaUhcUtil.isFfaPlayer(player) || FfaUhcUtil.wasInSpawn.contains(player.getUUID())) return true;
+        if(FfaUhcUtil.isFfaPlayer(player) || FfaUhcUtil.wasInSpawn.contains(player.getUUID())) return true;
         return !(player.getHealth() < 20);
     }
 

@@ -448,7 +448,7 @@ public class FfaSkyUtil {
         potion.getOrCreateTag().putInt("CustomPotionColor", 16771584);
 
         ArrayList<MobEffectInstance> effects = new ArrayList<>();
-        effects.add(new MobEffectInstance(MobEffects.REGENERATION, 80, 2));
+        effects.add(new MobEffectInstance(MobEffects.REGENERATION, 100, 1));
         effects.add(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 0));
         PotionUtils.setCustomEffects(potion, effects);
 

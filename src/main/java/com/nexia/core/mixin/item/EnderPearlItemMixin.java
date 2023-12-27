@@ -33,7 +33,7 @@ public class EnderPearlItemMixin extends Item {
         super(properties);
     }
 
-    @Inject(method = "use", at = @At(value = "HEAD"))
+    @Inject(method = "use", at = @At(value = "HEAD"), cancellable = true)
     private void setPlayer(Level level, Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         if (player instanceof ServerPlayer serverPlayer) {
             thrower = serverPlayer;
@@ -45,7 +45,6 @@ public class EnderPearlItemMixin extends Item {
             }
 
         }
-
 
     }
 
