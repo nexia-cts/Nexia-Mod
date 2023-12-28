@@ -9,6 +9,7 @@ import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.player.BanHandler;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import me.lucko.fabric.api.permissions.v0.Permissions;
@@ -64,6 +65,11 @@ public abstract class PlayerListMixin {
         ServerPlayer player = PlayerUtil.getFixedPlayer(oldPlayer);
 
         ServerLevel respawn = ServerTime.minecraftServer.getLevel(player.getRespawnDimension());
+
+        if(FfaSkyUtil.isFfaPlayer(player)) {
+            FfaSkyUtil.joinOrRespawn(player);
+            return;
+        }
 
         if(respawn != null && LobbyUtil.isLobbyWorld(respawn)) {
             player.inventory.clearContent();

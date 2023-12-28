@@ -38,7 +38,7 @@ public class EnderPearlItemMixin extends Item {
         if (player instanceof ServerPlayer serverPlayer) {
             thrower = serverPlayer;
 
-            if (FfaAreas.isFfaWorld(serverPlayer.getLevel()) && !FfaSkyUtil.wasInSpawn.contains(serverPlayer.getUUID())) {
+            if (FfaAreas.isFfaWorld(serverPlayer.getLevel()) && FfaSkyUtil.wasInSpawn.contains(serverPlayer.getUUID())) {
                 cir.setReturnValue(InteractionResultHolder.pass(serverPlayer.getItemInHand(interactionHand)));
                 InventoryUtil.sendHandItemPacket(serverPlayer, interactionHand);
                 return;

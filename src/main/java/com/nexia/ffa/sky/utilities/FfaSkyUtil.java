@@ -1,13 +1,12 @@
 package com.nexia.ffa.sky.utilities;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
-import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
+import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
@@ -21,7 +20,6 @@ import net.kyori.adventure.text.Component;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -31,11 +29,9 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
-import net.minecraft.world.entity.projectile.ThrownExperienceBottle;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -457,6 +453,10 @@ public class FfaSkyUtil {
 
     public static boolean beforeBuild(ServerPlayer player, BlockPos blockPos) {
         if (player.isCreative()) return true;
+        if (wasInSpawn.contains(player.getUUID()) || blockPos.getY() >= buildLimitY) {
+            InventoryUtil.sendHandItemPacket(player, player.getUsedItemHand());
+            return false;
+        }
         return FfaAreas.canBuild(player, blockPos);
     }
 
