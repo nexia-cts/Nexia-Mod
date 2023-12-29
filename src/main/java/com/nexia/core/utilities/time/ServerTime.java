@@ -10,7 +10,6 @@ import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
 import com.nexia.ffa.sky.SkyFfaBlocks;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
-import com.nexia.ffa.uhc.FfaUhcBlocks;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.GameHandler;
 import com.nexia.minigames.games.bedwars.BwGame;
@@ -64,7 +63,6 @@ public class ServerTime {
         BwLoadShop.loadBedWarsShop(true);
         BwDimension.register();
         BwGame.firstTick();
-
         WorldUtil.deleteTempWorlds();
 
         SkywarsGame.firstTick();
@@ -80,7 +78,6 @@ public class ServerTime {
 
             DuelGameHandler.starting();
             BwAreas.clearQueueBuild();
-            FfaUhcBlocks.removeAllBlocks();
 
             WorldUtil.deleteTempWorlds();
         } catch (Exception e) {
@@ -92,7 +89,6 @@ public class ServerTime {
         totalTickCount++;
 
         BwGame.tick();
-        FfaUhcBlocks.tick();
         SkyFfaBlocks.tick();
 
         if (totalTickCount % 5 == 0) {
@@ -134,6 +130,11 @@ public class ServerTime {
                 game.duelSecond();
             }
         } catch (Exception ignored) { }
+
+
+        if(totalSecondCount % 3600 == 0) {
+            com.nexia.ffa.uhc.utilities.FfaAreas.resetMap(true);
+        }
     }
 
 }

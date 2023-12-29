@@ -9,7 +9,6 @@ import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.uhc.FfaUhcBlocks;
 import com.nexia.ffa.uhc.utilities.player.PlayerData;
 import com.nexia.ffa.uhc.utilities.player.PlayerDataManager;
 import com.nexia.ffa.uhc.utilities.player.SavedPlayerData;
@@ -28,7 +27,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -159,13 +157,9 @@ public class FfaUhcUtil {
     public static boolean beforeBuild(ServerPlayer player, BlockPos blockPos) {
         if (player.isCreative()) return true;
         if (wasInSpawn.contains(player.getUUID())) return false;
-        if(blockPos.getY() >= FfaAreas.buildLimitY) return false;
-        return FfaAreas.canBuild(player, blockPos);
+        return blockPos.getY() < FfaAreas.buildLimitY;
     }
 
-    public static void afterPlace(ServerPlayer player, BlockPos blockPos, InteractionHand hand) {
-        if (!player.isCreative()) FfaUhcBlocks.placeBlock(blockPos);
-    }
 
     public static void calculateDeath(ServerPlayer player){
         SavedPlayerData data = PlayerDataManager.get(player).savedData;
@@ -217,11 +211,6 @@ public class FfaUhcUtil {
     public static void leaveOrDie(@NotNull ServerPlayer player, @Nullable DamageSource source, boolean leaving) {
         ServerPlayer attacker = null;
 
-        if(player.getLevel().equals(ffaWorld) && !FfaAreas.isInFfaSpawn(player)) {
-            player.destroyVanishingCursedItems();
-            player.inventory.dropAll();
-        }
-
         if (source != null && source.getEntity() != null && source.getEntity() instanceof net.minecraft.world.entity.player.Player) {
             attacker = PlayerUtil.getPlayerAttacker(source.getEntity());
         }
@@ -229,7 +218,7 @@ public class FfaUhcUtil {
         if (attacker != null) {
             FfaUhcUtil.clearArrows(attacker);
             FfaUhcUtil.clearTrident(attacker);
-            //FfaUhcUtil.setInventory(attacker);
+            FfaUhcUtil.setInventory(attacker);
         }
 
         if(!leaving){

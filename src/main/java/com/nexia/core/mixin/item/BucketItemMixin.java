@@ -41,6 +41,7 @@ public class BucketItemMixin extends Item {
         super(properties);
     }
 
+    /*
     @Inject(method = "use", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/BucketItem;emptyBucket(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/phys/BlockHitResult;)Z"))
     private void beforePlace(Level level, Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
 
@@ -60,4 +61,6 @@ public class BucketItemMixin extends Item {
             FfaUhcUtil.afterPlace(serverPlayer, blockPos3, player.getUsedItemHand());
         }
     }
+
+     */
 }

@@ -456,6 +456,9 @@ public class GamemodeHandler {
         DuelsMap map = selectedmap;
         if (map == null) {
             map = DuelsMap.duelsMaps.get(RandomUtil.randomInt(DuelsMap.duelsMaps.size()));
+            while(!map.isAdventureSupported && gameMode.gameMode.equals(GameType.ADVENTURE)) {
+                map = DuelsMap.duelsMaps.get(RandomUtil.randomInt(DuelsMap.duelsMaps.size()));
+            }
         } else {
             if (!DuelsMap.duelsMaps.contains(map)) {
                 executor.sendMessage(Component.text("Invalid map!").color(ChatFormat.failColor));

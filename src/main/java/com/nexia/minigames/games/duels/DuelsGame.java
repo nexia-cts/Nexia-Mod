@@ -101,6 +101,9 @@ public class DuelsGame { //implements Runnable{
         ServerLevel duelLevel = DuelGameHandler.createWorld(gameUUID.toString(), gameMode.hasRegen);
         if(selectedMap == null){
             selectedMap = DuelsMap.duelsMaps.get(RandomUtil.randomInt(0, DuelsMap.duelsMaps.size()));
+            while(!selectedMap.isAdventureSupported && gameMode.gameMode.equals(GameType.ADVENTURE)) {
+                selectedMap = DuelsMap.duelsMaps.get(RandomUtil.randomInt(0, DuelsMap.duelsMaps.size()));
+            }
         }
 
         selectedMap.structureMap.pasteMap(duelLevel);

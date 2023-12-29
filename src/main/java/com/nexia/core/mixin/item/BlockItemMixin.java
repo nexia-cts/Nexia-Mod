@@ -53,9 +53,5 @@ public abstract class BlockItemMixin {
         if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(player.getLevel())) {
             FfaSkyUtil.afterPlace(player, blockPos, context.getHand());
         }
-
-        if (FfaAreas.isFfaWorld(player.getLevel())) {
-            FfaUhcUtil.afterPlace(player, blockPos, context.getHand());
-        }
     }
 }

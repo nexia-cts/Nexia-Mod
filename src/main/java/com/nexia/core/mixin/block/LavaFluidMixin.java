@@ -1,14 +1,7 @@
 package com.nexia.core.mixin.block;
 
-import com.nexia.ffa.uhc.FfaUhcBlocks;
-import com.nexia.ffa.uhc.utilities.FfaAreas;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.LavaFluid;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(LavaFluid.class)
 public class LavaFluidMixin {

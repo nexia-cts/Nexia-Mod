@@ -1,21 +1,26 @@
 package com.nexia.ffa.uhc.utilities;
 
+import com.combatreforged.factory.api.util.Identifier;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.pos.ProtectionBlock;
 import com.nexia.core.utilities.pos.ProtectionMap;
+import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.Main;
 import net.kyori.adventure.text.Component;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.notcoded.codelib.util.world.structure.Rotation;
+import net.notcoded.codelib.util.world.structure.StructureMap;
 
 import static com.nexia.minigames.games.bedwars.areas.BwAreas.protectionMap;
 
@@ -35,7 +40,21 @@ public class FfaAreas {
     public static BlockPos ffaCorner1 = mapCenterSpawn.toBlockPos().offset(-mapRadius, -mapCenterSpawn.y, -mapRadius);
     public static BlockPos ffaCorner2 = mapCenterSpawn.toBlockPos().offset(mapRadius, mapCenterSpawn.y + 255, mapRadius);
 
+
+    public static StructureMap map = new StructureMap(new ResourceLocation("ffa", "uhc"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-80, -17, -80), true);
+
     public FfaAreas() {
+    }
+
+    public static void resetMap(boolean announce) {
+
+        map.pasteMap(ffaWorld);
+
+        if(announce){
+            for(com.combatreforged.factory.api.world.entity.player.Player player : ServerTime.factoryServer.getPlayers()) {
+                if(player.hasTag("ffa_uhc")) player.sendMessage(Component.text("[!] Map has been reloaded!").color(ChatFormat.lineTitleColor));
+            }
+        }
     }
 
     public static boolean isFfaWorld(Level level) {
@@ -48,33 +67,6 @@ public class FfaAreas {
         return pos.x >= spawnCorner1.getX() && pos.x <= spawnCorner2.getX() &&
                 pos.y >= spawnCorner1.getY() && pos.y <= spawnCorner2.getY() &&
                 pos.z >= spawnCorner1.getZ() && pos.z <= spawnCorner2.getZ();
-    }
-
-    public static boolean canBuild(ServerPlayer player, BlockPos blockPos) {
-        if (protectionMap == null) {
-            PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("Something went wrong, please inform the admins").color(ChatFormat.failColor));
-            return false;
-        }
-
-        return protectionMap.canBuiltAt(ffaCorner1, blockPos, player, true);
-    }
-
-    private static final String protMapPath = FfaUhcUtil.ffaUhcDir + "/protectionMap.json";
-
-    private static final ProtectionBlock[] protMapBlocks =  {
-            new ProtectionBlock(Blocks.AIR, true, null),
-            new ProtectionBlock(Blocks.VOID_AIR, true, null)
-    };
-    private static final ProtectionBlock notListedBlock =
-            new ProtectionBlock(null, false, "You can only break blocks placed by players.");
-    private static final String outsideMessage = "You can't build here.";
-
-    public static ProtectionMap protectionMap = ProtectionMap.importMap(
-            protMapPath, protMapBlocks, notListedBlock, outsideMessage);
-
-    public static void createProtectionMap(ServerPlayer player) {
-        protectionMap = new ProtectionMap(player,
-                ffaCorner1, ffaCorner2, protMapPath, protMapBlocks, notListedBlock, outsideMessage);
     }
 
     public static void setFfaWorld(MinecraftServer server) {

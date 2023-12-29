@@ -18,7 +18,6 @@ public class ProtectionMapCommand {
 
                 .then(Commands.literal("bedwars").executes(ProtectionMapCommand::bedwars))
                 .then(Commands.literal("ffa")
-                        .then(Commands.literal("uhc").executes(ProtectionMapCommand::ffa_uhc))
                         .then(Commands.literal("sky").executes(ProtectionMapCommand::ffa_sky))
                 )
         );
@@ -27,12 +26,6 @@ public class ProtectionMapCommand {
     public static int bedwars(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         BwAreas.createProtectionMap(player);
-        return 1;
-    }
-
-    public static int ffa_uhc(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ServerPlayer player = context.getSource().getPlayerOrException();
-        FfaAreas.createProtectionMap(player);
         return 1;
     }
 

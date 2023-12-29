@@ -19,10 +19,4 @@ public class ItemCombinerMenuMixin implements LevelAccessOwner {
     public void setContainerLevelAccess(ContainerLevelAccess access) {
         this.access = access;
     }
-
-    @Unique
-    @Override
-    public ContainerLevelAccess getContainerLevelAccess() {
-        return access;
-    }
 }

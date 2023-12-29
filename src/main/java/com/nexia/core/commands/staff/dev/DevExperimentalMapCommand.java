@@ -5,10 +5,13 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.LobbyUtil;
+import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.ffa.uhc.utilities.FfaAreas;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -32,7 +35,7 @@ public class DevExperimentalMapCommand {
                             }
                         })
                         .then(Commands.argument("argument", StringArgumentType.string())
-                                .suggests(((context, builder) -> SharedSuggestionProvider.suggest((new String[]{"cffa"}), builder)))
+                                .suggests(((context, builder) -> SharedSuggestionProvider.suggest((new String[]{"cffa", "rluhc"}), builder)))
                                 .executes(DevExperimentalMapCommand::run))
                 )
         );
@@ -65,6 +68,10 @@ public class DevExperimentalMapCommand {
             player.teleportTo(level, 0, 80, 0, 0, 0);
         }
 
+        if(argument.contains("rluhc")) {
+            FfaAreas.resetMap(true);
+            player.sendMessage(LegacyChatFormat.format("Reloaded UHC Map."), Util.NIL_UUID);
+        }
 
 
         return 1;

@@ -5,16 +5,14 @@ import com.nexia.core.Main;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.minigames.games.bedwars.BwGame;
-import com.nexia.world.structure.Rotation;
-import com.nexia.world.structure.StructureMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Blocks;
+import net.notcoded.codelib.util.world.structure.Rotation;
+import net.notcoded.codelib.util.world.structure.StructureMap;
 import org.apache.commons.io.FileUtils;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
@@ -52,7 +50,7 @@ public class SkywarsMap {
             new EntityPos(-59,92,-14),
             new EntityPos(-14,92,-59),
             new EntityPos(14,92,-59))
-    ), new StructureMap(new Identifier("skywars", "relic"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-63,-7,-63), true));
+    ), new StructureMap(new ResourceLocation("skywars", "relic"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-63,-7,-63), true));
 
     public static SkywarsMap SKYHENGE = new SkywarsMap("skyhenge", 12, new ArrayList<>(Arrays.asList(
             new EntityPos(72, 82, 0),
@@ -67,7 +65,7 @@ public class SkywarsMap {
             new EntityPos(0,82,72),
             new EntityPos(23,82,49),
             new EntityPos(49,82,23))
-    ), new StructureMap(new Identifier("skywars", "skyhenge"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-77, -7, -77), true));
+    ), new StructureMap(new ResourceLocation("skywars", "skyhenge"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-77, -7, -77), true));
 
 
     public static SkywarsMap identifyMap(String name) {
