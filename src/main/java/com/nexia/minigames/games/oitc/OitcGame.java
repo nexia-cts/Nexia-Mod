@@ -221,8 +221,8 @@ public class OitcGame {
         if(!OitcGame.deathPlayers.contains(victim) && OitcGame.isStarted && OitcGame.alive.contains(victim) && victimData.gameMode == OitcGameMode.PLAYING) {
             ServerPlayer attacker = null;
 
-            if(source != null && PlayerUtil.getPlayerAttacker(source.getEntity()) != null) {
-                attacker = PlayerUtil.getPlayerAttacker(source.getEntity());
+            if(source != null && PlayerUtil.getPlayerAttacker(victim, source.getEntity()) != null) {
+                attacker = PlayerUtil.getPlayerAttacker(victim, source.getEntity());
             }
 
             if(attacker != null){

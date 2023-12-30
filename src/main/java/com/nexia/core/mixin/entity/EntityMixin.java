@@ -30,7 +30,7 @@ public abstract class EntityMixin implements Nameable, CommandSource {
 
     @Redirect(method = "baseTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;getY()D"))
     private double modifyVoidY(Entity instance) {
-        double voidY = -32;
+        double voidY = 0;
 
         if (instance.level instanceof ServerLevel serverLevel) {
 
@@ -39,7 +39,7 @@ public abstract class EntityMixin implements Nameable, CommandSource {
             }
         }
 
-        return instance.getY() + 64 - voidY;
+        return instance.getY() + 32 - voidY;
     }
 
 }

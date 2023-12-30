@@ -78,6 +78,7 @@ public class ServerTime {
 
             DuelGameHandler.starting();
             BwAreas.clearQueueBuild();
+            SkyFfaBlocks.clearAllBlocks();
 
             WorldUtil.deleteTempWorlds();
         } catch (Exception e) {

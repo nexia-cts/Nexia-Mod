@@ -202,7 +202,14 @@ public class FfaSkyUtil {
 
     public static void leaveOrDie(@NotNull ServerPlayer player, @Nullable DamageSource source, boolean leaving) {
 
-        if (player.getKillCredit() instanceof ServerPlayer attacker) {
+        ServerPlayer attacker = null;
+
+        try {
+            attacker = PlayerUtil.getPlayerAttacker(player, source.getEntity());
+        } catch (Exception ignored) { }
+        // there is probably a better way to do this but im too lazy to do that
+
+        if(attacker != null) {
             FfaSkyUtil.killHeal(attacker);
             FfaSkyUtil.giveKillLoot(attacker);
         }
@@ -358,7 +365,7 @@ public class FfaSkyUtil {
             return false;
         }
 
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(damageSource.getEntity());
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player, damageSource.getEntity());
         if (attacker != null && FfaAreas.isInFfaSpawn(attacker)) {
             return false;
         }

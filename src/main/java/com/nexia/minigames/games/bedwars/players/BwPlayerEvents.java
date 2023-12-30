@@ -91,7 +91,7 @@ public class BwPlayerEvents {
     }
 
     public static void afterHurt(ServerPlayer player, DamageSource damageSource) {
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(damageSource.getEntity());
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player, damageSource.getEntity());
         if (attacker != null) {
             PlayerDataManager.get(player).combatTagPlayer = attacker;
             PlayerDataManager.get(attacker).combatTagPlayer = player;

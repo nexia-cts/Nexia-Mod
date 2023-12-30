@@ -176,9 +176,10 @@ public class FfaKitsUtil {
     public static void leaveOrDie(@NotNull ServerPlayer player, @Nullable DamageSource source, boolean leaving) {
         ServerPlayer attacker = null;
 
-        if (source != null && source.getEntity() != null && source.getEntity() instanceof net.minecraft.world.entity.player.Player) {
-            attacker = PlayerUtil.getPlayerAttacker(source.getEntity());
-        }
+        try {
+            attacker = PlayerUtil.getPlayerAttacker(player, source.getEntity());
+        } catch (Exception ignored) { }
+        // there is probably a better way to do this but im too lazy to do that
 
         if(!leaving) FfaKitsUtil.setDeathMessage(player, source);
 
@@ -204,7 +205,7 @@ public class FfaKitsUtil {
 
         if (source != null && source.getEntity() != null) {
             fAttacker = source.getEntity();
-            if(PlayerUtil.getPlayerAttacker(source.getEntity()) != null) attacker = PlayerUtil.getPlayerAttacker(source.getEntity());
+            if(PlayerUtil.getPlayerAttacker(minecraftPlayer, source.getEntity()) != null) attacker = PlayerUtil.getPlayerAttacker(minecraftPlayer, source.getEntity());
         }
 
         calculateDeath(minecraftPlayer);

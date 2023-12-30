@@ -20,6 +20,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import org.apache.logging.log4j.core.jmx.Server;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -152,17 +153,38 @@ public class PlayerUtil {
         return me.lucko.fabric.api.permissions.v0.Permissions.check(permission, command, level);
     }
 
-    public static ServerPlayer getPlayerAttacker(Entity attackerEntity) {
+    public static ServerPlayer getPlayerAttacker(@Nullable net.minecraft.world.entity.player.Player player, Entity attackerEntity) {
+
+        if(player == null) {
+            if (attackerEntity == null) return null;
+
+            if (attackerEntity instanceof ServerPlayer) {
+                return (ServerPlayer) attackerEntity;
+            } else if (attackerEntity instanceof Projectile) {
+                Entity projectileOwner = ((Projectile) attackerEntity).getOwner();
+                if (!(projectileOwner instanceof ServerPlayer)) return null;
+                return (ServerPlayer) projectileOwner;
+            }
+            return null;
+        }
+        if(player.getCombatTracker().getKiller() instanceof ServerPlayer) {
+            return (ServerPlayer) player.getCombatTracker().getKiller();
+        }
+
+        if(player.getKillCredit() instanceof ServerPlayer) {
+            return (ServerPlayer) player.getKillCredit();
+        }
+
         if (attackerEntity == null) return null;
 
         if (attackerEntity instanceof ServerPlayer) {
             return (ServerPlayer) attackerEntity;
-
         } else if (attackerEntity instanceof Projectile) {
             Entity projectileOwner = ((Projectile) attackerEntity).getOwner();
             if (!(projectileOwner instanceof ServerPlayer)) return null;
             return (ServerPlayer) projectileOwner;
         }
+
         return null;
     }
 

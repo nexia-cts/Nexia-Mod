@@ -157,7 +157,7 @@ public class FfaClassicUtil {
 
         if (source != null && source.getEntity() != null) {
             fAttacker = source.getEntity();
-            if(PlayerUtil.getPlayerAttacker(source.getEntity()) != null) attacker = PlayerUtil.getPlayerAttacker(source.getEntity());
+            if(PlayerUtil.getPlayerAttacker(minecraftPlayer, source.getEntity()) != null) attacker = PlayerUtil.getPlayerAttacker(minecraftPlayer, source.getEntity());
         }
 
         calculateDeath(minecraftPlayer);
@@ -294,7 +294,7 @@ public class FfaClassicUtil {
         ServerPlayer attacker = null;
 
         if (source != null && source.getEntity() != null && source.getEntity() instanceof net.minecraft.world.entity.player.Player) {
-            attacker = PlayerUtil.getPlayerAttacker(source.getEntity());
+            attacker = PlayerUtil.getPlayerAttacker(player, source.getEntity());
         }
 
         if (attacker != null) {

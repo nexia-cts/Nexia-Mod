@@ -28,10 +28,7 @@ import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -58,10 +55,11 @@ public abstract class PlayerMixin extends LivingEntity {
     public boolean disableShield(float f) {
         this.getCooldowns().addCooldown(Items.SHIELD, (int)(f * 20.0F));
         this.stopUsingItem();
+        Player player = (Player) (Object) this;
         this.level.broadcastEntityEvent(this, (byte)30);
-        if((this.getLastDamageSource() != null && this.getLastDamageSource().getEntity() != null && PlayerUtil.getPlayerAttacker(this.getLastDamageSource().getEntity()) != null) && Main.config.enhancements.betterShields){
+        if((this.getLastDamageSource() != null && this.getLastDamageSource().getEntity() != null && PlayerUtil.getPlayerAttacker(player, this.getLastDamageSource().getEntity()) != null) && Main.config.enhancements.betterShields){
             //this.level.broadcastEntityEvent(attacker, (byte)30);
-            ServerPlayer attacker = PlayerUtil.getPlayerAttacker(this.getLastDamageSource().getEntity());
+            ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player, this.getLastDamageSource().getEntity());
 
             SoundSource soundSource = null;
             for (SoundSource source : SoundSource.values()) {
@@ -98,7 +96,7 @@ public abstract class PlayerMixin extends LivingEntity {
             return;
         }
 
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(damageSource.getEntity());
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player, damageSource.getEntity());
         if(attacker != null) {
             if(attacker.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) cir.setReturnValue(false);
 
@@ -129,6 +127,7 @@ public abstract class PlayerMixin extends LivingEntity {
         return vanillaArmorCalculation(damageSource, damage);
     }
 
+    @Unique
     public float vanillaArmorCalculation(DamageSource damageSource, float damage) {
         if (!damageSource.isBypassArmor()) {
             damage = CombatRules.getDamageAfterAbsorb(damage, this.getArmorValue(), (float)this.getAttributeValue(Attributes.ARMOR_TOUGHNESS));

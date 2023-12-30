@@ -54,13 +54,19 @@ public class FfaAreas {
     }
 
     public static float getVoidY() {
-        int defaultY = ffaCorner1.getY() - 8;
+        int defaultY = 90;
 
+        /*
         AABB aabb = new AABB(ffaCorner1.offset(-10, -64, -10), ffaCorner2.offset(10, 64, 10));
         Predicate<ThrownEnderpearl> predicate = o -> true;
         if (!ffaWorld.getEntities(EntityType.ENDER_PEARL, aabb, predicate).isEmpty()) {
             return defaultY - 48;
         }
+         */
+
+        // fuck that nerd math
+
+
         return defaultY;
     }
 

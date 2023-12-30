@@ -126,15 +126,6 @@ public abstract class PlayerListMixin {
         }
     }
 
-    @Inject(method = "canBypassPlayerLimit", at = @At("TAIL"), cancellable = true)
-    private void playerLimitBypass(GameProfile gameProfile, CallbackInfoReturnable<Boolean> cir) {
-        CompletableFuture<Boolean> bool = Permissions.check(gameProfile, "nexia.join.full");
-        try {
-            boolean value = bool.get();
-            cir.setReturnValue(value);
-        } catch(Exception ignored) { }
-    }
-
     @Inject(method = "placeNewPlayer", at = @At("HEAD"))
     private void setJoinMessage(Connection connection, ServerPlayer serverPlayer, CallbackInfo ci){
         joinPlayer = serverPlayer;

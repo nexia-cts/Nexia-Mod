@@ -53,6 +53,22 @@ public class SkyFfaBlocks {
 
     }
 
+    public static void clearAllBlocks() {
+        while (!playerPlacedBlocks.isEmpty()) {
+            SkyFfaBlock firstBlock = playerPlacedBlocks.peek();
+
+            playerPlacedBlocks.remove();
+            setDisappearingBlock(firstBlock.blockPos);
+        }
+
+        while (!disappearingWool.isEmpty()) {
+            SkyFfaBlock firstBlock = disappearingWool.peek();
+
+            disappearingWool.remove();
+            blockDisappear(firstBlock.blockPos);
+        }
+    }
+
     public static void placeBlock(BlockPos blockPos) {
         playerPlacedBlocks.add(new SkyFfaBlock(blockPos, ticks + placedBlockTime));
     }
