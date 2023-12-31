@@ -20,6 +20,7 @@ import net.minecraft.Util;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
+import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -196,6 +197,7 @@ public class GamemodeHandler {
 
         factoryExecutor.setGameMode(Minecraft.GameMode.SPECTATOR);
         executor.teleportTo(player.getLevel(), player.getX(), player.getY(), player.getZ(), 0, 0);
+        AccuratePlayer accurateExecutor = AccuratePlayer.create(executor);
 
         DuelsGame duelsGame = playerData.duelsGame;
         TeamDuelsGame teamDuelsGame = playerData.teamDuelsGame;
@@ -203,16 +205,16 @@ public class GamemodeHandler {
         TextComponent spectateMSG = new TextComponent("§7§o(" + factoryExecutor.getRawName() + " started spectating)");
 
         if (teamDuelsGame != null) {
-            teamDuelsGame.spectators.add(executor);
+            teamDuelsGame.spectators.add(accurateExecutor);
             List<ServerPlayer> everyTeamMember = teamDuelsGame.team1.all;
             everyTeamMember.addAll(teamDuelsGame.team2.all);
             for (ServerPlayer players : everyTeamMember) {
                 players.sendMessage(spectateMSG, Util.NIL_UUID);
             }
         } else if (duelsGame != null) {
-            duelsGame.spectators.add(executor);
-            duelsGame.p1.sendMessage(spectateMSG, Util.NIL_UUID);
-            duelsGame.p2.sendMessage(spectateMSG, Util.NIL_UUID);
+            duelsGame.spectators.add(accurateExecutor);
+            duelsGame.p1.get().sendMessage(spectateMSG, Util.NIL_UUID);
+            duelsGame.p2.get().sendMessage(spectateMSG, Util.NIL_UUID);
         }
 
 
@@ -266,14 +268,15 @@ public class GamemodeHandler {
             );
         }
 
+        AccuratePlayer accurateExecutor = AccuratePlayer.create(executor);
 
         if (duelsGame != null) {
-            duelsGame.spectators.remove(executor);
+            duelsGame.spectators.remove(accurateExecutor);
 
-            duelsGame.p1.sendMessage(spectateMSG, Util.NIL_UUID);
-            duelsGame.p2.sendMessage(spectateMSG, Util.NIL_UUID);
+            duelsGame.p1.get().sendMessage(spectateMSG, Util.NIL_UUID);
+            duelsGame.p2.get().sendMessage(spectateMSG, Util.NIL_UUID);
         } else if (teamDuelsGame != null) {
-            teamDuelsGame.spectators.remove(executor);
+            teamDuelsGame.spectators.remove(accurateExecutor);
 
             List<ServerPlayer> everyTeamPlayer = teamDuelsGame.team1.all;
             everyTeamPlayer.addAll(teamDuelsGame.team2.all);

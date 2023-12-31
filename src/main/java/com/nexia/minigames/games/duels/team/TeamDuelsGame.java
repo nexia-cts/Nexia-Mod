@@ -22,6 +22,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.GameType;
+import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,7 +56,7 @@ public class TeamDuelsGame { // implements Runnable{
 
     public ServerLevel level;
 
-    public ArrayList<ServerPlayer> spectators = new ArrayList<>();
+    public ArrayList<AccuratePlayer> spectators = new ArrayList<>();
 
     // Winner thingie
     public DuelsTeam winner = null;
@@ -212,8 +213,8 @@ public class TeamDuelsGame { // implements Runnable{
 
             Component errormsg = Component.text("Cause: " + isBroken);
 
-            for (ServerPlayer spectator : this.spectators) {
-                Player factoryPlayer = PlayerUtil.getFactoryPlayer(spectator);
+            for (AccuratePlayer spectator : this.spectators) {
+                Player factoryPlayer = PlayerUtil.getFactoryPlayer(spectator.get());
                 factoryPlayer.sendMessage(error);
                 factoryPlayer.sendMessage(errormsg);
             }
@@ -243,8 +244,8 @@ public class TeamDuelsGame { // implements Runnable{
                 DuelsTeam winnerTeam = this.winner;
                 DuelsTeam loserTeam = this.loser;
 
-                for (ServerPlayer spectator : this.spectators) {
-                    PlayerUtil.getFactoryPlayer(spectator).runCommand("/hub", 0, false);
+                for (AccuratePlayer spectator : this.spectators) {
+                    PlayerUtil.getFactoryPlayer(spectator.get()).runCommand("/hub", 0, false);
                 }
 
                 this.isEnding = false;

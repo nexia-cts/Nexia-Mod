@@ -21,6 +21,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.GameType;
+import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,10 +32,10 @@ import java.util.UUID;
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 
 public class DuelsGame { //implements Runnable{
-    public ServerPlayer p1;
+    public AccuratePlayer p1;
 
     public UUID uuid;
-    public ServerPlayer p2;
+    public AccuratePlayer p2;
 
     public DuelGameMode gameMode;
 
@@ -54,19 +55,19 @@ public class DuelsGame { //implements Runnable{
 
     public ServerLevel level;
 
-    public ArrayList<ServerPlayer> spectators = new ArrayList<>();
+    public ArrayList<AccuratePlayer> spectators = new ArrayList<>();
 
 
     // Winner thingie
-    public ServerPlayer winner = null;
+    public AccuratePlayer winner = null;
 
-    public ServerPlayer loser = null;
+    public AccuratePlayer loser = null;
 
     private boolean shouldWait = false;
 
     public DuelsGame(ServerPlayer p1, ServerPlayer p2, DuelGameMode gameMode, DuelsMap map, ServerLevel level, int endTime, int startTime){
-        this.p1 = p1;
-        this.p2 = p2;
+        this.p1 = AccuratePlayer.create(p1);
+        this.p2 = AccuratePlayer.create(p2);
         this.gameMode = gameMode;
         this.map = map;
         this.endTime = endTime;
@@ -173,20 +174,20 @@ public class DuelsGame { //implements Runnable{
         if(this.isEnding) {
             int color = 160 * 65536 + 248;
             // r * 65536 + g * 256 + b;
-            DuelGameHandler.winnerRockets(this.winner, this.level, color);
+            DuelGameHandler.winnerRockets(this.winner.get(), this.level, color);
             this.currentEndTime++;
             if(this.currentEndTime >= this.endTime || !this.shouldWait) {
-                ServerPlayer minecraftAttacker = this.winner;
-                ServerPlayer minecraftVictim = this.loser;
-                Player attacker = PlayerUtil.getFactoryPlayer(minecraftAttacker);
+                AccuratePlayer minecraftAttacker = this.winner;
+                AccuratePlayer minecraftVictim = this.loser;
+                Player attacker = PlayerUtil.getFactoryPlayer(minecraftAttacker.get());
 
-                PlayerData victimData = PlayerDataManager.get(minecraftVictim);
-                PlayerData attackerData = PlayerDataManager.get(minecraftAttacker);
+                PlayerData victimData = PlayerDataManager.get(minecraftVictim.get());
+                PlayerData attackerData = PlayerDataManager.get(minecraftAttacker.get());
 
                 PlayerUtil.resetHealthStatus(attacker);
 
-                for(ServerPlayer spectator : this.spectators) {
-                    PlayerUtil.getFactoryPlayer(spectator).runCommand("/hub", 0, false);
+                for(AccuratePlayer spectator : this.spectators) {
+                    PlayerUtil.getFactoryPlayer(spectator.get()).runCommand("/hub", 0, false);
                 }
 
                 victimData.duelsGame = null;
@@ -194,7 +195,7 @@ public class DuelsGame { //implements Runnable{
                 victimData.inDuel = false;
                 victimData.inviteMap = DuelsMap.CITY;
                 victimData.inviteKit = "";
-                removeQueue(minecraftVictim, null, true);
+                removeQueue(minecraftVictim.get(), null, true);
                 victimData.gameMode = DuelGameMode.LOBBY;
 
                 attackerData.duelsGame = null;
@@ -202,7 +203,7 @@ public class DuelsGame { //implements Runnable{
                 attackerData.inDuel = false;
                 attackerData.inviteMap = DuelsMap.CITY;
                 attackerData.inviteKit = "";
-                removeQueue(minecraftAttacker, null, true);
+                removeQueue(minecraftAttacker.get(), null, true);
                 attackerData.gameMode = DuelGameMode.LOBBY;
 
                 attackerData.savedData.wins++;
@@ -210,17 +211,13 @@ public class DuelsGame { //implements Runnable{
 
                 this.isEnding = false;
 
-                minecraftVictim = PlayerUtil.getFixedPlayer(minecraftVictim);
-
-                if(minecraftVictim != null) {
-                    PlayerUtil.getFactoryPlayer(minecraftVictim).runCommand("/hub", 0, false);
+                if(minecraftVictim.get() != null) {
+                    PlayerUtil.getFactoryPlayer(minecraftVictim.get()).runCommand("/hub", 0, false);
                 }
 
 
-                minecraftAttacker = PlayerUtil.getFixedPlayer(minecraftAttacker);
-
-                if(minecraftAttacker != null) {
-                    PlayerUtil.getFactoryPlayer(minecraftAttacker).runCommand("/hub", 0, false);
+                if(minecraftAttacker.get() != null) {
+                    PlayerUtil.getFactoryPlayer(minecraftAttacker.get()).runCommand("/hub", 0, false);
                 }
 
                 DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
@@ -233,19 +230,22 @@ public class DuelsGame { //implements Runnable{
 
             this.currentStartTime--;
 
-            this.map.p1Pos.teleportPlayer(this.level, this.p1);
-            this.map.p2Pos.teleportPlayer(this.level, this.p2);
+            ServerPlayer p1 = this.p1.get();
+            ServerPlayer p2 = this.p2.get();
+
+            this.map.p1Pos.teleportPlayer(this.level, p1);
+            this.map.p2Pos.teleportPlayer(this.level, p2);
 
             if (this.startTime - this.currentStartTime >= this.startTime) {
-                PlayerUtil.sendSound(this.p1, new EntityPos(this.p1), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
-                PlayerUtil.sendSound(this.p2, new EntityPos(this.p2), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
-                this.p1.setGameMode(this.gameMode.gameMode);
-                this.p1.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-                this.p1.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
+                PlayerUtil.sendSound(p1, new EntityPos(p1), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
+                PlayerUtil.sendSound(p2, new EntityPos(p2), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
+                p1.setGameMode(this.gameMode.gameMode);
+                p1.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                p1.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
-                this.p2.setGameMode(this.gameMode.gameMode);
-                this.p2.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-                this.p2.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
+                p2.setGameMode(this.gameMode.gameMode);
+                p2.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                p2.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
                 this.hasStarted = true;
                 return;
             }
@@ -261,19 +261,17 @@ public class DuelsGame { //implements Runnable{
 
             title = Title.title(Component.text(this.currentStartTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
 
-            PlayerUtil.getFactoryPlayer(this.p1).sendTitle(title);
-            PlayerUtil.getFactoryPlayer(this.p2).sendTitle(title);
+            PlayerUtil.getFactoryPlayer(p1).sendTitle(title);
+            PlayerUtil.getFactoryPlayer(p2).sendTitle(title);
 
-            PlayerUtil.sendSound(this.p1, new EntityPos(this.p1), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
-            PlayerUtil.sendSound(this.p2, new EntityPos(this.p2), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+            PlayerUtil.sendSound(p1, new EntityPos(p1), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+            PlayerUtil.sendSound(p2, new EntityPos(p2), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
 
         }
     }
 
     public void endGame(@NotNull ServerPlayer minecraftVictim, @Nullable ServerPlayer minecraftAttacker, boolean wait) {
-
-        this.winner = minecraftAttacker;
-        this.loser = minecraftVictim;
+        this.loser = AccuratePlayer.create(minecraftVictim);
         this.shouldWait = wait;
         this.hasStarted = true;
         this.isEnding = true;
@@ -282,7 +280,9 @@ public class DuelsGame { //implements Runnable{
 
         Player victim = PlayerUtil.getFactoryPlayer(minecraftVictim);
         Player attacker = null;
+
         if (!attackerNull) {
+            this.winner = AccuratePlayer.create(minecraftAttacker);
             attacker = PlayerUtil.getFactoryPlayer(minecraftAttacker);
         }
 
