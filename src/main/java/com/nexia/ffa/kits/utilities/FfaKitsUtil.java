@@ -174,12 +174,7 @@ public class FfaKitsUtil {
 
 
     public static void leaveOrDie(@NotNull ServerPlayer player, @Nullable DamageSource source, boolean leaving) {
-        ServerPlayer attacker = null;
-
-        try {
-            attacker = PlayerUtil.getPlayerAttacker(player, source.getEntity());
-        } catch (Exception ignored) { }
-        // there is probably a better way to do this but im too lazy to do that
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
 
         if(!leaving) FfaKitsUtil.setDeathMessage(player, source);
 
@@ -200,13 +195,7 @@ public class FfaKitsUtil {
     }
 
     public static void setDeathMessage(@NotNull ServerPlayer minecraftPlayer, @Nullable DamageSource source) {
-        ServerPlayer attacker = null;
-        Entity fAttacker = null;
-
-        if (source != null && source.getEntity() != null) {
-            fAttacker = source.getEntity();
-            if(PlayerUtil.getPlayerAttacker(minecraftPlayer, source.getEntity()) != null) attacker = PlayerUtil.getPlayerAttacker(minecraftPlayer, source.getEntity());
-        }
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(minecraftPlayer);
 
         calculateDeath(minecraftPlayer);
 
@@ -259,13 +248,6 @@ public class FfaKitsUtil {
         if (source == DamageSource.MAGIC) {
             msg = Component.text("\uD83E\uDDEA " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
                     .append(Component.text(" had a bit too much pot.").color(ChatFormat.chatColor2));
-        }
-
-        if (fAttacker instanceof Projectile && attacker != null) {
-            msg = Component.text("\uD83C\uDFF9 " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
-                    .append(Component.text(" experienced freedom by ").color(ChatFormat.chatColor2)
-                            .append(Component.text(attacker.getScoreboardName()).color(ChatFormat.greenColor))
-                    );
         }
 
 

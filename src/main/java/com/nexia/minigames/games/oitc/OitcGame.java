@@ -219,11 +219,7 @@ public class OitcGame {
     public static void death(ServerPlayer victim, DamageSource source){
         PlayerData victimData = PlayerDataManager.get(victim);
         if(!OitcGame.deathPlayers.contains(victim) && OitcGame.isStarted && OitcGame.alive.contains(victim) && victimData.gameMode == OitcGameMode.PLAYING) {
-            ServerPlayer attacker = null;
-
-            if(source != null && PlayerUtil.getPlayerAttacker(victim, source.getEntity()) != null) {
-                attacker = PlayerUtil.getPlayerAttacker(victim, source.getEntity());
-            }
+            ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim);
 
             if(attacker != null){
                 PlayerData attackerData = PlayerDataManager.get(attacker);

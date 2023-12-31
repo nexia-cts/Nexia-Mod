@@ -375,8 +375,7 @@ public class SkywarsGame {
     public static void death(ServerPlayer victim, DamageSource source){
         PlayerData victimData = PlayerDataManager.get(victim);
         if(SkywarsGame.isStarted && SkywarsGame.alive.contains(victim) && victimData.gameMode == SkywarsGameMode.PLAYING) {
-            ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim, source.getEntity());
-            // there is probably a better way to do this but im too lazy to do that
+            ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim);
 
             if(attacker != null){
                 PlayerData attackerData = PlayerDataManager.get(attacker);

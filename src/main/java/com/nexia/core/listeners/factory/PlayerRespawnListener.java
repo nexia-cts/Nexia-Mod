@@ -45,14 +45,13 @@ public class PlayerRespawnListener {
             if(data.gameMode == PlayerGameMode.OITC) {
                 double[] respawn = {0, 100, 0};
                 boolean isPlaying = com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(player).gameMode == OitcGameMode.PLAYING;
-                if(player.getLastDamageSource() != null && PlayerUtil.getPlayerAttacker(player, player.getLastDamageSource().getEntity()) != null) {
-                    ServerPlayer serverPlayer = PlayerUtil.getPlayerAttacker(player, player.getLastDamageSource().getEntity());
-                    if(isPlaying) {
-                        respawn[0] = serverPlayer.getX();
-                        respawn[1] = serverPlayer.getY();
-                        respawn[2] = serverPlayer.getZ();
-                    }
+                ServerPlayer serverPlayer = PlayerUtil.getPlayerAttacker(player);
+                if(serverPlayer != null && isPlaying) {
+                    respawn[0] = serverPlayer.getX();
+                    respawn[1] = serverPlayer.getY();
+                    respawn[2] = serverPlayer.getZ();
                 }
+
 
                 if(isPlaying) {
                     GameHandler.showCountdown(player, 5);
@@ -65,13 +64,11 @@ public class PlayerRespawnListener {
             if(data.gameMode == PlayerGameMode.SKYWARS) {
                 double[] respawn = {0, 100, 0};
                 boolean isPlaying = com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(player).gameMode == SkywarsGameMode.PLAYING;
-                if(player.getLastDamageSource() != null && PlayerUtil.getPlayerAttacker(player, player.getLastDamageSource().getEntity()) != null) {
-                    ServerPlayer serverPlayer = PlayerUtil.getPlayerAttacker(player, player.getLastDamageSource().getEntity());
-                    if(isPlaying) {
-                        respawn[0] = serverPlayer.getX();
-                        respawn[1] = serverPlayer.getY();
-                        respawn[2] = serverPlayer.getZ();
-                    }
+                ServerPlayer serverPlayer = PlayerUtil.getPlayerAttacker(player);
+                if(serverPlayer != null && isPlaying) {
+                    respawn[0] = serverPlayer.getX();
+                    respawn[1] = serverPlayer.getY();
+                    respawn[2] = serverPlayer.getZ();
                 }
 
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);

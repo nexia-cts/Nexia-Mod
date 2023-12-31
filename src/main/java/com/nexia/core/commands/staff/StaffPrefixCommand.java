@@ -20,7 +20,7 @@ public class StaffPrefixCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
 
         dispatcher.register(Commands.literal("staffprefix")
-                .requires(commandSourceStack -> PlayerUtil.hasPermission(commandSourceStack, "nexia.staff.prefix", 3))
+                .requires(commandSourceStack -> PlayerUtil.hasPermission(commandSourceStack, "nexia.staff.prefix"))
                 .then(Commands.argument("type", StringArgumentType.string())
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest((new String[]{"set", "add", "remove"}), builder)))
                         .then(Commands.argument("player", EntityArgument.player())

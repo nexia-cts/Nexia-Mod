@@ -153,6 +153,10 @@ public class PlayerUtil {
         return me.lucko.fabric.api.permissions.v0.Permissions.check(permission, command, level);
     }
 
+    public static boolean hasPermission(@NotNull CommandSourceStack permission, @NotNull String command) {
+        return me.lucko.fabric.api.permissions.v0.Permissions.check(permission, command);
+    }
+
     public static ServerPlayer getPlayerAttacker(@Nullable net.minecraft.world.entity.player.Player player, Entity attackerEntity) {
 
         if(player == null) {
@@ -174,6 +178,36 @@ public class PlayerUtil {
         if(player.getKillCredit() instanceof ServerPlayer) {
             return (ServerPlayer) player.getKillCredit();
         }
+
+        if (attackerEntity == null) return null;
+
+        if (attackerEntity instanceof ServerPlayer) {
+            return (ServerPlayer) attackerEntity;
+        } else if (attackerEntity instanceof Projectile) {
+            Entity projectileOwner = ((Projectile) attackerEntity).getOwner();
+            if (!(projectileOwner instanceof ServerPlayer)) return null;
+            return (ServerPlayer) projectileOwner;
+        }
+
+        return null;
+    }
+
+    public static ServerPlayer getPlayerAttacker(@NotNull net.minecraft.world.entity.player.Player player) {
+
+        if(player.getCombatTracker().getKiller() instanceof ServerPlayer) {
+            return (ServerPlayer) player.getCombatTracker().getKiller();
+        }
+
+        if(player.getKillCredit() instanceof ServerPlayer) {
+            return (ServerPlayer) player.getKillCredit();
+        }
+
+        if(player.getLastDamageSource() != null && player.getLastDamageSource().getEntity() != null) getPlayerAttacker(player.getLastDamageSource().getEntity());
+
+        return null;
+    }
+
+    public static ServerPlayer getPlayerAttacker(Entity attackerEntity) {
 
         if (attackerEntity == null) return null;
 

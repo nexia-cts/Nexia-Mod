@@ -57,9 +57,9 @@ public abstract class PlayerMixin extends LivingEntity {
         this.stopUsingItem();
         Player player = (Player) (Object) this;
         this.level.broadcastEntityEvent(this, (byte)30);
-        if((this.getLastDamageSource() != null && this.getLastDamageSource().getEntity() != null && PlayerUtil.getPlayerAttacker(player, this.getLastDamageSource().getEntity()) != null) && Main.config.enhancements.betterShields){
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
+        if(attacker != null && Main.config.enhancements.betterShields){
             //this.level.broadcastEntityEvent(attacker, (byte)30);
-            ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player, this.getLastDamageSource().getEntity());
 
             SoundSource soundSource = null;
             for (SoundSource source : SoundSource.values()) {
@@ -96,7 +96,7 @@ public abstract class PlayerMixin extends LivingEntity {
             return;
         }
 
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player, damageSource.getEntity());
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
         if(attacker != null) {
             if(attacker.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) cir.setReturnValue(false);
 

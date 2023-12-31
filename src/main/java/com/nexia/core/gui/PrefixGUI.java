@@ -51,14 +51,14 @@ public class PrefixGUI extends SimpleGui {
                 slot = 19;
             }
 
-            if(PlayerUtil.hasPermission(player.createCommandSourceStack(), "nexia.prefix." + rank, 4) && player.getTags().contains(rank)){
+            if(PlayerUtil.hasPermission(player.createCommandSourceStack(), "nexia.prefix." + rank) && player.getTags().contains(rank)){
                 ItemStack enchantedItem = new ItemStack(Items.NAME_TAG, 1);
                 enchantedItem.enchant(Enchantments.SHARPNESS, 1);
                 enchantedItem.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
                 enchantedItem.setHoverName(new TextComponent("§d§l" + rank));
                 this.setSlot(slot, enchantedItem);
                 slot++;
-            } else if(PlayerUtil.hasPermission(player.createCommandSourceStack(), "nexia.prefix." + rank, 4)){
+            } else if(PlayerUtil.hasPermission(player.createCommandSourceStack(), "nexia.prefix." + rank)){
                 ItemStack changedItem = new ItemStack(Items.NAME_TAG, 1);
                 changedItem.setHoverName(new TextComponent("§f" + rank));
                 this.setSlot(slot, changedItem);
