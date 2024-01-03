@@ -13,7 +13,7 @@ public class PlayCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
         dispatcher.register(Commands.literal("play").executes(PlayCommand::openGUI)
-                .then(Commands.literal("ffa").executes(PlayCommand::openGUI)
+                .then(Commands.literal("ffa").executes(PlayCommand::openFFAGui)
                         .then(Commands.literal("kits").executes(PlayCommand::playKitFFA))
                         .then(Commands.literal("sky").executes(PlayCommand::playSkyFFA))
                         .then(Commands.literal("uhc").executes(PlayCommand::playUhcFFA))
@@ -25,7 +25,7 @@ public class PlayCommand {
                 .then(Commands.literal("oitc").executes(PlayCommand::playOITC))
                 .then(Commands.literal("bw").executes(PlayCommand::playBedWars)));
         dispatcher.register(Commands.literal("join").executes(PlayCommand::openGUI)
-                .then(Commands.literal("ffa").executes(PlayCommand::openGUI)
+                .then(Commands.literal("ffa").executes(PlayCommand::openFFAGui)
                         .then(Commands.literal("kits").executes(PlayCommand::playKitFFA))
                         .then(Commands.literal("sky").executes(PlayCommand::playSkyFFA))
                         .then(Commands.literal("uhc").executes(PlayCommand::playUhcFFA))
@@ -37,11 +37,20 @@ public class PlayCommand {
                 .then(Commands.literal("bw").executes(PlayCommand::playBedWars))
                 .then(Commands.literal("oitc").executes(PlayCommand::playOITC))
         );
-        dispatcher.register(Commands.literal("ffa").executes(PlayCommand::playNormalFFA));
+        dispatcher.register(Commands.literal("ffa").executes(PlayCommand::openFFAGui)
+                .then(Commands.literal("kits").executes(PlayCommand::playKitFFA))
+                .then(Commands.literal("sky").executes(PlayCommand::playSkyFFA))
+                .then(Commands.literal("uhc").executes(PlayCommand::playUhcFFA))
+                .then(Commands.literal("classic").executes(PlayCommand::playNormalFFA)));
     }
 
     private static int openGUI(CommandContext<CommandSourceStack> context) throws CommandSyntaxException{
         PlayGUI.openMainGUI(context.getSource().getPlayerOrException());
+        return 1;
+    }
+
+    private static int openFFAGui(CommandContext<CommandSourceStack> context) throws CommandSyntaxException{
+        PlayGUI.openMainGUI(context.getSource().getPlayerOrException()).setFFALayout();
         return 1;
     }
 

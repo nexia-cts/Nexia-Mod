@@ -107,7 +107,7 @@ public class PlayGUI extends SimpleGui {
         this.setSlot(8, bedwars);
     }
 
-    private void setFFALayout(){
+    public void setFFALayout(){
         ItemStack classic = new ItemStack(Items.NETHERITE_SWORD, 1);
         classic.setHoverName(new TextComponent("§cClassic FFA"));
         ItemDisplayUtil.addGlint(classic);
@@ -267,10 +267,12 @@ public class PlayGUI extends SimpleGui {
         }
         return super.click(index, clickType, action);
     }
-    public static void openMainGUI(ServerPlayer player) {
+    public static PlayGUI openMainGUI(ServerPlayer player) {
         PlayGUI shop = new PlayGUI(MenuType.GENERIC_9x1, player, false);
         shop.setTitle(title);
         shop.setMainLayout();
         shop.open();
+
+        return shop;
     }
 }

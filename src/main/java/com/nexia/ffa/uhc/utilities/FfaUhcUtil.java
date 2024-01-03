@@ -330,13 +330,13 @@ public class FfaUhcUtil {
         invItems = new HashMap<>();
 
         ItemStack sword = new ItemStack(Items.DIAMOND_SWORD);
-        sword.enchant(Enchantments.SHARPNESS, 2);
+        sword.enchant(Enchantments.SHARPNESS, 4);
 
         ItemStack trident = new ItemStack(Items.TRIDENT);
-        trident.enchant(Enchantments.IMPALING, 1);
+        trident.enchant(Enchantments.IMPALING, 2);
 
         ItemStack axe = new ItemStack(Items.DIAMOND_AXE);
-        axe.enchant(Enchantments.CLEAVING, 1);
+        axe.enchant(Enchantments.CLEAVING, 2);
 
         ItemStack lava_bucket = new ItemStack(Items.LAVA_BUCKET);
         ItemStack water_bucket = new ItemStack(Items.WATER_BUCKET);
@@ -349,33 +349,36 @@ public class FfaUhcUtil {
 
         ItemStack crossbow = new ItemStack(Items.CROSSBOW);
         crossbow.enchant(Enchantments.PIERCING, 1);
+        crossbow.enchant(Enchantments.QUICK_CHARGE, 1);
+
+        ItemStack shield = new ItemStack(Items.SHIELD);
 
         ItemStack golden_apples = new ItemStack(Items.GOLDEN_APPLE);
-        golden_apples.setCount(8);
+        golden_apples.setCount(13);
 
         ItemStack cobwebs = new ItemStack(Items.COBWEB);
         cobwebs.setCount(10);
 
         ItemStack bow = new ItemStack(Items.BOW);
-        bow.enchant(Enchantments.POWER_ARROWS, 1);
+        bow.enchant(Enchantments.POWER_ARROWS, 2);
 
         ItemStack pickaxe = new ItemStack(Items.DIAMOND_PICKAXE);
-        pickaxe.enchant(Enchantments.DIGGING_EFFICIENCY, 1);
+        pickaxe.enchant(Enchantments.DIGGING_EFFICIENCY, 2);
 
         ItemStack arrows = new ItemStack(Items.ARROW);
-        arrows.setCount(8);
+        arrows.setCount(6);
 
         ItemStack helmet = new ItemStack(Items.DIAMOND_HELMET);
-        helmet.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 1);
+        helmet.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 2);
 
         ItemStack chestplate = new ItemStack(Items.DIAMOND_CHESTPLATE);
-        chestplate.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 2);
+        chestplate.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 3);
 
         ItemStack leggings = new ItemStack(Items.DIAMOND_LEGGINGS);
-        leggings.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 2);
+        leggings.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 3);
 
         ItemStack boots = new ItemStack(Items.DIAMOND_BOOTS);
-        boots.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 1);
+        boots.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 2);
 
         invItems.put(0, sword);
         invItems.put(1, trident);
@@ -385,24 +388,28 @@ public class FfaUhcUtil {
         invItems.put(5, cobblestone);
         invItems.put(6, crossbow);
         invItems.put(7, cobwebs);
-        invItems.put(8, bow);
+        invItems.put(8, golden_apples);
 
         invItems.put(30, lava_bucket);
         invItems.put(13, water_bucket);
         invItems.put(32, cobblestone);
         invItems.put(35, pickaxe);
+        invItems.put(34, bow);
 
+        invItems.put(21, lava_bucket);
         invItems.put(22, water_bucket);
         invItems.put(23, oak_log);
 
         invItems.put(31, water_bucket);
         invItems.put(17, arrows);
+        invItems.put(16, shield);
+        invItems.put(14, water_bucket);
 
         invItems.put(36, boots);
         invItems.put(37, leggings);
         invItems.put(38, chestplate);
         invItems.put(39, helmet);
 
-        invItems.put(40, golden_apples);
+        invItems.put(40, shield);
     }
 }

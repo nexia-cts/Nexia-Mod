@@ -42,30 +42,41 @@ public class SkywarsMap {
     public StructureMap structureMap;
 
     public static SkywarsMap RELIC = new SkywarsMap("relic", 8, new ArrayList<>(Arrays.asList(
-            new EntityPos(59,92,-14),
-            new EntityPos(59,92,14),
-            new EntityPos(14,92,59),
-            new EntityPos(-14,92,59),
-            new EntityPos(-59,92,14),
-            new EntityPos(-59,92,-14),
-            new EntityPos(-14,92,-59),
-            new EntityPos(14,92,-59))
+            new EntityPos(59.5,91.0,-14.5),
+            new EntityPos(59.5,91.0,14.5),
+            new EntityPos(14.5,91.0,59.5),
+            new EntityPos(-14.5,91.0,59.5),
+            new EntityPos(-59.5,91.0,14.5),
+            new EntityPos(-59.5,91.0,-14.5),
+            new EntityPos(-14.5,91.0,-59.5),
+            new EntityPos(14.5,91.0,-59.5))
     ), new StructureMap(new ResourceLocation("skywars", "relic"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-63,-7,-63), true));
 
     public static SkywarsMap SKYHENGE = new SkywarsMap("skyhenge", 12, new ArrayList<>(Arrays.asList(
-            new EntityPos(72, 82, 0),
-            new EntityPos(49,82,-23),
-            new EntityPos(23,82,-49),
-            new EntityPos(0,82,-72),
-            new EntityPos(-23,82,-49),
-            new EntityPos(-49,82,-23),
-            new EntityPos(-72,82,0),
-            new EntityPos(-49,82,23),
-            new EntityPos(-23,82,49),
-            new EntityPos(0,82,72),
-            new EntityPos(23,82,49),
-            new EntityPos(49,82,23))
+            new EntityPos(72.5, 88.0, 0.5),
+            new EntityPos(49.5,88.0,-23.5),
+            new EntityPos(23.5,88.0,-49.5),
+            new EntityPos(0.5,88.0,-72.5),
+            new EntityPos(-23.5,88.0,-49.5),
+            new EntityPos(-49.5,88.0,-23.5),
+            new EntityPos(-72.5,88.0,0.5),
+            new EntityPos(-49.5,88.0,23.5),
+            new EntityPos(-23.5,88.0,49.5),
+            new EntityPos(0.5,88.0,72.5),
+            new EntityPos(23.5,88.0,49.5),
+            new EntityPos(49.5,88.0,23.5))
     ), new StructureMap(new ResourceLocation("skywars", "skyhenge"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-77, -7, -77), true));
+
+    public static SkywarsMap BELOW = new SkywarsMap("below", 8, new ArrayList<>(Arrays.asList(
+            new EntityPos(-29.5, 81.0, 69.5),
+            new EntityPos(29.5,81.0,69.5),
+            new EntityPos(69.5,81.0,28.5),
+            new EntityPos(69.5,81.0,-28.5),
+            new EntityPos(29.5,81.0,-68.5),
+            new EntityPos(-28.5,81.0,-68.5),
+            new EntityPos(-68.5,81.0,-28.5),
+            new EntityPos(-68.5,81.0,29.5))
+    ), new StructureMap(new ResourceLocation("skywars", "below"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-76, -9, -76), true));
 
 
     public static SkywarsMap identifyMap(String name) {

@@ -67,6 +67,7 @@ public class LobbyUtil {
 
     public static String[] removedTags = {
             "in_bedwars",
+            "bedwars",
             "ffa",
             "ffa_classic",
             "ffa_kits",
@@ -218,6 +219,7 @@ public class LobbyUtil {
             return;
         }
 
+        player.removeTag("duels");
         DuelGameHandler.leave(minecraftPlayer, true);
 
         if (!LobbyUtil.isLobbyWorld(minecraftPlayer.getLevel())) {

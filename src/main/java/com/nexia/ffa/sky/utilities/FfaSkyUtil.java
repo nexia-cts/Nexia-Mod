@@ -67,7 +67,9 @@ public class FfaSkyUtil {
         com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
         return player.getTags().contains("ffa_sky") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.SKY;
     }
+
     public static void ffaSecond() {
+        /*
         Iterator<UUID> it = fallInvulnerable.keySet().iterator();
         while (it.hasNext()) {
             UUID uuid = it.next();
@@ -81,29 +83,8 @@ public class FfaSkyUtil {
                 fallInvulnerable.put(player.getUUID(), 4);
             }
         }
-    }
 
-    public static void calculateKill(ServerPlayer player){
-        SavedPlayerData data = PlayerDataManager.get(player).savedData;
-        data.killstreak++;
-        if(data.killstreak > data.bestKillstreak){
-            data.bestKillstreak = data.killstreak;
-        }
-        data.kills++;
-
-        if(data.killstreak % 5 == 0) {
-            for (ServerPlayer serverPlayer : FfaAreas.ffaWorld.players()) {
-                PlayerUtil.getFactoryPlayer(serverPlayer).sendMessage(
-                        Component.text("[").color(ChatFormat.lineColor)
-                                .append(Component.text("☠").color(ChatFormat.failColor))
-                                .append(Component.text("] ").color(ChatFormat.lineColor))
-                                .append(Component.text(player.getScoreboardName()).color(ChatFormat.normalColor))
-                                .append(Component.text(" now has a killstreak of ").color(ChatFormat.chatColor2))
-                                .append(Component.text(data.killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
-                                .append(Component.text("!").color(ChatFormat.chatColor2))
-                );
-            }
-        }
+         */
     }
 
     public static void fiveTick() {
@@ -171,7 +152,7 @@ public class FfaSkyUtil {
 
     public static void joinOrRespawn(ServerPlayer player) {
         PlayerUtil.resetHealthStatus(player);
-        fallInvulnerable.put(player.getUUID(), 4);
+        //fallInvulnerable.put(player.getUUID(), 4);
         wasInSpawn.add(player.getUUID());
         player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1000000, 0, true, false, false));
         player.setGameMode(GameType.SURVIVAL);
@@ -365,7 +346,8 @@ public class FfaSkyUtil {
             return false;
         }
 
-        return damageSource != DamageSource.FALL || !FfaSkyUtil.fallInvulnerable.containsKey(player.getUUID());
+        return true;
+        //return damageSource != DamageSource.FALL || !FfaSkyUtil.fallInvulnerable.containsKey(player.getUUID());
     }
 
     public static void afterPlace(ServerPlayer player, BlockPos blockPos, InteractionHand hand) {

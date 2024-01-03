@@ -57,7 +57,7 @@ public class SkywarsGame {
             .setGenerator(FfaAreas.ffaWorld.getChunkSource().getGenerator())
             .setDifficulty(Difficulty.EASY)
             .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
-            .setGameRule(GameRules.RULE_MOBGRIEFING, false)
+            .setGameRule(GameRules.RULE_MOBGRIEFING, true)
             .setGameRule(GameRules.RULE_WEATHER_CYCLE, false)
             .setGameRule(GameRules.RULE_FALL_DAMAGE, true)
             .setGameRule(GameRules.RULE_DAYLIGHT, false)
@@ -225,7 +225,7 @@ public class SkywarsGame {
                 new ResourceLocation("skywars", SkywarsGame.id)).asWorld();
 
         SkywarsGame.map.structureMap.pasteMap(level);
-        ServerTime.factoryServer.runCommand(String.format("execute in skywars:%s run worldborder set 200", SkywarsGame.id));
+        ServerTime.factoryServer.runCommand(String.format("execute in skywars:%s run worldborder set 200", SkywarsGame.id), 4, false);
         SkywarsMap.spawnQueueBuild(level);
         SkywarsGame.world = level;
     }
@@ -240,6 +240,8 @@ public class SkywarsGame {
         SkywarsGame.alive.addAll(SkywarsGame.queue);
 
         ArrayList<EntityPos> positions = new ArrayList<>(SkywarsGame.map.positions);
+
+        ServerTime.factoryServer.runCommand(String.format("execute in skywars:%s run worldborder set 30 60", SkywarsGame.id), 4, false);
 
         for (AccuratePlayer player : SkywarsGame.alive) {
             EntityPos pos = positions.get(RandomUtil.randomInt(positions.size()));
