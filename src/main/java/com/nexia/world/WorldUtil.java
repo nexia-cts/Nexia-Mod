@@ -54,12 +54,12 @@ public class WorldUtil {
         List<String> duelsDelete = new ArrayList<>();
 
         for (ServerLevel level : ServerTime.minecraftServer.getAllLevels()) {
-            String[] split = level.dimension().toString().replaceAll("]", "").split(":");
-            if (split[1].toLowerCase().contains("duels")) {
-                duelsDelete.add(split[2]);
+            Identifier split = WorldUtil.getWorldName(WorldUtil.getWorldName(level));
+            if (split.getNamespace().toLowerCase().contains("duels")) {
+                duelsDelete.add(split.getNamespace());
             }
-            if (split[1].toLowerCase().contains("skywars")) {
-                skywarsDelete.add(split[2]);
+            if (split.getNamespace().toLowerCase().contains("skywars")) {
+                skywarsDelete.add(split.getNamespace());
             }
         }
 

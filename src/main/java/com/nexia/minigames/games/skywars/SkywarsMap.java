@@ -1,6 +1,5 @@
 package com.nexia.minigames.games.skywars;
 
-import com.combatreforged.factory.api.util.Identifier;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
@@ -68,8 +67,8 @@ public class SkywarsMap {
     ), new StructureMap(new ResourceLocation("skywars", "skyhenge"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-77, -7, -77), true));
 
     public static SkywarsMap BELOW = new SkywarsMap("below", 8, new ArrayList<>(Arrays.asList(
-            new EntityPos(-29.5, 81.0, 69.5),
-            new EntityPos(29.5,81.0,69.5),
+            new EntityPos(-28.5, 81.0, 69.5),
+            new EntityPos(28.5,81.0,69.5),
             new EntityPos(69.5,81.0,28.5),
             new EntityPos(69.5,81.0,-28.5),
             new EntityPos(29.5,81.0,-68.5),
@@ -77,6 +76,13 @@ public class SkywarsMap {
             new EntityPos(-68.5,81.0,-28.5),
             new EntityPos(-68.5,81.0,29.5))
     ), new StructureMap(new ResourceLocation("skywars", "below"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-76, -9, -76), true));
+
+    public static SkywarsMap NULL = new SkywarsMap("null", 4, new ArrayList<>(Arrays.asList(
+            new EntityPos(-24.5, 77.0, 25.5),
+            new EntityPos(25.5, 77.0, -24.5),
+            new EntityPos(-24.5, 77.0, 25.5),
+            new EntityPos(-24.5, 77.0, -24.5))
+    ), new StructureMap(new ResourceLocation("skywars", "null"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-33, -42, -33), true));
 
 
     public static SkywarsMap identifyMap(String name) {

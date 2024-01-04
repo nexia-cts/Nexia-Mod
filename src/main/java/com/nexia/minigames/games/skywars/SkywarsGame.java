@@ -241,8 +241,6 @@ public class SkywarsGame {
 
         ArrayList<EntityPos> positions = new ArrayList<>(SkywarsGame.map.positions);
 
-        ServerTime.factoryServer.runCommand(String.format("execute in skywars:%s run worldborder set 30 60", SkywarsGame.id), 4, false);
-
         for (AccuratePlayer player : SkywarsGame.alive) {
             EntityPos pos = positions.get(RandomUtil.randomInt(positions.size()));
             ServerPlayer serverPlayer = player.get();
