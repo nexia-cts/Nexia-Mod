@@ -8,6 +8,7 @@ import com.nexia.core.utilities.misc.EventUtil;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
@@ -116,7 +117,7 @@ public class ServerGamePacketListenerMixin {
             }
         }
 
-        if (FfaClassicUtil.isFfaPlayer(player)) {
+        if (FfaUtil.isFfaPlayer(player)) {
             // If clicks on crafting slot
             if (containerId == 0 && slot >= 1 && slot <= 4) {
                 ItemStackUtil.sendInventoryRefreshPacket(player);

@@ -50,7 +50,7 @@ public class SkywarsGame {
 
     public static ServerLevel world = null;
 
-    public static SkywarsMap map = SkywarsMap.RELIC;
+    public static SkywarsMap map = SkywarsMap.BELOW;
 
     public static RuntimeWorldConfig config = new RuntimeWorldConfig()
             .setDimensionType(FfaAreas.ffaWorld.dimensionType())
@@ -96,7 +96,13 @@ public class SkywarsGame {
 
         PlayerData data = PlayerDataManager.get(minecraftPlayer);
         SkywarsGame.spectator.remove(accuratePlayer);
+
+
+        if(!SkywarsGame.isStarted && SkywarsGame.queue.contains(accuratePlayer)) {
+            SkywarsGame.map = SkywarsMap.calculateMap(SkywarsGame.queue.size(), SkywarsGame.queue.size() - 1);
+        }
         SkywarsGame.queue.remove(accuratePlayer);
+
         SkywarsGame.alive.remove(accuratePlayer);
 
         data.kills = 0;
@@ -208,6 +214,8 @@ public class SkywarsGame {
             SkywarsGame.queue.add(AccuratePlayer.create(player));
             player.setGameMode(GameType.ADVENTURE);
             player.addTag(LobbyUtil.NO_DAMAGE_TAG);
+
+            SkywarsGame.map = SkywarsMap.calculateMap(SkywarsGame.queue.size() - 1, SkywarsGame.queue.size());
         }
 
         player.teleportTo(world, 0, 128.1, 0, 0, 0);
@@ -219,12 +227,12 @@ public class SkywarsGame {
 
         SkywarsGame.id = UUID.randomUUID().toString();
 
-        SkywarsGame.map = SkywarsMap.skywarsMaps.get(RandomUtil.randomInt(SkywarsMap.skywarsMaps.size()));
+        //SkywarsGame.map = SkywarsMap.skywarsMaps.get(RandomUtil.randomInt(SkywarsMap.skywarsMaps.size()));
         ServerLevel level = ServerTime.fantasy.openTemporaryWorld(
                 SkywarsGame.config,
                 new ResourceLocation("skywars", SkywarsGame.id)).asWorld();
 
-        SkywarsGame.map.structureMap.pasteMap(level);
+        //SkywarsGame.map.structureMap.pasteMap(level);
         ServerTime.factoryServer.runCommand(String.format("execute in skywars:%s run worldborder set 200", SkywarsGame.id), 4, false);
         SkywarsMap.spawnQueueBuild(level);
         SkywarsGame.world = level;
@@ -238,6 +246,8 @@ public class SkywarsGame {
         SkywarsGame.glowingTime = 180;
         SkywarsGame.gameEnd = 360;
         SkywarsGame.alive.addAll(SkywarsGame.queue);
+
+        SkywarsGame.map.structureMap.pasteMap(SkywarsGame.world);
 
         ArrayList<EntityPos> positions = new ArrayList<>(SkywarsGame.map.positions);
 

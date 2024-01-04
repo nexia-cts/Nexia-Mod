@@ -1,7 +1,6 @@
 package com.nexia.core.mixin.player;
 
 import com.mojang.authlib.GameProfile;
-import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
@@ -12,7 +11,6 @@ import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
@@ -25,7 +23,8 @@ import net.minecraft.server.players.PlayerList;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.level.GameType;
 import org.json.simple.JSONObject;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
@@ -34,12 +33,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.net.SocketAddress;
-import java.util.concurrent.CompletableFuture;
 
 import static com.nexia.core.utilities.player.BanHandler.banTimeToText;
 import static com.nexia.core.utilities.time.ServerTime.joinPlayer;
 import static com.nexia.core.utilities.time.ServerTime.leavePlayer;
-import static com.nexia.discord.Main.jda;
 
 @Mixin(PlayerList.class)
 public abstract class PlayerListMixin {
@@ -54,7 +51,7 @@ public abstract class PlayerListMixin {
             if (key.contains("multiplayer.player.join")) args.set(0, joinFormat(component, joinPlayer));
 
             if(!PlayerMutes.muted(player)){
-                args.set(0, chatFormat(player, component));
+                args.set(0, chatFormat(component));
             }
 
         } catch (Exception ignored) {}
@@ -75,6 +72,8 @@ public abstract class PlayerListMixin {
             player.inventory.clearContent();
             LobbyUtil.giveItems(player);
             player.setGameMode(GameType.ADVENTURE);
+
+            PlayerUtil.getFactoryPlayer(player).runCommand("/hub");
             return;
         }
 
@@ -132,7 +131,7 @@ public abstract class PlayerListMixin {
     }
 
     @Unique
-    private static Component chatFormat(ServerPlayer player, Component original) {
+    private static Component chatFormat(Component original) {
         try {
             TranslatableComponent component = (TranslatableComponent) original;
             Object[] args = component.getArgs();

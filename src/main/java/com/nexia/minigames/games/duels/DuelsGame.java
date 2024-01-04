@@ -220,8 +220,13 @@ public class DuelsGame { //implements Runnable{
                     PlayerUtil.getFactoryPlayer(minecraftAttacker.get()).runCommand("/hub", 0, false);
                 }
 
-                DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
+                for(ServerPlayer spectator : this.level.players()) {
+                    PlayerUtil.getFactoryPlayer(spectator).runCommand("/hub", 0, false);
 
+                    spectator.kill();
+                }
+
+                DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
                 DuelGameHandler.duelsGames.remove(this);
                 return;
             }

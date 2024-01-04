@@ -7,16 +7,12 @@ import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
-import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.sky.SkyFfaBlocks;
 import com.nexia.ffa.sky.utilities.player.PlayerData;
 import com.nexia.ffa.sky.utilities.player.PlayerDataManager;
-import com.nexia.ffa.sky.utilities.player.SavedPlayerData;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,7 +26,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.projectile.Arrow;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -45,9 +40,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 
-import static com.nexia.ffa.sky.utilities.FfaAreas.ffaCorner1;
-import static com.nexia.ffa.sky.utilities.FfaAreas.ffaCorner2;
-import static com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld;
 import static com.nexia.ffa.sky.utilities.FfaAreas.*;
 
 public class FfaSkyUtil {
@@ -211,6 +203,7 @@ public class FfaSkyUtil {
     }
 
     public static void giveKillLoot(ServerPlayer player) {
+        if(!FfaSkyUtil.isFfaPlayer(player)) return;
         HashMap<Integer, ItemStack> availableRewards = (HashMap<Integer, ItemStack>) killRewards.clone();
         ArrayList<ItemStack> givenRewards = new ArrayList<>();
 
@@ -243,6 +236,7 @@ public class FfaSkyUtil {
     }
 
     public static void killHeal(ServerPlayer player) {
+        if(!FfaSkyUtil.isFfaPlayer(player)) return;
         int minHeal = 4;
         int maxHeal = 11;
         float maxHealth = player.getMaxHealth();
@@ -314,7 +308,7 @@ public class FfaSkyUtil {
 
     private static ItemStack gApplePotion() {
         ItemStack potion = new ItemStack(Items.POTION);
-        potion.setHoverName(new TextComponent("\247bPiss Juice²"));
+        potion.setHoverName(new TextComponent("\247bPiss Juice"));
         potion.getOrCreateTag().putInt("CustomPotionColor", 16771584);
 
         ArrayList<MobEffectInstance> effects = new ArrayList<>();
@@ -342,11 +336,7 @@ public class FfaSkyUtil {
         }
 
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
-        if (attacker != null && FfaAreas.isInFfaSpawn(attacker)) {
-            return false;
-        }
-
-        return true;
+        return attacker == null || !FfaAreas.isInFfaSpawn(attacker);
         //return damageSource != DamageSource.FALL || !FfaSkyUtil.fallInvulnerable.containsKey(player.getUUID());
     }
 

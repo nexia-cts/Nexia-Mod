@@ -1,6 +1,7 @@
 package com.nexia.minigames.games.skywars;
 
 import com.nexia.core.Main;
+import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
@@ -27,6 +28,12 @@ public class SkywarsMap {
 
     public static List<String> stringSkywarsMaps = new ArrayList<>();
 
+
+    public static List<SkywarsMap> fourPlayerMaps = new ArrayList<>();
+
+    public static List<SkywarsMap> eightPlayerMaps = new ArrayList<>();
+
+    public static List<SkywarsMap> twelvePlayerMaps = new ArrayList<>();
 
     public String id;
 
@@ -130,5 +137,22 @@ public class SkywarsMap {
 
         SkywarsMap.skywarsMaps.add(this);
         SkywarsMap.stringSkywarsMaps.add(id);
+
+        if(maxPlayers == 4) SkywarsMap.fourPlayerMaps.add(this);
+        if(maxPlayers == 8) SkywarsMap.eightPlayerMaps.add(this);
+        if(maxPlayers == 12) SkywarsMap.twelvePlayerMaps.add(this);
+    }
+
+    public static SkywarsMap calculateMap(int oldPlayers, int newPlayers) {
+        if(newPlayers <= 4) {
+            return SkywarsMap.fourPlayerMaps.get(RandomUtil.randomInt(SkywarsMap.fourPlayerMaps.size()));
+        }
+        if(newPlayers >= 5 && oldPlayers <= 4) {
+            return SkywarsMap.eightPlayerMaps.get(RandomUtil.randomInt(SkywarsMap.eightPlayerMaps.size()));
+        }
+        if(newPlayers >= 9 && oldPlayers <= 8) {
+            return SkywarsMap.twelvePlayerMaps.get(RandomUtil.randomInt(SkywarsMap.twelvePlayerMaps.size()));
+        }
+        return SkywarsMap.BELOW;
     }
 }

@@ -1,7 +1,6 @@
 package com.nexia.minigames.games.bedwars.upgrades;
 
 import com.nexia.core.utilities.chat.LegacyChatFormat;
-import com.nexia.core.utilities.chat.RomanNumbers;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.minigames.games.bedwars.players.BwTeam;
@@ -16,6 +15,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.notcoded.codelib.util.numbers.RomanNumbers;
 
 import java.util.HashMap;
 
