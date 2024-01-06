@@ -27,10 +27,11 @@ public class EggItemMixin {
         this.hand = interactionHand;
     }
 
-    @Redirect(method = "use", at = @At(value = "NEW", target = "(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/LivingEntity;)Lnet/minecraft/world/entity/projectile/ThrownEgg;"))
+    @Redirect(method = "use", at = @At(value = "NEW", target = "net/minecraft/world/entity/projectile/ThrownEgg"))
     private ThrownEgg setThrownEgg(Level level, LivingEntity livingEntity) {
 
-        if (livingEntity instanceof ServerPlayer player) {
+        if (livingEntity instanceof ServerPlayer) {
+            ServerPlayer player = (ServerPlayer) livingEntity;
 
             if (BwAreas.isBedWarsWorld(level)) {
                 return BwPlayerEvents.throwEgg(player, player.getItemInHand(hand));

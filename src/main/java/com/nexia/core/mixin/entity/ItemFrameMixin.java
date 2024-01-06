@@ -1,8 +1,6 @@
 package com.nexia.core.mixin.entity;
 
-import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.classic.utilities.FfaAreas;
-import com.nexia.ffa.classic.utilities.FfaClassicUtil;
+import com.nexia.ffa.utilities.FfaAreas;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -28,7 +26,7 @@ public abstract class ItemFrameMixin extends Entity {
     private void canTakeItem(Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResult> cir) {
 
         // Disable interacting with armor stands in ffa
-        if (FfaUtil.isFfaPlayer(player) && !player.isCreative()) {
+        if (FfaAreas.isFfaWorld(level) && !player.isCreative()) {
             cir.setReturnValue(InteractionResult.FAIL);
             return;
         }
@@ -39,7 +37,7 @@ public abstract class ItemFrameMixin extends Entity {
     private void canTakeItem(ItemStack itemStack, CallbackInfo ci) {
 
         // Disable interacting with item frames in ffa
-        if ((FfaAreas.isFfaWorld(level) || com.nexia.ffa.kits.utilities.FfaAreas.isFfaWorld(level) || com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(level) || com.nexia.ffa.pot.utilities.FfaAreas.isFfaWorld(level)) && !getTags().contains("removeFrameMap")) {
+        if (FfaAreas.isFfaWorld(level) && !getTags().contains("removeFrameMap")) {
             ci.cancel();
             return;
         }

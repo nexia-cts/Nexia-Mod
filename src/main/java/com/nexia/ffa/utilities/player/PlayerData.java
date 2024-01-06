@@ -1,13 +1,16 @@
-package com.nexia.ffa.uhc.utilities.player;
+package com.nexia.ffa.utilities.player;
 
 import net.minecraft.world.entity.player.Inventory;
 
 public class PlayerData {
     public SavedPlayerData savedData;
-    public Inventory ffaInventory;
+
+    public Inventory FfaInventory;
+
 
     public PlayerData(SavedPlayerData savedData) {
         this.savedData = savedData;
-        this.ffaInventory = null;
+
+        this.FfaInventory = null;
     }
 }

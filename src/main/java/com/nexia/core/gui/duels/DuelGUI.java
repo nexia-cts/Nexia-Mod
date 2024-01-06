@@ -81,7 +81,7 @@ public class DuelGUI extends SimpleGui {
         //this.setSlot(4, HeadFunctions.getPlayerHead(otherp.getScoreboardName(), 1));
         int i1 = 0;
         ItemStack item;
-        for(String duel : DuelGameMode.stringDuelGameModes){
+        for(String duel : DuelGameMode.duels){
             if(slot == 17) {
                 slot = 19;
             }
@@ -104,7 +104,7 @@ public class DuelGUI extends SimpleGui {
             Component name = itemStack.getHoverName();
 
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
-                if(DuelGameMode.stringDuelGameModes.contains(name.getString().substring(2).replaceAll(" ", "_"))){
+                if(Arrays.stream(DuelGameMode.duels).toList().contains(name.getString().substring(2).replaceAll(" ", "_"))){
                     this.kit = name.getString().substring(2).replaceAll(" ", "_");
                     setMapLayout(GamemodeHandler.identifyGamemode(this.kit));
                 } else {

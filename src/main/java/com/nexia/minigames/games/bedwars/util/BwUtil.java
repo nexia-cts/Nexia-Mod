@@ -117,7 +117,7 @@ public class BwUtil {
         Level level = player.level;
         Vec3 pos = player.position().add(0, 1, 0);
         Vec3 angle = player.getLookAngle();
-        float speed = 0.8f;
+        float speed = 0.5f;
 
         LargeFireball fireball = new LargeFireball(level, player, angle.x, angle.y, angle.z);
         fireball.teleportTo(pos.x, pos.y, pos.z);
@@ -179,7 +179,10 @@ public class BwUtil {
         if (item instanceof PickaxeItem || item instanceof AxeItem || item instanceof ShearsItem) {
             return false;
         }
-        return !BwUtil.isDefaultSword(itemStack);
+        if (BwUtil.isDefaultSword(itemStack)) {
+            return false;
+        }
+        return true;
     }
 
     public static boolean canDropItem(com.combatreforged.factory.api.world.item.ItemStack itemStack) {
@@ -195,7 +198,8 @@ public class BwUtil {
 
     public static float playerArmorCalculation(ServerPlayer player, DamageSource damageSource, float damage) {
 
-        if (damageSource.getEntity() instanceof ServerPlayer attacker) {
+        if (damageSource.getEntity() instanceof ServerPlayer) {
+            ServerPlayer attacker = (ServerPlayer) damageSource.getEntity();
             float crit = PlayerUtil.couldCrit(attacker) ? 1.5f : 1f;
             float nonCritDamage = damage / crit;
 

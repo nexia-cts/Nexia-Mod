@@ -1,8 +1,7 @@
 package com.nexia.core.mixin.block;
 
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.classic.utilities.FfaClassicUtil;
+import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
@@ -28,7 +27,7 @@ public class AnvilBlockMixin {
         if (!(player instanceof ServerPlayer serverPlayer)) return;
         PlayerData playerData = PlayerDataManager.get(serverPlayer);
 
-        if (BwUtil.isInBedWars(serverPlayer) || (playerData.duelsGame != null || playerData.teamDuelsGame != null) || LobbyUtil.isLobbyWorld(serverPlayer.getLevel()) || (FfaUtil.isFfaPlayer(player)) && !serverPlayer.isCreative()) {
+        if (BwUtil.isInBedWars(serverPlayer) || (playerData.duelsGame != null || playerData.teamDuelsGame != null) || LobbyUtil.isLobbyWorld(serverPlayer.getLevel()) || (FfaAreas.isFfaWorld(serverPlayer.getLevel())) && !serverPlayer.isCreative()) {
             cir.setReturnValue(InteractionResult.FAIL);
             return;
         }

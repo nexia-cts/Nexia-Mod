@@ -74,7 +74,7 @@ public class BwPlayers {
             team.players.remove(player);
 
             ServerLevel world = BwAreas.bedWarsWorld;
-            if (team.players.isEmpty() && team.bedLocation != null &&
+            if (team.players.size() < 1 && team.bedLocation != null &&
                     world.getBlockState(team.bedLocation).getBlock() instanceof BedBlock) {
                 world.setBlock(team.bedLocation, Blocks.AIR.defaultBlockState(), 3);
             }
@@ -146,7 +146,8 @@ public class BwPlayers {
         ItemStack itemStack = item.getDefaultInstance();
         itemStack.getOrCreateTag().putInt("Unbreakable", 1);
 
-        if (!(item instanceof DyeableLeatherItem leatherItem)) return itemStack;
+        if (!(item instanceof DyeableLeatherItem)) return itemStack;
+        DyeableLeatherItem leatherItem = (DyeableLeatherItem) item;
 
         BwTeam team = BwTeam.getPlayerTeam(player);
         if (team == null) return itemStack;

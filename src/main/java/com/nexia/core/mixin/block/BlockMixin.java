@@ -22,10 +22,12 @@ public class BlockMixin {
             at = @At("HEAD"),
             cancellable = true)
     private static void dropResources(BlockState blockState, Level level, BlockPos blockPos, BlockEntity blockEntity, Entity breakerEntity, ItemStack tool, CallbackInfo ci) {
-        if (!(level instanceof ServerLevel serverLevel)) return;
+        if (!(level instanceof ServerLevel)) return;
+        ServerLevel serverLevel = (ServerLevel) level;
 
         if (BwAreas.isBedWarsWorld(serverLevel) && !(BwUtil.dropResources(blockState))) {
             ci.cancel();
+
         }
 
     }

@@ -6,8 +6,8 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.classic.utilities.FfaClassicUtil;
+import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
@@ -78,9 +78,9 @@ public class DuelsGame { //implements Runnable{
     public static DuelsGame startGame(ServerPlayer mcP1, ServerPlayer mcP2, String stringGameMode, @Nullable DuelsMap selectedMap){
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
         if(gameMode == null){
-            gameMode = DuelGameMode.CLASSIC;
+            gameMode = DuelGameMode.FFA;
             System.out.printf("[ERROR] Nexia: Invalid duel gamemode ({0}) selected! Using fallback one.%n", stringGameMode);
-            stringGameMode = "CLASSIC";
+            stringGameMode = "FFA";
         }
 
         PlayerData invitorData = PlayerDataManager.get(mcP1);

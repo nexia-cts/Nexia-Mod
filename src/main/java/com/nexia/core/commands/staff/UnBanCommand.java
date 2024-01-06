@@ -6,7 +6,6 @@ import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.core.utilities.time.ServerTime;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -36,7 +35,7 @@ public class UnBanCommand {
     }
 
     public static int unban(CommandSourceStack context, Collection<GameProfile> collection) {
-        UserBanList userBanList = ServerTime.minecraftServer.getPlayerList().getBans();
+        UserBanList userBanList = Main.server.getPlayerList().getBans();
         int i = 0;
 
         ServerPlayer player = null;

@@ -8,7 +8,6 @@ import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.core.utilities.time.ServerTime;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -35,7 +34,7 @@ public class BanCommand {
     }
 
     public static int ban(CommandSourceStack context, Collection<GameProfile> collection, String reason) {
-        UserBanList userBanList = ServerTime.minecraftServer.getPlayerList().getBans();
+        UserBanList userBanList = Main.server.getPlayerList().getBans();
         int i = 0;
 
         ServerPlayer player = null;
@@ -46,7 +45,7 @@ public class BanCommand {
 
         for (GameProfile gameProfile : collection) {
             if (!userBanList.isBanned(gameProfile)) {
-                ServerPlayer serverPlayer = ServerTime.minecraftServer.getPlayerList().getPlayer(gameProfile.getId());
+                ServerPlayer serverPlayer = Main.server.getPlayerList().getPlayer(gameProfile.getId());
 
                 UserBanListEntry userBanListEntry = new UserBanListEntry(gameProfile, (Date) null, context.getTextName(), (Date) null, reason);
                 userBanList.add(userBanListEntry);

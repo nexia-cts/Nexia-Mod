@@ -3,7 +3,7 @@ package com.nexia.core.gui;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.ffa.classic.utilities.FfaAreas;
+import com.nexia.ffa.utilities.FfaAreas;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
@@ -17,6 +17,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
 
 public class PlayGUI extends SimpleGui {
 
@@ -31,12 +32,6 @@ public class PlayGUI extends SimpleGui {
         }
     }
     private void setMainLayout(){
-
-        int players = FfaAreas.ffaWorld.players().size();
-        players = players + com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld.players().size();
-        players = players + com.nexia.ffa.pot.utilities.FfaAreas.ffaWorld.players().size();
-        players = players + com.nexia.ffa.uhc.utilities.FfaAreas.ffaWorld.players().size();
-
         ItemStack ffa = new ItemStack(Items.NETHERITE_SWORD, 1);
         ffa.setHoverName(new TextComponent("§3FFA"));
         ItemDisplayUtil.addGlint(ffa);
@@ -46,7 +41,7 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(ffa, "§7Fight players in a huge landscape", 1);
         ItemDisplayUtil.addLore(ffa, "§7be the best player.", 2);
         ItemDisplayUtil.addLore(ffa, "§f", 3);
-        ItemDisplayUtil.addLore(ffa, "§3◆ There are " + players + " people playing this gamemode.", 4);
+        ItemDisplayUtil.addLore(ffa, "§3◆ There are " + FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
 
         ItemStack hub = new ItemStack(Items.DRAGON_BREATH, 1);
         hub.setHoverName(new TextComponent("§5Hub"));
@@ -106,62 +101,24 @@ public class PlayGUI extends SimpleGui {
     }
 
     private void setFFALayout(){
-        ItemStack classic = new ItemStack(Items.NETHERITE_SWORD, 1);
-        classic.setHoverName(new TextComponent("§cClassic FFA"));
-        ItemDisplayUtil.addGlint(classic);
-        classic.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
+        ItemStack enchanted_sword = new ItemStack(Items.NETHERITE_SWORD, 1);
+        enchanted_sword.setHoverName(new TextComponent("§cClassic"));
+        enchanted_sword.enchant(Enchantments.SHARPNESS, 1);
+        enchanted_sword.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
+        enchanted_sword.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
-        ItemDisplayUtil.addLore(classic, "§5", 0);
-        ItemDisplayUtil.addLore(classic, "§7The classic snapshot", 1);
-        ItemDisplayUtil.addLore(classic, "§7Free For All gamemode.", 2);
-        ItemDisplayUtil.addLore(classic, "§f", 3);
-        ItemDisplayUtil.addLore(classic, "§c◆ There are " + FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
-
-        ItemStack kit = new ItemStack(Items.DIAMOND_SWORD, 1);
-        kit.setHoverName(new TextComponent("§bKit FFA"));
-        ItemDisplayUtil.addGlint(classic);
-        kit.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
-
-        ItemDisplayUtil.addLore(kit, "§5", 0);
-        ItemDisplayUtil.addLore(kit, "§7Fight against players", 1);
-        ItemDisplayUtil.addLore(kit, "§7with various kits!", 2);
-        ItemDisplayUtil.addLore(kit, "§f", 3);
-        ItemDisplayUtil.addLore(kit, "§b◆ There are " + com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
-
-
-
-        ItemStack pot = new ItemStack(Items.POTION, 1);
-        pot.setHoverName(new TextComponent("§dPot FFA"));
-        ItemDisplayUtil.addGlint(pot);
-        pot.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
-
-        ItemDisplayUtil.addLore(pot, "§5", 0);
-        ItemDisplayUtil.addLore(pot, "§7The classic snapshot", 1);
-        ItemDisplayUtil.addLore(pot, "§7Free For All gamemodes.", 2);
-        ItemDisplayUtil.addLore(pot, "§5", 3);
-        ItemDisplayUtil.addLore(pot, "§d◆ There are " + com.nexia.ffa.pot.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
-
-
-
-        ItemStack uhc = new ItemStack(Items.GOLDEN_APPLE, 1);
-        uhc.setHoverName(new TextComponent("§6UHC FFA"));
-        ItemDisplayUtil.addGlint(classic);
-        uhc.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
-
-        ItemDisplayUtil.addLore(uhc, "§5", 0);
-        ItemDisplayUtil.addLore(uhc, "§7The classic snapshot", 1);
-        ItemDisplayUtil.addLore(uhc, "§7Free For All gamemodes.", 2);
-        ItemDisplayUtil.addLore(uhc, "§f", 3);
-        ItemDisplayUtil.addLore(uhc, "§6◆ There are " + com.nexia.ffa.uhc.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
+        ItemStack unknown = new ItemStack(Items.BARRIER, 1);
+        unknown.setHoverName(new TextComponent("§c???"));
+        ItemDisplayUtil.addGlint(unknown);
+        unknown.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
 
         fillEmptySlots(emptySlot);
-        this.setSlot(1, classic);
-        this.setSlot(3, uhc);
-        this.setSlot(5, pot);
-        this.setSlot(7, kit);
+        this.setSlot(3, unknown);
+        this.setSlot(4, enchanted_sword);
+        this.setSlot(5, unknown);
     }
 
     public boolean click(int index, ClickType clickType, net.minecraft.world.inventory.ClickType action){
@@ -169,23 +126,8 @@ public class PlayGUI extends SimpleGui {
         if(element != null && clickType != ClickType.MOUSE_DOUBLE_CLICK) {
             ItemStack itemStack = element.getItemStack();
             Component name = itemStack.getHoverName();
-            if(name.getString().equalsIgnoreCase("§cClassic FFA")){
+            if(name.getString().equalsIgnoreCase("§cClassic")){
                 LobbyUtil.sendGame(this.player, "classic ffa", true, true);
-                this.close();
-            }
-
-            if(name.getString().equalsIgnoreCase("§bKit FFA")){
-                LobbyUtil.sendGame(this.player, "kits ffa", true, true);
-                this.close();
-            }
-
-            if(name.getString().equalsIgnoreCase("§dPot FFA")){
-                LobbyUtil.sendGame(this.player, "pot ffa", true, true);
-                this.close();
-            }
-
-            if(name.getString().equalsIgnoreCase("§6UHC FFA")){
-                LobbyUtil.sendGame(this.player, "uhc ffa", true, true);
                 this.close();
             }
 

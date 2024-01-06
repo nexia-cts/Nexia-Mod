@@ -25,9 +25,15 @@ public class RanksGUI extends SimpleGui {
         super(type, player, includePlayer);
     }
 
-    private void fillEmptySlots(ItemStack itemStack){
-        for(int i = 0; i < 27; i++){
+    private void fillEmptySlots(ItemStack itemStack, int slots){
+        for(int i = 0; i < slots; i++){
             this.setSlot(i, itemStack);
+            /*
+            GuiElementInterface element = this.getSlot(i);
+            if(element != null && element.getItemStack().getItem() == null || element.getItemStack().getItem() == Items.AIR){
+                this.setSlot(i, itemStack);
+            }
+             */
         }
     }
     private void setMainLayout(){
@@ -59,7 +65,7 @@ public class RanksGUI extends SimpleGui {
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
 
-        fillEmptySlots(emptySlot);
+        fillEmptySlots(emptySlot, 27);
 
         this.setSlot(2, purple);
         this.setSlot(3, magenta_glow);

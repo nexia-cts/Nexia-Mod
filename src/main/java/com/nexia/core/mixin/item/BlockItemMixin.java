@@ -1,8 +1,5 @@
 package com.nexia.core.mixin.item;
 
-import com.nexia.core.utilities.item.ItemStackUtil;
-import com.nexia.ffa.uhc.utilities.FfaAreas;
-import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import net.minecraft.core.BlockPos;
@@ -30,18 +27,6 @@ public abstract class BlockItemMixin {
             cir.setReturnValue(InteractionResult.PASS);
             return;
         }
-
-        if (FfaAreas.isFfaWorld(level) && !FfaUhcUtil.beforeBuild(player, blockPos)) {
-            cir.setReturnValue(InteractionResult.PASS);
-            ItemStackUtil.sendInventoryRefreshPacket(player);
-        }
     }
 
-    @Inject(method = "place", at = @At(value = "TAIL"))
-    private void afterPlace(BlockPlaceContext context, CallbackInfoReturnable<InteractionResult> cir) {
-        ServerPlayer player = (ServerPlayer)context.getPlayer();
-        if (player == null || !FfaUhcUtil.isFfaPlayer(player)) return;
-        BlockPos blockPos = context.getClickedPos();
-        FfaUhcUtil.afterPlace(player, blockPos, context.getHand());
-    }
 }

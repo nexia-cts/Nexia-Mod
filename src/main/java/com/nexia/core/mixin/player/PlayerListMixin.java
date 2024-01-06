@@ -52,10 +52,21 @@ public abstract class PlayerListMixin {
         try {
             Component component = args.get(0);
             ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayer(args.get(2));
-            String key = ((TranslatableComponent) component).getKey();
 
-            if (key.contains("multiplayer.player.left")) args.set(0, leaveFormat(component, leavePlayer));
-            if (key.contains("multiplayer.player.join")) args.set(0, joinFormat(component, joinPlayer));
+
+            if(Main.config.events.statusMessages){
+                String key = ((TranslatableComponent) component).getKey();
+                if (
+                        key.contains("multiplayer.player.join")
+                ) {
+                    args.set(0, joinFormat(component, joinPlayer));
+                }
+                if (
+                        key.contains("multiplayer.player.left")
+                ) {
+                    args.set(0, leaveFormat(component, leavePlayer));
+                }
+            }
 
             if(!PlayerMutes.muted(player)){
                 args.set(0, chatFormat(player, component));
@@ -68,7 +79,7 @@ public abstract class PlayerListMixin {
     private void respawned(ServerPlayer oldPlayer, boolean bl, CallbackInfoReturnable<ServerPlayer> cir) {
         ServerPlayer player = PlayerUtil.getFixedPlayer(oldPlayer);
 
-        ServerLevel respawn = ServerTime.minecraftServer.getLevel(player.getRespawnDimension());
+        ServerLevel respawn = Main.server.getLevel(player.getRespawnDimension());
 
         if(respawn != null && LobbyUtil.isLobbyWorld(respawn)) {
             player.inventory.clearContent();

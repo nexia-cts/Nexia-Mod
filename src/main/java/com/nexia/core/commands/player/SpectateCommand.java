@@ -10,6 +10,8 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.ffa.utilities.FfaAreas;
+import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import me.lucko.fabric.api.permissions.v0.Permissions;
@@ -74,7 +76,7 @@ public class SpectateCommand {
 
         if(factoryExecutor.getHealth() < 20) {
             factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
-                    Component.text("You must be fully healed to go into spectator!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                    Component.text("You must be fully healed to go into spectator!").decoration(ChatFormat.bold, false))
             );
             return 0;
         }
@@ -95,7 +97,7 @@ public class SpectateCommand {
 
         if(!Permissions.check(executor, "nexia.prefix.supporter")) {
             factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
-                            Component.text("This feature is only available for ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
+                            Component.text("This feature is only available for").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                                     .append(Component.text("Supporters")
                                             .color(ChatFormat.brandColor1)
                                             .decoration(ChatFormat.bold, true)
@@ -105,32 +107,27 @@ public class SpectateCommand {
                                             .append(Component.text("!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                     )
                     )
+
             );
-            return 0;
         }
 
-        if(PlayerDataManager.get(executor).gameMode != PlayerGameMode.FFA) {
+        if(!FfaUtil.isFfaPlayer(player)) {
             factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
-                    Component.text("This can only be used in FFA!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
+                    Component.text("That player is not in FFA!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
             ));
-            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
-                    Component.text("If you are in duels then you do /spectate <player>.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-            ));
-            return 0;
         }
 
         // Check if player is in combat (or full health), then put them in spectator.
 
         if(factoryExecutor.getHealth() < 20) {
             factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
-                    Component.text("You must be fully healed to go into spectator!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                    Component.text("You must be fully healed to go into spectator!").decoration(ChatFormat.bold, false))
             );
             return 0;
         }
 
         factoryExecutor.setGameMode(Minecraft.GameMode.SPECTATOR);
-        executor.teleportTo(player.getLevel(), player.getX(), player.getY(), player.getZ(), 0, 0);
-        // potential bug caused here if manipulated correctly? [player.getLevel()]
+        executor.teleportTo(FfaAreas.ffaWorld, player.getX(), player.getY(), player.getZ(), 0, 0);
 
         return 1;
     }

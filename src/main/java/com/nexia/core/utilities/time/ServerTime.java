@@ -3,14 +3,13 @@ package com.nexia.core.utilities.time;
 import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.scheduler.TaskScheduler;
+import com.combatreforged.factory.api.util.Identifier;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
-import com.nexia.ffa.classic.utilities.FfaAreas;
-import com.nexia.ffa.classic.utilities.FfaClassicUtil;
-import com.nexia.ffa.kits.utilities.FfaKitsUtil;
-import com.nexia.ffa.pot.utilities.FfaPotUtil;
-import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
+import com.nexia.ffa.utilities.FfaAreas;
+import com.nexia.ffa.utilities.FfaUtil;
 import com.nexia.minigames.games.bedwars.BwGame;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.areas.BwDimension;
@@ -20,14 +19,20 @@ import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.world.WorldUtil;
+import net.minecraft.Util;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import xyz.nucleoid.fantasy.Fantasy;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServerTime {
 
     public static int totalTickCount = -1;
     public static int totalSecondCount = -1;
+
 
     public static MinecraftServer minecraftServer = null;
 
@@ -46,21 +51,20 @@ public class ServerTime {
     public static Fantasy fantasy = null;
 
     public static void firstTick(MinecraftServer server) {
-        ServerTime.minecraftServer = server;
+        minecraftServer = server;
+        Main.server = server;
 
         ServerTime.serverType = ServerType.returnServer();
 
         fantasy = Fantasy.get(minecraftServer);
         LobbyUtil.setLobbyWorld(minecraftServer);
         FfaAreas.setFfaWorld(minecraftServer);
-        com.nexia.ffa.kits.utilities.FfaAreas.setFfaWorld(minecraftServer);
-        com.nexia.ffa.uhc.utilities.FfaAreas.setFfaWorld(minecraftServer);
-        com.nexia.ffa.pot.utilities.FfaAreas.setFfaWorld(minecraftServer);
         BwLoadShop.loadBedWarsShop(true);
         BwDimension.register();
         BwGame.firstTick();
 
         WorldUtil.deleteTempWorlds();
+
 
         SkywarsGame.firstTick();
         DuelGameHandler.starting();
@@ -86,21 +90,13 @@ public class ServerTime {
         BwGame.tick();
 
         if (totalTickCount % 5 == 0) {
-            FfaClassicUtil.fiveTick();
-            FfaKitsUtil.fiveTick();
-            FfaPotUtil.fiveTick();
-            FfaUhcUtil.fiveTick();
+            FfaUtil.fiveTick();
         }
 
         // Most second methods are also handled here to avoid too many methods from being executed at the same time
         switch (totalTickCount % 20) {
             case 0 -> everySecond();
-            case 2 -> {
-                FfaClassicUtil.ffaSecond();
-                FfaKitsUtil.ffaSecond();
-                FfaPotUtil.ffaSecond();
-                FfaUhcUtil.ffaSecond();
-            }
+            case 2 -> FfaUtil.ffaSecond();
             case 6 -> BwGame.bedWarsSecond();
         }
     }
