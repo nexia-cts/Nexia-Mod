@@ -424,7 +424,7 @@ public class SkywarsGame {
             victim.destroyVanishingCursedItems();
             victim.inventory.dropAll();
 
-            victimData.savedData.losses++;
+            if(SkywarsGame.winner != accurateVictim) victimData.savedData.losses++;
             SkywarsGame.alive.remove(accurateVictim);
             SkywarsGame.spectator.add(accurateVictim);
             PlayerDataManager.get(victim).gameMode = SkywarsGameMode.SPECTATOR;

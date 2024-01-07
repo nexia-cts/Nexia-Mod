@@ -23,6 +23,10 @@ public class FfaKit {
     public static final FfaKit ARCHER = new FfaKit("archer", new ItemStack(Items.BOW));
     public static final FfaKit MAGE = new FfaKit("mage", new ItemStack(Items.DRAGON_BREATH));
 
+    public static final FfaKit KIT6 = new FfaKit("kit_6", new ItemStack(Items.BARRIER));
+
+    public static final FfaKit KIT7 = new FfaKit("kit_7", new ItemStack(Items.BARRIER));
+
     public FfaKit(String id, ItemStack item) {
         this.id = id;
         this.item = item;
