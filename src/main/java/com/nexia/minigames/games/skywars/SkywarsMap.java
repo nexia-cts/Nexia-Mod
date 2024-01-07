@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.notcoded.codelib.util.world.structure.Rotation;
 import net.notcoded.codelib.util.world.structure.StructureMap;
 import org.apache.commons.io.FileUtils;
-import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
 import java.io.File;
@@ -35,14 +34,14 @@ public class SkywarsMap {
 
     public static List<SkywarsMap> twelvePlayerMaps = new ArrayList<>();
 
-    public String id;
+    public final String id;
 
-    public int maxPlayers;
+    public final int maxPlayers;
 
-    public ArrayList<EntityPos> positions;
+    public final ArrayList<EntityPos> positions;
 
-    private static BlockVec3 queueC1 = new EntityPos(0, 128, 0).toBlockVec3().add(-7, -1, -7);
-    private static BlockVec3 queueC2 = new EntityPos(0, 128, 0).toBlockVec3().add(7, 6, 7);
+    private static final BlockVec3 queueC1 = new EntityPos(0, 128, 0).toBlockVec3().add(-7, -1, -7);
+    private static final BlockVec3 queueC2 = new EntityPos(0, 128, 0).toBlockVec3().add(7, 6, 7);
 
 
     public StructureMap structureMap;
@@ -85,9 +84,9 @@ public class SkywarsMap {
     ), new StructureMap(new ResourceLocation("skywars", "below"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-76, -9, -76), true));
 
     public static SkywarsMap NULL = new SkywarsMap("null", 4, new ArrayList<>(Arrays.asList(
+            new EntityPos(25.5, 77.0, 25.5),
             new EntityPos(-24.5, 77.0, 25.5),
             new EntityPos(25.5, 77.0, -24.5),
-            new EntityPos(-24.5, 77.0, 25.5),
             new EntityPos(-24.5, 77.0, -24.5))
     ), new StructureMap(new ResourceLocation("skywars", "null"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-33, -42, -33), true));
 
@@ -99,18 +98,29 @@ public class SkywarsMap {
         return null;
     }
 
-    public static void spawnQueueBuild(ServerLevel level) {
+    public static void spawnQueueBuild(ServerLevel level, boolean setAir) {
         for (BlockPos pos : BlockPos.betweenClosed(
                 queueC1.x, queueC1.y, queueC1.z,
                 queueC2.x, queueC2.y, queueC2.z)) {
 
-            if (level.getBlockState(pos).getBlock() == Blocks.AIR && (
-                    queueC1.x == pos.getX() || queueC2.x == pos.getX() ||
-                            queueC1.y == pos.getY() || queueC2.y == pos.getY() ||
-                            queueC1.z == pos.getZ() || queueC2.z == pos.getZ() )) {
+            if(!setAir) {
+                if (level.getBlockState(pos).getBlock() == Blocks.AIR && (
+                        queueC1.x == pos.getX() || queueC2.x == pos.getX() ||
+                                queueC1.y == pos.getY() || queueC2.y == pos.getY() ||
+                                queueC1.z == pos.getZ() || queueC2.z == pos.getZ() )) {
 
-                level.setBlock(pos, Blocks.GLASS.defaultBlockState(), 3);
+                    level.setBlock(pos, Blocks.GLASS.defaultBlockState(), 3);
+                }
+            } else {
+                if (level.getBlockState(pos).getBlock() == Blocks.GLASS && (
+                        queueC1.x == pos.getX() || queueC2.x == pos.getX() ||
+                                queueC1.y == pos.getY() || queueC2.y == pos.getY() ||
+                                queueC1.z == pos.getZ() || queueC2.z == pos.getZ() )) {
+
+                    level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+                }
             }
+
         }
     }
 
@@ -119,11 +129,17 @@ public class SkywarsMap {
         try {
             worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(
                     ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("skywars", id)).location(),
-                    new RuntimeWorldConfig());
-            ServerTime.factoryServer.unloadWorld("skywars:" + id, false);
+                    null);
             FileUtils.forceDeleteOnExit(new File("/world/dimensions/skywars", id));
-        } catch (Exception ignored) {
+            ServerTime.factoryServer.unloadWorld("skywars:" + id, false);
+        } catch (Exception e) {
             Main.logger.error("Error occurred while deleting world: skywars:" + id);
+            if(Main.config.debugMode) e.printStackTrace();
+            try {
+                ServerTime.factoryServer.unloadWorld("skywars:" + id, false);
+            } catch (Exception e2) {
+                if(Main.config.debugMode) e2.printStackTrace();
+            }
             return;
         }
         worldHandle.delete();
@@ -153,6 +169,6 @@ public class SkywarsMap {
         if(newPlayers >= 9 && oldPlayers <= 8) {
             return SkywarsMap.twelvePlayerMaps.get(RandomUtil.randomInt(SkywarsMap.twelvePlayerMaps.size()));
         }
-        return SkywarsMap.BELOW;
+        return SkywarsMap.SKYHENGE;
     }
 }

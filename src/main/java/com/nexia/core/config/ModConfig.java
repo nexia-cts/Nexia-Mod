@@ -15,6 +15,8 @@ public class ModConfig implements ConfigData {
             0.5,
     };
 
+    public boolean debugMode = false;
+
 
     public Enhancements enhancements = new Enhancements();
     public static class Enhancements {

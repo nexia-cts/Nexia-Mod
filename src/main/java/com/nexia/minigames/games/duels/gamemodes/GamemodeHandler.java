@@ -25,77 +25,30 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Random;
 
 public class GamemodeHandler {
 
     public static DuelGameMode identifyGamemode(@NotNull String gameMode) {
 
-        if (gameMode.equalsIgnoreCase("axe")) {
-            return DuelGameMode.AXE;
-        }
+        String fixedGameMode = gameMode.toLowerCase();
 
-        if (gameMode.equalsIgnoreCase("bow_only")) {
-            return DuelGameMode.BOW_ONLY;
-        }
+        return switch (fixedGameMode) {
+            case "shield" -> DuelGameMode.SHIELD;
+            case "pot" -> DuelGameMode.POT;
+            case "neth_pot" -> DuelGameMode.NETH_POT;
+            case "uhc_shield" -> DuelGameMode.UHC_SHIELD;
+            case "og_vanilla" -> DuelGameMode.OG_VANILLA;
+            case "cart" -> DuelGameMode.CART;
+            case "diamond_crystal" -> DuelGameMode.DIAMOND_CRYSTAL;
+            case "vanilla" -> DuelGameMode.VANILLA;
+            case "neth_smp" -> DuelGameMode.NETH_SMP;
+            case "sword_only" -> DuelGameMode.SWORD_ONLY;
+            case "classic" -> DuelGameMode.CLASSIC;
+            case "uhc" -> DuelGameMode.UHC;
+            case "trident_only" -> DuelGameMode.TRIDENT_ONLY;
+            default -> null;
+        };
 
-        if (gameMode.equalsIgnoreCase("shield")) {
-            return DuelGameMode.SHIELD;
-        }
-
-        if (gameMode.equalsIgnoreCase("pot")) {
-            return DuelGameMode.POT;
-        }
-
-        if (gameMode.equalsIgnoreCase("neth_pot")) {
-            return DuelGameMode.NETH_POT;
-        }
-
-        if (gameMode.equalsIgnoreCase("uhc_shield")) {
-            return DuelGameMode.UHC_SHIELD;
-        }
-
-        if (gameMode.equalsIgnoreCase("hsg")) {
-            return DuelGameMode.HSG;
-        }
-
-        if (gameMode.equalsIgnoreCase("skywars")) {
-            return DuelGameMode.SKYWARS;
-        }
-
-        if (gameMode.equalsIgnoreCase("classic_crystal")) {
-            return DuelGameMode.CLASSIC_CRYSTAL;
-        }
-
-        if (gameMode.equalsIgnoreCase("vanilla")) {
-            return DuelGameMode.VANILLA;
-        }
-
-        if (gameMode.equalsIgnoreCase("smp")) {
-            return DuelGameMode.SMP;
-        }
-
-        if (gameMode.equalsIgnoreCase("sword_only")) {
-            return DuelGameMode.SWORD_ONLY;
-        }
-
-        if (gameMode.equalsIgnoreCase("classic")) {
-            return DuelGameMode.CLASSIC;
-        }
-
-        if (gameMode.equalsIgnoreCase("hoe_only")) {
-            return DuelGameMode.HOE_ONLY;
-        }
-
-        if (gameMode.equalsIgnoreCase("uhc")) {
-            return DuelGameMode.UHC;
-        }
-
-        if (gameMode.equalsIgnoreCase("trident_only")) {
-            return DuelGameMode.TRIDENT_ONLY;
-        }
-
-        return null;
     }
 
     public static boolean isInQueue(@NotNull ServerPlayer player, @NotNull DuelGameMode gameMode) {

@@ -1,10 +1,11 @@
 package com.nexia.ffa.uhc.utilities;
 
+import com.combatreforged.factory.api.world.entity.Entity;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.Main;
+import com.nexia.world.WorldUtil;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -41,9 +42,11 @@ public class FfaAreas {
 
         map.pasteMap(ffaWorld);
 
+        if(com.nexia.core.Main.config.debugMode) com.nexia.core.Main.logger.info("[DEBUG]: Uhc FFA Map has been reset.");
+
         if(announce){
-            for(com.combatreforged.factory.api.world.entity.player.Player player : ServerTime.factoryServer.getPlayers()) {
-                if(player.hasTag("ffa_uhc")) player.sendMessage(Component.text("[!] Map has been reloaded!").color(ChatFormat.lineTitleColor));
+            for(Entity entity : WorldUtil.getWorld(ffaWorld).getEntities()) {
+                if(entity instanceof com.combatreforged.factory.api.world.entity.player.Player player && player.hasTag("ffa_uhc")) player.sendMessage(Component.text("[!] Map has been reloaded!").color(ChatFormat.lineTitleColor));
             }
         }
     }

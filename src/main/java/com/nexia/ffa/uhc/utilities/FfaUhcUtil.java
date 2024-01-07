@@ -16,12 +16,12 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.projectile.*;
+import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -68,7 +68,7 @@ public class FfaUhcUtil {
             data.bestKillstreak = data.killstreak;
         }
         data.kills++;
-        //player.heal(player.getMaxHealth());
+        player.heal(player.getMaxHealth());
 
         FfaUhcUtil.clearArrows(player);
         FfaUhcUtil.clearTrident(player);

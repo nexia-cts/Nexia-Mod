@@ -32,6 +32,7 @@ repositories {
 
 	maven { url 'https://github.com/not-coded/notcoded-maven/raw/fabric/' }
 	maven { url 'https://maven.nucleoid.xyz' }
+	maven { url "https://maven.rizecookey.net/" }
 	maven { url "https://maven.shedaniel.me/" }
 	maven { url "https://maven.gegy.dev/" }
 	maven { url "https://jitpack.io" }
@@ -47,7 +48,12 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	modImplementation('com.combatreforged.factory:factory-api:0.1.13-full')
-	modImplementation("com.combatreforged.factory:factory-builder:0.1.13-${project.minecraft_version}-full")
+	modImplementation('com.combatreforged.factory:factory-builder:0.1.13-1.16_combat-6')
+
+	implementation("com.combatreforged.factory:factory-api:0.1.13:javadoc@jar") {
+		exclude(group: "com.google.code.gson")
+		exclude(group: "org.apache.logging.log4j")
+	}
 
 	implementation("org.apache.logging.log4j:log4j-core:2.20.0")
 	include(implementation("com.google.code.gson:gson:2.10.1"))

@@ -61,6 +61,8 @@ public class DuelGameHandler {
         }
         data.teamDuelsGame = null;
         data.duelsGame = null;
+
+        if(Main.config.debugMode) Main.logger.info(String.format("[DEBUG]: Player %s left Duels.", player.getScoreboardName()));
     }
 
     public static void winnerRockets(@NotNull ServerPlayer winner, @NotNull ServerLevel level,
@@ -107,6 +109,8 @@ public class DuelGameHandler {
                 .setTimeOfDay(6000);
 
 
+        if(Main.config.debugMode) Main.logger.info("[DEBUG]: Created world: duels:" + uuid);
+
         return ServerTime.fantasy.openTemporaryWorld(config, new ResourceLocation("duels", uuid)).asWorld();
         //return ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", uuid)).location(), config).asWorld();
     }
@@ -117,10 +121,18 @@ public class DuelGameHandler {
             worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(
                     ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", id)).location(),
                     new RuntimeWorldConfig());
-            ServerTime.factoryServer.unloadWorld("duels:" + id, false);
             FileUtils.forceDeleteOnExit(new File("/world/dimensions/duels", id));
-        } catch (Exception ignored) {
+            ServerTime.factoryServer.unloadWorld("duels:" + id, false);
+        } catch (Exception e) {
             Main.logger.error("Error occurred while deleting world: duels:" + id);
+            try {
+                ServerTime.factoryServer.unloadWorld("duels:" + id, false);
+            } catch (Exception ignored2) {
+                if(Main.config.debugMode) e.printStackTrace();
+            }
+
+            if(Main.config.debugMode) e.printStackTrace();
+
             return;
         }
         worldHandle.delete();

@@ -40,26 +40,28 @@ public class WorldUtil {
             worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(
                     ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(identifier.getNamespace(), identifier.getId())).location(),
                     new RuntimeWorldConfig());
-            ServerTime.factoryServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getId(), false);
             FileUtils.forceDeleteOnExit(new File("/world/dimensions/" + identifier.getNamespace(), identifier.getId()));
-        } catch (Exception ignored) {
+            ServerTime.factoryServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getId(), false);
+        } catch (Exception e) {
             Main.logger.error("Error occurred while deleting world: " + identifier.getNamespace() + ":" + identifier.getId());
+            if(Main.config.debugMode) e.printStackTrace();
             return;
         }
         worldHandle.delete();
     }
 
     public static void deleteTempWorlds() {
+        if(Main.config.debugMode) Main.logger.info("[DEBUG]: Deleting Temporary Worlds");
         List<String> skywarsDelete = new ArrayList<>();
         List<String> duelsDelete = new ArrayList<>();
 
         for (ServerLevel level : ServerTime.minecraftServer.getAllLevels()) {
             Identifier split = WorldUtil.getWorldName(WorldUtil.getWorldName(level));
             if (split.getNamespace().toLowerCase().contains("duels")) {
-                duelsDelete.add(split.getNamespace());
+                duelsDelete.add(split.getId());
             }
             if (split.getNamespace().toLowerCase().contains("skywars")) {
-                skywarsDelete.add(split.getNamespace());
+                skywarsDelete.add(split.getId());
             }
         }
 

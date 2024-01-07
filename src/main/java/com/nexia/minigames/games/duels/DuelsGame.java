@@ -132,7 +132,6 @@ public class DuelsGame { //implements Runnable{
         removeQueue(mcP2, null, true);
         invitorData.spectatingPlayer = null;
         invitorData.duelPlayer = mcP2;
-
         mcP1.setGameMode(GameType.ADVENTURE);
         mcP2.setGameMode(GameType.ADVENTURE);
 

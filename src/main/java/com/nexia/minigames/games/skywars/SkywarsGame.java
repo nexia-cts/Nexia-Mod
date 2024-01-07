@@ -1,6 +1,7 @@
 package com.nexia.minigames.games.skywars;
 
 import  com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -37,6 +38,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.notcoded.codelib.players.AccuratePlayer;
+import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.time.Duration;
@@ -50,7 +52,7 @@ public class SkywarsGame {
 
     public static ServerLevel world = null;
 
-    public static SkywarsMap map = SkywarsMap.BELOW;
+    public static SkywarsMap map = SkywarsMap.SKYHENGE;
 
     public static RuntimeWorldConfig config = new RuntimeWorldConfig()
             .setDimensionType(FfaAreas.ffaWorld.dimensionType())
@@ -97,7 +99,6 @@ public class SkywarsGame {
         PlayerData data = PlayerDataManager.get(minecraftPlayer);
         SkywarsGame.spectator.remove(accuratePlayer);
 
-
         if(!SkywarsGame.isStarted && SkywarsGame.queue.contains(accuratePlayer)) {
             SkywarsGame.map = SkywarsMap.calculateMap(SkywarsGame.queue.size(), SkywarsGame.queue.size() - 1);
         }
@@ -111,6 +112,8 @@ public class SkywarsGame {
         accuratePlayer.get().setGameMode(GameType.ADVENTURE);
 
         accuratePlayer.get().inventory.clearContent();
+        accuratePlayer.get().setExperienceLevels(0);
+        accuratePlayer.get().setExperiencePoints(0);
         minecraftPlayer.inventory.setCarried(ItemStack.EMPTY);
         minecraftPlayer.getEnderChestInventory().clearContent();
 
@@ -125,7 +128,9 @@ public class SkywarsGame {
             if(SkywarsGame.isEnding) {
                 int color = 160 * 65536 + 248;
                 // r * 65536 + g * 256 + b;
-                DuelGameHandler.winnerRockets(SkywarsGame.winner.get(), SkywarsGame.world, color);
+                if(SkywarsGame.winner.get() == null) SkywarsGame.endTime = 0;
+                else DuelGameHandler.winnerRockets(SkywarsGame.winner.get(), SkywarsGame.world, color);
+
 
                 if(SkywarsGame.endTime <= 0) {
                     for(ServerPlayer player : SkywarsGame.getViewers()){
@@ -160,17 +165,7 @@ public class SkywarsGame {
                     Player fPlayer = PlayerUtil.getFactoryPlayer(player.get());
 
                     if(SkywarsGame.queueTime <= 5) {
-                        TextColor color = NamedTextColor.GREEN;
-
-                        if(SkywarsGame.queueTime <= 3 && SkywarsGame.queueTime > 1) {
-                            color = NamedTextColor.YELLOW;
-                        } else if(SkywarsGame.queueTime <= 1) {
-                            color = NamedTextColor.RED;
-                        }
-
-                        Title title = Title.title(Component.text(SkywarsGame.queueTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
-
-                        fPlayer.sendTitle(title);
+                        fPlayer.sendTitle(getTitle());
                         PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
                     }
 
@@ -197,6 +192,20 @@ public class SkywarsGame {
             }
             if(SkywarsGame.queueTime <= 0) startGame();
         }
+    }
+
+    @NotNull
+    private static Title getTitle() {
+        TextColor color = NamedTextColor.GREEN;
+
+        if(SkywarsGame.queueTime <= 3 && SkywarsGame.queueTime > 1) {
+            color = NamedTextColor.YELLOW;
+        } else if(SkywarsGame.queueTime <= 1) {
+            color = NamedTextColor.RED;
+        }
+
+        Title title = Title.title(Component.text(SkywarsGame.queueTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
+        return title;
     }
 
     public static void joinQueue(ServerPlayer player) {
@@ -234,8 +243,10 @@ public class SkywarsGame {
 
         //SkywarsGame.map.structureMap.pasteMap(level);
         ServerTime.factoryServer.runCommand(String.format("execute in skywars:%s run worldborder set 200", SkywarsGame.id), 4, false);
-        SkywarsMap.spawnQueueBuild(level);
+        SkywarsMap.spawnQueueBuild(level, false);
         SkywarsGame.world = level;
+
+        if(Main.config.debugMode) Main.logger.info(String.format("[DEBUG]: New Skywars Map (%s) has been reset (not pasted)", SkywarsGame.id));
     }
 
     public static void startGame() {
@@ -248,6 +259,7 @@ public class SkywarsGame {
         SkywarsGame.alive.addAll(SkywarsGame.queue);
 
         SkywarsGame.map.structureMap.pasteMap(SkywarsGame.world);
+        if(Main.config.debugMode) Main.logger.info(String.format("[DEBUG]: Skywars Map (%s) has been pasted on skywars:%s.", SkywarsGame.map.id, SkywarsGame.id));
 
         ArrayList<EntityPos> positions = new ArrayList<>(SkywarsGame.map.positions);
 
@@ -265,6 +277,8 @@ public class SkywarsGame {
             positions.remove(pos);
         }
 
+        SkywarsMap.spawnQueueBuild(SkywarsGame.world, true);
+
         SkywarsGame.spectator.clear();
         SkywarsGame.queue.clear();
 
@@ -272,6 +286,7 @@ public class SkywarsGame {
     }
 
     public static void resetAll() {
+        if(Main.config.debugMode) Main.logger.info("[DEBUG]: Skywars Game hasbeen reset.");
         SkywarsGame.isStarted = false;
         SkywarsGame.isGlowingActive = false;
         SkywarsGame.glowingTime = 180;
@@ -288,6 +303,8 @@ public class SkywarsGame {
     }
 
     public static void endGame() {
+
+        if(Main.config.debugMode) Main.logger.info(String.format("[DEBUG]: Skywars Game (%s) is ending.", SkywarsGame.id));
 
         SkywarsGame.isEnding = true;
 

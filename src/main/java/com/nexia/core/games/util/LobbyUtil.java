@@ -136,6 +136,7 @@ public class LobbyUtil {
         minecraftPlayer.inventory.setCarried(ItemStack.EMPTY);
         minecraftPlayer.getEnderChestInventory().clearContent();
         minecraftPlayer.setExperiencePoints(0);
+        minecraftPlayer.setExperienceLevels(0);
 
         // Duels shit
         player.addTag("duels");

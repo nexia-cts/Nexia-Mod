@@ -335,8 +335,15 @@ public class FfaSkyUtil {
             return false;
         }
 
+
+        return true;
+
+        /*
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
         return attacker == null || !FfaAreas.isInFfaSpawn(attacker);
+
+         */
+
         //return damageSource != DamageSource.FALL || !FfaSkyUtil.fallInvulnerable.containsKey(player.getUUID());
     }
 

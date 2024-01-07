@@ -2,8 +2,8 @@ package com.nexia.core.gui.duels;
 
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
-import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
+import com.nexia.minigames.games.duels.map.DuelsMap;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
@@ -14,8 +14,6 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
-
-import java.util.Arrays;
 
 public class DuelGUI extends SimpleGui {
     static final TextComponent title = new TextComponent("Duel Menu");
@@ -91,6 +89,7 @@ public class DuelGUI extends SimpleGui {
             item = DuelGameMode.duelsItems.get(i1).setHoverName(new TextComponent("§f" + duel.toUpperCase().replaceAll("_", " ")));
             ItemDisplayUtil.removeLore(item, 0);
             ItemDisplayUtil.removeLore(item, 1);
+
             this.setSlot(slot, item);
             slot++;
             i1++;
