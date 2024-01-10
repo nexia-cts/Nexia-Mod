@@ -2,7 +2,6 @@ package com.nexia.minigames.games.oitc.util;
 
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.core.utilities.time.TickUtil;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.oitc.util.player.PlayerDataManager;
 import net.minecraft.network.chat.TextComponent;
@@ -15,6 +14,7 @@ import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
+import net.notcoded.codelib.util.TickUtil;
 
 import java.util.ArrayList;
 
@@ -31,7 +31,7 @@ public class OitcScoreboard {
             title, ObjectiveCriteria.RenderType.INTEGER);
 
     public static void setUpScoreboard() {
-        for (ServerPlayer player : OitcGame.alive) {
+        for (ServerPlayer player : OitcGame.getViewers()) {
             sendOITCScoreboard(player);
         }
         updateScoreboard();
@@ -53,7 +53,7 @@ public class OitcScoreboard {
         addLines(lines);
         updateTimer();
 
-        for (ServerPlayer player : OitcGame.alive) {
+        for (ServerPlayer player : OitcGame.getViewers()) {
             updateStats(player);
             sendLines(player);
         }
