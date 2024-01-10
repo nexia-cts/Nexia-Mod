@@ -209,8 +209,6 @@ public class FfaClassicUtil {
                 symbol = "\uD83D\uDD31";
             } else if (handItem == Items.DIAMOND_AXE) {
                 symbol = "\uD83E\uDE93";
-            } else if (handItem == Items.DIAMOND_HOE) {
-                symbol = "∫";
             }
 
             msg = Component.text("☠ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
