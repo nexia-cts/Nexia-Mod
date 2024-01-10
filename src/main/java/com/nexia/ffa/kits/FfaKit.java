@@ -41,6 +41,8 @@ public class FfaKit {
         if(name.equalsIgnoreCase("tank")) return FfaKit.TANK;
         if(name.equalsIgnoreCase("archer")) return FfaKit.ARCHER;
         if(name.equalsIgnoreCase("mage")) return FfaKit.MAGE;
+        if(name.equalsIgnoreCase("kit6")) return FfaKit.KIT6;
+        if(name.equalsIgnoreCase("kit7")) return FfaKit.KIT7;
         return null;
     }
     public void giveKit(ServerPlayer player, boolean clearEffect) {

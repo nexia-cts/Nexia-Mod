@@ -66,7 +66,7 @@ public class ServerTime {
         WorldUtil.deleteTempWorlds();
 
         SkywarsGame.firstTick();
-        OitcGame.firstTick(minecraftServer);
+        OitcGame.firstTick();
         DuelGameHandler.starting();
     }
 

@@ -21,7 +21,6 @@ import net.kyori.adventure.title.Title;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -348,14 +347,14 @@ public class OitcGame {
     }
 
     public static void spawnInRandomPos(ServerPlayer player){
-        OitcMap map = OitcGame.map;oit
+        OitcMap map = OitcGame.map;
         EntityPos spawnPosition = map.spawnPositions.get(RandomUtil.randomInt(map.spawnPositions.size()));
 
         spawnPosition.teleportPlayer(OitcGame.world, player);
     }
 
     public static boolean isOITCPlayer(net.minecraft.world.entity.player.Player player){
-        return PlayerDataManager.get(player).gameMode == PlayerGameMode.OITC || player.getTags().contains("oitc") || player.getTags().contains("in_oitc_game");
+        return com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.OITC || player.getTags().contains("oitc") || player.getTags().contains("in_oitc_game");
     }
 
     public static void death(ServerPlayer victim, DamageSource source){
@@ -419,7 +418,7 @@ public class OitcGame {
         }
     }
 
-    public static void firstTick(MinecraftServer server){
+    public static void firstTick(){
         resetAll();
     }
 
