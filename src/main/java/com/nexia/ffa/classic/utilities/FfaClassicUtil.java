@@ -203,12 +203,14 @@ public class FfaClassicUtil {
             String symbol = "◆";
             Item handItem = attacker.getMainHandItem().getItem();
 
-            if (handItem == Items.NETHERITE_SWORD) {
+            if (handItem == Items.DIAMOND_SWORD) {
                 symbol = "\uD83D\uDDE1";
             } else if (handItem == Items.TRIDENT) {
                 symbol = "\uD83D\uDD31";
-            } else if (handItem == Items.NETHERITE_AXE) {
+            } else if (handItem == Items.DIAMOND_AXE) {
                 symbol = "\uD83E\uDE93";
+            } else if (handItem == Items.DIAMOND_HOE) {
+                symbol = "∫";
             }
 
             msg = Component.text("☠ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
@@ -318,8 +320,8 @@ public class FfaClassicUtil {
         invItems.put(2, axe);
         
         ItemStack hoe = new ItemStack(Items.DIAMOND_HOE);
-        trident.getOrCreateTag().putBoolean("Unbreakable", true);
-        invItems.put(4, hoe);
+        Hoe.getOrCreateTag().putBoolean("Unbreakable", true);
+        invItems.put(3, hoe);
 
         ItemStack helmet = new ItemStack(Items.DIAMOND_HELMET);
         helmet.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 2);
