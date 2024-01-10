@@ -91,7 +91,6 @@ public class ServerTime {
 
         BwGame.tick();
         SkyFfaBlocks.tick();
-        OitcGame.tick();
 
         if (totalTickCount % 5 == 0) {
             FfaClassicUtil.fiveTick();
