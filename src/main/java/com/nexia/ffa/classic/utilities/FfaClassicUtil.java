@@ -316,6 +316,10 @@ public class FfaClassicUtil {
         axe.enchant(Enchantments.CLEAVING, 1);
         axe.getOrCreateTag().putBoolean("Unbreakable", true);
         invItems.put(2, axe);
+        
+        ItemStack hoe = new ItemStack(Items.DIAMOND_HOE);
+        trident.getOrCreateTag().putBoolean("Unbreakable", true);
+        invItems.put(4, hoe);
 
         ItemStack helmet = new ItemStack(Items.DIAMOND_HELMET);
         helmet.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 2);
