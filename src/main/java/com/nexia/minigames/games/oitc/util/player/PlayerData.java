@@ -12,14 +12,14 @@ public class PlayerData {
 
     public int kills;
 
-    public int deathTime;
+    public boolean hasDied;
 
     public PlayerData(SavedPlayerData savedData) {
         this.savedData = savedData;
 
         this.gameMode = OitcGameMode.LOBBY;
         this.kills = 0;
-        this.deathTime = 5;
+        this.hasDied = false;
     }
 
 }
