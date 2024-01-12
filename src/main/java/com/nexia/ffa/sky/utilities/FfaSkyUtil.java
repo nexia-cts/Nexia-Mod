@@ -308,7 +308,7 @@ public class FfaSkyUtil {
 
     private static ItemStack gApplePotion() {
         ItemStack potion = new ItemStack(Items.POTION);
-        potion.setHoverName(new TextComponent("\247bPiss Juice"));
+        potion.setHoverName(new TextComponent("\247ePiss Juice\2477™"));
         potion.getOrCreateTag().putInt("CustomPotionColor", 16771584);
 
         ArrayList<MobEffectInstance> effects = new ArrayList<>();

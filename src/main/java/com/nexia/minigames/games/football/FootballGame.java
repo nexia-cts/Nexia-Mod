@@ -22,12 +22,17 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.AABB;
 import net.notcoded.codelib.players.AccuratePlayer;
@@ -46,14 +51,14 @@ public class FootballGame {
 
     public static ServerLevel world = null;
 
-    public static FootballMap map = FootballMap.FIELDS;
+    public static FootballMap map = FootballMap.FIELD;
 
     public static FootballTeam team1 = new FootballTeam(new ArrayList<>(), FootballGame.map.team1Pos);
     public static FootballTeam team2 = new FootballTeam(new ArrayList<>(), map.team2Pos);
 
 
     // Both timers counted in seconds.
-    public static int gameTime = 1000;
+    public static int gameTime = 300;
 
     public static int queueTime = 15;
 
@@ -76,17 +81,21 @@ public class FootballGame {
         FootballGame.spectator.remove(accuratePlayer);
         FootballGame.queue.remove(accuratePlayer);
         FootballGame.players.remove(accuratePlayer);
+        data.team = null;
 
         player.removeTag("in_football_game");
 
         PlayerUtil.resetHealthStatus(player);
         minecraftPlayer.setGameMode(GameType.ADVENTURE);
 
+        if(FootballGame.team1.players.isEmpty()) FootballGame.endGame(FootballGame.team2);
+        if(FootballGame.team2.players.isEmpty()) FootballGame.endGame(FootballGame.team1);
+
         player.getInventory().clear();
         minecraftPlayer.inventory.setCarried(ItemStack.EMPTY);
         minecraftPlayer.getEnderChestInventory().clearContent();
 
-        if(data.gameMode.equals(FootballGameMode.PLAYING) && !winnerTeam.players.contains(accuratePlayer)) {
+        if(data.gameMode.equals(FootballGameMode.PLAYING) && winnerTeam != null && !winnerTeam.players.contains(accuratePlayer)) {
             data.savedData.loss++;
         }
 
@@ -168,14 +177,18 @@ public class FootballGame {
         }
     }
 
-    public static void goal(AccuratePlayer scorer, ArmorStand entity, FootballTeam team) {
+    public static void goal(ArmorStand entity, FootballTeam team) {
+        if(team.goals >= FootballGame.map.maxGoals) FootballGame.endGame(team);
         team.goals++;
         entity.moveTo(0, 80, 0, 0, 0);
 
-        PlayerDataManager.get(scorer.get()).savedData.goals++;
+        //PlayerDataManager.get(scorer.get()).savedData.goals++;
+
+        int teamID = 1;
+        if(team == FootballGame.team2) teamID = 2;
 
         for(ServerPlayer player : FootballGame.getViewers()) {
-            PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(Component.text(scorer.get().getScoreboardName()).color(ChatFormat.brandColor2), Component.text("has scored a goal!").color(ChatFormat.normalColor)));
+            PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(Component.text("Team " + teamID).color(ChatFormat.brandColor2), Component.text("has scored a goal!").color(ChatFormat.normalColor)));
         }
 
         for(AccuratePlayer player : FootballGame.team1.players) {
@@ -243,22 +256,67 @@ public class FootballGame {
                             .append(Component.text(timer[0] + ":" + timer[1]).color(ChatFormat.brandColor2))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
                             .append(Component.text("Goals » ").color(TextColor.fromHexString("#b3b3b3")))
-                            .append(Component.text(com.nexia.minigames.games.football.util.player.PlayerDataManager.get(player).team.goals).color(ChatFormat.brandColor2))
+                            .append(Component.text(com.nexia.minigames.games.football.util.player.PlayerDataManager.get(player).team.goals + "/" + FootballGame.map.maxGoals).color(ChatFormat.brandColor2))
             );
         }
+    }
+
+    private static ArmorStand createArmorStand() {
+        ArmorStand armorStand = new ArmorStand(FootballGame.world, 0, 80, 0);
+        armorStand.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 999999, 5, true, true));
+
+        //armorStand.setSmall(true);
+        armorStand.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.GOLDEN_HELMET));
+
+        //armorStand.setShowArms(true);
+        //armorStand.setRightArmPose(new Rotations(0, 45, 0));
+        // show hitler pose for thingie for sneak peek with red cap
+
+        FootballGame.world.addFreshEntity(armorStand);
+
+        return armorStand;
+    }
+
+    private static FootballTeam assignPlayer(AccuratePlayer player) {
+        int players = FootballGame.players.size();
+        int random = RandomUtil.randomInt(1, 2);
+
+        int team1 = FootballGame.team1.players.size();
+        int team2 = FootballGame.team2.players.size();
+
+        if(team1 >= players/2) {
+            FootballGame.team2.addPlayer(player);
+            return FootballGame.team2;
+        } else if (team2 >= players/2) {
+            FootballGame.team1.addPlayer(player);
+            return FootballGame.team1;
+        }
+
+        if(random == 1) {
+            FootballGame.team1.addPlayer(player);
+            return FootballGame.team1;
+        } else if (random == 2) {
+            FootballGame.team2.addPlayer(player);
+            return FootballGame.team2;
+        }
+
+        return null;
     }
 
     public static void startGame() {
         if(FootballGame.queueTime <= 0){
             FootballGame.isStarted = true;
-            FootballGame.gameTime = 1000;
+            FootballGame.gameTime = 300;
             FootballGame.players.addAll(FootballGame.queue);
 
             // leather armor dyed blue/red depending on the team
 
-            ItemStack sword = new ItemStack(Items.STONE_SWORD);
+            ItemStack sword = new ItemStack(Items.WOODEN_SWORD);
             sword.getOrCreateTag().putBoolean("Unbreakable", true);
+            sword.enchant(Enchantments.KNOCKBACK, 2);
             sword.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
+
+            FootballGame.createArmorStand();
 
             for(AccuratePlayer player : FootballGame.players) {
                 ServerPlayer serverPlayer = player.get();
@@ -268,10 +326,56 @@ public class FootballGame {
                 data.gameMode = FootballGameMode.PLAYING;
 
                 serverPlayer.addTag("in_football_game");
-                serverPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                serverPlayer.addTag(LobbyUtil.NO_DAMAGE_TAG);
 
+                data.team = FootballGame.assignPlayer(player);
+                while(data.team == null) {
+                    data.team = FootballGame.assignPlayer(player);
+                    // if you're still null then im going to beat the shit out of you
+                }
                 data.team.spawnPosition.teleportPlayer(FootballGame.world, serverPlayer);
 
+                ItemStack helmet = Items.LEATHER_HELMET.getDefaultInstance();
+                helmet.getOrCreateTag().putInt("Unbreakable", 1);
+
+                ItemStack chestplate = Items.LEATHER_CHESTPLATE.getDefaultInstance();
+                chestplate.getOrCreateTag().putInt("Unbreakable", 1);
+
+                ItemStack leggings = Items.LEATHER_LEGGINGS.getDefaultInstance();
+                leggings.getOrCreateTag().putInt("Unbreakable", 1);
+
+                ItemStack boots = Items.LEATHER_BOOTS.getDefaultInstance();
+                boots.getOrCreateTag().putInt("Unbreakable", 1);
+
+                if(data.team.equals(FootballGame.team1)) {
+                    // r * 65536 + g * 256 + b
+                    int colour = 255 * 65536;
+
+                    DyeableLeatherItem leatherItem = (DyeableLeatherItem) Items.LEATHER_HELMET;
+
+                    leatherItem.setColor(helmet, colour);
+                    leatherItem.setColor(chestplate, colour);
+                    leatherItem.setColor(leggings, colour);
+                    leatherItem.setColor(boots, colour);
+
+                } else if(data.team.equals(FootballGame.team2)) {
+                    int colour = 255;
+
+                    DyeableLeatherItem leatherItem = (DyeableLeatherItem) Items.LEATHER_HELMET;
+
+                    leatherItem.setColor(helmet, colour);
+                    leatherItem.setColor(chestplate, colour);
+                    leatherItem.setColor(leggings, colour);
+                    leatherItem.setColor(boots, colour);
+                }
+
+                player.get().setItemSlot(EquipmentSlot.HEAD, helmet);
+                player.get().setItemSlot(EquipmentSlot.CHEST, chestplate);
+                player.get().setItemSlot(EquipmentSlot.LEGS, leggings);
+                player.get().setItemSlot(EquipmentSlot.FEET, boots);
+
+
+                player.get().setGameMode(GameType.SURVIVAL);
                 //player.setRespawnPosition(world.dimension(), pos, 0, true, false);
             }
 
@@ -294,7 +398,7 @@ public class FootballGame {
 
         isStarted = false;
         queueTime = 15;
-        gameTime = 1000;
+        gameTime = 300;
         isEnding = false;
         team1 = new FootballTeam(new ArrayList<>(), map.team1Pos);
         team2 = new FootballTeam(new ArrayList<>(), map.team2Pos);
@@ -312,7 +416,24 @@ public class FootballGame {
             entity.remove();
         }
 
+        if(!FootballGame.isStarted) {
+            for (ArmorStand entity : FootballGame.world.getEntities(EntityType.ARMOR_STAND, aabb, predicate)) {
+                // kill @e[type=item,distance=0..]
+                entity.remove();
+            }
+        }
+        if(!FootballGame.isStarted) return;
+
         // check if armor stand (football) is in goal, then reset football to middle and give goal
+
+        aabb = new AABB(FootballGame.map.team1goalCorner1, FootballGame.map.team1goalCorner2);
+        for (ArmorStand entity : FootballGame.world.getEntities(EntityType.ARMOR_STAND, aabb, predicate)) {
+            FootballGame.goal(entity, FootballGame.team2);
+        }
+        aabb = new AABB(FootballGame.map.team2goalCorner1, FootballGame.map.team2goalCorner2);
+        for (ArmorStand entity : FootballGame.world.getEntities(EntityType.ARMOR_STAND, aabb, predicate)) {
+            FootballGame.goal(entity, FootballGame.team1);
+        }
     }
 
     public static void firstTick(){

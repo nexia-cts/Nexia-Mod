@@ -53,7 +53,7 @@ public class OitcGame {
 
     public static ServerLevel world = null;
 
-    public static OitcMap map = OitcMap.CITY;
+    public static OitcMap map = OitcMap.JUNGLE_PLAZA;
 
 
     // Both timers counted in seconds.
@@ -84,6 +84,8 @@ public class OitcGame {
         OitcGame.deathPlayers.remove(accuratePlayer);
 
         data.kills = 0;
+
+        if(OitcGame.players.size() == 1) OitcGame.endGame(OitcGame.players.get(0).get());
 
         player.removeTag("in_oitc_game");
 
@@ -233,12 +235,15 @@ public class OitcGame {
 
         // maybe i should improve this in the future, ykyk
 
-        Collection<AccuratePlayer> killers = getKills().values();
+        HashMap<Integer, AccuratePlayer> kills = getKills();
+        Set<Integer> killers = kills.keySet();
         Arrays.sort(killers.toArray());
+        // this is ballux
 
         int i = 0;
-        for(AccuratePlayer accuratePlayer : killers) {
+        for(Integer integer : killers) {
             i++;
+            AccuratePlayer accuratePlayer = kills.get(integer);
             if(accuratePlayer.get() != null && accuratePlayer.equals(player)) return ServerTime.ordinal(i);
             break;
         }

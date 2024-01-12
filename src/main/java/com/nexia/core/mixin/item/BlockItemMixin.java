@@ -6,6 +6,7 @@ import com.nexia.ffa.uhc.utilities.FfaAreas;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
+import com.nexia.minigames.games.football.FootballGame;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -28,6 +29,11 @@ public abstract class BlockItemMixin {
         ServerLevel level = player.getLevel();
 
         if (BwAreas.isBedWarsWorld(player.getLevel()) && !BwPlayerEvents.beforePlace(player, context)) {
+            cir.setReturnValue(InteractionResult.PASS);
+            return;
+        }
+
+        if (player.getLevel().equals(FootballGame.world) && !player.isCreative()) {
             cir.setReturnValue(InteractionResult.PASS);
             return;
         }

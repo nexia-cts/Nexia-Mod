@@ -12,6 +12,7 @@ import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.team.DuelsTeam;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -155,6 +156,10 @@ public abstract class PlayerMixin extends LivingEntity {
                 cir.setReturnValue(false);
                 return;
             }
+        }
+
+        if(FootballGame.isFootballPlayer(player)) {
+            cir.setReturnValue(false);
         }
 
         if(OitcGame.isOITCPlayer(player)){

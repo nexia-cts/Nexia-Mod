@@ -1,7 +1,6 @@
 package com.nexia.core.mixin.entity;
 
 import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.classic.utilities.FfaAreas;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
@@ -29,7 +28,6 @@ public abstract class ArmorStandMixin extends LivingEntity {
         if (FfaUtil.isFfaPlayer(player) && !player.isCreative()) {
             cir.setReturnValue(InteractionResult.FAIL);
         }
-
     }
 
 }

@@ -15,10 +15,12 @@ public class FootballTeam {
     public EntityPos spawnPosition;
 
     public FootballTeam(@NotNull ArrayList<AccuratePlayer> players, @NotNull EntityPos spawnPosition) {
-
         this.players = players;
         this.goals = 0;
         this.spawnPosition = spawnPosition;
+    }
 
+    public boolean addPlayer(AccuratePlayer player) {
+        return this.players.add(player);
     }
 }

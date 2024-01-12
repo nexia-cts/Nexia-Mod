@@ -14,6 +14,8 @@ public class FootballMap {
 
     public String name;
 
+    public int maxGoals;
+
     public BlockPos corner1;
 
     public BlockPos corner2;
@@ -29,7 +31,7 @@ public class FootballMap {
     public EntityPos team1Pos;
     public EntityPos team2Pos;
 
-    public static FootballMap FIELDS = new FootballMap("fields", "Fields [placeholder map]", new BlockPos(0, 80, 0), new BlockPos(0, 80, 0), new EntityPos(20, 80, 0), new EntityPos(0, 80, -20), new BlockPos(0, 80, 0), new BlockPos(0, 80, 0),  new BlockPos(0, 80, 0),  new BlockPos(0, 80, 0));
+    public static FootballMap FIELD = new FootballMap("field", "Field", 4, new BlockPos(-36, 84, -54), new BlockPos(36, 77, 54), new EntityPos(0, 80, 10, -90, 0), new EntityPos(0, 80, -10), new BlockPos(3, 82, 52), new BlockPos(-3, 80, 51),  new BlockPos(-3, 82, -52),  new BlockPos(3, 80, -51));
 
 
     public static FootballMap identifyMap(String name) {
@@ -39,9 +41,10 @@ public class FootballMap {
         return null;
     }
 
-    public FootballMap(String id, String name, BlockPos corner1, BlockPos corner2, EntityPos team1Pos, EntityPos team2Pos, BlockPos team1goalCorner1, BlockPos team1goalCorner2, BlockPos team2goalCorner1, BlockPos team2goalCorner2) {
+    public FootballMap(String id, String name, int maxGoals, BlockPos corner1, BlockPos corner2, EntityPos team1Pos, EntityPos team2Pos, BlockPos team1goalCorner1, BlockPos team1goalCorner2, BlockPos team2goalCorner1, BlockPos team2goalCorner2) {
         this.id = id;
         this.name = name;
+        this.maxGoals = maxGoals;
 
         this.team1Pos = team1Pos;
         this.team2Pos = team2Pos;

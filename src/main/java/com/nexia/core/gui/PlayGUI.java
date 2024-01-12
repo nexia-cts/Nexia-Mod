@@ -7,6 +7,7 @@ import com.nexia.ffa.classic.utilities.FfaAreas;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import eu.pb4.sgui.api.ClickType;
@@ -138,8 +139,8 @@ public class PlayGUI extends SimpleGui {
         pot.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         ItemDisplayUtil.addLore(pot, "§5", 0);
-        ItemDisplayUtil.addLore(pot, "§7guys", 1);
-        ItemDisplayUtil.addLore(pot, "§7i kinda need a description.", 2);
+        ItemDisplayUtil.addLore(pot, "§7Fight people on sky islands", 1);
+        ItemDisplayUtil.addLore(pot, "§7and drink Piss Juice™ to survive!", 2);
         ItemDisplayUtil.addLore(pot, "§5", 3);
         ItemDisplayUtil.addLore(pot, "§b◆ There are " + com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
 
@@ -147,12 +148,12 @@ public class PlayGUI extends SimpleGui {
 
         ItemStack uhc = new ItemStack(Items.GOLDEN_APPLE, 1);
         uhc.setHoverName(new TextComponent("§6UHC FFA"));
-        ItemDisplayUtil.addGlint(classic);
+        ItemDisplayUtil.addGlint(uhc);
         uhc.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         ItemDisplayUtil.addLore(uhc, "§5", 0);
-        ItemDisplayUtil.addLore(uhc, "§7The classic snapshot", 1);
-        ItemDisplayUtil.addLore(uhc, "§7Free For All gamemodes.", 2);
+        ItemDisplayUtil.addLore(uhc, "§7An FFA to practice pvp", 1);
+        ItemDisplayUtil.addLore(uhc, "§7for the UHC gamemode.", 2);
         ItemDisplayUtil.addLore(uhc, "§f", 3);
         ItemDisplayUtil.addLore(uhc, "§6◆ There are " + com.nexia.ffa.uhc.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
 
@@ -195,11 +196,23 @@ public class PlayGUI extends SimpleGui {
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
 
+        ItemStack football = new ItemStack(Items.BEDROCK, 1);
+        football.setHoverName(new TextComponent("§fFootball"));
+        ItemDisplayUtil.addGlint(football);
+        football.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
+
+        ItemDisplayUtil.addLore(football, "§f", 0);
+        ItemDisplayUtil.addLore(football, "§7Also known as soccer.", 1);
+        ItemDisplayUtil.addLore(football, "§7You kick a ball into a goal", 2);
+        ItemDisplayUtil.addLore(football, "§7to achieve victory!", 3);
+        ItemDisplayUtil.addLore(football, "§f", 4);
+        ItemDisplayUtil.addLore(football, "§f◆ There are " + FootballGame.world.players().size() + " people playing this gamemode.", 5);
+
         fillEmptySlots(emptySlot);
 
         this.setSlot(2, oitc);
         this.setSlot(4, back);
-        this.setSlot(6, unknown);
+        this.setSlot(6, football);
         this.setSlot(0, unknown);
         this.setSlot(8, unknown);
     }
@@ -245,6 +258,11 @@ public class PlayGUI extends SimpleGui {
 
             if(name.getString().equalsIgnoreCase("§eOITC")){
                 LobbyUtil.sendGame(this.player, "oitc", true, true);
+                this.close();
+            }
+
+            if(name.getString().equalsIgnoreCase("§fFootball")){
+                LobbyUtil.sendGame(this.player, "football", true, true);
                 this.close();
             }
 

@@ -6,9 +6,9 @@ public class ServerType {
 
     public static ServerType EU = new ServerType("eu", "135.125.151.156");
 
-    public static ServerType NA = new ServerType("na", "50.20.202.100");
+    public static ServerType NA = new ServerType("na", "173.240.149.199");
 
-    public static ServerType DEV = new ServerType("dev", "135.125.147.231");
+    public static ServerType DEV = new ServerType("dev", "50.20.206.158");
 
     public ServerType(String type, String ip) {
         this.type = type;
