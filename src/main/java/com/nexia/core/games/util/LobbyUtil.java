@@ -20,6 +20,8 @@ import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwScoreboard;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
+import com.nexia.minigames.games.football.FootballGame;
+import com.nexia.minigames.games.football.FootballGameMode;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.oitc.OitcGameMode;
 import com.nexia.minigames.games.skywars.SkywarsGame;
@@ -39,7 +41,7 @@ import net.minecraft.world.level.Level;
 
 public class LobbyUtil {
 
-    public static String[] statsGameModes = {"FFA CLASSIC", "SKY FFA", "UHC FFA", "KIT FFA", "BEDWARS", "OITC", "DUELS", "SKYWARS"};
+    public static String[] statsGameModes = {"FFA CLASSIC", "SKY FFA", "UHC FFA", "KIT FFA", "BEDWARS", "OITC", "DUELS", "SKYWARS", "FOOTBALL"};
 
     public static ServerLevel lobbyWorld = null;
     public static EntityPos lobbySpawn = new EntityPos(Main.config.lobbyPos[0], Main.config.lobbyPos[1], Main.config.lobbyPos[2], 0, 0);
@@ -73,6 +75,8 @@ public class LobbyUtil {
             "ffa_kits",
             "ffa_sky",
             "ffa_uhc",
+            "football",
+            "in_football_game",
             "duels",
             "skywars",
             "oitc",
@@ -98,6 +102,9 @@ public class LobbyUtil {
         }
         else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.SKYWARS) {
             SkywarsGame.leave(minecraftPlayer);
+        }
+        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.FOOTBALL) {
+            FootballGame.leave(minecraftPlayer);
         }
 
         PlayerUtil.sendBossbar(SkywarsGame.BOSSBAR, minecraftPlayer, true);
@@ -330,6 +337,17 @@ public class LobbyUtil {
 
             if(message){player.sendActionBarMessage(Component.text("You have joined §7\uD83D\uDDE1 §f§lOITC §7\uD83C\uDFF9"));}
         }
+
+        if(game.equalsIgnoreCase("football")){
+            player.addTag("football");
+            PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.FOOTBALL;
+            com.nexia.minigames.games.football.util.player.PlayerDataManager.get(minecraftPlayer).gameMode = FootballGameMode.LOBBY;
+
+            FootballGame.joinQueue(minecraftPlayer);
+
+            if(message){player.sendActionBarMessage(Component.text("You have joined §7? §7§lFootball §7?"));}
+        }
+
 
         if(game.equalsIgnoreCase("skywars")){
             player.addTag("skywars");

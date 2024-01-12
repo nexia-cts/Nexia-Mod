@@ -9,6 +9,7 @@ public class PlayerGameMode {
     public static final PlayerGameMode SKYWARS = new PlayerGameMode("skywars");
     public static final PlayerGameMode OITC = new PlayerGameMode("oitc");
     public static final PlayerGameMode FFA = new PlayerGameMode("ffa");
+    public static final PlayerGameMode FOOTBALL = new PlayerGameMode("football");
 
     //public static final PlayerGameMode DUELS = new PlayerGameMode("duels");
 

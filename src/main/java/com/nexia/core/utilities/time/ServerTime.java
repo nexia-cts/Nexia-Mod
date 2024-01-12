@@ -19,6 +19,7 @@ import com.nexia.minigames.games.bedwars.shop.BwLoadShop;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
+import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.world.WorldUtil;
@@ -63,6 +64,7 @@ public class ServerTime {
         BwLoadShop.loadBedWarsShop(true);
         BwDimension.register();
         BwGame.firstTick();
+        FootballGame.firstTick();
         WorldUtil.deleteTempWorlds();
 
         SkywarsGame.firstTick();
@@ -91,6 +93,7 @@ public class ServerTime {
 
         BwGame.tick();
         SkyFfaBlocks.tick();
+        FootballGame.tick();
         OitcGame.tick();
 
         if (totalTickCount % 5 == 0) {
@@ -124,6 +127,7 @@ public class ServerTime {
     static void everySecond() {
         totalSecondCount++;
         OitcGame.second();
+        FootballGame.second();
         SkywarsGame.second();
         GameHandler.second();
         try {
