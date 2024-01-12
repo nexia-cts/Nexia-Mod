@@ -43,7 +43,7 @@ public abstract class LivingEntityMixin {
 
     /**
      * @author notcoded
-     * @reason hi
+     * @reason fix shield kb
      */
     @Overwrite
     public void knockback(float f, double d, double e) {

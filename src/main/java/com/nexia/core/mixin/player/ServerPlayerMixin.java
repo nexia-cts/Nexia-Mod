@@ -7,7 +7,6 @@ import com.nexia.core.gui.duels.DuelGUI;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
@@ -93,7 +92,7 @@ public abstract class ServerPlayerMixin extends Player {
     @Redirect(method = "doCloseContainer", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/AbstractContainerMenu;removed(Lnet/minecraft/world/entity/player/Player;)V"))
     private void removed(AbstractContainerMenu instance, Player player) {
 
-        if (FfaClassicUtil.isFfaPlayer(player)) {
+        if (FfaUtil.isFfaPlayer(player)) {
             player.inventory.add(inventory.getCarried());
             player.inventory.setCarried(ItemStack.EMPTY);
             return;

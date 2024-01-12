@@ -12,6 +12,7 @@
     "block.GrindstoneBlockMixin",
     "block.PotBlockMixin",
     "block.SignBlockMixin",
+    "block.CommandBlockMixin",
     "entity.AbstractArrowMixin",
     "entity.AbstractHurtingProjectileMixin",
     "entity.ArmorStandMixin",

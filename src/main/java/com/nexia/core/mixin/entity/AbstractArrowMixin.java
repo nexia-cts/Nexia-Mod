@@ -1,10 +1,10 @@
 package com.nexia.core.mixin.entity;
 
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
-import net.minecraft.util.Mth;
+import com.nexia.minigames.games.oitc.OitcGame;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
@@ -16,23 +16,35 @@ public class AbstractArrowMixin {
     @Redirect(method = "onHitEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;ceil(D)I"))
     private int modifyArrowDamage(double vanillaCalculated) {
 
-        if (BwAreas.isBedWarsWorld(((AbstractArrow)(Object)this).level)) {
+        ServerLevel level = (ServerLevel) ((AbstractArrow)(Object)this).level;
+
+        if (BwAreas.isBedWarsWorld(level)) {
             vanillaCalculated *= 0.625;
         }
 
         arrowDamage = (int)Math.ceil(vanillaCalculated);
+
+        if(OitcGame.world.equals(level)) {
+            arrowDamage = 1000;
+        }
+
         return arrowDamage;
     }
 
     @Redirect(method = "onHitEntity", at = @At(value = "INVOKE", target = "Ljava/lang/Math;min(JJ)J"))
     private long modifyCritDamage(long vanillaCalculated, long intMaxValue) {
 
-        if (BwAreas.isBedWarsWorld(((AbstractArrow)(Object)this).level)) {
+        ServerLevel level = (ServerLevel) ((AbstractArrow)(Object)this).level;
+
+        if (BwAreas.isBedWarsWorld(level)) {
             long critBoost = arrowDamage / 4 + 1;
             arrowDamage = (int)Math.min(arrowDamage + critBoost, Integer.MAX_VALUE);
-
         } else {
             arrowDamage = (int)Math.min(vanillaCalculated, intMaxValue);
+        }
+
+        if(OitcGame.world.equals(level)) {
+            arrowDamage = 1000;
         }
 
         return arrowDamage;

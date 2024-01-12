@@ -9,7 +9,6 @@ import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.minigames.GameHandler;
 import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
@@ -52,10 +51,6 @@ public class PlayerRespawnListener {
                     respawn[2] = serverPlayer.getZ();
                 }
 
-
-                if(isPlaying) {
-                    GameHandler.showCountdown(player, 5);
-                }
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
                 respawnEvent.setSpawnpoint(new Location(respawn[0], respawn[1], respawn[2], ServerTime.factoryServer.getWorld(new Identifier("oitc", OitcGame.world.dimension().toString().replaceAll("]", "").split(":")[2]))));
                 return;

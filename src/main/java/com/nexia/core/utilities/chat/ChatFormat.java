@@ -2,17 +2,10 @@ package com.nexia.core.utilities.chat;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.server.level.ServerPlayer;
-import org.apache.commons.lang3.tuple.MutablePair;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class ChatFormat {
 
@@ -23,9 +16,9 @@ public class ChatFormat {
     public static TextColor normalColor = NamedTextColor.WHITE;
     public static TextColor systemColor = NamedTextColor.DARK_GRAY;
 
-    public static TextColor brandColor1 = TextColor.fromHexString("#b300f6");
+    public static TextColor brandColor1 = TextColor.fromHexString("#a400fc");
 
-    public static TextColor brandColor2 = TextColor.fromHexString("#eb00ff");
+    public static TextColor brandColor2 = TextColor.fromHexString("#e700f0");
 
     public static TextColor failColor = TextColor.fromHexString("#ff2b1c");
 
@@ -47,16 +40,16 @@ public class ChatFormat {
     // Text
 
     public static Component nexiaMessage = Component.text("N")
-            .color(TextColor.fromHexString("#9e00f5"))
+            .color(TextColor.fromHexString("#a400fc"))
             .decoration(bold, true)
             .append(Component.text("e")
-                    .color(TextColor.fromHexString("#aa00f3"))
+                    .color(TextColor.fromHexString("#ba00f8"))
                     .append(Component.text("x")
-                            .color(TextColor.fromHexString("#b600f2"))
+                            .color(TextColor.fromHexString("#d000f4"))
                             .append(Component.text("i")
-                                    .color(TextColor.fromHexString("#c300f0"))
+                                    .color(TextColor.fromHexString("#e700f0"))
                                     .append(Component.text("a")
-                                            .color(TextColor.fromHexString("#cf00ee"))
+                                            .color(TextColor.fromHexString("#fc00ec"))
                                     )
                             )
                     )
