@@ -11,7 +11,6 @@ import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.football.util.player.PlayerData;
 import com.nexia.minigames.games.football.util.player.PlayerDataManager;
-import net.fabricmc.loader.impl.util.StringUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -42,6 +41,7 @@ import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 public class FootballGame {
@@ -152,19 +152,17 @@ public class FootballGame {
 
                     fPlayer.sendActionBarMessage(
                             Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
-                                    .append(Component.text(StringUtil.capitalize(FootballGame.map.id)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
-                                    .append(Component.text(" (" + FootballGame.queue.size()).color(TextColor.fromHexString("#b3b3b3")))
+                                    .append(Component.text(FootballGame.map.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                                    .append(Component.text(" (" + FootballGame.queue.size() + ")").color(TextColor.fromHexString("#b3b3b3")))
                                     .append(Component.text(" | ").color(ChatFormat.lineColor))
                                     .append(Component.text("Time » ").color(TextColor.fromHexString("#b3b3b3")))
                                     .append(Component.text(FootballGame.queueTime).color(ChatFormat.brandColor2))
-                                    .append(Component.text(" | ").color(ChatFormat.lineColor))
-                                    .append(Component.text("Teaming is not allowed!").color(ChatFormat.failColor))
                     );
 
                     if(FootballGame.queueTime <= 5 || FootballGame.queueTime == 10 || FootballGame.queueTime == 15) {
-                        fPlayer.sendMessage(Component.text("The game will start in ").color(ChatFormat.lineColor)
+                        fPlayer.sendMessage(Component.text("The game will start in ").color(TextColor.fromHexString("#b3b3b3"))
                                 .append(Component.text(FootballGame.queueTime).color(ChatFormat.brandColor1))
-                                .append(Component.text(" seconds.").color(ChatFormat.lineColor))
+                                .append(Component.text(" seconds.").color(TextColor.fromHexString("#b3b3b3")))
                         );
                     }
                 }
@@ -235,28 +233,39 @@ public class FootballGame {
         FootballGame.isEnding = true;
         FootballGame.winnerTeam = winnerTeam;
 
+        int teamID = 1;
+        if(winnerTeam == FootballGame.team2) teamID = 2;
+
         for(AccuratePlayer accuratePlayer : winnerTeam.players) {
             PlayerUtil.getFactoryPlayer(accuratePlayer.get()).sendTitle(Title.title(Component.text("You won!").color(ChatFormat.greenColor), Component.text("")));
             PlayerDataManager.get(accuratePlayer.get()).savedData.wins++;
         }
 
         for(ServerPlayer player : FootballGame.getViewers()){
-            PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2), Component.text("has won the game! (" + winnerTeam.goals + " goals)").color(ChatFormat.normalColor)));
+            PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(Component.text("Team " + teamID).color(ChatFormat.brandColor2), Component.text("has won the game! (" + winnerTeam.goals + " goals)").color(ChatFormat.normalColor)));
         }
     }
 
     public static void updateInfo() {
+
         String[] timer = TickUtil.minuteTimeStamp(FootballGame.gameTime * 20);
         for(ServerPlayer player : FootballGame.getViewers()) {
+            FootballTeam playerTeam = PlayerDataManager.get(player).team;
+            FootballTeam otherTeam = FootballGame.team1;
+            if(playerTeam.equals(FootballGame.team1)) otherTeam = FootballGame.team2;
+
             PlayerUtil.getFactoryPlayer(player).sendActionBarMessage(
                     Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
-                            .append(Component.text(StringUtil.capitalize(FootballGame.map.id)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                            .append(Component.text(FootballGame.map.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
                             .append(Component.text("Time » ").color(TextColor.fromHexString("#b3b3b3")))
                             .append(Component.text(timer[0] + ":" + timer[1]).color(ChatFormat.brandColor2))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
                             .append(Component.text("Goals » ").color(TextColor.fromHexString("#b3b3b3")))
-                            .append(Component.text(com.nexia.minigames.games.football.util.player.PlayerDataManager.get(player).team.goals + "/" + FootballGame.map.maxGoals).color(ChatFormat.brandColor2))
+                            .append(Component.text(playerTeam.goals + "/" + FootballGame.map.maxGoals).color(ChatFormat.brandColor2))
+                            .append(Component.text(" | ").color(ChatFormat.lineColor))
+                            .append(Component.text("Enemy Team Goals » ").color(TextColor.fromHexString("#b3b3b3")))
+                            .append(Component.text(otherTeam.goals + "/" + FootballGame.map.maxGoals).color(ChatFormat.brandColor2))
             );
         }
     }
@@ -266,11 +275,10 @@ public class FootballGame {
         armorStand.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 999999, 5, true, true));
 
         //armorStand.setSmall(true);
-        armorStand.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.GOLDEN_HELMET));
 
-        //armorStand.setShowArms(true);
-        //armorStand.setRightArmPose(new Rotations(0, 45, 0));
-        // show hitler pose for thingie for sneak peek with red cap
+        UUID footballUUID = UUID.fromString("fcbf27a9-535e-466f-ae75-7c7959fba7f0");
+
+        armorStand.setItemSlot(EquipmentSlot.HEAD, PlayerUtil.getPlayerHead(footballUUID));
 
         FootballGame.world.addFreshEntity(armorStand);
 

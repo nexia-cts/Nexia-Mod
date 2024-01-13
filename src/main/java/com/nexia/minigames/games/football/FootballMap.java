@@ -31,7 +31,7 @@ public class FootballMap {
     public EntityPos team1Pos;
     public EntityPos team2Pos;
 
-    public static FootballMap FIELD = new FootballMap("field", "Field", 4, new BlockPos(-36, 84, -54), new BlockPos(36, 77, 54), new EntityPos(0, 80, 10, -90, 0), new EntityPos(0, 80, -10), new BlockPos(3, 82, 52), new BlockPos(-3, 80, 51),  new BlockPos(-3, 82, -52),  new BlockPos(3, 80, -51));
+    public static FootballMap FIELD = new FootballMap("field", "Field", 4, new BlockPos(-36, 84, -54), new BlockPos(36, 77, 54), new EntityPos(0, 80, 10, -180, 0), new EntityPos(0, 80, -10), new BlockPos(3, 82, 52), new BlockPos(-3, 80, 51),  new BlockPos(-3, 82, -52),  new BlockPos(3, 80, -51));
 
 
     public static FootballMap identifyMap(String name) {

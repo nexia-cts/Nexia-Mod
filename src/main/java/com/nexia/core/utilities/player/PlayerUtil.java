@@ -1,12 +1,15 @@
 package com.nexia.core.utilities.player;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.google.gson.JsonParser;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesPacket;
@@ -20,13 +23,17 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import org.apache.logging.log4j.core.jmx.Server;
+import net.minecraft.world.item.Items;
+import net.notcoded.codelib.minecraft.MinecraftAPI;
+import net.notcoded.codelib.util.http.HttpAPI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class PlayerUtil {
 
@@ -42,6 +49,57 @@ public class PlayerUtil {
         for (ServerPlayer player : players) {
             player.sendMessage(component, Util.NIL_UUID);
         }
+    }
+
+    public static String getTextureID(@NotNull UUID uuid){
+        String response;
+
+        try {
+            response = HttpAPI.get(new URL(String.format("https://sessionserver.mojang.com/session/minecraft/profile/%s", uuid)));
+        } catch(Exception ignored) { return null; }
+
+        if(response != null && !response.trim().isEmpty()) {
+            String textureID = new JsonParser().parse(response).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
+            if(textureID == null || textureID.trim().isEmpty()) return null;
+            return textureID;
+        }
+
+        return null;
+    }
+
+    public static ItemStack getPlayerHead(@NotNull UUID playerUUID) {
+        ItemStack playerHead = Items.PLAYER_HEAD.getDefaultInstance();
+        String textureID = getTextureID(playerUUID);
+
+        if(textureID == null) return playerHead;
+
+        playerHead.setTag(nbtFromTextureValue(playerUUID, textureID));
+
+        //footballHead.getOrCreateTag().putString("Value", 123);
+
+        return playerHead;
+    }
+
+    private static CompoundTag nbtFromTextureValue(@NotNull UUID id, @NotNull String textureID) {
+        String name = MinecraftAPI.getName(id);
+
+        CompoundTag nbtCompound = new CompoundTag();
+        CompoundTag skullownertag = new CompoundTag();
+        CompoundTag texturetag = new CompoundTag();
+        ListTag texturelist = new ListTag();
+        CompoundTag valuetag = new CompoundTag();
+        CompoundTag displaytag = new CompoundTag();
+
+        valuetag.putString("Value", textureID);
+        texturelist.add(valuetag);
+        texturetag.put("textures", texturelist);
+        skullownertag.put("Properties", texturetag);
+        skullownertag.putUUID("Id", id);
+        nbtCompound.put("SkullOwner", skullownertag);
+        displaytag.putString("Name", name);
+        nbtCompound.put("display", displaytag);
+
+        return nbtCompound;
     }
 
     public static void broadcastTitle(List<ServerPlayer> players, String title, String subtitle, int in, int stay, int out) {

@@ -212,9 +212,9 @@ public class OitcGame {
                     );
 
                     if(OitcGame.queueTime <= 5 || OitcGame.queueTime == 10 || OitcGame.queueTime == 15) {
-                        fPlayer.sendMessage(Component.text("The game will start in ").color(ChatFormat.lineColor)
+                        fPlayer.sendMessage(Component.text("The game will start in ").color(TextColor.fromHexString("#b3b3b3"))
                                 .append(Component.text(OitcGame.queueTime).color(ChatFormat.brandColor1))
-                                .append(Component.text(" seconds.").color(ChatFormat.lineColor))
+                                .append(Component.text(" seconds.").color(TextColor.fromHexString("#b3b3b3")))
                         );
                     }
                 }
@@ -303,7 +303,7 @@ public class OitcGame {
         for(ServerPlayer player : OitcGame.getViewers()) {
             PlayerUtil.getFactoryPlayer(player).sendActionBarMessage(
                     Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
-                            .append(Component.text(StringUtil.capitalize(OitcGame.map.id)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                            .append(Component.text(OitcGame.map.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
                             .append(Component.text("Time » ").color(TextColor.fromHexString("#b3b3b3")))
                             .append(Component.text(timer[0] + ":" + timer[1]).color(ChatFormat.brandColor2))
@@ -436,11 +436,9 @@ public class OitcGame {
             // kill @e[type=item,distance=0..]
 
             OitcGame.world.addParticle(ParticleTypes.FLAME, entity.getX(), entity.getY(), entity.getZ(), 0.0, 0.0, 0.0);
-            if(entity.isOnGround()) {
+            if(entity.inGround) {
                 entity.remove();
             }
-
-
         }
     }
 

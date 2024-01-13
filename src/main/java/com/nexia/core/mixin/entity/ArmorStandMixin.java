@@ -1,6 +1,7 @@
 package com.nexia.core.mixin.entity;
 
 import com.nexia.ffa.FfaUtil;
+import com.nexia.minigames.games.football.FootballGame;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
@@ -25,7 +26,7 @@ public abstract class ArmorStandMixin extends LivingEntity {
     private void canTakeItem(Player player, Vec3 vec3, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResult> cir) {
 
         // Disable interacting with armor stands in ffa
-        if (FfaUtil.isFfaPlayer(player) && !player.isCreative()) {
+        if ((FfaUtil.isFfaPlayer(player) || FootballGame.isFootballPlayer(player)) && !player.isCreative()) {
             cir.setReturnValue(InteractionResult.FAIL);
         }
     }
