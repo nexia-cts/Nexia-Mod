@@ -44,6 +44,6 @@
     "fabric": "*",
     "factory-api": "*",
     "collective-fabric": ">=1.16.5-5.50",
-    "saveandloadinventories": "*"
+    "saveandloadinventories-fabric": "*"
   }
 }
