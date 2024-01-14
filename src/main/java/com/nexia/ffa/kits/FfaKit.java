@@ -20,12 +20,8 @@ public class FfaKit {
     public static final FfaKit KNIGHT = new FfaKit("knight", new ItemStack(Items.DIAMOND_SWORD));
     public static final FfaKit POSEIDON = new FfaKit("poseidon", new ItemStack(Items.TRIDENT));
     public static final FfaKit BRUTE = new FfaKit("brute", new ItemStack(Items.NETHERITE_CHESTPLATE));
-    public static final FfaKit HUNTER = new FfaKit("HUNTER", new ItemStack(Items.CROSSBOW));
-    public static final FfaKit NINJA = new FfaKit("NINJA", new ItemStack(Items.SUGAR));
-
-    public static final FfaKit KIT6 = new FfaKit("kit_6", new ItemStack(Items.BARRIER));
-
-    public static final FfaKit KIT7 = new FfaKit("kit_7", new ItemStack(Items.BARRIER));
+    public static final FfaKit HUNTER = new FfaKit("hunter", new ItemStack(Items.CROSSBOW));
+    public static final FfaKit NINJA = new FfaKit("ninja", new ItemStack(Items.SUGAR));
 
     public FfaKit(String id, ItemStack item) {
         this.id = id;
@@ -41,8 +37,6 @@ public class FfaKit {
         if(name.equalsIgnoreCase("brute")) return FfaKit.BRUTE;
         if(name.equalsIgnoreCase("hunter")) return FfaKit.HUNTER;
         if(name.equalsIgnoreCase("ninja")) return FfaKit.NINJA;
-        if(name.equalsIgnoreCase("kit6")) return FfaKit.KIT6;
-        if(name.equalsIgnoreCase("kit7")) return FfaKit.KIT7;
         return null;
     }
     public void giveKit(ServerPlayer player, boolean clearEffect) {
