@@ -51,7 +51,7 @@ public class FootballGame {
 
     public static ServerLevel world = null;
 
-    public static FootballMap map = FootballMap.FIELD;
+    public static FootballMap map = FootballMap.STADIUM;
 
     public static FootballTeam team1 = new FootballTeam(new ArrayList<>(), FootballGame.map.team1Pos);
     public static FootballTeam team2 = new FootballTeam(new ArrayList<>(), map.team2Pos);
@@ -81,6 +81,10 @@ public class FootballGame {
         FootballGame.spectator.remove(accuratePlayer);
         FootballGame.queue.remove(accuratePlayer);
         FootballGame.players.remove(accuratePlayer);
+
+        if(data.gameMode.equals(FootballGameMode.PLAYING) && (winnerTeam == null || winnerTeam.players.contains(accuratePlayer))) data.savedData.loss++;
+
+
         data.team = null;
 
         player.removeTag("in_football_game");
@@ -96,10 +100,6 @@ public class FootballGame {
         player.getInventory().clear();
         minecraftPlayer.inventory.setCarried(ItemStack.EMPTY);
         minecraftPlayer.getEnderChestInventory().clearContent();
-
-        if(data.gameMode.equals(FootballGameMode.PLAYING) && winnerTeam != null && !winnerTeam.players.contains(accuratePlayer)) {
-            data.savedData.loss++;
-        }
 
         player.removeTag("football");
 
@@ -132,6 +132,9 @@ public class FootballGame {
                     int team1 = FootballGame.team1.goals;
                     int team2 = FootballGame.team2.goals;
 
+
+                    if(team1 == team2) endGame(null);
+
                     if(team1 > team2) endGame(FootballGame.team1);
                     else endGame(FootballGame.team2);
                 } else if(FootballGame.gameTime > 0 && !FootballGame.isEnding){
@@ -143,6 +146,7 @@ public class FootballGame {
         } else {
             if(FootballGame.queue.size() >= 2) {
                 for(AccuratePlayer player : FootballGame.queue){
+                    if(player.get() == null) return;
                     Player fPlayer = PlayerUtil.getFactoryPlayer(player.get());
 
                     if(FootballGame.queueTime <= 5) {
@@ -178,9 +182,15 @@ public class FootballGame {
     }
 
     public static void goal(ArmorStand entity, FootballTeam team) {
-        team.goals++;
+
+        if(!FootballGame.isEnding) {
+            team.goals++;
+            ServerPlayer closestPlayer = (ServerPlayer) FootballGame.world.getNearestPlayer(entity.getX(), entity.getY(), entity.getZ(), 20, e -> e instanceof ServerPlayer se && !se.isSpectator() && !se.isCreative() && team.players.contains(AccuratePlayer.create(se)));
+            PlayerDataManager.get(closestPlayer).savedData.goals++;
+            if(team.goals >= FootballGame.map.maxGoals) FootballGame.endGame(team);
+        }
+
         FootballGame.updateInfo();
-        if(!FootballGame.isEnding && team.goals >= FootballGame.map.maxGoals) FootballGame.endGame(team);
 
         //PlayerDataManager.get(scorer.get()).savedData.goals++;
 
@@ -241,6 +251,20 @@ public class FootballGame {
 
     public static void endGame(FootballTeam winnerTeam) {
         FootballGame.isEnding = true;
+
+        if(winnerTeam == null) {
+            Component msg = Component.text("The game was a ")
+                    .color(ChatFormat.normalColor)
+                    .append(Component.text("draw").color(ChatFormat.brandColor2))
+                    .append(Component.text("!").color(ChatFormat.normalColor)
+                    );
+            for(ServerPlayer player : FootballGame.getViewers()){
+                PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(msg, Component.text("")));
+            }
+
+            return;
+        }
+
         FootballGame.winnerTeam = winnerTeam;
 
         int teamID = 1;
@@ -261,7 +285,7 @@ public class FootballGame {
         String[] timer = TickUtil.minuteTimeStamp(FootballGame.gameTime * 20);
         for(ServerPlayer player : FootballGame.getViewers()) {
             FootballTeam playerTeam = PlayerDataManager.get(player).team;
-            if(playerTeam == null) playerTeam = FootballGame.team2; // maybe cuz spectator
+            if(playerTeam == null) playerTeam = FootballGame.team1; // maybe cuz spectator
             FootballTeam otherTeam = FootballGame.team1;
             if(playerTeam.equals(FootballGame.team1)) otherTeam = FootballGame.team2;
 

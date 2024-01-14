@@ -32,7 +32,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
@@ -144,9 +143,9 @@ public class SkywarsGame {
             } else {
                 SkywarsGame.updateInfo();
 
-                if(SkywarsGame.glowingTime <= 0 && !SkywarsGame.isGlowingActive){
+                if(SkywarsGame.glowingTime <= 0 && !SkywarsGame.isGlowingActive && !SkywarsGame.isEnding){
                     SkywarsGame.glowPlayers();
-                } else if(SkywarsGame.glowingTime > 0 && !SkywarsGame.isGlowingActive){
+                } else if(SkywarsGame.glowingTime > 0 && !SkywarsGame.isGlowingActive && !SkywarsGame.isEnding){
                     SkywarsGame.glowingTime--;
                 }
 
@@ -154,8 +153,8 @@ public class SkywarsGame {
                     SkywarsGame.gameEnd--;
                 }
 
-                if(SkywarsGame.gameEnd == 60) SkywarsGame.sendCenterWarning();
-                if(SkywarsGame.gameEnd <= 0) SkywarsGame.winNearestCenter();
+                if(SkywarsGame.gameEnd == 60 && !SkywarsGame.isEnding) SkywarsGame.sendCenterWarning();
+                if(SkywarsGame.gameEnd <= 0 && !SkywarsGame.isEnding) SkywarsGame.winNearestCenter();
             }
 
 
@@ -286,7 +285,7 @@ public class SkywarsGame {
     }
 
     public static void resetAll() {
-        if(Main.config.debugMode) Main.logger.info("[DEBUG]: Skywars Game hasbeen reset.");
+        if(Main.config.debugMode) Main.logger.info("[DEBUG]: Skywars Game has been reset.");
         SkywarsGame.isStarted = false;
         SkywarsGame.isGlowingActive = false;
         SkywarsGame.glowingTime = 180;
@@ -302,13 +301,12 @@ public class SkywarsGame {
         SkywarsGame.resetMap();
     }
 
-    public static void endGame() {
-
+    public static void endGame(@NotNull AccuratePlayer accuratePlayer) {
+        if(accuratePlayer.get() == null) return;
         if(Main.config.debugMode) Main.logger.info(String.format("[DEBUG]: Skywars Game (%s) is ending.", SkywarsGame.id));
 
         SkywarsGame.isEnding = true;
 
-        AccuratePlayer accuratePlayer = SkywarsGame.alive.get(0);
         SkywarsGame.winner = accuratePlayer;
         ServerPlayer player = accuratePlayer.get();
 
@@ -341,7 +339,7 @@ public class SkywarsGame {
 
         if(!SkywarsGame.isGlowingActive) {
             String[] timer = TickUtil.minuteTimeStamp(glowingTime * 20);
-            TextComponent updatedTime = new TextComponent("§7Glow in §a" + timer[0] + "m, " + timer[1] + "s" + "§7...");
+            TextComponent updatedTime = new TextComponent("§7Glow in §a" + timer[0].substring(1) + "m, " + timer[1] + "s" + "§7...");
 
             bossbar.setValue(glowingTime);
             bossbar.setName(updatedTime);
@@ -350,7 +348,7 @@ public class SkywarsGame {
 
         if(SkywarsGame.gameEnd > 0) {
             String[] timer = TickUtil.minuteTimeStamp(gameEnd * 20);
-            TextComponent updatedTime = new TextComponent("§7Game end in §a" + timer[0] + "m, " + timer[1] + "s" + "§7...");
+            TextComponent updatedTime = new TextComponent("§7Game end in §a" + timer[0].substring(1) + "m, " + timer[1] + "s" + "§7...");
 
             bossbar.setValue(gameEnd);
             bossbar.setName(updatedTime);
@@ -398,11 +396,12 @@ public class SkywarsGame {
     }
 
     public static void winNearestCenter() {
-        ServerPlayer closestPlayer = (ServerPlayer) SkywarsGame.world.getNearestPlayer(0, 80, 0, 0, EntitySelector.NO_CREATIVE_OR_SPECTATOR);
-        for(AccuratePlayer death : SkywarsGame.alive) {
-            if(death.get() == closestPlayer) return;
-            death.get().die(DamageSource.OUT_OF_WORLD);
-        }
+        if(SkywarsGame.isEnding) return;
+        ServerPlayer closestPlayer = (ServerPlayer) SkywarsGame.world.getNearestPlayer(0, 80, 0, 20, e -> e instanceof ServerPlayer se && !se.isCreative() && !se.isSpectator() && SkywarsGame.isSkywarsPlayer(se));
+
+        // welcome to pact or fap
+
+        endGame(AccuratePlayer.create(closestPlayer));
     }
 
     public static boolean isSkywarsPlayer(net.minecraft.world.entity.player.Player player){
@@ -437,8 +436,8 @@ public class SkywarsGame {
 
             PlayerUtil.broadcast(SkywarsGame.getViewers(), message);
 
-            if(SkywarsGame.alive.size() == 1) {
-                SkywarsGame.endGame();
+            if(SkywarsGame.alive.size() == 1 && !SkywarsGame.isEnding) {
+                SkywarsGame.endGame(SkywarsGame.alive.get(0));
             }
         }
     }

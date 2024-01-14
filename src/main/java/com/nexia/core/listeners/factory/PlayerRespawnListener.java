@@ -45,7 +45,7 @@ public class PlayerRespawnListener {
                 double[] respawn = {0, 100, 0};
                 boolean isPlaying = com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(player).gameMode == OitcGameMode.PLAYING;
                 ServerPlayer serverPlayer = PlayerUtil.getPlayerAttacker(player);
-                if(serverPlayer != null && isPlaying) {
+                if(serverPlayer != null && serverPlayer != player && isPlaying) {
                     respawn[0] = serverPlayer.getX();
                     respawn[1] = serverPlayer.getY();
                     respawn[2] = serverPlayer.getZ();
@@ -60,7 +60,7 @@ public class PlayerRespawnListener {
                 double[] respawn = {0, 100, 0};
                 boolean isPlaying = com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(player).gameMode == SkywarsGameMode.PLAYING;
                 ServerPlayer serverPlayer = PlayerUtil.getPlayerAttacker(player);
-                if(serverPlayer != null && isPlaying) {
+                if(serverPlayer != null && serverPlayer != player && isPlaying) {
                     respawn[0] = serverPlayer.getX();
                     respawn[1] = serverPlayer.getY();
                     respawn[2] = serverPlayer.getZ();

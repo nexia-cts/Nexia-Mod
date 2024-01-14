@@ -436,7 +436,7 @@ public class OitcGame {
 
             OitcGame.world.addParticle(ParticleTypes.FLAME, entity.getX(), entity.getY(), entity.getZ(), 0.0, 0.0, 0.0);
             if(entity.inGround) {
-                entity.remove();
+                entity.kill();
             }
         }
     }

@@ -141,6 +141,7 @@ public class PlayerJoinListener {
         com.nexia.minigames.games.duels.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.minigames.games.oitc.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
+        com.nexia.minigames.games.football.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.minigames.games.skywars.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         LobbyUtil.leaveAllGames(minecraftPlayer, true);
         checkBooster(minecraftPlayer);
