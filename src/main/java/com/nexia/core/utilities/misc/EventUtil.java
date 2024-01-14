@@ -1,6 +1,7 @@
 package com.nexia.core.utilities.misc;
 
 import com.nexia.core.games.util.LobbyUtil;
+import com.nexia.core.gui.ffa.KitGUI;
 import com.nexia.core.gui.ffa.SpawnGUI;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.classic.utilities.FfaAreas;
@@ -26,20 +27,36 @@ public class EventUtil {
     }
 
     public static void onSignClick(CallbackInfoReturnable<InteractionResult> ci, BlockPos signPos, Level level, ServerPlayer p) {
-        List<BlockPos> bp = new ArrayList<>(Arrays.asList(
-                new BlockPos(0, 81, -6),
-                new BlockPos(0, 81, 6),
-                new BlockPos(-6, 81, 0),
-                new BlockPos(6, 81, 0)
-        ));
-
         p.swing(InteractionHand.MAIN_HAND);
+
         if(level.equals(FfaAreas.ffaWorld)) {
+
+            List<BlockPos> bp = new ArrayList<>(Arrays.asList(
+                    new BlockPos(0, 81, -6),
+                    new BlockPos(0, 81, 6),
+                    new BlockPos(-6, 81, 0),
+                    new BlockPos(6, 81, 0)
+            ));
+
             if(bp.contains(signPos)) {
                 SpawnGUI.openSpawnGUI(p);
             }
 
             ci.setReturnValue(InteractionResult.PASS);
+            return;
+        } else if (level.equals(com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld)) {
+            List<BlockPos> bp = new ArrayList<>(Arrays.asList(
+                    new BlockPos(0, 128, 3),
+                    new BlockPos(3, 128, 0),
+                    new BlockPos(0, 128, -3),
+                    new BlockPos(-3, 128, 0)
+            ));
+
+            if(bp.contains(signPos)) {
+                KitGUI.openKitGUI(p);
+            }
+            ci.setReturnValue(InteractionResult.PASS);
+            return;
         }
     }
 

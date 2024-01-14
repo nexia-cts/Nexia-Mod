@@ -191,11 +191,7 @@ public class BwPlayerEvents {
         if (!BwAreas.canBuildAt(player, blockPos, true)) {
             return false;
         }
-        if (BwUtil.placeTnt(player, blockPlaceContext)) {
-            return false;
-        }
-
-        return true;
+        return !BwUtil.placeTnt(player, blockPlaceContext);
     }
 
     public static boolean beforeBreakBlock(ServerPlayer player, BlockPos blockPos) {
@@ -208,11 +204,7 @@ public class BwPlayerEvents {
             return false;
         }
 
-        if (!BwAreas.canBuildAt(player, blockPos, true)) {
-            return false;
-        }
-
-        return true;
+        return BwAreas.canBuildAt(player, blockPos, true);
     }
 
     public static void bedBroken(ServerPlayer player, BlockPos blockPos) {
@@ -295,7 +287,7 @@ public class BwPlayerEvents {
         ItemStack itemStack = ItemStackUtil.getContainerClickItem(player, packet);
 
         if ((itemStack != null) && (packet.getClickType() == ClickType.THROW || slot == -999)) {
-            if (!BwUtil.canDropItem(itemStack)) return false;
+            return BwUtil.canDropItem(itemStack);
         }
 
         return true;

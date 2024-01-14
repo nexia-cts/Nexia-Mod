@@ -20,6 +20,16 @@ public class FootballTeam {
         this.spawnPosition = spawnPosition;
     }
 
+    public boolean refreshTeam() {
+        for(AccuratePlayer player : this.players) {
+            if(player.get() == null || !FootballGame.isFootballPlayer(player.get())) {
+                this.players.remove(player);
+                if(this.players.isEmpty()) return false;
+            }
+        }
+        return true;
+    }
+
     public boolean addPlayer(AccuratePlayer player) {
         return this.players.add(player);
     }

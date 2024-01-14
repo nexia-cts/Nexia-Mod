@@ -1,7 +1,6 @@
 package com.nexia.minigames.games.bedwars.players;
 
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
@@ -34,7 +33,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.scores.PlayerTeam;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 import java.util.function.Predicate;
 
 public class BwTeam {
@@ -112,7 +113,7 @@ public class BwTeam {
     public static ArrayList<BwTeam> getAliveTeams() {
         ArrayList<BwTeam> aliveTeams = new ArrayList<>();
         for (BwTeam team : allTeams.values()) {
-            if (team.players.size() > 0) {
+            if (!team.players.isEmpty()) {
                 aliveTeams.add(team);
             }
         }
@@ -130,10 +131,11 @@ public class BwTeam {
 
             BwTeam team = availableTeams.get(random.nextInt(availableTeams.size()));
             team.players.add(player);
-            if (team.players.size() >= BwGame.playersInTeam) availableTeams.remove(team);
+            availableTeams.remove(team);
 
-            scoreboard.addPlayerToTeam(player.getScoreboardName(), team.scoreboardTeam);
             player.addTag(LobbyUtil.NO_RANK_DISPLAY_TAG);
+            scoreboard.addPlayerToTeam(player.getScoreboardName(), team.scoreboardTeam);
+
 
             queueList.remove(player);
         }

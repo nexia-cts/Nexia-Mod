@@ -26,7 +26,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Arrow;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.SpectralArrow;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.Item;
@@ -38,9 +37,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
 import static com.nexia.ffa.kits.utilities.FfaAreas.*;
@@ -292,6 +289,13 @@ public class FfaKitsUtil {
         player.setGameMode(GameType.ADVENTURE);
         FfaAreas.spawn.teleportPlayer(FfaAreas.ffaWorld, player);
         if(data.kit != null) data.kit.giveKit(player, true);
-        else KitGUI.openKitGUI(player);
+        else {
+            BlfScheduler.delay(20, new BlfRunnable() {
+                @Override
+                public void run() {
+                    KitGUI.openKitGUI(player);
+                }
+            });
+        }
     }
 }

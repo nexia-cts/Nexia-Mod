@@ -119,8 +119,6 @@ public class LobbyUtil {
             }
         }
 
-        minecraftPlayer.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(0.0);
-
         returnToLobby(minecraftPlayer, tp);
     }
 

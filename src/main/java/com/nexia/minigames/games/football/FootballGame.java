@@ -16,6 +16,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,7 +27,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.DyeableLeatherItem;
@@ -82,9 +82,7 @@ public class FootballGame {
         FootballGame.queue.remove(accuratePlayer);
         FootballGame.players.remove(accuratePlayer);
 
-        if(data.gameMode.equals(FootballGameMode.PLAYING) && (winnerTeam == null || winnerTeam.players.contains(accuratePlayer))) data.savedData.loss++;
-
-
+        if(data.gameMode.equals(FootballGameMode.PLAYING) && (winnerTeam == null || !winnerTeam.players.contains(accuratePlayer))) data.savedData.loss++;
         data.team = null;
 
         player.removeTag("in_football_game");
@@ -92,10 +90,8 @@ public class FootballGame {
         PlayerUtil.resetHealthStatus(player);
         minecraftPlayer.setGameMode(GameType.ADVENTURE);
 
-        if(FootballGame.team1.players.isEmpty()) FootballGame.endGame(FootballGame.team2);
-        if(FootballGame.team2.players.isEmpty()) FootballGame.endGame(FootballGame.team1);
-
-        minecraftPlayer.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(0.0);
+        if(!FootballGame.team1.refreshTeam()) FootballGame.endGame(FootballGame.team2);
+        if(!FootballGame.team2.refreshTeam()) FootballGame.endGame(FootballGame.team1);
 
         player.getInventory().clear();
         minecraftPlayer.inventory.setCarried(ItemStack.EMPTY);
@@ -134,7 +130,6 @@ public class FootballGame {
 
 
                     if(team1 == team2) endGame(null);
-
                     if(team1 > team2) endGame(FootballGame.team1);
                     else endGame(FootballGame.team2);
                 } else if(FootballGame.gameTime > 0 && !FootballGame.isEnding){
@@ -380,24 +375,31 @@ public class FootballGame {
 
             // leather armor dyed blue/red depending on the team
 
-            ItemStack sword = new ItemStack(Items.WOODEN_SWORD);
-            sword.getOrCreateTag().putBoolean("Unbreakable", true);
-            sword.enchant(Enchantments.KNOCKBACK, 3);
-            sword.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
+            ItemStack kicking = new ItemStack(Items.NETHERITE_SWORD);
+            kicking.getOrCreateTag().putBoolean("Unbreakable", true);
+            kicking.enchant(Enchantments.KNOCKBACK, 4);
+            kicking.setHoverName(new TextComponent("§7§lKicking §7Sword §8[§75s cooldown§8]"));
+            kicking.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
+
+            ItemStack normal = new ItemStack(Items.IRON_SWORD);
+            normal.getOrCreateTag().putBoolean("Unbreakable", true);
+            normal.enchant(Enchantments.KNOCKBACK, 2);
+            normal.setHoverName(new TextComponent("§f§lNormal §fSword §8[§7no cooldown§8]"));
+            normal.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
 
             FootballGame.createArmorStand();
 
             for(AccuratePlayer player : FootballGame.players) {
                 ServerPlayer serverPlayer = player.get();
-                serverPlayer.inventory.setItem(0, sword);
+                serverPlayer.inventory.setItem(0, normal);
+                serverPlayer.inventory.setItem(1, kicking);
 
                 PlayerData data = PlayerDataManager.get(serverPlayer);
                 data.gameMode = FootballGameMode.PLAYING;
 
                 serverPlayer.addTag("in_football_game");
-                serverPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                serverPlayer.addTag(LobbyUtil.NO_DAMAGE_TAG);
                 serverPlayer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 99999, 255, false, false, false));
-                player.get().getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(0.8);
 
                 data.team = FootballGame.assignPlayer(player);
                 while(data.team == null) {
@@ -442,6 +444,7 @@ public class FootballGame {
 
                 player.get().setGameMode(GameType.SURVIVAL);
                 //player.setRespawnPosition(world.dimension(), pos, 0, true, false);
+                player.get().getCooldowns().addCooldown(Items.NETHERITE_SWORD, 200);
             }
 
             FootballGame.spectator.clear();
