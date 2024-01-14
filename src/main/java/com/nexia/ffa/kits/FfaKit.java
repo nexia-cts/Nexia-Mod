@@ -1,6 +1,7 @@
 package com.nexia.ffa.kits;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.kits.utilities.player.PlayerDataManager;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,8 +14,8 @@ public class FfaKit {
     public static ArrayList<FfaKit> ffaKits = new ArrayList<>();
     public static ArrayList<String> stringFfaKits = new ArrayList<>();
 
-
     public String id;
+
     public ItemStack item;
 
     public static final FfaKit KNIGHT = new FfaKit("knight", new ItemStack(Items.DIAMOND_SWORD));
@@ -32,11 +33,19 @@ public class FfaKit {
     }
 
     public static FfaKit identifyKit(String name) {
-        if(name.equalsIgnoreCase("knight")) return FfaKit.KNIGHT;
-        if(name.equalsIgnoreCase("poseidon")) return FfaKit.POSEIDON;
-        if(name.equalsIgnoreCase("brute")) return FfaKit.BRUTE;
-        if(name.equalsIgnoreCase("hunter")) return FfaKit.HUNTER;
-        if(name.equalsIgnoreCase("ninja")) return FfaKit.NINJA;
+        /*
+        return switch (name.toLowerCase()) {
+            case "knight" -> FfaKit.KNIGHT;
+            case "poseidon" -> FfaKit.POSEIDON;
+            case "brute" -> FfaKit.BRUTE;
+            case "hunter" -> FfaKit.HUNTER;
+            case "ninja" -> FfaKit.NINJA;
+            default -> null;
+        };
+         */
+        for(FfaKit kit : FfaKit.ffaKits) {
+            if(kit.id.equalsIgnoreCase(name)) return kit;
+        }
         return null;
     }
     public void giveKit(ServerPlayer player, boolean clearEffect) {
@@ -44,6 +53,6 @@ public class FfaKit {
         PlayerDataManager.get(player).kit = this;
 
         if(clearEffect) fPlayer.clearEffects();
-        fPlayer.runCommand("/loadinventory " + "ffa_kits-" + this.id, 4, false);
+        InventoryUtil.loadInventory(player, "ffa_kits-" + this.id);
     }
 }

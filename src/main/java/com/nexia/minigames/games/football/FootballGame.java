@@ -26,6 +26,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.DyeableLeatherItem;
@@ -41,7 +42,6 @@ import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.UUID;
 import java.util.function.Predicate;
 
 public class FootballGame {
@@ -58,7 +58,7 @@ public class FootballGame {
 
 
     // Both timers counted in seconds.
-    public static int gameTime = 300;
+    public static int gameTime = 600;
 
     public static int queueTime = 15;
 
@@ -90,6 +90,8 @@ public class FootballGame {
 
         if(FootballGame.team1.players.isEmpty()) FootballGame.endGame(FootballGame.team2);
         if(FootballGame.team2.players.isEmpty()) FootballGame.endGame(FootballGame.team1);
+
+        minecraftPlayer.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(0.0);
 
         player.getInventory().clear();
         minecraftPlayer.inventory.setCarried(ItemStack.EMPTY);
@@ -176,26 +178,34 @@ public class FootballGame {
     }
 
     public static void goal(ArmorStand entity, FootballTeam team) {
-        if(team.goals >= FootballGame.map.maxGoals) FootballGame.endGame(team);
         team.goals++;
-        entity.moveTo(0, 80, 0, 0, 0);
+        FootballGame.updateInfo();
+        if(!FootballGame.isEnding && team.goals >= FootballGame.map.maxGoals) FootballGame.endGame(team);
 
         //PlayerDataManager.get(scorer.get()).savedData.goals++;
 
         int teamID = 1;
         if(team == FootballGame.team2) teamID = 2;
 
-        for(ServerPlayer player : FootballGame.getViewers()) {
-            PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(Component.text("Team " + teamID).color(ChatFormat.brandColor2), Component.text("has scored a goal!").color(ChatFormat.normalColor)));
+        if(!FootballGame.isEnding) {
+            entity.setDeltaMovement(0, 0, 0);
+            entity.moveTo(0, 80, 0, 0, 0);
+
+            for(ServerPlayer player : FootballGame.getViewers()) {
+                PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(Component.text("Team " + teamID).color(ChatFormat.brandColor2), Component.text("has scored a goal!").color(ChatFormat.normalColor)));
+            }
+
+            for(AccuratePlayer player : FootballGame.team1.players) {
+                FootballGame.team1.spawnPosition.teleportPlayer(FootballGame.world, player.get());
+            }
+
+            for(AccuratePlayer player : FootballGame.team2.players) {
+                FootballGame.team2.spawnPosition.teleportPlayer(FootballGame.world, player.get());
+            }
         }
 
-        for(AccuratePlayer player : FootballGame.team1.players) {
-            FootballGame.team1.spawnPosition.teleportPlayer(FootballGame.world, player.get());
-        }
 
-        for(AccuratePlayer player : FootballGame.team2.players) {
-            FootballGame.team2.spawnPosition.teleportPlayer(FootballGame.world, player.get());
-        }
+
     }
 
     @NotNull
@@ -251,6 +261,7 @@ public class FootballGame {
         String[] timer = TickUtil.minuteTimeStamp(FootballGame.gameTime * 20);
         for(ServerPlayer player : FootballGame.getViewers()) {
             FootballTeam playerTeam = PlayerDataManager.get(player).team;
+            if(playerTeam == null) playerTeam = FootballGame.team2; // maybe cuz spectator
             FootballTeam otherTeam = FootballGame.team1;
             if(playerTeam.equals(FootballGame.team1)) otherTeam = FootballGame.team2;
 
@@ -271,14 +282,40 @@ public class FootballGame {
     }
 
     private static ArmorStand createArmorStand() {
-        ArmorStand armorStand = new ArmorStand(FootballGame.world, 0, 80, 0);
+        ArmorStand armorStand = new ArmorStand(FootballGame.world, 0, 81, 0);
         armorStand.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 999999, 5, true, true));
+        DyeableLeatherItem leatherItem = (DyeableLeatherItem) Items.LEATHER_CHESTPLATE;
 
-        //armorStand.setSmall(true);
+        ItemStack helmet = Items.LEATHER_HELMET.getDefaultInstance();
+        helmet.getOrCreateTag().putInt("Unbreakable", 1);
 
-        UUID footballUUID = UUID.fromString("fcbf27a9-535e-466f-ae75-7c7959fba7f0");
+        ItemStack chestplate = Items.LEATHER_CHESTPLATE.getDefaultInstance();
+        chestplate.getOrCreateTag().putInt("Unbreakable", 1);
 
-        armorStand.setItemSlot(EquipmentSlot.HEAD, PlayerUtil.getPlayerHead(footballUUID));
+        ItemStack leggings = Items.LEATHER_LEGGINGS.getDefaultInstance();
+        leggings.getOrCreateTag().putInt("Unbreakable", 1);
+
+        ItemStack boots = Items.LEATHER_BOOTS.getDefaultInstance();
+        boots.getOrCreateTag().putInt("Unbreakable", 1);
+
+        // r * 65536 + g * 256 + b
+        int black = 0;
+        int white = 255 * 65536 + 255 * 256 + 255;
+
+        leatherItem.setColor(helmet, white);
+        leatherItem.setColor(chestplate, black);
+        leatherItem.setColor(leggings, white);
+        leatherItem.setColor(boots, black);
+
+        armorStand.setItemSlot(EquipmentSlot.HEAD, helmet);
+        armorStand.setItemSlot(EquipmentSlot.CHEST, chestplate);
+        armorStand.setItemSlot(EquipmentSlot.LEGS, leggings);
+        armorStand.setItemSlot(EquipmentSlot.FEET, boots);
+
+        //armorStand.getAttribute(Attributes.ARMOR_TOUGHNESS).setBaseValue(0.0);
+
+        armorStand.setNoBasePlate(true);
+        //armorStand.setInvisible(true);
 
         FootballGame.world.addFreshEntity(armorStand);
 
@@ -314,14 +351,14 @@ public class FootballGame {
     public static void startGame() {
         if(FootballGame.queueTime <= 0){
             FootballGame.isStarted = true;
-            FootballGame.gameTime = 300;
+            FootballGame.gameTime = 600;
             FootballGame.players.addAll(FootballGame.queue);
 
             // leather armor dyed blue/red depending on the team
 
             ItemStack sword = new ItemStack(Items.WOODEN_SWORD);
             sword.getOrCreateTag().putBoolean("Unbreakable", true);
-            sword.enchant(Enchantments.KNOCKBACK, 2);
+            sword.enchant(Enchantments.KNOCKBACK, 3);
             sword.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
 
             FootballGame.createArmorStand();
@@ -334,7 +371,9 @@ public class FootballGame {
                 data.gameMode = FootballGameMode.PLAYING;
 
                 serverPlayer.addTag("in_football_game");
-                serverPlayer.addTag(LobbyUtil.NO_DAMAGE_TAG);
+                serverPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                serverPlayer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 99999, 255, false, false, false));
+                player.get().getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(0.8);
 
                 data.team = FootballGame.assignPlayer(player);
                 while(data.team == null) {
@@ -355,27 +394,21 @@ public class FootballGame {
                 ItemStack boots = Items.LEATHER_BOOTS.getDefaultInstance();
                 boots.getOrCreateTag().putInt("Unbreakable", 1);
 
+                int colour = 0;
+
                 if(data.team.equals(FootballGame.team1)) {
                     // r * 65536 + g * 256 + b
-                    int colour = 255 * 65536;
-
-                    DyeableLeatherItem leatherItem = (DyeableLeatherItem) Items.LEATHER_HELMET;
-
-                    leatherItem.setColor(helmet, colour);
-                    leatherItem.setColor(chestplate, colour);
-                    leatherItem.setColor(leggings, colour);
-                    leatherItem.setColor(boots, colour);
-
+                    colour = 255 * 65536;
                 } else if(data.team.equals(FootballGame.team2)) {
-                    int colour = 255;
-
-                    DyeableLeatherItem leatherItem = (DyeableLeatherItem) Items.LEATHER_HELMET;
-
-                    leatherItem.setColor(helmet, colour);
-                    leatherItem.setColor(chestplate, colour);
-                    leatherItem.setColor(leggings, colour);
-                    leatherItem.setColor(boots, colour);
+                    colour = 255;
                 }
+
+                DyeableLeatherItem leatherItem = (DyeableLeatherItem) Items.LEATHER_HELMET;
+
+                leatherItem.setColor(helmet, colour);
+                leatherItem.setColor(chestplate, colour);
+                leatherItem.setColor(leggings, colour);
+                leatherItem.setColor(boots, colour);
 
                 player.get().setItemSlot(EquipmentSlot.HEAD, helmet);
                 player.get().setItemSlot(EquipmentSlot.CHEST, chestplate);
@@ -406,7 +439,7 @@ public class FootballGame {
 
         isStarted = false;
         queueTime = 15;
-        gameTime = 300;
+        gameTime = 600;
         isEnding = false;
         team1 = new FootballTeam(new ArrayList<>(), map.team1Pos);
         team2 = new FootballTeam(new ArrayList<>(), map.team2Pos);
@@ -429,8 +462,8 @@ public class FootballGame {
                 // kill @e[type=item,distance=0..]
                 entity.remove();
             }
+            return;
         }
-        if(!FootballGame.isStarted) return;
 
         // check if armor stand (football) is in goal, then reset football to middle and give goal
 

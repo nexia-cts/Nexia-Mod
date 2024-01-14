@@ -34,6 +34,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
@@ -118,6 +119,8 @@ public class LobbyUtil {
             }
         }
 
+        minecraftPlayer.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(0.0);
+
         returnToLobby(minecraftPlayer, tp);
     }
 
@@ -133,6 +136,7 @@ public class LobbyUtil {
 
         minecraftPlayer.abilities.mayfly = false;
         minecraftPlayer.abilities.flying = false;
+        minecraftPlayer.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(0.0);
         minecraftPlayer.onUpdateAbilities();
         minecraftPlayer.setGlowing(false);
 

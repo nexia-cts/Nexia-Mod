@@ -14,7 +14,6 @@ import com.nexia.minigames.games.oitc.util.player.PlayerData;
 import com.nexia.minigames.games.oitc.util.player.PlayerDataManager;
 import net.blumbo.blfscheduler.BlfRunnable;
 import net.blumbo.blfscheduler.BlfScheduler;
-import net.fabricmc.loader.impl.util.StringUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -202,7 +201,7 @@ public class OitcGame {
 
                     fPlayer.sendActionBarMessage(
                             Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
-                                    .append(Component.text(StringUtil.capitalize(OitcGame.map.id)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                                    .append(Component.text(OitcGame.map.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                                     .append(Component.text(" (" + OitcGame.queue.size() + "/" + OitcGame.map.maxPlayers + ")").color(TextColor.fromHexString("#b3b3b3")))
                                     .append(Component.text(" | ").color(ChatFormat.lineColor))
                                     .append(Component.text("Time » ").color(TextColor.fromHexString("#b3b3b3")))

@@ -29,9 +29,8 @@ import java.util.List;
 public class GamemodeHandler {
 
     public static DuelGameMode identifyGamemode(@NotNull String gameMode) {
-
+        /*
         String fixedGameMode = gameMode.toLowerCase();
-
         return switch (fixedGameMode) {
             case "shield" -> DuelGameMode.SHIELD;
             case "pot" -> DuelGameMode.POT;
@@ -48,6 +47,14 @@ public class GamemodeHandler {
             case "trident_only" -> DuelGameMode.TRIDENT_ONLY;
             default -> null;
         };
+
+         */
+
+        for(DuelGameMode duelGameMode : DuelGameMode.duelGameModes) {
+            if(duelGameMode.id.equalsIgnoreCase(gameMode)) return duelGameMode;
+        }
+        return null;
+
 
     }
 

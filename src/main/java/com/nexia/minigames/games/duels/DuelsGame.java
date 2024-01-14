@@ -3,6 +3,7 @@ package com.nexia.minigames.games.duels;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
@@ -152,8 +153,9 @@ public class DuelsGame { //implements Runnable{
                 .append(Component.text("Your opponent: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                 .append(Component.text(p2.getRawName()).color(ChatFormat.brandColor2))));
 
-        p1.runCommand("/loadinventory " + stringGameMode.toLowerCase(), 4, false);
-        p2.runCommand("/loadinventory " + stringGameMode.toLowerCase(), 4, false);
+        InventoryUtil.loadInventory(mcP1, "duels-" + stringGameMode.toLowerCase());
+        InventoryUtil.loadInventory(mcP2, "duels-" + stringGameMode.toLowerCase());
+
 
         playerData.gameMode = gameMode;
         invitorData.gameMode = gameMode;

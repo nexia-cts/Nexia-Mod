@@ -1,13 +1,12 @@
 package com.nexia.minigames.games.skywars;
 
-import  com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
-import com.nexia.core.utilities.player.BanHandler;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
@@ -38,6 +37,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.notcoded.codelib.players.AccuratePlayer;
+import net.notcoded.codelib.util.TickUtil;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
@@ -340,8 +340,8 @@ public class SkywarsGame {
         }
 
         if(!SkywarsGame.isGlowingActive) {
-            String parsedTime = BanHandler.banTimeToText(glowingTime * 1000L);
-            TextComponent updatedTime = new TextComponent("§7Glow in §a" + parsedTime + "§7...");
+            String[] timer = TickUtil.minuteTimeStamp(glowingTime * 20);
+            TextComponent updatedTime = new TextComponent("§7Glow in §a" + timer[0] + "m, " + timer[1] + "s" + "§7...");
 
             bossbar.setValue(glowingTime);
             bossbar.setName(updatedTime);
@@ -349,8 +349,8 @@ public class SkywarsGame {
         }
 
         if(SkywarsGame.gameEnd > 0) {
-            String parsedTime = BanHandler.banTimeToText(gameEnd * 1000L);
-            TextComponent updatedTime = new TextComponent("§7Game end in §a" + parsedTime + "§7...");
+            String[] timer = TickUtil.minuteTimeStamp(gameEnd * 20);
+            TextComponent updatedTime = new TextComponent("§7Game end in §a" + timer[0] + "m, " + timer[1] + "s" + "§7...");
 
             bossbar.setValue(gameEnd);
             bossbar.setName(updatedTime);

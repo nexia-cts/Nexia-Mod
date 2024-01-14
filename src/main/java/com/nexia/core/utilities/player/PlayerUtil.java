@@ -30,10 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerUtil {
 
@@ -72,10 +69,7 @@ public class PlayerUtil {
         String textureID = getTextureID(playerUUID);
 
         if(textureID == null) return playerHead;
-
         playerHead.setTag(nbtFromTextureValue(playerUUID, textureID));
-
-        //footballHead.getOrCreateTag().putString("Value", 123);
 
         return playerHead;
     }

@@ -3,6 +3,7 @@ package com.nexia.minigames.games.duels.team;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
@@ -152,7 +153,7 @@ public class TeamDuelsGame { // implements Runnable{
                             .append(Component.text(team2.leader.getScoreboardName() + "'s Team")
                                     .color(ChatFormat.brandColor2))));
 
-            factoryPlayer.runCommand("/loadinventory " + stringGameMode.toLowerCase(), 4, false);
+            InventoryUtil.loadInventory(player, "duels-" + stringGameMode.toLowerCase());
 
             if (!gameMode.hasSaturation) {
                 factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
@@ -183,7 +184,7 @@ public class TeamDuelsGame { // implements Runnable{
                             .append(Component.text(team1.leader.getScoreboardName() + "'s Team")
                                     .color(ChatFormat.brandColor2))));
 
-            factoryPlayer.runCommand("/loadinventory " + stringGameMode.toLowerCase(), 4, false);
+            InventoryUtil.loadInventory(player, "duels-" + stringGameMode.toLowerCase());
 
             if (!gameMode.hasSaturation) {
                 factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);

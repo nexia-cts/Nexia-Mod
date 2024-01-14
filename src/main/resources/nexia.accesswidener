@@ -1,5 +1,4 @@
 accessWidener   v1   named
 accessible method net/minecraft/world/entity/player/Player destroyVanishingCursedItems ()V
-accessible method net/minecraft/world/entity/decoration/ArmorStand setSmall (Z)V
-accessible method net/minecraft/world/entity/decoration/ArmorStand setShowArms (Z)V
 accessible field net/minecraft/world/entity/projectile/AbstractArrow inGround Z
+accessible method net/minecraft/world/entity/decoration/ArmorStand setNoBasePlate (Z)V
