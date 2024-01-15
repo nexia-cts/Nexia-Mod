@@ -110,16 +110,6 @@ public class OitcGame {
         data.gameMode = OitcGameMode.LOBBY;
     }
 
-    private static HashMap<Integer, AccuratePlayer> getKills() {
-        HashMap<Integer, AccuratePlayer> kills = new HashMap<>();
-
-        for(AccuratePlayer player : OitcGame.players) {
-            kills.put(PlayerDataManager.get(player.get()).kills, player);
-        }
-
-        return kills;
-    }
-
     public static void second() {
         if(OitcGame.isStarted) {
             if(OitcGame.isEnding) {
@@ -231,40 +221,6 @@ public class OitcGame {
         }
     }
 
-    private static String getPlacement(AccuratePlayer player) {
-        ServerPlayer serverPlayer = player.get();
-        PlayerData playerData = PlayerDataManager.get(serverPlayer);
-
-        if(!OitcGame.isStarted || !playerData.gameMode.equals(OitcGameMode.PLAYING)) return "NONE";
-
-        // maybe i should improve this in the future, ykyk
-
-        HashMap<AccuratePlayer, Integer> kills = new HashMap<>();
-        ArrayList<AccuratePlayer> arrayList = new ArrayList<>();
-
-        for(AccuratePlayer accuratePlayer : OitcGame.players) {
-            int kill = PlayerDataManager.get(accuratePlayer.get()).kills;
-            kills.put(accuratePlayer, kill);
-            arrayList.add(accuratePlayer);
-        }
-
-        // this is ballux
-
-        int i = 0;
-        for(AccuratePlayer ap : arrayList) {
-            i++;
-            Integer accuratePlayer = kills.get(ap);
-            return String.valueOf(i);
-            // ???
-        }
-
-        // Ich hab leider keine idea.
-
-
-
-        return "UNLUCKY";
-    }
-
     @NotNull
     private static Title getTitle(int queueTime) {
         TextColor color = NamedTextColor.GREEN;
@@ -323,9 +279,6 @@ public class OitcGame {
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
                             .append(Component.text("Kills » ").color(TextColor.fromHexString("#b3b3b3")))
                             .append(Component.text(PlayerDataManager.get(player).kills).color(ChatFormat.brandColor2))
-                            .append(Component.text(" (").color(ChatFormat.systemColor))
-                            .append(Component.text(OitcGame.getPlacement(AccuratePlayer.create(player))).color(ChatFormat.brandColor2))
-                            .append(Component.text(")").color(ChatFormat.systemColor))
             );
         }
     }
