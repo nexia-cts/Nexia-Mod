@@ -91,11 +91,11 @@ public class SkywarsMap {
     ), new StructureMap(new ResourceLocation("skywars", "null"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-33, -42, -33), true));
 
     public static SkywarsMap SHROOMS = new SkywarsMap("shrooms", 4, new ArrayList<>(Arrays.asList(
-            new EntityPos(40.5, 80, 40.5),
-            new EntityPos(40.5, 80, -39.5),
-            new EntityPos(-39.5, 80, -39.5),
-            new EntityPos(-39.5, 80, 40.5))
-    ), new StructureMap(new ResourceLocation("skywars", "shrooms"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-44, -6, -45), true));
+            new EntityPos(40.5, 75, 40.5),
+            new EntityPos(40.5, 75, -39.5),
+            new EntityPos(-39.5, 75, -39.5),
+            new EntityPos(-39.5, 75, 40.5))
+    ), new StructureMap(new ResourceLocation("skywars", "shrooms"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-44, -11, -45), true));
 
 
     public static SkywarsMap identifyMap(String name) {
