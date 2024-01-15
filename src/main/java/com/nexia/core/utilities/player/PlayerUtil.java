@@ -137,17 +137,18 @@ public class PlayerUtil {
     }
 
     public static Player getFactoryPlayer(@NotNull ServerPlayer minecraftPlayer) {
-        Player fPlayer = cachedFactoryPlayers.get(minecraftPlayer);
-        if(fPlayer == null) {
-            fPlayer = ServerTime.factoryServer.getPlayer(minecraftPlayer.getUUID());
-            cachedFactoryPlayers.put(minecraftPlayer, fPlayer);
-        }
-        return fPlayer;
+        try {
+            return ServerTime.factoryServer.getPlayer(minecraftPlayer.getUUID());
+        } catch (Exception ignored) { }
+        return null;
     }
 
     public static Player getFactoryPlayerFromName(@NotNull String player) {
-        if(player.trim().length() == 0) return null;
-        return ServerTime.factoryServer.getPlayer(player);
+        if(player.trim().isEmpty()) return null;
+        try {
+            return ServerTime.factoryServer.getPlayer(player);
+        } catch (Exception ignored) { }
+        return null;
     }
 
     public static ServerPlayer getMinecraftPlayer(@NotNull Player player){

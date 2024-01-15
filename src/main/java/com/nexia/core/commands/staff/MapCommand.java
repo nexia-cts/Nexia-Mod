@@ -56,7 +56,7 @@ public class MapCommand {
         String type = StringArgumentType.getString(context, "type");
         String map = StringArgumentType.getString(context, "map");
 
-        if(ChatFormat.hasWhiteSpacesOrSpaces(map) || ChatFormat.hasWhiteSpacesOrSpaces(type)) {
+        if(map.trim().isEmpty() || type.trim().isEmpty()) {
             if(player != null) {
                 player.sendMessage(
                         ChatFormat.nexiaMessage

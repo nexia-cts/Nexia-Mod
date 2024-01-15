@@ -279,6 +279,7 @@ public class FootballGame {
 
         String[] timer = TickUtil.minuteTimeStamp(FootballGame.gameTime * 20);
         for(ServerPlayer player : FootballGame.getViewers()) {
+            if(player == null) return;
             FootballTeam playerTeam = PlayerDataManager.get(player).team;
             if(playerTeam == null) playerTeam = FootballGame.team1; // maybe cuz spectator
             FootballTeam otherTeam = FootballGame.team1;
@@ -378,13 +379,13 @@ public class FootballGame {
             ItemStack kicking = new ItemStack(Items.NETHERITE_SWORD);
             kicking.getOrCreateTag().putBoolean("Unbreakable", true);
             kicking.enchant(Enchantments.KNOCKBACK, 4);
-            kicking.setHoverName(new TextComponent("§7§lKicking §7Sword §8[§75s cooldown§8]"));
+            kicking.setHoverName(new TextComponent("§7§lKicking §7Sword §8[§710s cooldown§8]"));
             kicking.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
 
             ItemStack normal = new ItemStack(Items.IRON_SWORD);
             normal.getOrCreateTag().putBoolean("Unbreakable", true);
             normal.enchant(Enchantments.KNOCKBACK, 2);
-            normal.setHoverName(new TextComponent("§f§lNormal §fSword §8[§7no cooldown§8]"));
+            normal.setHoverName(new TextComponent("§f§lNormal §fSword §8[§fno cooldown§8]"));
             normal.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
 
             FootballGame.createArmorStand();

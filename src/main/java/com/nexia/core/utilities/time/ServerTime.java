@@ -11,7 +11,6 @@ import com.nexia.ffa.kits.utilities.FfaKitsUtil;
 import com.nexia.ffa.sky.SkyFfaBlocks;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
-import com.nexia.minigames.GameHandler;
 import com.nexia.minigames.games.bedwars.BwGame;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.areas.BwDimension;
@@ -129,7 +128,6 @@ public class ServerTime {
         OitcGame.second();
         FootballGame.second();
         SkywarsGame.second();
-        GameHandler.second();
         try {
             for (DuelsGame game : DuelGameHandler.duelsGames) {
                 if (game == null) return;

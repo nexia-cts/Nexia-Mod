@@ -77,7 +77,7 @@ public abstract class ServerPlayerMixin extends Player {
                     ci.cancel();
                     return;
                 }
-                attacker.getCooldowns().addCooldown(Items.NETHERITE_SWORD, 100);
+                attacker.getCooldowns().addCooldown(Items.NETHERITE_SWORD, 200);
                 return;
             }
 

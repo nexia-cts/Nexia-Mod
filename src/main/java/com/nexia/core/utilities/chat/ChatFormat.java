@@ -1,11 +1,9 @@
 package com.nexia.core.utilities.chat;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.jetbrains.annotations.NotNull;
 
 public class ChatFormat {
 
@@ -56,13 +54,6 @@ public class ChatFormat {
             )
             .append(Component.text(" » ").color(arrowColor).decoration(bold, false));
 
-    public static void sendError(Player player, Component component) {
-        player.sendMessage(
-                ChatFormat.nexiaMessage
-                        .append(component.decoration(ChatFormat.bold, false))
-        );
-    }
-
 
     public static Component separatorLine(String title) {
         String spaces = "                                                                ";
@@ -77,16 +68,5 @@ public class ChatFormat {
         } else {
             return Component.text(spaces).color(lineColor).decorate(strikeThrough);
         }
-    }
-
-    public static boolean hasWhiteSpacesOrSpaces(@NotNull String string){
-        return string.matches(".*\\s+.*") || string.trim().length() == 0;
-    }
-
-    public static boolean hasWhiteSpacesOrSpaces(@NotNull String[] strings){
-        for(String string : strings) {
-            return string.matches(".*\\s+.*") || string.trim().length() == 0;
-        }
-        return false;
     }
 }

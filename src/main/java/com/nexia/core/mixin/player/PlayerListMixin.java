@@ -2,7 +2,6 @@ package com.nexia.core.mixin.player;
 
 import com.mojang.authlib.GameProfile;
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.player.BanHandler;
@@ -84,7 +83,7 @@ public abstract class PlayerListMixin {
     private static Component joinFormat(Component original, ServerPlayer joinPlayer) {
         try {
             String name = String.valueOf(joinPlayer.getScoreboardName());
-            if(ChatFormat.hasWhiteSpacesOrSpaces(name)) { return original; }
+            if(name.isEmpty()) { return original; }
             if(joinPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) < 1) { return LegacyChatFormat.format("§8[§6!§8] §6{}", name); }
             return LegacyChatFormat.format("§8[§a+§8] §a{}", name);
         } catch (Exception var8) {
@@ -96,7 +95,7 @@ public abstract class PlayerListMixin {
     private static Component leaveFormat(Component original, ServerPlayer leavePlayer) {
         try {
             String name = String.valueOf(leavePlayer.getScoreboardName());
-            if(ChatFormat.hasWhiteSpacesOrSpaces(name)) { return original; }
+            if(name.isEmpty()) { return original; }
             return LegacyChatFormat.format("§8[§c-§8] §c{}", name);
         } catch (Exception var8) {
             return original;

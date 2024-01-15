@@ -40,7 +40,10 @@ import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.function.Predicate;
 
 public class OitcGame {
@@ -84,7 +87,10 @@ public class OitcGame {
 
         data.kills = 0;
 
-        if(OitcGame.players.size() == 1) OitcGame.endGame(OitcGame.players.get(0).get());
+        if(OitcGame.players.size() <= 1) {
+            if(OitcGame.players.size() == 1) OitcGame.endGame(OitcGame.players.get(0).get());
+            else OitcGame.endGame(null);
+        }
 
         player.removeTag("in_oitc_game");
 
@@ -116,42 +122,6 @@ public class OitcGame {
 
     public static void second() {
         if(OitcGame.isStarted) {
-
-            try {
-                OitcGame.deathPlayers.forEach(((player, integer) -> {
-                    int newInt = integer - 1;
-
-                    /*
-                    OitcGame.deathPlayers.remove(player);
-                    OitcGame.deathPlayers.put(player, newInt);
-                    */
-
-                    OitcGame.deathPlayers.replace(player, newInt);
-
-                    Title title = getTitle(newInt);
-
-                    PlayerUtil.getFactoryPlayer(player.get()).sendTitle(title);
-                    PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
-
-
-                    if(newInt <= 1){
-                        spawnInRandomPos(player.get());
-                        OitcGame.deathPlayers.remove(player);
-                        //ServerTime.factoryServer.runCommand("/gamemode adventure " + player.get().getScoreboardName(), 4, false);
-                        player.get().setGameMode(GameType.ADVENTURE);
-                        BlfScheduler.delay(5, new BlfRunnable() {
-                            @Override
-                            public void run() {
-                                giveKit(player.get());
-                                player.get().setGameMode(GameType.ADVENTURE);
-                            }
-                        });
-
-                    }
-                }));
-            } catch (Exception ignored) { }
-
-
             if(OitcGame.isEnding) {
                 int color = 244 * 65536 + 166 * 256 + 71;
                 // r * 65536 + g * 256 + b;
@@ -167,6 +137,41 @@ public class OitcGame {
 
                 OitcGame.endTime--;
             } else {
+                try {
+                    OitcGame.deathPlayers.forEach(((player, integer) -> {
+                        int newInt = integer - 1;
+
+                        if(!player.get().isSpectator()) player.get().setGameMode(GameType.SPECTATOR);
+
+                        /*
+                        OitcGame.deathPlayers.remove(player);
+                        OitcGame.deathPlayers.put(player, newInt);
+                        */
+
+                        OitcGame.deathPlayers.replace(player, newInt);
+
+                        Title title = getTitle(newInt);
+
+                        PlayerUtil.getFactoryPlayer(player.get()).sendTitle(title);
+                        PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+
+
+                        if(newInt <= 1){
+                            spawnInRandomPos(player.get());
+                            OitcGame.deathPlayers.remove(player);
+                            //ServerTime.factoryServer.runCommand("/gamemode adventure " + player.get().getScoreboardName(), 4, false);
+                            player.get().setGameMode(GameType.ADVENTURE);
+                            BlfScheduler.delay(5, new BlfRunnable() {
+                                @Override
+                                public void run() {
+                                    giveKit(player.get());
+                                    player.get().setGameMode(GameType.ADVENTURE);
+                                }
+                            });
+
+                        }
+                    }));
+                } catch (Exception ignored) { }
                 OitcGame.updateInfo();
 
                 if(OitcGame.gameTime <= 0 && !OitcGame.isEnding){
@@ -234,22 +239,30 @@ public class OitcGame {
 
         // maybe i should improve this in the future, ykyk
 
-        HashMap<Integer, AccuratePlayer> kills = getKills();
-        Set<Integer> killers = kills.keySet();
-        Arrays.sort(killers.toArray());
+        HashMap<AccuratePlayer, Integer> kills = new HashMap<>();
+        ArrayList<AccuratePlayer> arrayList = new ArrayList<>();
+
+        for(AccuratePlayer accuratePlayer : OitcGame.players) {
+            int kill = PlayerDataManager.get(accuratePlayer.get()).kills;
+            kills.put(accuratePlayer, kill);
+            arrayList.add(accuratePlayer);
+        }
+
         // this is ballux
 
         int i = 0;
-        for(Integer integer : killers) {
+        for(AccuratePlayer ap : arrayList) {
             i++;
-            AccuratePlayer accuratePlayer = kills.get(integer);
-            if(accuratePlayer.get() != null && accuratePlayer.equals(player)) return ServerTime.ordinal(i);
-            break;
+            Integer accuratePlayer = kills.get(ap);
+            return String.valueOf(i);
+            // ???
         }
 
+        // Ich hab leider keine idea.
 
 
-        return "NONE";
+
+        return "UNLUCKY";
     }
 
     @NotNull
@@ -285,6 +298,7 @@ public class OitcGame {
 
     public static void endGame(ServerPlayer serverPlayer) {
         OitcGame.isEnding = true;
+        if(serverPlayer == null) return;
         PlayerData data = PlayerDataManager.get(serverPlayer);
         OitcGame.winner = AccuratePlayer.create(serverPlayer);
 
@@ -436,7 +450,7 @@ public class OitcGame {
 
             OitcGame.world.addParticle(ParticleTypes.FLAME, entity.getX(), entity.getY(), entity.getZ(), 0.0, 0.0, 0.0);
             if(entity.inGround) {
-                entity.kill();
+                entity.remove();
             }
         }
     }

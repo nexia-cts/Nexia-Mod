@@ -12,7 +12,6 @@ import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.classic.utilities.FfaAreas;
-import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.skywars.util.player.PlayerData;
 import com.nexia.minigames.games.skywars.util.player.PlayerDataManager;
@@ -203,8 +202,7 @@ public class SkywarsGame {
             color = NamedTextColor.RED;
         }
 
-        Title title = Title.title(Component.text(SkywarsGame.queueTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
-        return title;
+        return Title.title(Component.text(SkywarsGame.queueTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
     }
 
     public static void joinQueue(ServerPlayer player) {
@@ -430,9 +428,6 @@ public class SkywarsGame {
 
             String mainColor = LegacyChatFormat.chatColor2;
             String message = mainColor + victim.getCombatTracker().getDeathMessage().getString();
-
-            message = BwUtil.replaceDisplayName(message, mainColor, victim);
-            if(attacker != null) message = BwUtil.replaceDisplayName(message, mainColor, attacker);
 
             PlayerUtil.broadcast(SkywarsGame.getViewers(), message);
 

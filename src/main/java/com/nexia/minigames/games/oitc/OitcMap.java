@@ -22,7 +22,7 @@ public class OitcMap {
     public int maxPlayers;
     public ArrayList<EntityPos> spawnPositions;
 
-    public static OitcMap JUNGLE_PLAZA = new OitcMap("jungle_plaza", "Jungle Plaza", 8, new BlockPos(36, 93, 36), new BlockPos(-36, 70, 36),
+    public static OitcMap JUNGLE_PLAZA = new OitcMap("jungle_plaza", "Jungle Plaza", 8, new BlockPos(36, 70, 36), new BlockPos(-36, 93, -36),
             new ArrayList<>(Arrays.asList(
                     new EntityPos(11.5, 77.0, 11.5,135,0),
                     new EntityPos(-10.5, 77.0, 11.5,215,0),

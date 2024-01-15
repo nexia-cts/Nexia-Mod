@@ -13,8 +13,6 @@ import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
-import com.nexia.minigames.games.oitc.OitcGame;
-import com.nexia.minigames.games.oitc.OitcGameMode;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.minigames.games.skywars.SkywarsGameMode;
 import com.nexia.world.WorldUtil;
@@ -40,7 +38,8 @@ public class PlayerRespawnListener {
             DuelsGame duelsGame = duelsData.duelsGame;
             TeamDuelsGame teamDuelsGame = duelsData.teamDuelsGame;
 
-            
+
+            /*
             if(data.gameMode == PlayerGameMode.OITC) {
                 double[] respawn = {0, 100, 0};
                 boolean isPlaying = com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(player).gameMode == OitcGameMode.PLAYING;
@@ -55,6 +54,8 @@ public class PlayerRespawnListener {
                 respawnEvent.setSpawnpoint(new Location(respawn[0], respawn[1], respawn[2], ServerTime.factoryServer.getWorld(new Identifier("oitc", OitcGame.world.dimension().toString().replaceAll("]", "").split(":")[2]))));
                 return;
             }
+
+             */
 
             if(data.gameMode == PlayerGameMode.SKYWARS) {
                 double[] respawn = {0, 100, 0};
