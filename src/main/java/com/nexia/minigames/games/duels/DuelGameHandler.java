@@ -3,7 +3,7 @@ package com.nexia.minigames.games.duels;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.ffa.utilities.FfaAreas;
+import com.nexia.ffa.classic.utilities.FfaAreas;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
@@ -61,10 +61,12 @@ public class DuelGameHandler {
         }
         data.teamDuelsGame = null;
         data.duelsGame = null;
+
+        if(Main.config.debugMode) Main.logger.info(String.format("[DEBUG]: Player %s left Duels.", player.getScoreboardName()));
     }
 
     public static void winnerRockets(@NotNull ServerPlayer winner, @NotNull ServerLevel level,
-                                     @NotNull Integer winnerColor) {
+            @NotNull Integer winnerColor) {
 
         Random random = level.getRandom();
         EntityPos pos = new EntityPos(winner).add(random.nextInt(9) - 4, 2, random.nextInt(9) - 4);
@@ -89,7 +91,6 @@ public class DuelGameHandler {
         DuelGameHandler.teamDuelsGames.clear();
     }
 
-
     public static ServerLevel createWorld(String uuid, boolean doRegeneration) {
         RuntimeWorldConfig config = new RuntimeWorldConfig()
                 .setDimensionType(FfaAreas.ffaWorld.dimensionType())
@@ -108,6 +109,8 @@ public class DuelGameHandler {
                 .setTimeOfDay(6000);
 
 
+        if(Main.config.debugMode) Main.logger.info("[DEBUG]: Created world: duels:" + uuid);
+
         return ServerTime.fantasy.openTemporaryWorld(config, new ResourceLocation("duels", uuid)).asWorld();
         //return ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", uuid)).location(), config).asWorld();
     }
@@ -118,10 +121,18 @@ public class DuelGameHandler {
             worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(
                     ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", id)).location(),
                     new RuntimeWorldConfig());
-            ServerTime.factoryServer.unloadWorld("duels:" + id, false);
             FileUtils.forceDeleteOnExit(new File("/world/dimensions/duels", id));
-        } catch (Exception ignored) {
+            ServerTime.factoryServer.unloadWorld("duels:" + id, false);
+        } catch (Exception e) {
             Main.logger.error("Error occurred while deleting world: duels:" + id);
+            try {
+                ServerTime.factoryServer.unloadWorld("duels:" + id, false);
+            } catch (Exception ignored2) {
+                if(Main.config.debugMode) e.printStackTrace();
+            }
+
+            if(Main.config.debugMode) e.printStackTrace();
+
             return;
         }
         worldHandle.delete();

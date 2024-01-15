@@ -3,6 +3,7 @@ package com.nexia.minigames.games.duels.team;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
@@ -22,12 +23,12 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.GameType;
+import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 
@@ -56,7 +57,7 @@ public class TeamDuelsGame { // implements Runnable{
 
     public ServerLevel level;
 
-    public ArrayList<ServerPlayer> spectators = new ArrayList<>();
+    public ArrayList<AccuratePlayer> spectators = new ArrayList<>();
 
     // Winner thingie
     public DuelsTeam winner = null;
@@ -110,9 +111,9 @@ public class TeamDuelsGame { // implements Runnable{
     public static TeamDuelsGame startGame(@NotNull DuelsTeam team1, @NotNull DuelsTeam team2, String stringGameMode, @Nullable DuelsMap selectedMap) {
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
         if (gameMode == null) {
-            gameMode = DuelGameMode.FFA;
+            gameMode = DuelGameMode.CLASSIC;
             System.out.printf("[ERROR] Nexia: Invalid duel gamemode ({0}) selected! Using fallback one.%n", stringGameMode);
-            stringGameMode = "FFA";
+            stringGameMode = "CLASSIC";
         }
 
         team1.alive.clear();
@@ -152,7 +153,7 @@ public class TeamDuelsGame { // implements Runnable{
                             .append(Component.text(team2.leader.getScoreboardName() + "'s Team")
                                     .color(ChatFormat.brandColor2))));
 
-            factoryPlayer.runCommand("/loadinventory " + stringGameMode.toLowerCase(), 4, false);
+            InventoryUtil.loadInventory(player, "duels-" + stringGameMode.toLowerCase());
 
             if (!gameMode.hasSaturation) {
                 factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
@@ -183,7 +184,7 @@ public class TeamDuelsGame { // implements Runnable{
                             .append(Component.text(team1.leader.getScoreboardName() + "'s Team")
                                     .color(ChatFormat.brandColor2))));
 
-            factoryPlayer.runCommand("/loadinventory " + stringGameMode.toLowerCase(), 4, false);
+            InventoryUtil.loadInventory(player, "duels-" + stringGameMode.toLowerCase());
 
             if (!gameMode.hasSaturation) {
                 factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
@@ -213,8 +214,8 @@ public class TeamDuelsGame { // implements Runnable{
 
             Component errormsg = Component.text("Cause: " + isBroken);
 
-            for (ServerPlayer spectator : this.spectators) {
-                Player factoryPlayer = PlayerUtil.getFactoryPlayer(spectator);
+            for (AccuratePlayer spectator : this.spectators) {
+                Player factoryPlayer = PlayerUtil.getFactoryPlayer(spectator.get());
                 factoryPlayer.sendMessage(error);
                 factoryPlayer.sendMessage(errormsg);
             }
@@ -231,20 +232,21 @@ public class TeamDuelsGame { // implements Runnable{
 
             DuelsTeam notNullTeam = this.team1;
 
-            if(notNullTeam == null) notNullTeam = this.team2;
+            if(notNullTeam != null) notNullTeam = this.team2;
             if(notNullTeam != null) this.endGame(notNullTeam, null, false);
         }
         if (this.isEnding) {
             int color = 160 * 65536 + 248;
             // r * 65536 + g * 256 + b;
-            DuelGameHandler.winnerRockets(this.winner.alive.get(new Random().nextInt(this.winner.alive.size())), this.level, color);
+            DuelGameHandler.winnerRockets(this.winner.alive.get(new Random().nextInt(this.winner.alive.size())),
+                    this.level, color);
             this.currentEndTime++;
             if (this.currentEndTime >= this.endTime || !this.shouldWait) {
                 DuelsTeam winnerTeam = this.winner;
                 DuelsTeam loserTeam = this.loser;
 
-                for (ServerPlayer spectator : this.spectators) {
-                    PlayerUtil.getFactoryPlayer(spectator).runCommand("/hub", 0, false);
+                for (AccuratePlayer spectator : this.spectators) {
+                    PlayerUtil.getFactoryPlayer(spectator.get()).runCommand("/hub", 0, false);
                 }
 
                 this.isEnding = false;

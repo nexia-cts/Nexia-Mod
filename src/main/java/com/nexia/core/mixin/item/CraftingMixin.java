@@ -3,6 +3,7 @@ package com.nexia.core.mixin.item;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -34,7 +35,7 @@ public class CraftingMixin {
     private static ItemStack setCraftResult(ItemStack itemStack) {
         if (crafter == null) return itemStack;
 
-        if (BwUtil.isInBedWars(crafter) || PlayerDataManager.get(crafter).gameMode == PlayerGameMode.LOBBY) {
+        if (BwUtil.isInBedWars(crafter) || PlayerDataManager.get(crafter).gameMode == PlayerGameMode.LOBBY || FfaUtil.isFfaPlayer(crafter)) {
             ItemStackUtil.sendInventoryRefreshPacket(crafter);
             return ItemStack.EMPTY;
         }
@@ -46,7 +47,7 @@ public class CraftingMixin {
     private static ItemStack setCraftResultPacketItem(ItemStack itemStack) {
         if (crafter == null) return itemStack;
 
-        if (BwUtil.isInBedWars(crafter) || PlayerDataManager.get(crafter).gameMode == PlayerGameMode.LOBBY) return ItemStack.EMPTY;
+        if (BwUtil.isInBedWars(crafter) || PlayerDataManager.get(crafter).gameMode == PlayerGameMode.LOBBY || FfaUtil.isFfaPlayer(crafter)) return ItemStack.EMPTY;
 
         return itemStack;
     }

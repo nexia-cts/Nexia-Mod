@@ -4,7 +4,7 @@ import com.combatreforged.factory.api.FactoryAPI;
 import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
 import com.nexia.core.config.ModConfig;
-import com.nexia.core.listeners.*;
+import com.nexia.core.listeners.ListenerHelper;
 import com.nexia.core.loader.CommandLoader;
 import com.nexia.core.utilities.misc.NxFileUtil;
 import com.nexia.core.utilities.time.ServerTime;
@@ -12,20 +12,17 @@ import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1u.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Main implements ModInitializer, FactoryPlugin {
-
-	public static MinecraftServer server;
-
 	public static ModConfig config;
 
 	public static final String MOD_NAME = "Nexia";
 	public static final String MOD_NAME_SHORT = "Nx";
 	public static Logger logger = LogManager.getLogger(MOD_NAME);
 	public static final String modConfigDir = NxFileUtil.makeDir(FabricLoader.getInstance().getConfigDir().toString() + "/nexia");
+
 
 	@Override
 	public void onInitialize() {

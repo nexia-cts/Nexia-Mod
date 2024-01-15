@@ -34,36 +34,54 @@ public class PlayerRespawnListener {
 
             if(player == null) return;
             PlayerData duelsData = PlayerDataManager.get(player);
-            //com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
+            com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
             DuelsGame duelsGame = duelsData.duelsGame;
             TeamDuelsGame teamDuelsGame = duelsData.teamDuelsGame;
 
-            if(com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.SKYWARS) {
+
+            /*
+            if(data.gameMode == PlayerGameMode.OITC) {
+                double[] respawn = {0, 100, 0};
+                boolean isPlaying = com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(player).gameMode == OitcGameMode.PLAYING;
+                ServerPlayer serverPlayer = PlayerUtil.getPlayerAttacker(player);
+                if(serverPlayer != null && serverPlayer != player && isPlaying) {
+                    respawn[0] = serverPlayer.getX();
+                    respawn[1] = serverPlayer.getY();
+                    respawn[2] = serverPlayer.getZ();
+                }
+
+                respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
+                respawnEvent.setSpawnpoint(new Location(respawn[0], respawn[1], respawn[2], ServerTime.factoryServer.getWorld(new Identifier("oitc", OitcGame.world.dimension().toString().replaceAll("]", "").split(":")[2]))));
+                return;
+            }
+
+             */
+
+            if(data.gameMode == PlayerGameMode.SKYWARS) {
                 double[] respawn = {0, 100, 0};
                 boolean isPlaying = com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(player).gameMode == SkywarsGameMode.PLAYING;
-                if(player.getLastDamageSource() != null && PlayerUtil.getPlayerAttacker(player.getLastDamageSource().getEntity()) != null) {
-                    ServerPlayer serverPlayer = PlayerUtil.getPlayerAttacker(player.getLastDamageSource().getEntity());
-                    if(isPlaying) {
-                        respawn[0] = serverPlayer.getX();
-                        respawn[1] = serverPlayer.getY();
-                        respawn[2] = serverPlayer.getZ();
-                    }
+                ServerPlayer serverPlayer = PlayerUtil.getPlayerAttacker(player);
+                if(serverPlayer != null && serverPlayer != player && isPlaying) {
+                    respawn[0] = serverPlayer.getX();
+                    respawn[1] = serverPlayer.getY();
+                    respawn[2] = serverPlayer.getZ();
                 }
 
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
                 respawnEvent.setSpawnpoint(new Location(respawn[0], respawn[1], respawn[2], WorldUtil.getWorld(SkywarsGame.world)));
             }
-
+            
             if(duelsGame != null && duelsGame.isEnding && duelsGame.winner != null) {
-
                 factoryPlayer.getInventory().clear();
                 LobbyUtil.giveItems(player);
+
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
-                respawnEvent.setSpawnpoint(new Location(duelsGame.winner.getX(), duelsGame.winner.getY(), duelsGame.winner.getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", duelsGame.level.dimension().toString().replaceAll("]", "").split(":")[2]))));
+                respawnEvent.setSpawnpoint(new Location(duelsGame.winner.get().getX(), duelsGame.winner.get().getY(), duelsGame.winner.get().getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", duelsGame.level.dimension().toString().replaceAll("]", "").split(":")[2]))));
                 //player.teleportTo(duelsGame.level, duelsGame.winner.getX(), duelsGame.winner.getY(), duelsGame.winner.getZ(), 0, 0);
             } else if(teamDuelsGame != null && duelsData.duelsTeam != null) {
                 factoryPlayer.getInventory().clear();
                 LobbyUtil.giveItems(player);
+
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
                 // duelsTeam.alive.get(new Random().nextInt(teamDuelsGame.winner.alive.size()))
 

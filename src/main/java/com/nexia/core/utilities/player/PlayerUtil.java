@@ -1,12 +1,15 @@
 package com.nexia.core.utilities.player;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.google.gson.JsonParser;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesPacket;
@@ -20,12 +23,14 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.notcoded.codelib.minecraft.MinecraftAPI;
+import net.notcoded.codelib.util.http.HttpAPI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.net.URL;
+import java.util.*;
 
 public class PlayerUtil {
 
@@ -41,6 +46,54 @@ public class PlayerUtil {
         for (ServerPlayer player : players) {
             player.sendMessage(component, Util.NIL_UUID);
         }
+    }
+
+    public static String getTextureID(@NotNull UUID uuid){
+        String response;
+
+        try {
+            response = HttpAPI.get(new URL(String.format("https://sessionserver.mojang.com/session/minecraft/profile/%s", uuid)));
+        } catch(Exception ignored) { return null; }
+
+        if(response != null && !response.trim().isEmpty()) {
+            String textureID = new JsonParser().parse(response).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
+            if(textureID == null || textureID.trim().isEmpty()) return null;
+            return textureID;
+        }
+
+        return null;
+    }
+
+    public static ItemStack getPlayerHead(@NotNull UUID playerUUID) {
+        ItemStack playerHead = Items.PLAYER_HEAD.getDefaultInstance();
+        String textureID = getTextureID(playerUUID);
+
+        if(textureID == null) return playerHead;
+        playerHead.setTag(nbtFromTextureValue(playerUUID, textureID));
+
+        return playerHead;
+    }
+
+    private static CompoundTag nbtFromTextureValue(@NotNull UUID id, @NotNull String textureID) {
+        String name = MinecraftAPI.getName(id);
+
+        CompoundTag nbtCompound = new CompoundTag();
+        CompoundTag skullownertag = new CompoundTag();
+        CompoundTag texturetag = new CompoundTag();
+        ListTag texturelist = new ListTag();
+        CompoundTag valuetag = new CompoundTag();
+        CompoundTag displaytag = new CompoundTag();
+
+        valuetag.putString("Value", textureID);
+        texturelist.add(valuetag);
+        texturetag.put("textures", texturelist);
+        skullownertag.put("Properties", texturetag);
+        skullownertag.putUUID("Id", id);
+        nbtCompound.put("SkullOwner", skullownertag);
+        displaytag.putString("Name", name);
+        nbtCompound.put("display", displaytag);
+
+        return nbtCompound;
     }
 
     public static void broadcastTitle(List<ServerPlayer> players, String title, String subtitle, int in, int stay, int out) {
@@ -84,12 +137,18 @@ public class PlayerUtil {
     }
 
     public static Player getFactoryPlayer(@NotNull ServerPlayer minecraftPlayer) {
-        Player fPlayer = cachedFactoryPlayers.get(minecraftPlayer);
-        if(fPlayer == null) {
-            fPlayer = ServerTime.factoryServer.getPlayer(minecraftPlayer.getUUID());
-            cachedFactoryPlayers.put(minecraftPlayer, fPlayer);
-        }
-        return fPlayer;
+        try {
+            return ServerTime.factoryServer.getPlayer(minecraftPlayer.getUUID());
+        } catch (Exception ignored) { }
+        return null;
+    }
+
+    public static Player getFactoryPlayerFromName(@NotNull String player) {
+        if(player.trim().isEmpty()) return null;
+        try {
+            return ServerTime.factoryServer.getPlayer(player);
+        } catch (Exception ignored) { }
+        return null;
     }
 
     public static ServerPlayer getMinecraftPlayer(@NotNull Player player){
@@ -120,6 +179,11 @@ public class PlayerUtil {
         player.getFoodData().setFoodLevel(20);
     }
 
+    public static void sendActionbar(ServerPlayer player, String string){
+        player.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.ACTIONBAR,
+                LegacyChatFormat.format(string)));
+    }
+
     public static void sendTitle(ServerPlayer player, String title, String sub, int in, int stay, int out) {
         player.connection.send(new ClientboundSetTitlesPacket(in, stay, out));
         player.connection.send(new ClientboundSetTitlesPacket(
@@ -128,21 +192,86 @@ public class PlayerUtil {
                 ClientboundSetTitlesPacket.Type.SUBTITLE, new TextComponent(sub)));
     }
 
+
+    public static boolean doesPlayerExist(String player){
+        return getFactoryPlayerFromName(player) != null;
+    }
+
+    public static String returnSetPlayer(Player player, String message){
+        return message.replaceAll("%player%", String.valueOf(player.getRawName()));
+    }
+
+
     public static boolean hasPermission(@NotNull CommandSourceStack permission, @NotNull String command, int level) {
         return me.lucko.fabric.api.permissions.v0.Permissions.check(permission, command, level);
     }
 
-    public static ServerPlayer getPlayerAttacker(Entity attackerEntity) {
+    public static boolean hasPermission(@NotNull CommandSourceStack permission, @NotNull String command) {
+        return me.lucko.fabric.api.permissions.v0.Permissions.check(permission, command);
+    }
+
+    public static ServerPlayer getPlayerAttacker(@Nullable net.minecraft.world.entity.player.Player player, Entity attackerEntity) {
+
+        if(player == null) {
+            if (attackerEntity == null) return null;
+
+            if (attackerEntity instanceof ServerPlayer) {
+                return (ServerPlayer) attackerEntity;
+            } else if (attackerEntity instanceof Projectile) {
+                Entity projectileOwner = ((Projectile) attackerEntity).getOwner();
+                if (!(projectileOwner instanceof ServerPlayer)) return null;
+                return (ServerPlayer) projectileOwner;
+            }
+            return null;
+        }
+        if(player.getCombatTracker().getKiller() instanceof ServerPlayer) {
+            return (ServerPlayer) player.getCombatTracker().getKiller();
+        }
+
+        if(player.getKillCredit() instanceof ServerPlayer) {
+            return (ServerPlayer) player.getKillCredit();
+        }
+
         if (attackerEntity == null) return null;
 
         if (attackerEntity instanceof ServerPlayer) {
             return (ServerPlayer) attackerEntity;
-
         } else if (attackerEntity instanceof Projectile) {
             Entity projectileOwner = ((Projectile) attackerEntity).getOwner();
             if (!(projectileOwner instanceof ServerPlayer)) return null;
             return (ServerPlayer) projectileOwner;
         }
+
+        return null;
+    }
+
+    public static ServerPlayer getPlayerAttacker(@NotNull net.minecraft.world.entity.player.Player player) {
+
+        if(player.getCombatTracker().getKiller() instanceof ServerPlayer) {
+            return (ServerPlayer) player.getCombatTracker().getKiller();
+        }
+
+        if(player.getKillCredit() instanceof ServerPlayer) {
+            return (ServerPlayer) player.getKillCredit();
+        }
+
+        if(player.getLastDamageSource() != null && player.getLastDamageSource().getEntity() != null) getPlayerAttacker(player.getLastDamageSource().getEntity());
+
+        return null;
+    }
+
+    public static ServerPlayer getPlayerAttacker(Entity attackerEntity) {
+
+        if (attackerEntity == null) return null;
+
+        if (attackerEntity instanceof ServerPlayer) {
+            return (ServerPlayer) attackerEntity;
+        } else if (attackerEntity instanceof Projectile) {
+            Entity projectileOwner = ((Projectile) attackerEntity).getOwner();
+            if (!(projectileOwner instanceof ServerPlayer)) return null;
+            return (ServerPlayer) projectileOwner;
+        }
+
         return null;
     }
 
@@ -191,4 +320,12 @@ public class PlayerUtil {
         player.connection.send(new ClientboundSoundPacket(soundEvent, soundSource,
                 position.x, position.y, position.z, 16f * volume, pitch));
     }
+
+    public static boolean containsUuid(Collection<Player> playerList, Player player) {
+        for (Player listPlayer : playerList) {
+            if (listPlayer.getUUID().equals(player.getUUID())) return true;
+        }
+        return false;
+    }
+
 }

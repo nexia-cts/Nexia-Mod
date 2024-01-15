@@ -6,19 +6,19 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.ffa.utilities.FfaUtil;
+import com.nexia.ffa.FfaUtil;
+import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.team.DuelsTeam;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import com.nexia.minigames.games.football.FootballGame;
+import com.nexia.minigames.games.oitc.OitcGame;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.CombatRules;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -28,10 +28,7 @@ import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -44,6 +41,7 @@ public abstract class PlayerMixin extends LivingEntity {
     @Shadow @Final public Inventory inventory;
 
     @Shadow public abstract ItemCooldowns getCooldowns();
+
     protected PlayerMixin(EntityType<? extends LivingEntity> entityType, Level level) {
         super(entityType, level);
     }
@@ -57,10 +55,11 @@ public abstract class PlayerMixin extends LivingEntity {
     public boolean disableShield(float f) {
         this.getCooldowns().addCooldown(Items.SHIELD, (int)(f * 20.0F));
         this.stopUsingItem();
+        Player player = (Player) (Object) this;
         this.level.broadcastEntityEvent(this, (byte)30);
-        if((this.getLastDamageSource() != null && this.getLastDamageSource().getEntity() != null && PlayerUtil.getPlayerAttacker(this.getLastDamageSource().getEntity()) != null) && Main.config.enhancements.betterShields){
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
+        if(attacker != null && Main.config.enhancements.betterShields){
             //this.level.broadcastEntityEvent(attacker, (byte)30);
-            ServerPlayer attacker = PlayerUtil.getPlayerAttacker(this.getLastDamageSource().getEntity());
 
             SoundSource soundSource = null;
             for (SoundSource source : SoundSource.values()) {
@@ -71,9 +70,24 @@ public abstract class PlayerMixin extends LivingEntity {
         return true;
     }
 
+    @Inject(method = "canEat", cancellable = true, at = @At("HEAD"))
+    private void preventFFAUsers(boolean bl, CallbackInfoReturnable<Boolean> cir) {
+        if (!((Object) this instanceof ServerPlayer player)) return;
+        if(com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.sky.utilities.FfaAreas.isInFfaSpawn(player) ||
+                com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(player)) {
+            cir.setReturnValue(false);
+            ItemStackUtil.sendInventoryRefreshPacket(player);
+        }
+    }
+
     @Inject(method = "hurt", cancellable = true, at = @At("HEAD"))
     private void beforeHurt(DamageSource damageSource, float damage, CallbackInfoReturnable<Boolean> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
+
+        if (FfaSkyUtil.isFfaPlayer(player) && !FfaSkyUtil.beforeDamage(player, damageSource)) {
+            cir.setReturnValue(false);
+            return;
+        }
 
         if(player.getLevel().equals(LobbyUtil.lobbyWorld) && damageSource == DamageSource.OUT_OF_WORLD) LobbyUtil.lobbySpawn.teleportPlayer(LobbyUtil.lobbyWorld, player);
 
@@ -82,23 +96,12 @@ public abstract class PlayerMixin extends LivingEntity {
             return;
         }
 
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(damageSource.getEntity());
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
         if(attacker != null) {
             if(attacker.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) cir.setReturnValue(false);
 
             DuelsTeam team = PlayerDataManager.get(player).duelsTeam;
             if(team != null && team.all.contains(attacker) && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) cir.setReturnValue(false);
-        }
-    }
-
-
-
-    @Inject(method = "getAttackDelay", at = @At("HEAD"))
-    private void getAttackDelay(CallbackInfoReturnable<Integer> cir) {
-        if (!((Object) this instanceof ServerPlayer player)) return;
-
-        if (BwUtil.isBedWarsPlayer(player)) {
-            BwUtil.setAttackSpeed(player);
         }
     }
 
@@ -124,6 +127,7 @@ public abstract class PlayerMixin extends LivingEntity {
         return vanillaArmorCalculation(damageSource, damage);
     }
 
+    @Unique
     public float vanillaArmorCalculation(DamageSource damageSource, float damage) {
         if (!damageSource.isBypassArmor()) {
             damage = CombatRules.getDamageAfterAbsorb(damage, this.getArmorValue(), (float)this.getAttributeValue(Attributes.ARMOR_TOUGHNESS));
@@ -131,7 +135,8 @@ public abstract class PlayerMixin extends LivingEntity {
         return damage;
     }
 
-    @Inject(method = "drop*", cancellable = true, at = @At("HEAD"))
+
+    @Inject(method = "drop(Z)Z", cancellable = true, at = @At("HEAD"))
     private void drop1(boolean dropAll, CallbackInfoReturnable<Boolean> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
 
@@ -141,7 +146,10 @@ public abstract class PlayerMixin extends LivingEntity {
             cir.setReturnValue(false);
             return;
         }
-
+         if(LobbyUtil.isLobbyWorld(player.getLevel())){
+             cir.setReturnValue(false);
+             return;
+         }
         if (BwUtil.isBedWarsPlayer(player)) {
             if (!BwUtil.canDropItem(dropped)) {
                 ItemStackUtil.sendInventoryRefreshPacket(player);
@@ -150,9 +158,23 @@ public abstract class PlayerMixin extends LivingEntity {
             }
         }
 
-         if(LobbyUtil.isLobbyWorld(player.getLevel())){
-             cir.setReturnValue(false);
-             return;
-         }
+        if(FootballGame.isFootballPlayer(player)) {
+            cir.setReturnValue(false);
+        }
+
+        if(OitcGame.isOITCPlayer(player)){
+            cir.setReturnValue(false);
+        }
+
+    }
+
+    @Inject(method = "getAttackDelay", at = @At("HEAD"))
+    private void getAttackDelay(CallbackInfoReturnable<Integer> cir) {
+        if (!((Object) this instanceof ServerPlayer player)) return;
+
+        if (BwUtil.isBedWarsPlayer(player)) {
+            BwUtil.setAttackSpeed(player);
+        }
+
     }
 }

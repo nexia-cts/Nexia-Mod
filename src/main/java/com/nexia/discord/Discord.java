@@ -93,7 +93,6 @@ public class Discord extends ListenerAdapter {
             }
             event.getHook().editOriginal("Your account has been linked!").queue();
 
-
         }
     }
 }

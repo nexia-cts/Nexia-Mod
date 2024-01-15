@@ -1,6 +1,9 @@
 package com.nexia.core.mixin.entity;
 
+import com.nexia.core.Main;
+import com.nexia.ffa.sky.utilities.FfaAreas;
 import com.nexia.minigames.games.bedwars.custom.BwTrident;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -11,7 +14,7 @@ import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(ThrownTrident.class)
 public abstract class ThrownTridentMixin extends AbstractArrow {
@@ -34,10 +37,15 @@ public abstract class ThrownTridentMixin extends AbstractArrow {
     private float getDamageBonus(ItemStack itemStack, LivingEntity livingEntity) {
         float bonus = EnchantmentHelper.getDamageBonus(itemStack, livingEntity);
 
+        /*
         if ((Object)this instanceof BwTrident) {
             bonus -= 1;
         }
+         */
+
+        if(Main.config.enhancements.tridentDamagePatch) bonus -= 2;
 
         return bonus;
     }
+
 }

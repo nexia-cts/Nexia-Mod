@@ -59,12 +59,12 @@ public class DuelsTeam {
 
     public boolean replaceLeader(@NotNull ServerPlayer executor, @NotNull ServerPlayer player, boolean message) {
         Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor);
-
+        
         if(!this.refreshLeader(executor))  {
             if(message) factoryExecutor.sendMessage(Component.text("You are not the leader!").color(ChatFormat.failColor));
             return false;
         }
-
+        
         if(executor == player || this.refreshLeader(player)) {
             if(message) factoryExecutor.sendMessage(Component.text("You are the leader!").color(ChatFormat.failColor));
             return false;
@@ -141,6 +141,7 @@ public class DuelsTeam {
             return;
         }
         if(this.refreshLeader(player) && !this.people.isEmpty()) this.leader = this.people.get(RandomUtil.randomInt(this.people.size()));
+
 
         data.duelsTeam = null;
         this.people.remove(player);

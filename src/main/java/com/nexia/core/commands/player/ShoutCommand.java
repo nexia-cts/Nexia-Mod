@@ -22,12 +22,12 @@ public class ShoutCommand {
     private static HashMap<UUID, Long> cooldownTime = new HashMap<>();
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
         dispatcher.register(Commands.literal("shout")
-                .requires(context -> {
-                    try {
-                        return Permissions.check(context, "nexia.prefix.supporter");
-                    } catch (Exception ignored) { }
-                    return false;
-                })
+                        .requires(context -> {
+                            try {
+                                return Permissions.check(context.getPlayerOrException(), "nexia.prefix.supporter");
+                            } catch (Exception ignored) { }
+                            return false;
+                        })
                 .then(Commands.argument("message", StringArgumentType.greedyString())
                         .executes(context -> ShoutCommand.shout(context, StringArgumentType.getString(context, "message")))
                 )

@@ -92,20 +92,6 @@ public class TeamCommand {
         return 1;
     }
 
-    public static int promotePlayer(CommandContext<CommandSourceStack> context, ServerPlayer player) throws CommandSyntaxException {
-        ServerPlayer executor = context.getSource().getPlayerOrException();
-
-        com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(executor);
-
-        if(data.duelsTeam == null) {
-            PlayerUtil.getFactoryPlayer(executor).sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
-            return 1;
-        }
-
-        data.duelsTeam.replaceLeader(executor, player, true);
-        return 1;
-    }
-
     public static int joinTeam(CommandContext<CommandSourceStack> context, ServerPlayer player) throws CommandSyntaxException {
         com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).duelsTeam.joinTeam(context.getSource().getPlayerOrException());
         return 1;
@@ -132,6 +118,20 @@ public class TeamCommand {
 
     public static int createTeam(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         DuelsTeam.createTeam(context.getSource().getPlayerOrException(), true);
+        return 1;
+    }
+
+    public static int promotePlayer(CommandContext<CommandSourceStack> context, ServerPlayer player) throws CommandSyntaxException {
+        ServerPlayer executor = context.getSource().getPlayerOrException();
+
+        com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(executor);
+
+        if(data.duelsTeam == null) {
+            PlayerUtil.getFactoryPlayer(executor).sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
+            return 1;
+        }
+
+        data.duelsTeam.replaceLeader(executor, player, true);
         return 1;
     }
 

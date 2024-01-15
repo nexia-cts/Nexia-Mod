@@ -6,21 +6,13 @@ public class ServerType {
 
     public static ServerType EU = new ServerType("eu", "135.125.151.156");
 
-    public static ServerType NA = new ServerType("na", "50.20.202.100");
+    public static ServerType NA = new ServerType("na", "173.240.149.199");
 
-    public static ServerType DEV = new ServerType("dev", "135.125.147.231");
+    public static ServerType DEV = new ServerType("dev", "50.20.206.158");
 
     public ServerType(String type, String ip) {
         this.type = type;
         this.ip = ip;
-    }
-
-    public static ServerType getServerType(String region) {
-        ServerType serverType = null;
-        if(region.equalsIgnoreCase("eu")) serverType = ServerType.EU;
-        if(region.equalsIgnoreCase("na")) serverType = ServerType.NA;
-        if(region.equalsIgnoreCase("dev")) serverType = ServerType.DEV;
-        return serverType;
     }
 
     public static ServerType returnServer() {
@@ -29,6 +21,14 @@ public class ServerType {
         if(ip.equalsIgnoreCase(ServerType.EU.ip)) serverType = ServerType.EU;
         if(ip.equalsIgnoreCase(ServerType.NA.ip)) serverType = ServerType.NA;
         if(ip.equalsIgnoreCase(ServerType.DEV.ip)) serverType = ServerType.DEV;
+        return serverType;
+    }
+
+    public static ServerType getServerType(String region) {
+        ServerType serverType = null;
+        if(region.equalsIgnoreCase("eu")) serverType = ServerType.EU;
+        if(region.equalsIgnoreCase("na")) serverType = ServerType.NA;
+        if(region.equalsIgnoreCase("dev")) serverType = ServerType.DEV;
         return serverType;
     }
 }

@@ -20,6 +20,7 @@ import net.minecraft.Util;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
+import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,76 +29,33 @@ import java.util.List;
 public class GamemodeHandler {
 
     public static DuelGameMode identifyGamemode(@NotNull String gameMode) {
+        /*
+        String fixedGameMode = gameMode.toLowerCase();
+        return switch (fixedGameMode) {
+            case "shield" -> DuelGameMode.SHIELD;
+            case "pot" -> DuelGameMode.POT;
+            case "neth_pot" -> DuelGameMode.NETH_POT;
+            case "uhc_shield" -> DuelGameMode.UHC_SHIELD;
+            case "og_vanilla" -> DuelGameMode.OG_VANILLA;
+            case "cart" -> DuelGameMode.CART;
+            case "diamond_crystal" -> DuelGameMode.DIAMOND_CRYSTAL;
+            case "vanilla" -> DuelGameMode.VANILLA;
+            case "neth_smp" -> DuelGameMode.NETH_SMP;
+            case "sword_only" -> DuelGameMode.SWORD_ONLY;
+            case "classic" -> DuelGameMode.CLASSIC;
+            case "uhc" -> DuelGameMode.UHC;
+            case "trident_only" -> DuelGameMode.TRIDENT_ONLY;
+            default -> null;
+        };
 
-        if (gameMode.equalsIgnoreCase("axe")) {
-            return DuelGameMode.AXE;
+         */
+
+        for(DuelGameMode duelGameMode : DuelGameMode.duelGameModes) {
+            if(duelGameMode.id.equalsIgnoreCase(gameMode)) return duelGameMode;
         }
-
-        if (gameMode.equalsIgnoreCase("bow_only")) {
-            return DuelGameMode.BOW_ONLY;
-        }
-
-        if (gameMode.equalsIgnoreCase("shield")) {
-            return DuelGameMode.SHIELD;
-        }
-
-        if (gameMode.equalsIgnoreCase("pot")) {
-            return DuelGameMode.POT;
-        }
-
-        if (gameMode.equalsIgnoreCase("neth_pot")) {
-            return DuelGameMode.NETH_POT;
-        }
-
-        if (gameMode.equalsIgnoreCase("og_vanilla")) {
-            return DuelGameMode.OG_VANILLA;
-        }
-
-        if (gameMode.equalsIgnoreCase("uhc_shield")) {
-            return DuelGameMode.UHC_SHIELD;
-        }
-
-        if (gameMode.equalsIgnoreCase("hsg")) {
-            return DuelGameMode.HSG;
-        }
-
-        if (gameMode.equalsIgnoreCase("skywars")) {
-            return DuelGameMode.SKYWARS;
-        }
-
-        if (gameMode.equalsIgnoreCase("classic_crystal")) {
-            return DuelGameMode.CLASSIC_CRYSTAL;
-        }
-
-        if (gameMode.equalsIgnoreCase("vanilla")) {
-            return DuelGameMode.VANILLA;
-        }
-
-        if (gameMode.equalsIgnoreCase("smp")) {
-            return DuelGameMode.SMP;
-        }
-
-        if (gameMode.equalsIgnoreCase("sword_only")) {
-            return DuelGameMode.SWORD_ONLY;
-        }
-
-        if (gameMode.equalsIgnoreCase("ffa")) {
-            return DuelGameMode.FFA;
-        }
-
-        if (gameMode.equalsIgnoreCase("hoe_only")) {
-            return DuelGameMode.HOE_ONLY;
-        }
-
-        if (gameMode.equalsIgnoreCase("uhc")) {
-            return DuelGameMode.UHC;
-        }
-
-        if (gameMode.equalsIgnoreCase("trident_only")) {
-            return DuelGameMode.TRIDENT_ONLY;
-        }
-
         return null;
+
+
     }
 
     public static boolean isInQueue(@NotNull ServerPlayer player, @NotNull DuelGameMode gameMode) {
@@ -111,6 +69,7 @@ public class GamemodeHandler {
         }
 
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
+
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
 
         if (gameMode == null) {
@@ -141,7 +100,6 @@ public class GamemodeHandler {
         if (gameMode.queue.size() >= 2) {
             GamemodeHandler.joinGamemode(minecraftPlayer, gameMode.queue.get(0), stringGameMode, null, false);
         }
-
     }
 
     public static void removeQueue(ServerPlayer minecraftPlayer, @Nullable String stringGameMode, boolean silent) {
@@ -199,6 +157,7 @@ public class GamemodeHandler {
 
         factoryExecutor.setGameMode(Minecraft.GameMode.SPECTATOR);
         executor.teleportTo(player.getLevel(), player.getX(), player.getY(), player.getZ(), 0, 0);
+        AccuratePlayer accurateExecutor = AccuratePlayer.create(executor);
 
         DuelsGame duelsGame = playerData.duelsGame;
         TeamDuelsGame teamDuelsGame = playerData.teamDuelsGame;
@@ -206,16 +165,16 @@ public class GamemodeHandler {
         TextComponent spectateMSG = new TextComponent("§7§o(" + factoryExecutor.getRawName() + " started spectating)");
 
         if (teamDuelsGame != null) {
-            teamDuelsGame.spectators.add(executor);
+            teamDuelsGame.spectators.add(accurateExecutor);
             List<ServerPlayer> everyTeamMember = teamDuelsGame.team1.all;
             everyTeamMember.addAll(teamDuelsGame.team2.all);
             for (ServerPlayer players : everyTeamMember) {
                 players.sendMessage(spectateMSG, Util.NIL_UUID);
             }
         } else if (duelsGame != null) {
-            duelsGame.spectators.add(executor);
-            duelsGame.p1.sendMessage(spectateMSG, Util.NIL_UUID);
-            duelsGame.p2.sendMessage(spectateMSG, Util.NIL_UUID);
+            duelsGame.spectators.add(accurateExecutor);
+            duelsGame.p1.get().sendMessage(spectateMSG, Util.NIL_UUID);
+            duelsGame.p2.get().sendMessage(spectateMSG, Util.NIL_UUID);
         }
 
 
@@ -269,14 +228,15 @@ public class GamemodeHandler {
             );
         }
 
+        AccuratePlayer accurateExecutor = AccuratePlayer.create(executor);
 
         if (duelsGame != null) {
-            duelsGame.spectators.remove(executor);
+            duelsGame.spectators.remove(accurateExecutor);
 
-            duelsGame.p1.sendMessage(spectateMSG, Util.NIL_UUID);
-            duelsGame.p2.sendMessage(spectateMSG, Util.NIL_UUID);
+            duelsGame.p1.get().sendMessage(spectateMSG, Util.NIL_UUID);
+            duelsGame.p2.get().sendMessage(spectateMSG, Util.NIL_UUID);
         } else if (teamDuelsGame != null) {
-            teamDuelsGame.spectators.remove(executor);
+            teamDuelsGame.spectators.remove(accurateExecutor);
 
             List<ServerPlayer> everyTeamPlayer = teamDuelsGame.team1.all;
             everyTeamPlayer.addAll(teamDuelsGame.team2.all);
@@ -459,6 +419,9 @@ public class GamemodeHandler {
         DuelsMap map = selectedmap;
         if (map == null) {
             map = DuelsMap.duelsMaps.get(RandomUtil.randomInt(DuelsMap.duelsMaps.size()));
+            while(!map.isAdventureSupported && gameMode.gameMode.equals(GameType.ADVENTURE)) {
+                map = DuelsMap.duelsMaps.get(RandomUtil.randomInt(DuelsMap.duelsMaps.size()));
+            }
         } else {
             if (!DuelsMap.duelsMaps.contains(map)) {
                 executor.sendMessage(Component.text("Invalid map!").color(ChatFormat.failColor));

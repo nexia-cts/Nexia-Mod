@@ -59,7 +59,7 @@ public class StaffReportCommand {
                                                     ChatFormat.nexiaMessage
                                                             .append(Component.text("You have report banned ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                                                                     .append(Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor1).decoration(ChatFormat.bold, true))
-                                                                            .append(Component.text(".")).color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
+                                                                    .append(Component.text(".")).color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                                                             )
                                             );
                                         } else {
@@ -83,7 +83,7 @@ public class StaffReportCommand {
                                                     ChatFormat.nexiaMessage
                                                             .append(Component.text("You have report unbanned ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                                                                     .append(Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor1).decoration(ChatFormat.bold, true))
-                                                                            .append(Component.text(".")).color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
+                                                                    .append(Component.text(".")).color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                                                             )
                                             );
                                         } else {

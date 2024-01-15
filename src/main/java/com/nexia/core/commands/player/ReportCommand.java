@@ -84,8 +84,8 @@ public class ReportCommand {
 
         ServerPlayer staffPlayer;
         sendWebhook(executor.getRawName(), player.getScoreboardName(), reason);
-        for (int i = 0; i != Main.server.getPlayerCount(); i++){
-            staffPlayer = PlayerUtil.getMinecraftPlayerFromName(Main.server.getPlayerNames()[i]);
+        for (int i = 0; i != ServerTime.minecraftServer.getPlayerCount(); i++){
+            staffPlayer = PlayerUtil.getMinecraftPlayerFromName(ServerTime.minecraftServer.getPlayerNames()[i]);
             if(Permissions.check(staffPlayer, "nexia.staff.report", 1)) {
                 PlayerUtil.getFactoryPlayer(staffPlayer).sendMessage(
                         ChatFormat.nexiaMessage

@@ -1,7 +1,12 @@
 package com.nexia.core.mixin.item;
 
+import com.nexia.core.utilities.item.ItemStackUtil;
+import com.nexia.ffa.sky.utilities.FfaSkyUtil;
+import com.nexia.ffa.uhc.utilities.FfaAreas;
+import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
+import com.nexia.minigames.games.football.FootballGame;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,6 +32,33 @@ public abstract class BlockItemMixin {
             cir.setReturnValue(InteractionResult.PASS);
             return;
         }
+
+        if (player.getLevel().equals(FootballGame.world) && !player.isCreative()) {
+            cir.setReturnValue(InteractionResult.PASS);
+            return;
+        }
+
+        if (FfaAreas.isFfaWorld(level) && !FfaUhcUtil.beforeBuild(player, blockPos)) {
+            cir.setReturnValue(InteractionResult.PASS);
+            ItemStackUtil.sendInventoryRefreshPacket(player);
+            return;
+        }
+
+        if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(level) && !FfaSkyUtil.beforeBuild(player, blockPos)) {
+            cir.setReturnValue(InteractionResult.PASS);
+            return;
+        }
     }
 
+    @Inject(method = "place", at = @At(value = "TAIL"))
+    private void afterPlace(BlockPlaceContext context, CallbackInfoReturnable<InteractionResult> cir) {
+        ServerPlayer player = (ServerPlayer)context.getPlayer();
+        if (player == null) return;
+
+        BlockPos blockPos = context.getClickedPos();
+
+        if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(player.getLevel())) {
+            FfaSkyUtil.afterPlace(player, blockPos, context.getHand());
+        }
+    }
 }

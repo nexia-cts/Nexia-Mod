@@ -4,11 +4,10 @@ import com.combatreforged.factory.api.world.entity.player.Player;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.ffa.utilities.FfaAreas;
+import com.nexia.ffa.classic.utilities.FfaAreas;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -44,18 +43,27 @@ public class MapCommand {
         ));
     }
 
-    private static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ServerPlayer mcPlayer = context.getSource().getPlayerOrException();
-        Player player = PlayerUtil.getFactoryPlayer(mcPlayer);
+    private static int run(CommandContext<CommandSourceStack> context) {
+        ServerPlayer mcPlayer = null;
+        Player player = null;
+
+        try {
+            mcPlayer = context.getSource().getPlayerOrException();
+            player = PlayerUtil.getFactoryPlayer(mcPlayer);
+        } catch (Exception ignored) { }
+
 
         String type = StringArgumentType.getString(context, "type");
         String map = StringArgumentType.getString(context, "map");
 
-        if(ChatFormat.hasWhiteSpacesOrSpaces(map) || ChatFormat.hasWhiteSpacesOrSpaces(type)) {
-            player.sendMessage(
-                    ChatFormat.nexiaMessage
-                                    .append(Component.text("Invalid name!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
-            );
+        if(map.trim().isEmpty() || type.trim().isEmpty()) {
+            if(player != null) {
+                player.sendMessage(
+                        ChatFormat.nexiaMessage
+                                .append(Component.text("Invalid name!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
+                );
+            }
+
 
             return 1;
         }
@@ -66,36 +74,42 @@ public class MapCommand {
 
             ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), (
                     new RuntimeWorldConfig()
-                    .setDimensionType(FfaAreas.ffaWorld.dimensionType())
-                    .setGenerator(FfaAreas.ffaWorld.getChunkSource().getGenerator())
-                    .setDifficulty(Difficulty.HARD)
-                    .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
-                    .setGameRule(GameRules.RULE_MOBGRIEFING, false)
-                    .setGameRule(GameRules.RULE_WEATHER_CYCLE, false)
-                    .setGameRule(GameRules.RULE_DAYLIGHT, false)
-                    .setGameRule(GameRules.RULE_DO_IMMEDIATE_RESPAWN, false)
-                    .setGameRule(GameRules.RULE_DOMOBSPAWNING, false)
-                    .setGameRule(GameRules.RULE_SHOWDEATHMESSAGES, false)
-                    .setGameRule(GameRules.RULE_SPAWN_RADIUS, 0))).asWorld();
+                            .setDimensionType(FfaAreas.ffaWorld.dimensionType())
+                            .setGenerator(FfaAreas.ffaWorld.getChunkSource().getGenerator())
+                            .setDifficulty(Difficulty.HARD)
+                            .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
+                            .setGameRule(GameRules.RULE_MOBGRIEFING, false)
+                            .setGameRule(GameRules.RULE_WEATHER_CYCLE, false)
+                            .setGameRule(GameRules.RULE_DAYLIGHT, false)
+                            .setGameRule(GameRules.RULE_DO_IMMEDIATE_RESPAWN, false)
+                            .setGameRule(GameRules.RULE_DOMOBSPAWNING, false)
+                            .setGameRule(GameRules.RULE_SHOWDEATHMESSAGES, false)
+                            .setGameRule(GameRules.RULE_SPAWN_RADIUS, 0))).asWorld();
 
-            mcPlayer.teleportTo(level, 0, 80, 0, 0, 0);
+            if (mcPlayer != null && player != null) {
+                mcPlayer.teleportTo(level, 0, 80, 0, 0, 0);
 
-            player.sendMessage(
-                    ChatFormat.nexiaMessage
-                                    .append(Component.text("Created map called: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                            .append(Component.text(map).color(ChatFormat.brandColor2))
-            );
+                player.sendMessage(
+                        ChatFormat.nexiaMessage
+                                .append(Component.text("Created map called: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                .append(Component.text(map).color(ChatFormat.brandColor2))
+                );
+            }
+
 
             return 1;
         }
 
         if (type.equalsIgnoreCase("delete")) {
             ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), null).delete();
-            player.sendMessage(
-                    ChatFormat.nexiaMessage
-                            .append(Component.text("Deleted map called: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                            .append(Component.text(map).color(ChatFormat.brandColor2))
-            );
+            if(player != null) {
+                player.sendMessage(
+                        ChatFormat.nexiaMessage
+                                .append(Component.text("Deleted map called: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                .append(Component.text(map).color(ChatFormat.brandColor2))
+                );
+            }
+
             try {
                 FileUtils.forceDeleteOnExit(new File("/world/dimensions/" + mapname[0], mapname[1]));
             } catch (Exception ignored) { }
@@ -104,13 +118,17 @@ public class MapCommand {
 
         if(type.equalsIgnoreCase("tp")) {
             ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), null).asWorld();
-            mcPlayer.teleportTo(level, 0, 80, 0, 0, 0);
 
-            player.sendMessage(
-                    ChatFormat.nexiaMessage
-                            .append(Component.text("Teleported to map called: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                            .append(Component.text(map).color(ChatFormat.brandColor2))
-            );
+            if(mcPlayer != null && player != null) {
+                mcPlayer.teleportTo(level, 0, 80, 0, 0, 0);
+
+                player.sendMessage(
+                        ChatFormat.nexiaMessage
+                                .append(Component.text("Teleported to map called: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                .append(Component.text(map).color(ChatFormat.brandColor2))
+                );
+            }
+
             return 1;
         }
         return 1;

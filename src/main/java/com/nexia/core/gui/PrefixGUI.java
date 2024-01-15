@@ -8,8 +8,6 @@ import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
@@ -48,28 +46,28 @@ public class PrefixGUI extends SimpleGui {
             this.setSlot(airSlots, new ItemStack(Items.AIR));
             airSlots++;
         }
-        for(int i = 0; i < 10; i++){
+        for(String rank : Main.config.ranks){
             if(slot == 17) {
                 slot = 19;
             }
 
-            if(PlayerUtil.hasPermission(player.createCommandSourceStack(), "nexia.prefix." + Main.config.ranks[i], 4) && player.getTags().contains(Main.config.ranks[i])){
+            if(PlayerUtil.hasPermission(player.createCommandSourceStack(), "nexia.prefix." + rank) && player.getTags().contains(rank)){
                 ItemStack enchantedItem = new ItemStack(Items.NAME_TAG, 1);
                 enchantedItem.enchant(Enchantments.SHARPNESS, 1);
                 enchantedItem.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
-                enchantedItem.setHoverName(new TextComponent("§d§l" + Main.config.ranks[i]));
+                enchantedItem.setHoverName(new TextComponent("§d§l" + rank));
                 this.setSlot(slot, enchantedItem);
                 slot++;
-            } else if(PlayerUtil.hasPermission(player.createCommandSourceStack(), "nexia.prefix." + Main.config.ranks[i], 4)){
+            } else if(PlayerUtil.hasPermission(player.createCommandSourceStack(), "nexia.prefix." + rank)){
                 ItemStack changedItem = new ItemStack(Items.NAME_TAG, 1);
-                changedItem.setHoverName(new TextComponent("§f" + Main.config.ranks[i]));
+                changedItem.setHoverName(new TextComponent("§f" + rank));
                 this.setSlot(slot, changedItem);
                 slot++;
-            } else if(player.getTags().contains(Main.config.ranks[i])) {
+            } else if(player.getTags().contains(rank)) {
                 ItemStack enchantedItem = new ItemStack(Items.NAME_TAG, 1);
                 enchantedItem.enchant(Enchantments.SHARPNESS, 1);
                 enchantedItem.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
-                enchantedItem.setHoverName(new TextComponent(Main.config.ranks[i]).withStyle(ChatFormatting.BOLD, ChatFormatting.LIGHT_PURPLE));
+                enchantedItem.setHoverName(new TextComponent(rank).withStyle(ChatFormatting.BOLD, ChatFormatting.LIGHT_PURPLE));
                 this.setSlot(slot, enchantedItem);
                 slot++;
             }
@@ -88,13 +86,13 @@ public class PrefixGUI extends SimpleGui {
 
                 player.sendMessage(
                         ChatFormat.nexiaMessage
-                                .append(net.kyori.adventure.text.Component.text("Your prefix has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                .append(net.kyori.adventure.text.Component.text(name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                                .append(net.kyori.adventure.text.Component.text(".").decoration(ChatFormat.bold, false))
+                                        .append(net.kyori.adventure.text.Component.text("Your prefix has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                .append(net.kyori.adventure.text.Component.text(name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                                        .append(net.kyori.adventure.text.Component.text(".").decoration(ChatFormat.bold, false))
                 );
 
-                for(int i = 0; i < 10; i++){
-                    player.removeTag(Main.config.ranks[i]);
+                for(String rank : Main.config.ranks){
+                    player.removeTag(rank);
                 }
 
                 player.addTag(name.toLowerCase());

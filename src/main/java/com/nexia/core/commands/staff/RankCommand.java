@@ -39,42 +39,37 @@ public class RankCommand {
             factoryExecutor = PlayerUtil.getFactoryPlayer(context.getSource().getPlayerOrException());
         } catch(Exception ignored) { }
 
-        for(int i = 0; i < 10; i++){
-            if(rank.equalsIgnoreCase(Main.config.ranks[i])){
+        for(String tRank : Main.config.ranks){
+            if(rank.equalsIgnoreCase(tRank)){
+
                 if(factoryExecutor != null){
                     factoryExecutor.sendMessage(
                             ChatFormat.nexiaMessage
-                                    .append(Component.text("You have set the rank of ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                    .append(Component.text(otherFactoryPlayer.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                                    .append(Component.text(" to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                    .append(Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true).decoration(ChatFormat.bold, false))
-                                    .append(Component.text(".").color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false).decoration(ChatFormat.bold, false))
+                                            .append(Component.text("You have set the rank of ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                    .append(Component.text(otherFactoryPlayer.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                                            .append(Component.text(" to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                                    .append(Component.text(tRank).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true).decoration(ChatFormat.bold, false))
+                                                                            .append(Component.text(".").color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false).decoration(ChatFormat.bold, false))
                     );
                 } else {
-                    executer.sendSuccess(LegacyChatFormat.format("{b1}You have set the rank of {b2}{} {b1}to: {b2}{b}{}{b1}.", otherFactoryPlayer.getRawName(), Main.config.ranks[i]), false);
-                }
-
-                if(rank.equalsIgnoreCase("pro") || rank.equalsIgnoreCase("god")){
-                    ServerTime.factoryServer.runCommand("/staffprefix add " + otherFactoryPlayer.getRawName() + " " + rank, 3, true);
-                    ServerTime.factoryServer.runCommand("/staffprefix set " + otherFactoryPlayer.getRawName() + " " + rank, 3, true);
-                    return Command.SINGLE_SUCCESS;
+                    executer.sendSuccess(LegacyChatFormat.format("{b1}You have set the rank of {b2}{} {b1}to: {b2}{b}{}{b1}.", otherFactoryPlayer.getRawName(), tRank), false);
                 }
 
 
                 otherFactoryPlayer.sendMessage(
                         ChatFormat.nexiaMessage
                                         .append(Component.text("Your rank has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                                .append(Component.text(Main.config.ranks[i]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                                                .append(Component.text(tRank).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                                                         .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                 );
 
-                for (int i2 = 0; i2 < 9; i2++) {
-                    otherFactoryPlayer.removeTag(Main.config.ranks[i2]);
+                for (String tRank2 : Main.config.ranks) {
+                    otherFactoryPlayer.removeTag(tRank2);
                 }
 
-                ServerTime.factoryServer.runCommand(String.format("/lp user %s parent set %s", otherFactoryPlayer.getRawName(), Main.config.ranks[i]));
+                ServerTime.factoryServer.runCommand(String.format("/lp user %s parent set %s", otherFactoryPlayer.getRawName(), tRank));
 
-                otherFactoryPlayer.addTag(Main.config.ranks[i]);
+                otherFactoryPlayer.addTag(tRank);
             }
         }
 

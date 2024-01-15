@@ -1,8 +1,8 @@
-# Nexia MAIN
+# Nexia DEV
 
-Last Sync with [Dev](https://github.com/nexia-cts/Nexia-Mod/tree/dev):
+Last Sync with [Main](https://github.com/nexia-cts/Nexia-Mod/tree/main):
 
-[003694ce3a026fd71e36337412a964f187582269](https://github.com/nexia-cts/Nexia-Mod/commit/003694ce3a026fd71e36337412a964f187582269)
+[92e00caae78cb985bb7ae4297d7f7d04971b26a2](https://github.com/nexia-cts/Nexia-Mod/commit/92e00caae78cb985bb7ae4297d7f7d04971b26a2)
 
 *(may be 1 commit forward)*
 

@@ -3,7 +3,7 @@ package com.nexia.minigames.games.bedwars.players;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
-import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.minigames.games.bedwars.util.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
@@ -91,7 +91,7 @@ public class BwPlayerEvents {
     }
 
     public static void afterHurt(ServerPlayer player, DamageSource damageSource) {
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(damageSource.getEntity());
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
         if (attacker != null) {
             PlayerDataManager.get(player).combatTagPlayer = attacker;
             PlayerDataManager.get(attacker).combatTagPlayer = player;
@@ -191,11 +191,7 @@ public class BwPlayerEvents {
         if (!BwAreas.canBuildAt(player, blockPos, true)) {
             return false;
         }
-        if (BwUtil.placeTnt(player, blockPlaceContext)) {
-            return false;
-        }
-
-        return true;
+        return !BwUtil.placeTnt(player, blockPlaceContext);
     }
 
     public static boolean beforeBreakBlock(ServerPlayer player, BlockPos blockPos) {
@@ -208,11 +204,7 @@ public class BwPlayerEvents {
             return false;
         }
 
-        if (!BwAreas.canBuildAt(player, blockPos, true)) {
-            return false;
-        }
-
-        return true;
+        return BwAreas.canBuildAt(player, blockPos, true);
     }
 
     public static void bedBroken(ServerPlayer player, BlockPos blockPos) {
@@ -220,8 +212,8 @@ public class BwPlayerEvents {
             if (team.bedLocation == null) continue;
 
             if (new EntityPos(team.bedLocation).isInRadius(new EntityPos(blockPos), 1)) {
-                com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.get(player).savedData.bedsBroken++;
                 team.announceBedBreak(player, blockPos);
+                com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.get(player).savedData.bedsBroken++;
                 break;
             }
         }
@@ -295,7 +287,7 @@ public class BwPlayerEvents {
         ItemStack itemStack = ItemStackUtil.getContainerClickItem(player, packet);
 
         if ((itemStack != null) && (packet.getClickType() == ClickType.THROW || slot == -999)) {
-            if (!BwUtil.canDropItem(itemStack)) return false;
+            return BwUtil.canDropItem(itemStack);
         }
 
         return true;

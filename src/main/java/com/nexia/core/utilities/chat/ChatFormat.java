@@ -1,11 +1,9 @@
 package com.nexia.core.utilities.chat;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class ChatFormat {
 
@@ -16,9 +14,9 @@ public class ChatFormat {
     public static TextColor normalColor = NamedTextColor.WHITE;
     public static TextColor systemColor = NamedTextColor.DARK_GRAY;
 
-    public static TextColor brandColor1 = TextColor.fromHexString("#b300f6");
+    public static TextColor brandColor1 = TextColor.fromHexString("#a400fc");
 
-    public static TextColor brandColor2 = TextColor.fromHexString("#eb00ff");
+    public static TextColor brandColor2 = TextColor.fromHexString("#e700f0");
 
     public static TextColor failColor = TextColor.fromHexString("#ff2b1c");
 
@@ -40,24 +38,21 @@ public class ChatFormat {
     // Text
 
     public static Component nexiaMessage = Component.text("N")
-            .color(TextColor.fromHexString("#9e00f5"))
+            .color(TextColor.fromHexString("#a400fc"))
             .decoration(bold, true)
             .append(Component.text("e")
-                    .color(TextColor.fromHexString("#aa00f3"))
-                    .decorate(bold)
+                    .color(TextColor.fromHexString("#ba00f8"))
                     .append(Component.text("x")
-                            .color(TextColor.fromHexString("#b600f2"))
-                            .decorate(bold)
+                            .color(TextColor.fromHexString("#d000f4"))
                             .append(Component.text("i")
-                                    .color(TextColor.fromHexString("#c300f0"))
-                                    .decorate(bold)
+                                    .color(TextColor.fromHexString("#e700f0"))
                                     .append(Component.text("a")
-                                            .decorate(bold)
-                                            .color(TextColor.fromHexString("#cf00ee"))
+                                            .color(TextColor.fromHexString("#fc00ec"))
                                     )
                             )
                     )
-            ).append(Component.text(" » ").color(arrowColor).decoration(bold, false));
+            )
+            .append(Component.text(" » ").color(arrowColor).decoration(bold, false));
 
 
     public static Component separatorLine(String title) {
@@ -73,16 +68,5 @@ public class ChatFormat {
         } else {
             return Component.text(spaces).color(lineColor).decorate(strikeThrough);
         }
-    }
-
-    public static boolean hasWhiteSpacesOrSpaces(@NotNull String string){
-        return string.matches(".*\\s+.*") || string.trim().isEmpty();
-    }
-
-    public static boolean hasWhiteSpacesOrSpaces(@NotNull String[] strings){
-        for(String string : strings) {
-            return string.matches(".*\\s+.*") || string.trim().isEmpty();
-        }
-        return false;
     }
 }

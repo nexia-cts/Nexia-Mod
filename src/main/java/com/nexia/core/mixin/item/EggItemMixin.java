@@ -12,6 +12,7 @@ import net.minecraft.world.item.EggItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -20,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(EggItem.class)
 public class EggItemMixin {
 
+    @Unique
     private InteractionHand hand;
 
     @Inject(method = "use", at = @At("HEAD"))
@@ -27,11 +29,10 @@ public class EggItemMixin {
         this.hand = interactionHand;
     }
 
-    @Redirect(method = "use", at = @At(value = "NEW", target = "net/minecraft/world/entity/projectile/ThrownEgg"))
+    @Redirect(method = "use", at = @At(value = "NEW", target = "(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/LivingEntity;)Lnet/minecraft/world/entity/projectile/ThrownEgg;"))
     private ThrownEgg setThrownEgg(Level level, LivingEntity livingEntity) {
 
-        if (livingEntity instanceof ServerPlayer) {
-            ServerPlayer player = (ServerPlayer) livingEntity;
+        if (livingEntity instanceof ServerPlayer player) {
 
             if (BwAreas.isBedWarsWorld(level)) {
                 return BwPlayerEvents.throwEgg(player, player.getItemInHand(hand));

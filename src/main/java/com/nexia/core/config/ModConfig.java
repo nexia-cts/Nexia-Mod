@@ -7,27 +7,6 @@ import me.sargunvohra.mcmods.autoconfig1u.shadowed.blue.endless.jankson.Comment;
 @Config(name = "nexia-core")
 public class ModConfig implements ConfigData {
 
-    public Events events = new Events();
-    public static class Events {
-        @Comment("The server commands that get run whenever a player leaves the server.")
-        public String[] serverLeaveCommands = {""};
-        @Comment("The player commands that get run whenever a player leaves the server.")
-        public String[] playerLeaveCommands = {""};
-
-        @Comment("The server commands that get run whenever a player joins the server.")
-        public String[] serverJoinCommands = {""};
-        @Comment("The player commands that get run whenever a player joins the server.")
-        public String[] playerJoinCommands = {""};
-
-        @Comment("The server commands that get run whenever a player joins the server for the first time.")
-        public String[] serverFirstJoinCommands = {""};
-        @Comment("The player commands that get run whenever a player joins the server for the first time.")
-        public String[] playerFirstJoinCommands = {""};
-
-        @Comment("Toggles if the join and leave messages show.")
-        public boolean statusMessages = true;
-    }
-
     @Comment("List of ranks.")
     public String[] ranks = {""};
     public double[] lobbyPos = {
@@ -36,6 +15,9 @@ public class ModConfig implements ConfigData {
             0.5,
     };
 
+    public boolean debugMode = false;
+
+
     public Enhancements enhancements = new Enhancements();
     public static class Enhancements {
         @Comment("Toggles if the better shields are enabled.")
@@ -43,5 +25,11 @@ public class ModConfig implements ConfigData {
 
         @Comment("Modifies the pearl cooldown in ticks (20 ticks = 1 second).")
         public int enderpearlCooldown = 20;
+
+        @Comment("Remove Projectiles going through players [EXPERIMENTAL]")
+        public boolean projectilePatch = false;
+
+        @Comment("Fix Tridents doing 8 damage when thrown, instead of 6")
+        public boolean tridentDamagePatch = false;
     }
 }

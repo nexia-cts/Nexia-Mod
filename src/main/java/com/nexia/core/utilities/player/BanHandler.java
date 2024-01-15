@@ -1,5 +1,6 @@
 package com.nexia.core.utilities.player;
 
+import com.google.gson.*;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
 import com.nexia.core.utilities.chat.LegacyChatFormat;

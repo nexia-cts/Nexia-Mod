@@ -13,27 +13,46 @@ public class PlayCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
         dispatcher.register(Commands.literal("play").executes(PlayCommand::openGUI)
-                .then(Commands.literal("skywars").executes(PlayCommand::playSkywars))
-                .then(Commands.literal("sw").executes(PlayCommand::playSkywars))
-                .then(Commands.literal("bedwars").executes(PlayCommand::playBedwars))
-                .then(Commands.literal("bw").executes(PlayCommand::playBedwars))
-                .then(Commands.literal("ffa").executes(PlayCommand::openGUI)
+                .then(Commands.literal("ffa").executes(PlayCommand::openFFAGui)
+                        .then(Commands.literal("kits").executes(PlayCommand::playKitFFA))
+                        .then(Commands.literal("sky").executes(PlayCommand::playSkyFFA))
+                        .then(Commands.literal("uhc").executes(PlayCommand::playUhcFFA))
                         .then(Commands.literal("classic").executes(PlayCommand::playNormalFFA)))
-                .then(Commands.literal("duels").executes(PlayCommand::playDuels)));
-        dispatcher.register(Commands.literal("join").executes(PlayCommand::openGUI)
-                .then(Commands.literal("skywars").executes(PlayCommand::playSkywars))
-                .then(Commands.literal("sw").executes(PlayCommand::playSkywars))
-                .then(Commands.literal("bedwars").executes(PlayCommand::playBedwars))
-                .then(Commands.literal("bw").executes(PlayCommand::playBedwars))
-                .then(Commands.literal("ffa").executes(PlayCommand::openGUI)
-                        .then(Commands.literal("classic").executes(PlayCommand::playNormalFFA)))
+                .then(Commands.literal("bedwars").executes(PlayCommand::playBedWars))
                 .then(Commands.literal("duels").executes(PlayCommand::playDuels))
+                .then(Commands.literal("skywars").executes(PlayCommand::playSkywars))
+                .then(Commands.literal("sw").executes(PlayCommand::playSkywars))
+                .then(Commands.literal("football").executes(PlayCommand::playFootball))
+                .then(Commands.literal("oitc").executes(PlayCommand::playOITC))
+                .then(Commands.literal("bw").executes(PlayCommand::playBedWars)));
+        dispatcher.register(Commands.literal("join").executes(PlayCommand::openGUI)
+                .then(Commands.literal("ffa").executes(PlayCommand::openFFAGui)
+                        .then(Commands.literal("kits").executes(PlayCommand::playKitFFA))
+                        .then(Commands.literal("sky").executes(PlayCommand::playSkyFFA))
+                        .then(Commands.literal("uhc").executes(PlayCommand::playUhcFFA))
+                        .then(Commands.literal("classic").executes(PlayCommand::playNormalFFA)))
+                .then(Commands.literal("bedwars").executes(PlayCommand::playBedWars))
+                .then(Commands.literal("duels").executes(PlayCommand::playDuels))
+                .then(Commands.literal("skywars").executes(PlayCommand::playSkywars))
+                .then(Commands.literal("football").executes(PlayCommand::playFootball))
+                .then(Commands.literal("sw").executes(PlayCommand::playSkywars))
+                .then(Commands.literal("bw").executes(PlayCommand::playBedWars))
+                .then(Commands.literal("oitc").executes(PlayCommand::playOITC))
         );
-        dispatcher.register(Commands.literal("ffa").executes(PlayCommand::playNormalFFA));
+        dispatcher.register(Commands.literal("ffa").executes(PlayCommand::openFFAGui)
+                .then(Commands.literal("kits").executes(PlayCommand::playKitFFA))
+                .then(Commands.literal("sky").executes(PlayCommand::playSkyFFA))
+                .then(Commands.literal("uhc").executes(PlayCommand::playUhcFFA))
+                .then(Commands.literal("classic").executes(PlayCommand::playNormalFFA)));
     }
 
     private static int openGUI(CommandContext<CommandSourceStack> context) throws CommandSyntaxException{
         PlayGUI.openMainGUI(context.getSource().getPlayerOrException());
+        return 1;
+    }
+
+    private static int openFFAGui(CommandContext<CommandSourceStack> context) throws CommandSyntaxException{
+        PlayGUI.openMainGUI(context.getSource().getPlayerOrException()).setFFALayout();
         return 1;
     }
 
@@ -43,21 +62,51 @@ public class PlayCommand {
         return 1;
     }
 
-    private static int playBedwars(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static int playKitFFA(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        LobbyUtil.sendGame(player, "bedwars", true, true);
+        LobbyUtil.sendGame(player, "kits ffa", true, true);
         return 1;
     }
 
-    private static int playSkywars(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static int playUhcFFA(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        LobbyUtil.sendGame(player, "skywars", true, true);
+        LobbyUtil.sendGame(player, "uhc ffa", true, true);
+        return 1;
+    }
+
+    private static int playSkyFFA(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        LobbyUtil.sendGame(player, "sky ffa", true, true);
+        return 1;
+    }
+
+    private static int playBedWars(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        LobbyUtil.sendGame(player, "bedwars", true, true);
         return 1;
     }
 
     private static int playDuels(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         LobbyUtil.sendGame(player, "duels", true, true);
+        return 1;
+    }
+
+    private static int playOITC(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        LobbyUtil.sendGame(player, "oitc", true, true);
+        return 1;
+    }
+
+    private static int playFootball(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        LobbyUtil.sendGame(player, "football", true, true);
+        return 1;
+    }
+
+    private static int playSkywars(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        LobbyUtil.sendGame(player, "skywars", true, true);
         return 1;
     }
 

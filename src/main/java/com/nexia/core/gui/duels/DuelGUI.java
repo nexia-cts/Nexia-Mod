@@ -1,12 +1,14 @@
 package com.nexia.core.gui.duels;
 
 import com.nexia.core.utilities.item.ItemDisplayUtil;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
-import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
+import com.nexia.minigames.games.duels.map.DuelsMap;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,8 +16,6 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
-
-import java.util.Arrays;
 
 public class DuelGUI extends SimpleGui {
     static final TextComponent title = new TextComponent("Duel Menu");
@@ -78,10 +78,17 @@ public class DuelGUI extends SimpleGui {
             this.setSlot(airSlots, new ItemStack(Items.AIR));
             airSlots++;
         }
+
         //this.setSlot(4, HeadFunctions.getPlayerHead(otherp.getScoreboardName(), 1));
+
+        ItemStack playerHead = PlayerUtil.getPlayerHead(otherp.getUUID());
+        playerHead.setHoverName(new TextComponent(otherp.getScoreboardName()).withStyle(ChatFormatting.BOLD));
+
+        this.setSlot(4, playerHead);
+
         int i1 = 0;
         ItemStack item;
-        for(String duel : DuelGameMode.duels){
+        for(String duel : DuelGameMode.stringDuelGameModes){
             if(slot == 17) {
                 slot = 19;
             }
@@ -91,6 +98,7 @@ public class DuelGUI extends SimpleGui {
             item = DuelGameMode.duelsItems.get(i1).setHoverName(new TextComponent("§f" + duel.toUpperCase().replaceAll("_", " ")));
             ItemDisplayUtil.removeLore(item, 0);
             ItemDisplayUtil.removeLore(item, 1);
+
             this.setSlot(slot, item);
             slot++;
             i1++;
@@ -103,8 +111,8 @@ public class DuelGUI extends SimpleGui {
             ItemStack itemStack = element.getItemStack();
             Component name = itemStack.getHoverName();
 
-            if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
-                if(Arrays.stream(DuelGameMode.duels).toList().contains(name.getString().substring(2).replaceAll(" ", "_"))){
+            if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR && itemStack.getItem() != Items.PLAYER_HEAD){
+                if(DuelGameMode.stringDuelGameModes.contains(name.getString().substring(2).replaceAll(" ", "_"))){
                     this.kit = name.getString().substring(2).replaceAll(" ", "_");
                     setMapLayout(GamemodeHandler.identifyGamemode(this.kit));
                 } else {
