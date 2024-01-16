@@ -87,8 +87,7 @@ public class OitcGame {
 
         data.kills = 0;
 
-        if(OitcGame.players.size() <= 1) {
-            if(!OitcGame.isEnding) return;
+        if(OitcGame.players.size() <= 1 && !OitcGame.isEnding) {
             if(OitcGame.players.size() == 1) OitcGame.endGame(OitcGame.players.get(0).get());
             else OitcGame.endGame(null);
         }
