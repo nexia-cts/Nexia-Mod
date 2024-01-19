@@ -96,7 +96,15 @@ public class SkyFfaBlocks {
 
     private static void blockDisappear(BlockPos blockPos) {
         if (contains(playerPlacedBlocks, blockPos) || contains(disappearingWool, blockPos)) return;
-        FfaAreas.ffaWorld.setBlock(blockPos, Blocks.AIR.defaultBlockState(), 3);
+
+        try {
+            if(FfaAreas.ffaWorld.getChunkAt(blockPos) != null) {
+                FfaAreas.ffaWorld.setBlock(blockPos, Blocks.AIR.defaultBlockState(), 3);
+            }
+        } catch (Exception ignored) { }
+
+
+
     }
 
 }

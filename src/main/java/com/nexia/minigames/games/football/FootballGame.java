@@ -178,6 +178,9 @@ public class FootballGame {
 
     public static void goal(ArmorStand entity, FootballTeam team) {
 
+        if(!team1.refreshTeam() || !team2.refreshTeam()) endGame(null);
+
+
         if(!FootballGame.isEnding) {
             team.goals++;
             ServerPlayer closestPlayer = (ServerPlayer) FootballGame.world.getNearestPlayer(entity.getX(), entity.getY(), entity.getZ(), 20, e -> e instanceof ServerPlayer se && !se.isSpectator() && !se.isCreative() && team.players.contains(AccuratePlayer.create(se)));
@@ -382,18 +385,22 @@ public class FootballGame {
             kicking.setHoverName(new TextComponent("§7§lKicking §7Sword §8[§710s cooldown§8]"));
             kicking.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
 
+            /*
             ItemStack normal = new ItemStack(Items.IRON_SWORD);
             normal.getOrCreateTag().putBoolean("Unbreakable", true);
             normal.enchant(Enchantments.KNOCKBACK, 2);
             normal.setHoverName(new TextComponent("§f§lNormal §fSword §8[§fno cooldown§8]"));
             normal.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
 
+
+             */
             FootballGame.createArmorStand();
 
             for(AccuratePlayer player : FootballGame.players) {
                 ServerPlayer serverPlayer = player.get();
-                serverPlayer.inventory.setItem(0, normal);
-                serverPlayer.inventory.setItem(1, kicking);
+                //serverPlayer.inventory.setItem(0, normal);
+                //serverPlayer.inventory.setItem(1, kicking);
+                serverPlayer.inventory.setItem(0, kicking);
 
                 PlayerData data = PlayerDataManager.get(serverPlayer);
                 data.gameMode = FootballGameMode.PLAYING;

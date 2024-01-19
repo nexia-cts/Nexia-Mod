@@ -2,6 +2,7 @@ package com.nexia.core.mixin.player;
 
 import com.mojang.authlib.GameProfile;
 import com.nexia.core.utilities.misc.RandomUtil;
+import com.nexia.core.utilities.time.ServerType;
 import com.nexia.discord.Discord;
 import com.nexia.discord.Main;
 import com.nexia.discord.utilities.player.PlayerDataManager;
@@ -20,7 +21,7 @@ public class ServerLoginPacketListenerMixin {
 
     @ModifyArg(method = "handleAcceptedLogin", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerLoginPacketListenerImpl;disconnect(Lnet/minecraft/network/chat/Component;)V"))
     private Component handleAcceptedLogin(Component original) {
-        if (!(original instanceof TranslatableComponent component)) return original;
+        if ((!(original instanceof TranslatableComponent component)) || ServerType.returnServer() != ServerType.DEV) return original;
 
         if (component.getKey().contains("banned")) {
             component = new TranslatableComponent("§c§lYou have been banned.\n§7Reason: §d" + component.getString().split("Reason: ")[1] + "\n§7You can appeal your ban at §d" + Main.config.discordLink);

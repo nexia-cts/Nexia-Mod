@@ -18,7 +18,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -315,7 +314,7 @@ public class FfaClassicUtil {
         invItems.put(1, trident);
 
         ItemStack axe = new ItemStack(Items.DIAMOND_AXE);
-        axe.enchant(Enchantments.CLEAVING, 1);
+        axe.enchant(Enchantments.SHARPNESS, 1);
         axe.getOrCreateTag().putBoolean("Unbreakable", true);
         invItems.put(2, axe);
         

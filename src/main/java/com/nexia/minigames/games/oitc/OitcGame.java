@@ -87,7 +87,7 @@ public class OitcGame {
 
         data.kills = 0;
 
-        if(OitcGame.players.size() <= 1) {
+        if(OitcGame.players.size() <= 1 && !OitcGame.isEnding && OitcGame.isStarted) {
             if(OitcGame.players.size() == 1) OitcGame.endGame(OitcGame.players.get(0).get());
             else OitcGame.endGame(null);
         }
@@ -110,22 +110,12 @@ public class OitcGame {
         data.gameMode = OitcGameMode.LOBBY;
     }
 
-    private static HashMap<Integer, AccuratePlayer> getKills() {
-        HashMap<Integer, AccuratePlayer> kills = new HashMap<>();
-
-        for(AccuratePlayer player : OitcGame.players) {
-            kills.put(PlayerDataManager.get(player.get()).kills, player);
-        }
-
-        return kills;
-    }
-
     public static void second() {
         if(OitcGame.isStarted) {
             if(OitcGame.isEnding) {
                 int color = 244 * 65536 + 166 * 256 + 71;
                 // r * 65536 + g * 256 + b;
-                if(OitcGame.winner.get() != null) DuelGameHandler.winnerRockets(OitcGame.winner.get(), OitcGame.world, color);
+                if(OitcGame.winner != null && OitcGame.winner.get() != null) DuelGameHandler.winnerRockets(OitcGame.winner.get(), OitcGame.world, color);
 
                 if(OitcGame.endTime <= 0) {
                     for(ServerPlayer player : OitcGame.getViewers()){
@@ -174,7 +164,7 @@ public class OitcGame {
                 } catch (Exception ignored) { }
                 OitcGame.updateInfo();
 
-                if(OitcGame.gameTime <= 0 && !OitcGame.isEnding){
+                if(OitcGame.gameTime <= 0 && !OitcGame.isEnding && OitcGame.isStarted){
 
                     // Yes, I know I am a dumbass.
                     List<Integer> intKills = new ArrayList<>();
@@ -229,40 +219,6 @@ public class OitcGame {
             }
             if(OitcGame.queueTime <= 0) startGame();
         }
-    }
-
-    private static String getPlacement(AccuratePlayer player) {
-        ServerPlayer serverPlayer = player.get();
-        PlayerData playerData = PlayerDataManager.get(serverPlayer);
-
-        if(!OitcGame.isStarted || !playerData.gameMode.equals(OitcGameMode.PLAYING)) return "NONE";
-
-        // maybe i should improve this in the future, ykyk
-
-        HashMap<AccuratePlayer, Integer> kills = new HashMap<>();
-        ArrayList<AccuratePlayer> arrayList = new ArrayList<>();
-
-        for(AccuratePlayer accuratePlayer : OitcGame.players) {
-            int kill = PlayerDataManager.get(accuratePlayer.get()).kills;
-            kills.put(accuratePlayer, kill);
-            arrayList.add(accuratePlayer);
-        }
-
-        // this is ballux
-
-        int i = 0;
-        for(AccuratePlayer ap : arrayList) {
-            i++;
-            Integer accuratePlayer = kills.get(ap);
-            return String.valueOf(i);
-            // ???
-        }
-
-        // Ich hab leider keine idea.
-
-
-
-        return "UNLUCKY";
     }
 
     @NotNull
@@ -323,9 +279,6 @@ public class OitcGame {
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
                             .append(Component.text("Kills » ").color(TextColor.fromHexString("#b3b3b3")))
                             .append(Component.text(PlayerDataManager.get(player).kills).color(ChatFormat.brandColor2))
-                            .append(Component.text(" (").color(ChatFormat.systemColor))
-                            .append(Component.text(OitcGame.getPlacement(AccuratePlayer.create(player))).color(ChatFormat.brandColor2))
-                            .append(Component.text(")").color(ChatFormat.systemColor))
             );
         }
     }

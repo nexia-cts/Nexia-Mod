@@ -81,9 +81,12 @@ public abstract class ServerPlayerMixin extends Player {
                 return;
             }
 
+            if(this.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(Items.AIR)) {
+                ci.cancel();
+                return;
+            }
+
             attacker.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 0, false, false, false));
-
-
             return;
         }
     }
