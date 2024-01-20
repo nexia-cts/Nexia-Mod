@@ -46,9 +46,6 @@ public class DuelGameMode {
     public static final DuelGameMode CART = new DuelGameMode("cart", true, false, GameType.SURVIVAL, new ItemStack(Items.TNT_MINECART), false);
 
     public static final DuelGameMode DIAMOND_CRYSTAL = new DuelGameMode("diamond_crystal", true, false, GameType.SURVIVAL, new ItemStack(Items.END_CRYSTAL), false);
-
-    public static final DuelGameMode CLASSIC_CRYSTAL = new DuelGameMode("classic_crystal", true, false, GameType.SURVIVAL, new ItemStack(Items.OBSIDIAN), false);
-
     public static final DuelGameMode VANILLA = new DuelGameMode("vanilla", true, true, GameType.SURVIVAL, new ItemStack(Items.RESPAWN_ANCHOR), false);
 
 

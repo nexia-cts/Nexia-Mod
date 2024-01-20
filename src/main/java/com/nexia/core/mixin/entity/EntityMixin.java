@@ -11,7 +11,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -43,8 +42,6 @@ public abstract class EntityMixin implements Nameable, CommandSource {
 
     @Shadow public Level level;
 
-    @Shadow public abstract Vec3 getDeltaMovement();
-
     @Inject(method = "isInvulnerableTo", at = @At("HEAD"), cancellable = true)
     private void hurt(DamageSource damageSource, CallbackInfoReturnable<Boolean> cir) {
         if (damageSource == DamageSource.FALL && getTags().contains(LobbyUtil.NO_FALL_DAMAGE_TAG) || damageSource == DamageSource.FALL && getTags().contains("ffa")) {
@@ -72,14 +69,9 @@ public abstract class EntityMixin implements Nameable, CommandSource {
      */
     @Overwrite
     public void push(Entity entity) {
+        Entity entity1 = (Entity) (Object) this;
         if (!this.isPassengerOfSameVehicle(entity)) {
             if (!entity.noPhysics && !this.noPhysics) {
-
-                if(entity instanceof ArmorStand && this.level.equals(FootballGame.world)) {
-                    Vec3 motion = this.getDeltaMovement();
-                    entity.setDeltaMovement(motion.x(), motion.y() + 0.0784000015258789d, motion.z());
-                    return;
-                }
 
                 double d = entity.getX() - this.getX();
                 double e = entity.getZ() - this.getZ();
@@ -96,12 +88,34 @@ public abstract class EntityMixin implements Nameable, CommandSource {
                     d *= g;
                     e *= g;
 
+                    if(entity instanceof ArmorStand && this.level.equals(FootballGame.world)) {
+                        d = d * 2.2;
+                        e = e * 2.2;
+
+
+                        // 0 = not smooth at all (1 block to another)
+                        // basically a transition thingie (making it look smoother instead of it getting teleported)
+                        int smoothness = 100;
+
+                        d = d/smoothness;
+                        e = e/smoothness;
+
+                        for (int i = 0; i < smoothness; i++) {
+                            if (!entity1.isVehicle()) {
+                                entity1.push(-d, 0.0, -e);
+                            }
+
+                            if (!entity.isVehicle()) {
+                                entity.push(d, 0.0, e);
+                            }
+                        }
+                        return;
+                    }
 
                     d *= 0.05000000074505806;
                     e *= 0.05000000074505806;
                     d *= (double)(1.0F - this.pushthrough);
                     e *= (double)(1.0F - this.pushthrough);
-
 
                     if (!this.isVehicle()) {
                         this.push(-d, 0.0, -e);

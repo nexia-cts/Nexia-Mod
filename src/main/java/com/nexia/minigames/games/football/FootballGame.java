@@ -108,8 +108,10 @@ public class FootballGame {
                 int color = 244 * 65536 + 166 * 256 + 71;
                 // r * 65536 + g * 256 + b;
 
-                ServerPlayer randomPlayer = winnerTeam.players.get(RandomUtil.randomInt(winnerTeam.players.size())).get();
-                if(randomPlayer != null) DuelGameHandler.winnerRockets(randomPlayer, FootballGame.world, color);
+                if(winnerTeam != null) {
+                    ServerPlayer randomPlayer = winnerTeam.players.get(RandomUtil.randomInt(winnerTeam.players.size())).get();
+                    if(randomPlayer != null) DuelGameHandler.winnerRockets(randomPlayer, FootballGame.world, color);
+                }
 
                 if(FootballGame.endTime <= 0) {
                     for(ServerPlayer player : FootballGame.getViewers()){
@@ -257,7 +259,7 @@ public class FootballGame {
                     .append(Component.text("!").color(ChatFormat.normalColor)
                     );
             for(ServerPlayer player : FootballGame.getViewers()){
-                PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(msg, Component.text("")));
+                if(player != null && PlayerUtil.getFactoryPlayer(player) != null) PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(msg, Component.text("")));
             }
 
             return;
