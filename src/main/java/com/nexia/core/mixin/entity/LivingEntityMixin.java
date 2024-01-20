@@ -5,7 +5,6 @@ import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
 import net.minecraft.world.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -57,15 +56,14 @@ public abstract class LivingEntityMixin {
             } else {
                 g = Math.min(1.0, g + (double) ShieldItem.getShieldKnockbackResistanceValue(itemStack));
             }
-
         }
 
         f = (float)((double)f * (1.0 - g));
         if (!(f <= 0.0F)) {
             instance.hasImpulse = true;
             Vec3 vec3 = instance.getDeltaMovement();
-            Vec3 vec32 = (new Vec3(d, 0.0, e)).normalize().scale(f);
-            instance.setDeltaMovement(vec3.x / 2.0 - vec32.x, instance.isOnGround() ? Mth.clamp((double)f * 0.75, 0.0, 0.4) : Mth.clamp(vec3.y + (double) f * 0.5, 0.0, 0.4), vec3.z / 2.0 - vec32.z);
+            Vec3 vec32 = (new Vec3(d, 0.0, e)).normalize().scale((double)f);
+            instance.setDeltaMovement(vec3.x / 2.0 - vec32.x, instance.isOnGround() ? Math.min(0.4, (double)f * 0.75) : Math.min(0.4, vec3.y + (double)f * 0.5), vec3.z / 2.0 - vec32.z);
         }
     }
 

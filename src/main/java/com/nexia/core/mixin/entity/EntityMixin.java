@@ -11,6 +11,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -41,6 +42,10 @@ public abstract class EntityMixin implements Nameable, CommandSource {
     @Shadow public abstract void push(double d, double e, double f);
 
     @Shadow public Level level;
+
+    @Shadow public abstract void setDeltaMovement(Vec3 vec3);
+
+    @Shadow public abstract void setDeltaMovement(double d, double e, double f);
 
     @Inject(method = "isInvulnerableTo", at = @At("HEAD"), cancellable = true)
     private void hurt(DamageSource damageSource, CallbackInfoReturnable<Boolean> cir) {
@@ -89,10 +94,10 @@ public abstract class EntityMixin implements Nameable, CommandSource {
                     e *= g;
 
                     if(entity instanceof ArmorStand && this.level.equals(FootballGame.world)) {
-                        d = d * 2.2;
-                        e = e * 2.2;
+                        d = d * 2.4;
+                        e = e * 2.4;
 
-
+                        /*
                         // 0 = not smooth at all (1 block to another)
                         // basically a transition thingie (making it look smoother instead of it getting teleported)
                         int smoothness = 100;
@@ -109,6 +114,14 @@ public abstract class EntityMixin implements Nameable, CommandSource {
                                 entity.push(d, 0.0, e);
                             }
                         }
+                         */
+
+                        entity.hasImpulse = true;
+                        Vec3 vec3 = entity1.getDeltaMovement();
+                        Vec3 vec32 = (new Vec3(d, 0.0, e)).normalize().scale((double)0.4);
+
+                        entity.setDeltaMovement(vec3.x + vec32.x * 4, vec3.y + 0.0784000015258789d, vec3.z + vec32.z * 4);
+
                         return;
                     }
 

@@ -20,6 +20,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
@@ -48,6 +49,8 @@ public abstract class ServerPlayerMixin extends Player {
 
     @Shadow private int spawnInvulnerableTime;
 
+    @Shadow public abstract void attack(Entity entity);
+
     public ServerPlayerMixin(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
         super(level, blockPos, f, gameProfile);
     }
@@ -55,7 +58,6 @@ public abstract class ServerPlayerMixin extends Player {
     @Inject(method = "<init>", at = @At("TAIL"))
     private void init(MinecraftServer minecraftServer, ServerLevel serverLevel, GameProfile gameProfile, ServerPlayerGameMode serverPlayerGameMode, CallbackInfo ci) {
         ServerPlayer player = (ServerPlayer)(Object)this;
-
         if (FfaSkyUtil.isFfaPlayer(player)) {
             spawnInvulnerableTime = 0;
         }
@@ -71,20 +73,19 @@ public abstract class ServerPlayerMixin extends Player {
 
         if(level.equals(FootballGame.world) && FootballGame.isFootballPlayer(attacker) && entity instanceof ArmorStand) {
 
-            if(this.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(Items.NETHERITE_SWORD)) {
-                attacker.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 1, false, false, false));
-                if(attacker.getCooldowns().isOnCooldown(Items.NETHERITE_SWORD)) {
-                    ci.cancel();
-                    return;
-                }
-                attacker.getCooldowns().addCooldown(Items.NETHERITE_SWORD, 200);
-                return;
-            }
-
-            if(this.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(Items.AIR)) {
+            if(!this.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(Items.NETHERITE_SWORD)) {
+                PlayerUtil.sendSound(attacker, SoundEvents.PLAYER_ATTACK_NODAMAGE, SoundSource.PLAYERS, 100, 1);
                 ci.cancel();
                 return;
             }
+            if(attacker.getCooldowns().isOnCooldown(Items.NETHERITE_SWORD)) {
+                PlayerUtil.sendSound(attacker, SoundEvents.PLAYER_ATTACK_NODAMAGE, SoundSource.PLAYERS, 100, 1);
+                ci.cancel();
+                return;
+            }
+            attacker.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 1, false, false, false));
+
+            attacker.getCooldowns().addCooldown(Items.NETHERITE_SWORD, 200);
 
             attacker.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 0, false, false, false));
             return;

@@ -182,11 +182,10 @@ public class FootballGame {
 
         if(!team1.refreshTeam() || !team2.refreshTeam()) endGame(null);
 
-
         if(!FootballGame.isEnding) {
-            team.goals++;
             ServerPlayer closestPlayer = (ServerPlayer) FootballGame.world.getNearestPlayer(entity.getX(), entity.getY(), entity.getZ(), 20, e -> e instanceof ServerPlayer se && !se.isSpectator() && !se.isCreative() && team.players.contains(AccuratePlayer.create(se)));
-            PlayerDataManager.get(closestPlayer).savedData.goals++;
+            if(closestPlayer != null) PlayerDataManager.get(closestPlayer).savedData.goals++;
+            team.goals++;
             if(team.goals >= FootballGame.map.maxGoals) FootballGame.endGame(team);
         }
 
