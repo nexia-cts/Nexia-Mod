@@ -77,7 +77,7 @@ public abstract class EntityMixin implements Nameable, CommandSource {
 
                 if(entity instanceof ArmorStand && this.level.equals(FootballGame.world)) {
                     Vec3 motion = this.getDeltaMovement();
-                    entity.setDeltaMovement(motion.x() * 1.3, motion.y() + 0.0784000015258789d, motion.z() * 1.3);
+                    entity.setDeltaMovement(motion.x(), motion.y() + 0.0784000015258789d, motion.z());
                     return;
                 }
 
