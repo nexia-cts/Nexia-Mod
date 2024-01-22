@@ -19,6 +19,7 @@ import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
+import net.notcoded.codelib.players.AccuratePlayer;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
@@ -55,7 +56,7 @@ public class DuelGameHandler {
         data.spectatingPlayer = null;
         if (leaveTeam) {
             if (data.duelsTeam != null) {
-                data.duelsTeam.leaveTeam(player, true);
+                data.duelsTeam.leaveTeam(AccuratePlayer.create(player), true);
             }
             data.duelsTeam = null;
         }
