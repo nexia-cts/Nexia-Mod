@@ -314,7 +314,7 @@ public class FfaClassicUtil {
         invItems.put(1, trident);
 
         ItemStack axe = new ItemStack(Items.DIAMOND_AXE);
-        axe.enchant(Enchantments.SHARPNESS, 1);
+        axe.enchant(Enchantments.SHARPNESS, 2);
         axe.getOrCreateTag().putBoolean("Unbreakable", true);
         invItems.put(2, axe);
         
