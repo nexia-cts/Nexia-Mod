@@ -72,7 +72,7 @@ public class SkywarsMap {
             new EntityPos(49.5,88.0,23.5))
     ), new StructureMap(new ResourceLocation("skywars", "skyhenge"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-77, -7, -77), true));
 
-    public static SkywarsMap BELOW = new SkywarsMap("below", 8, new ArrayList<>(Arrays.asList(
+    public static SkywarsMap BELOW = new SkywarsMap("below", 4, new ArrayList<>(Arrays.asList(
             new EntityPos(-28.5, 81.0, 69.5),
             new EntityPos(28.5,81.0,69.5),
             new EntityPos(69.5,81.0,28.5),
@@ -170,10 +170,10 @@ public class SkywarsMap {
         if(newPlayers <= 4) {
             return SkywarsMap.fourPlayerMaps.get(RandomUtil.randomInt(SkywarsMap.fourPlayerMaps.size()));
         }
-        if(oldPlayers <= 4) {
+        if(newPlayers >= 5) {
             return SkywarsMap.eightPlayerMaps.get(RandomUtil.randomInt(SkywarsMap.eightPlayerMaps.size()));
         }
-        if(newPlayers >= 9 && oldPlayers <= 8) {
+        if(newPlayers >= 9) {
             return SkywarsMap.twelvePlayerMaps.get(RandomUtil.randomInt(SkywarsMap.twelvePlayerMaps.size()));
         }
         return SkywarsMap.SKYHENGE;
