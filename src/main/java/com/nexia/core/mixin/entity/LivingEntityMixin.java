@@ -64,9 +64,7 @@ public abstract class LivingEntityMixin {
             instance.hasImpulse = true;
             Vec3 vec3 = instance.getDeltaMovement();
             Vec3 vec32 = (new Vec3(d, 0.0, e)).normalize().scale((double)f);
-            double m = -0.0784/vec3.y;
-            double mi = 1-m;
-            instance.setDeltaMovement(vec3.x / 2.0 - vec32.x, instance.isOnGround() ? Mth.clamp((double)f * 0.75, -0.16, 0.4) : Mth.clamp(vec3.y * mi + (double)f * 0.5, -0.16, 0.4), vec3.z / 2.0 - vec32.z);
+            instance.setDeltaMovement(vec3.x / 2.0 - vec32.x, instance.isOnGround() ? Mth.clamp((double)f * 0.75, -0.4, 0.4) : Mth.clamp(vec3.y / 2 + (double)f * 0.5, -0.4, 0.4), vec3.z / 2.0 - vec32.z);
         }
     }
 
