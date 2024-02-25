@@ -35,7 +35,7 @@ public class ServerLoginPacketListenerMixin {
             }
 
             Discord.idMinecraft.put(id, gameProfile.getId());
-            component = new TranslatableComponent("§cYou are not whitelisted!\n§7If you have §5§lSupporter §7rank but aren't linked, then you can link your account here:\n§7Code: §5§l" + id);
+            component = new TranslatableComponent("§c§lYou may have joined the wrong server.\n\n§5§lEU§7: eu.nexia.dev\n§5§lNA§7: na.nexia.dev\n\n§7If you were intending to join the development server then you can link your account here:\n§7Code: §5§l" + id);
         }
 
         return component;
