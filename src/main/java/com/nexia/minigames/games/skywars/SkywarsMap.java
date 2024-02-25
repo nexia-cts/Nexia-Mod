@@ -170,12 +170,9 @@ public class SkywarsMap {
         if(newPlayers <= 4) {
             return SkywarsMap.fourPlayerMaps.get(RandomUtil.randomInt(SkywarsMap.fourPlayerMaps.size()));
         }
-        if(newPlayers >= 5 && oldPlayers <= 4) {
+        if(oldPlayers >= 5 && newPlayers <= 8) {
             return SkywarsMap.eightPlayerMaps.get(RandomUtil.randomInt(SkywarsMap.eightPlayerMaps.size()));
         }
-        if(newPlayers >= 9 && oldPlayers <= 8) {
-            return SkywarsMap.twelvePlayerMaps.get(RandomUtil.randomInt(SkywarsMap.twelvePlayerMaps.size()));
-        }
-        return SkywarsMap.SKYHENGE;
+        return SkywarsMap.twelvePlayerMaps.get(RandomUtil.randomInt(SkywarsMap.twelvePlayerMaps.size()));
     }
 }
