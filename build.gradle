@@ -89,7 +89,7 @@ dependencies {
 
 	// discord shit
 	include(api("net.dv8tion:JDA:${project.jda_version}"))
-	include(api('club.minnced:discord-webhooks:0.8.2') { exclude(group: "org.json") })
+	include(api('club.minnced:discord-webhooks:0.8.4') { exclude(group: "org.json") })
 	include(api('org.json:json:20230227'))
 
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
