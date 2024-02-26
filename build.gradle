@@ -33,6 +33,7 @@ group = project.maven_group
 
 // Set Build Dir to main to differentiate
 buildDir = new File(buildDir, getGitBranch())
+if(new File(buildDir, "libs").exists()) FileUtils.cleanDirectory(buildDir.toPath().resolve("libs").toFile())
 
 // Repo for CT intermediary mappings
 repositories {
