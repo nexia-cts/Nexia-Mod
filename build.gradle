@@ -17,14 +17,22 @@ String getGitCommit() {
 	return stdout.toString().trim()
 }
 
+String getGitBranch() {
+	ByteArrayOutputStream stdout = new ByteArrayOutputStream();
+	exec {
+		commandLine("git", "rev-parse", "--abbrev-ref", "HEAD")
+		standardOutput = stdout
+	}
+	return stdout.toString().trim()
+}
+
+
 archivesBaseName = project.archives_base_name
-version = project.mod_version + "." + getGitCommit()
+version = project.mod_version + "+" + getGitBranch() + "." + getGitCommit()
 group = project.maven_group
 
-// Set Build Dir to dev to differentiate with main
-buildDir = new File(buildDir, "dev")
-if(new File(buildDir, "libs").exists()) FileUtils.cleanDirectory(buildDir.toPath().resolve("libs").toFile())
-
+// Set Build Dir to main to differentiate
+buildDir = new File(buildDir, getGitBranch())
 
 // Repo for CT intermediary mappings
 repositories {
@@ -49,11 +57,6 @@ dependencies {
 
 	modImplementation('com.combatreforged.factory:factory-api:0.1.13-full')
 	modImplementation('com.combatreforged.factory:factory-builder:0.1.13-1.16_combat-6')
-
-	implementation("com.combatreforged.factory:factory-api:0.1.13:javadoc@jar") {
-		exclude(group: "com.google.code.gson")
-		exclude(group: "org.apache.logging.log4j")
-	}
 
 	implementation("org.apache.logging.log4j:log4j-core:2.20.0")
 	include(implementation("com.google.code.gson:gson:2.10.1"))
@@ -96,7 +99,10 @@ dependencies {
 loom {
 	accessWidenerPath = file("src/main/resources/nexia.accesswidener")
 	customMinecraftManifest = "https://gist.githubusercontent.com/rizecookey/4c6142baaccc3875f9b227fe22f2ace5/raw/c8ed74b19f7a5315813c9d4b199798b692a8f359/1.16_combat-6.json"
-	intermediaryUrl = "https://maven.rizecookey.net/net/fabricmc/intermediary/%1\$s/intermediary-%1\$s-v2.jar"
+
+	// URL temporarily switched until it is fixed.
+	//intermediaryUrl = "https://maven.rizecookey.net/net/fabricmc/intermediary/%1\$s/intermediary-%1\$s-v2.jar"
+	intermediaryUrl = "https://notcoded.needs.rest/r/intermediary-%1\$s-v2.jar"
 }
 
 processResources {
