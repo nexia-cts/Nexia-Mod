@@ -1,34 +1,41 @@
 package com.nexia.core.utilities.time;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 public class ServerType {
+
     public String type;
-    public String ip;
+    public String domain;
+    public static ServerType EU = new ServerType("eu", "eu.nexia.dev");
 
-    public static ServerType EU = new ServerType("eu", "135.125.151.156");
+    public static ServerType NA = new ServerType("na", "na.nexia.dev");
 
-    public static ServerType NA = new ServerType("na", "173.240.149.199");
+    public static ServerType DEV = new ServerType("dev", "dev.nexia.dev");
 
-    public static ServerType DEV = new ServerType("dev", "50.20.206.158");
-
-    public ServerType(String type, String ip) {
+    public ServerType(String type, String domain) {
         this.type = type;
-        this.ip = ip;
+        this.domain = domain;
+    }
+
+    public String getIP() throws UnknownHostException {
+        return InetAddress.getByName(this.domain).getHostAddress();
     }
 
     public static ServerType returnServer() {
         String ip = ServerTime.minecraftServer.getLocalIp();
-        ServerType serverType = null;
-        if(ip.equalsIgnoreCase(ServerType.EU.ip)) serverType = ServerType.EU;
-        if(ip.equalsIgnoreCase(ServerType.NA.ip)) serverType = ServerType.NA;
-        if(ip.equalsIgnoreCase(ServerType.DEV.ip)) serverType = ServerType.DEV;
-        return serverType;
+        try {
+            if(ip.equalsIgnoreCase(ServerType.EU.getIP())) return ServerType.EU;
+            else if(ip.equalsIgnoreCase(ServerType.NA.getIP())) return ServerType.NA;
+            else if(ip.equalsIgnoreCase(ServerType.DEV.getIP())) return ServerType.DEV;
+        } catch (UnknownHostException ignored) { }
+        return null;
     }
 
     public static ServerType getServerType(String region) {
-        ServerType serverType = null;
-        if(region.equalsIgnoreCase("eu")) serverType = ServerType.EU;
-        if(region.equalsIgnoreCase("na")) serverType = ServerType.NA;
-        if(region.equalsIgnoreCase("dev")) serverType = ServerType.DEV;
-        return serverType;
+        if(region.equalsIgnoreCase("eu")) return ServerType.EU;
+        else if(region.equalsIgnoreCase("na")) return ServerType.NA;
+        else if(region.equalsIgnoreCase("dev")) return ServerType.DEV;
+        return null;
     }
 }
