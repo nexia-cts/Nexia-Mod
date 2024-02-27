@@ -69,18 +69,18 @@ public class LobbyUtil {
     public static final String NO_SATURATION_TAG = "no_saturation";
 
     public static String[] removedTags = {
-            "in_bedwars",
+            PlayerGameMode.BEDWARS.tag,
             "bedwars",
-            "ffa",
+            PlayerGameMode.FFA.tag,
             "ffa_classic",
             "ffa_kits",
             "ffa_sky",
             "ffa_uhc",
-            "football",
+            PlayerGameMode.FOOTBALL.tag,
             "in_football_game",
             "duels",
-            "skywars",
-            "oitc",
+            PlayerGameMode.SKYWARS.tag,
+            PlayerGameMode.OITC.tag,
             "in_oitc_game",
             NO_RANK_DISPLAY_TAG,
             NO_SATURATION_TAG,
@@ -113,10 +113,8 @@ public class LobbyUtil {
         minecraftPlayer.setGlowing(false);
         minecraftPlayer.setGameMode(GameType.ADVENTURE);
 
-        for(int i = 0; i < LobbyUtil.removedTags.length; i++){
-            if(player.hasTag(LobbyUtil.removedTags[i])){
-                player.removeTag(LobbyUtil.removedTags[i]);
-            }
+        for(String tag : LobbyUtil.removedTags) {
+            if(player.hasTag(tag)) player.removeTag(tag);
         }
 
         returnToLobby(minecraftPlayer, tp);
@@ -124,10 +122,8 @@ public class LobbyUtil {
 
     public static void returnToLobby(ServerPlayer minecraftPlayer, boolean tp) {
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
-        for(int i = 0; i < LobbyUtil.removedTags.length; i++){
-            if(player.hasTag(LobbyUtil.removedTags[i])){
-                player.removeTag(LobbyUtil.removedTags[i]);
-            }
+        for(String tag : LobbyUtil.removedTags) {
+            if(player.hasTag(tag)) player.removeTag(tag);
         }
 
         minecraftPlayer.setInvulnerable(false);
@@ -254,7 +250,7 @@ public class LobbyUtil {
                 game.equalsIgnoreCase("kits ffa") ||
                 game.equalsIgnoreCase("sky ffa") ||
                 game.equalsIgnoreCase("uhc ffa")) {
-            player.addTag("ffa");
+            player.addTag(FfaUtil.FFA_TAG);
             PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.FFA;
             if(message){ player.sendActionBarMessage(Component.text("You have joined §8🗡 §7§lFFA §b🔱")); }
         }
@@ -329,7 +325,7 @@ public class LobbyUtil {
         }
 
         if(game.equalsIgnoreCase("oitc")){
-            player.addTag("oitc");
+            player.addTag(OitcGame.OITC_TAG);
             PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.OITC;
             OitcGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
 
@@ -341,7 +337,7 @@ public class LobbyUtil {
         }
 
         if(game.equalsIgnoreCase("football")){
-            player.addTag("football");
+            player.addTag(FootballGame.FOOTBALL_TAG);
             PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.FOOTBALL;
             com.nexia.minigames.games.football.util.player.PlayerDataManager.get(minecraftPlayer).gameMode = FootballGameMode.LOBBY;
 

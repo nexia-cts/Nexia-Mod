@@ -17,6 +17,8 @@ import java.text.DecimalFormat;
 
 public class FfaUtil {
 
+    public static final String FFA_TAG = "ffa";
+
     public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
         return player.getTags().contains("ffa") || player.getTags().contains("ffa_classic") || player.getTags().contains("ffa_kits") || player.getTags().contains("ffa_sky") || player.getTags().contains("ffa_uhc") && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.FFA;
     }

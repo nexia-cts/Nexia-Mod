@@ -71,6 +71,8 @@ public class OitcGame {
 
     private static AccuratePlayer winner = null;
 
+    public static final String OITC_TAG = "oitc";
+
     private static int endTime = 5;
 
 

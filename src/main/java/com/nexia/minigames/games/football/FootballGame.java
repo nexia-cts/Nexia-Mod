@@ -70,6 +70,8 @@ public class FootballGame {
 
     private static FootballTeam winnerTeam = null;
 
+    public static final String FOOTBALL_TAG = "football";
+
     private static int endTime = 5;
 
 

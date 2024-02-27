@@ -1,6 +1,5 @@
 package com.nexia.core.utilities.player;
 
-import com.google.gson.*;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
@@ -21,7 +20,7 @@ import java.util.HashMap;
 
 public class BanHandler {
 
-    static String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/tempbans";
+    static final String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/tempbans";
     static String playerDataDirectory = dataDirectory + "/playerdata";
 
     public static int parseTimeArg(String durationArg) throws Exception {
@@ -105,6 +104,8 @@ public class BanHandler {
             banned.connection.disconnect(new TextComponent("§c§lYou have been banned.\n§7Duration: §d" + banTimeToText(duration) + "\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + Main.config.discordLink));
         }
     }
+
+
 
     public static String banTimeToText(long millis) {
         long seconds = millis / 1000;

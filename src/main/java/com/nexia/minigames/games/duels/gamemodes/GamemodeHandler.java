@@ -29,26 +29,6 @@ import java.util.List;
 public class GamemodeHandler {
 
     public static DuelGameMode identifyGamemode(@NotNull String gameMode) {
-        /*
-        String fixedGameMode = gameMode.toLowerCase();
-        return switch (fixedGameMode) {
-            case "shield" -> DuelGameMode.SHIELD;
-            case "pot" -> DuelGameMode.POT;
-            case "neth_pot" -> DuelGameMode.NETH_POT;
-            case "uhc_shield" -> DuelGameMode.UHC_SHIELD;
-            case "og_vanilla" -> DuelGameMode.OG_VANILLA;
-            case "cart" -> DuelGameMode.CART;
-            case "diamond_crystal" -> DuelGameMode.DIAMOND_CRYSTAL;
-            case "vanilla" -> DuelGameMode.VANILLA;
-            case "neth_smp" -> DuelGameMode.NETH_SMP;
-            case "sword_only" -> DuelGameMode.SWORD_ONLY;
-            case "classic" -> DuelGameMode.CLASSIC;
-            case "uhc" -> DuelGameMode.UHC;
-            case "trident_only" -> DuelGameMode.TRIDENT_ONLY;
-            default -> null;
-        };
-
-         */
 
         for(DuelGameMode duelGameMode : DuelGameMode.duelGameModes) {
             if(duelGameMode.id.equalsIgnoreCase(gameMode)) return duelGameMode;

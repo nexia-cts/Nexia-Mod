@@ -31,6 +31,9 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(UnTempBanCommand::register);
         CommandRegistrationCallback.EVENT.register(UnLinkCommand::register);
 
+        CommandRegistrationCallback.EVENT.register(GamemodeBanCommand::register);
+        CommandRegistrationCallback.EVENT.register(UnGamemodeBanCommand::register);
+
         CommandRegistrationCallback.EVENT.register(AcceptDuelCommand::register);
         CommandRegistrationCallback.EVENT.register(DeclineDuelCommand::register);
 

@@ -165,14 +165,17 @@ public class SkywarsMap {
         if(maxPlayers == 8) SkywarsMap.eightPlayerMaps.add(this);
         if(maxPlayers == 12) SkywarsMap.twelvePlayerMaps.add(this);
     }
-
+    
     public static SkywarsMap calculateMap(int oldPlayers, int newPlayers) {
-        if(newPlayers <= 4) {
+        if(newPlayers <= 4 && !SkywarsMap.fourPlayerMaps.contains(SkywarsGame.map)) {
             return SkywarsMap.fourPlayerMaps.get(RandomUtil.randomInt(SkywarsMap.fourPlayerMaps.size()));
         }
-        if(oldPlayers >= 5 && newPlayers <= 8) {
+        if(oldPlayers >= 5 && newPlayers <= 8 && !SkywarsMap.eightPlayerMaps.contains(SkywarsGame.map)) {
             return SkywarsMap.eightPlayerMaps.get(RandomUtil.randomInt(SkywarsMap.eightPlayerMaps.size()));
         }
-        return SkywarsMap.twelvePlayerMaps.get(RandomUtil.randomInt(SkywarsMap.twelvePlayerMaps.size()));
+        if(!SkywarsMap.twelvePlayerMaps.contains(SkywarsGame.map)) {
+            return SkywarsMap.twelvePlayerMaps.get(RandomUtil.randomInt(SkywarsMap.twelvePlayerMaps.size()));
+        }
+        return SkywarsGame.map;
     }
 }
