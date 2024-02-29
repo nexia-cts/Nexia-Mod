@@ -80,14 +80,14 @@ public class BanHandler {
 
         GameProfile profile = collection.stream().findFirst().get();
 
-        JSONObject BanJSON = getBanList(profile.getId().toString());
+        JSONObject banJSON = getBanList(profile.getId().toString());
 
-        if (BanJSON != null) {
-            if((long) BanJSON.get("duration") - System.currentTimeMillis() > 0) {
+        if (banJSON != null) {
+            if((long) banJSON.get("duration") - System.currentTimeMillis() > 0) {
                 removeBanFromList(profile);
             } else {
                 sender.sendSuccess(LegacyChatFormat.format("{s}This player has already been banned for {f}{}{s}." +
-                        "\n{s}Reason: {f}{}", banTimeToText((long) BanJSON.get("duration") - System.currentTimeMillis()), BanJSON.get("reason")), false);
+                        "\n{s}Reason: {f}{}", banTimeToText((long) banJSON.get("duration") - System.currentTimeMillis()), banJSON.get("reason")), false);
                 return;
             }
         }

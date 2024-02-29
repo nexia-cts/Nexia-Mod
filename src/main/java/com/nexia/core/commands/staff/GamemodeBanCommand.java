@@ -7,6 +7,7 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.player.BanHandler;
+import com.nexia.core.utilities.player.GamemodeBanHandler;
 import com.nexia.core.utilities.player.PlayerUtil;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
@@ -20,7 +21,7 @@ public class GamemodeBanCommand {
         dispatcher.register(Commands.literal("gamemodeban")
                 .requires(commandSourceStack -> PlayerUtil.hasPermission(commandSourceStack, "nexia.staff.ban", 3))
                 .then(Commands.argument("player", EntityArgument.player())
-                        .then(Commands.argument("gamemode", StringArgumentType.greedyString())
+                        .then(Commands.argument("gamemode", StringArgumentType.string())
                                 .suggests(((context, builder) -> SharedSuggestionProvider.suggest((PlayerGameMode.stringPlayerGameModes), builder)))
                                 .then(Commands.argument("duration", StringArgumentType.word())
                                         .then(Commands.argument("reason", StringArgumentType.greedyString())
@@ -74,7 +75,7 @@ public class GamemodeBanCommand {
             return 1;
         }
 
-        BanHandler.tryGamemodeBan(sender, player, gameMode, durationInSeconds * 1000, reason);
+        GamemodeBanHandler.tryGamemodeBan(sender, player, gameMode, durationInSeconds * 1000, reason);
 
         return 1;
     }

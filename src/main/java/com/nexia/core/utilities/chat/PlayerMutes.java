@@ -32,10 +32,10 @@ public class PlayerMutes {
 
         PlayerUtil.getFactoryPlayer(muted).sendMessage(
                 ChatFormat.nexiaMessage
-                                .append(Component.text("You have been muted for "))
-                                        .append(Component.text(muteTimeToText(duration)).color(ChatFormat.brandColor2))
-                                                .append(Component.text(".\nReason: "))
-                                                        .append(Component.text(reason).color(ChatFormat.brandColor2))
+                                .append(Component.text("You have been muted for ").decoration(ChatFormat.bold, false))
+                                        .append(Component.text(muteTimeToText(duration)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                                .append(Component.text(".\nReason: ").decoration(ChatFormat.bold, false))
+                                                        .append(Component.text(reason).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
         );
 
     }
