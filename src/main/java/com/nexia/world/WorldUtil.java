@@ -5,6 +5,7 @@ import com.combatreforged.factory.api.world.World;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.DuelGameHandler;
+import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.minigames.games.skywars.SkywarsMap;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -60,7 +61,7 @@ public class WorldUtil {
             if (split.getNamespace().toLowerCase().contains("duels")) {
                 duelsDelete.add(split.getId());
             }
-            if (split.getNamespace().toLowerCase().contains("skywars")) {
+            if (split.getNamespace().toLowerCase().contains("skywars") && !split.getId().toLowerCase().contains(SkywarsGame.id)) {
                 skywarsDelete.add(split.getId());
             }
         }

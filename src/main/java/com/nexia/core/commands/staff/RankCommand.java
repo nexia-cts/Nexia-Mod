@@ -1,7 +1,6 @@
 package com.nexia.core.commands.staff;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -20,7 +19,7 @@ import net.minecraft.server.level.ServerPlayer;
 public class RankCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
         dispatcher.register(Commands.literal("rank")
-                .requires(commandSourceStack -> PlayerUtil.hasPermission(commandSourceStack, "nexia.staff.rank", 4))
+                .requires(commandSourceStack -> PlayerUtil.hasPermission(commandSourceStack, "nexia.staff.rank"))
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.argument("rank", StringArgumentType.string())
                                 .suggests(((context, builder) -> SharedSuggestionProvider.suggest((Main.config.ranks), builder)))

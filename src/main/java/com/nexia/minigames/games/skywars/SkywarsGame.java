@@ -85,6 +85,8 @@ public class SkywarsGame {
 
     private static AccuratePlayer winner = null;
 
+    public static final String SKYWARS_TAG = "skywars";
+
     private static int endTime = 5;
 
     public static CustomBossEvent BOSSBAR = ServerTime.minecraftServer.getCustomBossEvents().get(new ResourceLocation("skywars", "timer"));
@@ -115,7 +117,7 @@ public class SkywarsGame {
         minecraftPlayer.inventory.setCarried(ItemStack.EMPTY);
         minecraftPlayer.getEnderChestInventory().clearContent();
 
-        player.removeTag("skywars");
+        player.removeTag(SKYWARS_TAG);
 
         data.gameMode = SkywarsGameMode.LOBBY;
     }
@@ -265,7 +267,7 @@ public class SkywarsGame {
             ServerPlayer serverPlayer = player.get();
 
             PlayerDataManager.get(serverPlayer).gameMode = SkywarsGameMode.PLAYING;
-            serverPlayer.addTag("skywars");
+            serverPlayer.addTag(SKYWARS_TAG);
             serverPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
             serverPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
             serverPlayer.setGameMode(GameType.SURVIVAL);

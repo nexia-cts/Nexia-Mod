@@ -88,12 +88,12 @@ public class PlayerRespawnListener {
                 ServerPlayer player1;
                 if(duelsData.duelsTeam.alive.isEmpty()) {
                     if(teamDuelsGame.team1 == duelsData.duelsTeam) {
-                        player1 = teamDuelsGame.team2.alive.get(new Random().nextInt(teamDuelsGame.team2.alive.size()));
+                        player1 = teamDuelsGame.team2.alive.get(new Random().nextInt(teamDuelsGame.team2.alive.size())).get();
                     } else {
-                        player1 = teamDuelsGame.team1.alive.get(new Random().nextInt(teamDuelsGame.team1.alive.size()));
+                        player1 = teamDuelsGame.team1.alive.get(new Random().nextInt(teamDuelsGame.team1.alive.size())).get();
                     }
                 } else {
-                    player1 = duelsData.duelsTeam.alive.get(new Random().nextInt(duelsData.duelsTeam.alive.size()));
+                    player1 = duelsData.duelsTeam.alive.get(new Random().nextInt(duelsData.duelsTeam.alive.size())).get();
                 }
 
 

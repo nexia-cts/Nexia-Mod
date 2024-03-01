@@ -11,6 +11,7 @@ import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.sky.SkyFfaBlocks;
 import com.nexia.ffa.sky.utilities.player.PlayerData;
 import com.nexia.ffa.sky.utilities.player.PlayerDataManager;
+import com.nexia.ffa.sky.utilities.player.SavedPlayerData;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
@@ -45,7 +46,6 @@ import static com.nexia.ffa.sky.utilities.FfaAreas.*;
 public class FfaSkyUtil {
 
     public static String ffaSkyDir = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/ffa/sky";
-    public static HashMap<UUID, Integer> fallInvulnerable = new HashMap<>();
 
     public static ArrayList<UUID> wasInSpawn = new ArrayList<>();
 
@@ -58,25 +58,6 @@ public class FfaSkyUtil {
     public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
         com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
         return player.getTags().contains("ffa_sky") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.SKY;
-    }
-
-    public static void ffaSecond() {
-        /*
-        Iterator<UUID> it = fallInvulnerable.keySet().iterator();
-        while (it.hasNext()) {
-            UUID uuid = it.next();
-            Integer time = fallInvulnerable.get(uuid);
-            time--;
-            if (time <= 0) it.remove();
-            else fallInvulnerable.put(uuid, time);
-        }
-        for (ServerPlayer player : ffaWorld.players()) {
-            if (FfaAreas.isInFfaSpawn(player)) {
-                fallInvulnerable.put(player.getUUID(), 4);
-            }
-        }
-
-         */
     }
 
     public static void fiveTick() {
@@ -144,7 +125,6 @@ public class FfaSkyUtil {
 
     public static void joinOrRespawn(ServerPlayer player) {
         PlayerUtil.resetHealthStatus(player);
-        //fallInvulnerable.put(player.getUUID(), 4);
         wasInSpawn.add(player.getUUID());
         player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1000000, 0, true, false, false));
         player.setGameMode(GameType.SURVIVAL);
@@ -177,13 +157,27 @@ public class FfaSkyUtil {
 
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
 
-        if(attacker != null) {
+        if(attacker != null && attacker != player) {
+            SavedPlayerData data = PlayerDataManager.get(attacker).savedData;
+
+            data.killstreak++;
+            if(data.killstreak > data.bestKillstreak){
+                data.bestKillstreak = data.killstreak;
+            }
+            data.kills++;
             FfaSkyUtil.killHeal(attacker);
             FfaSkyUtil.giveKillLoot(attacker);
         }
 
         FfaSkyUtil.clearEnderpearls(player);
         FfaSkyUtil.clearArrows(player);
+
+        SavedPlayerData data = PlayerDataManager.get(player).savedData;
+        data.deaths++;
+        if(data.killstreak > data.bestKillstreak){
+            data.bestKillstreak = data.killstreak;
+        }
+        data.killstreak = 0;
 
         if(!leaving){
             FfaSkyUtil.sendToSpawn(player);
@@ -268,7 +262,7 @@ public class FfaSkyUtil {
     }
 
     public static boolean canGoToSpawn(ServerPlayer player) {
-        if(FfaSkyUtil.isFfaPlayer(player) || FfaSkyUtil.wasInSpawn.contains(player.getUUID())) return true;
+        if(!FfaSkyUtil.isFfaPlayer(player) || FfaSkyUtil.wasInSpawn.contains(player.getUUID())) return true;
         return !(player.getHealth() < 20);
     }
 
@@ -331,20 +325,7 @@ public class FfaSkyUtil {
     public static boolean beforeDamage(ServerPlayer player, DamageSource damageSource) {
         if (damageSource == DamageSource.OUT_OF_WORLD) return true;
 
-        if (FfaAreas.isInFfaSpawn(player)) {
-            return false;
-        }
-
-
-        return true;
-
-        /*
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
-        return attacker == null || !FfaAreas.isInFfaSpawn(attacker);
-
-         */
-
-        //return damageSource != DamageSource.FALL || !FfaSkyUtil.fallInvulnerable.containsKey(player.getUUID());
+        return !FfaAreas.isInFfaSpawn(player);
     }
 
     public static void afterPlace(ServerPlayer player, BlockPos blockPos, InteractionHand hand) {

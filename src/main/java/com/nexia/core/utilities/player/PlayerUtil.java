@@ -34,10 +34,6 @@ import java.util.*;
 
 public class PlayerUtil {
 
-    public static HashMap<Player, ServerPlayer> cachedServerPlayer = new HashMap<>();
-
-    public static HashMap<ServerPlayer, Player> cachedFactoryPlayers = new HashMap<>();
-
     public static void broadcast(List<ServerPlayer> players, String string) {
         broadcast(players, new TextComponent(string));
     }
@@ -152,13 +148,7 @@ public class PlayerUtil {
     }
 
     public static ServerPlayer getMinecraftPlayer(@NotNull Player player){
-
-        ServerPlayer sPlayer = cachedServerPlayer.get(player);
-        if(sPlayer == null) {
-            sPlayer = ServerTime.minecraftServer.getPlayerList().getPlayer(player.getUUID());
-            cachedServerPlayer.put(player, sPlayer);
-        }
-        return sPlayer;
+        return ServerTime.minecraftServer.getPlayerList().getPlayer(player.getUUID());
     }
 
     public static ServerPlayer getMinecraftPlayerFromName(@NotNull String player){
@@ -192,14 +182,6 @@ public class PlayerUtil {
                 ClientboundSetTitlesPacket.Type.SUBTITLE, new TextComponent(sub)));
     }
 
-
-    public static boolean doesPlayerExist(String player){
-        return getFactoryPlayerFromName(player) != null;
-    }
-
-    public static String returnSetPlayer(Player player, String message){
-        return message.replaceAll("%player%", String.valueOf(player.getRawName()));
-    }
 
 
     public static boolean hasPermission(@NotNull CommandSourceStack permission, @NotNull String command, int level) {

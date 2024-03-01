@@ -1,4 +1,4 @@
-# Nexia Main
+# Nexia
 
 ### Requirements
 - Java 17

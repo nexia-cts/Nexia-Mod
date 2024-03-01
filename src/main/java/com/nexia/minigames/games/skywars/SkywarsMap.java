@@ -72,7 +72,7 @@ public class SkywarsMap {
             new EntityPos(49.5,88.0,23.5))
     ), new StructureMap(new ResourceLocation("skywars", "skyhenge"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-77, -7, -77), true));
 
-    public static SkywarsMap BELOW = new SkywarsMap("below", 8, new ArrayList<>(Arrays.asList(
+    public static SkywarsMap BELOW = new SkywarsMap("below", 4, new ArrayList<>(Arrays.asList(
             new EntityPos(-28.5, 81.0, 69.5),
             new EntityPos(28.5,81.0,69.5),
             new EntityPos(69.5,81.0,28.5),
@@ -165,14 +165,17 @@ public class SkywarsMap {
         if(maxPlayers == 8) SkywarsMap.eightPlayerMaps.add(this);
         if(maxPlayers == 12) SkywarsMap.twelvePlayerMaps.add(this);
     }
-
+    
     public static SkywarsMap calculateMap(int oldPlayers, int newPlayers) {
-        if(newPlayers <= 4) {
+        if(newPlayers <= 4 && !SkywarsMap.fourPlayerMaps.contains(SkywarsGame.map)) {
             return SkywarsMap.fourPlayerMaps.get(RandomUtil.randomInt(SkywarsMap.fourPlayerMaps.size()));
         }
-        if(oldPlayers >= 5 && newPlayers <= 8) {
+        if(oldPlayers >= 5 && newPlayers <= 8 && !SkywarsMap.eightPlayerMaps.contains(SkywarsGame.map)) {
             return SkywarsMap.eightPlayerMaps.get(RandomUtil.randomInt(SkywarsMap.eightPlayerMaps.size()));
         }
-        return SkywarsMap.twelvePlayerMaps.get(RandomUtil.randomInt(SkywarsMap.twelvePlayerMaps.size()));
+        if(!SkywarsMap.twelvePlayerMaps.contains(SkywarsGame.map)) {
+            return SkywarsMap.twelvePlayerMaps.get(RandomUtil.randomInt(SkywarsMap.twelvePlayerMaps.size()));
+        }
+        return SkywarsGame.map;
     }
 }

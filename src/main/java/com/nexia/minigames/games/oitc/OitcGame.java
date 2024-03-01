@@ -71,6 +71,8 @@ public class OitcGame {
 
     private static AccuratePlayer winner = null;
 
+    public static final String OITC_TAG = "oitc";
+
     private static int endTime = 5;
 
 
@@ -87,7 +89,7 @@ public class OitcGame {
 
         data.kills = 0;
 
-        if(OitcGame.players.size() <= 1 && !OitcGame.isEnding) {
+        if(OitcGame.players.size() <= 1 && !OitcGame.isEnding && OitcGame.isStarted) {
             if(OitcGame.players.size() == 1) OitcGame.endGame(OitcGame.players.get(0).get());
             else OitcGame.endGame(null);
         }
@@ -115,7 +117,7 @@ public class OitcGame {
             if(OitcGame.isEnding) {
                 int color = 244 * 65536 + 166 * 256 + 71;
                 // r * 65536 + g * 256 + b;
-                if(OitcGame.winner.get() != null) DuelGameHandler.winnerRockets(OitcGame.winner.get(), OitcGame.world, color);
+                if(OitcGame.winner != null && OitcGame.winner.get() != null) DuelGameHandler.winnerRockets(OitcGame.winner.get(), OitcGame.world, color);
 
                 if(OitcGame.endTime <= 0) {
                     for(ServerPlayer player : OitcGame.getViewers()){
@@ -164,7 +166,7 @@ public class OitcGame {
                 } catch (Exception ignored) { }
                 OitcGame.updateInfo();
 
-                if(OitcGame.gameTime <= 0 && !OitcGame.isEnding){
+                if(OitcGame.gameTime <= 0 && !OitcGame.isEnding && OitcGame.isStarted){
 
                     // Yes, I know I am a dumbass.
                     List<Integer> intKills = new ArrayList<>();

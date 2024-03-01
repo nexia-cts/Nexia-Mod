@@ -4,7 +4,6 @@ import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.player.SavedPlayerData;
 import net.kyori.adventure.text.Component;
-import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -33,10 +32,10 @@ public class PlayerMutes {
 
         PlayerUtil.getFactoryPlayer(muted).sendMessage(
                 ChatFormat.nexiaMessage
-                                .append(Component.text("You have been muted for "))
-                                        .append(Component.text(muteTimeToText(duration)).color(ChatFormat.brandColor2))
-                                                .append(Component.text(".\nReason: "))
-                                                        .append(Component.text(reason).color(ChatFormat.brandColor2))
+                                .append(Component.text("You have been muted for ").decoration(ChatFormat.bold, false))
+                                        .append(Component.text(muteTimeToText(duration)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                                .append(Component.text(".\nReason: ").decoration(ChatFormat.bold, false))
+                                                        .append(Component.text(reason).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
         );
 
     }

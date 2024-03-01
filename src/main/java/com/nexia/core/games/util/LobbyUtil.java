@@ -5,6 +5,8 @@ import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
+import com.nexia.core.utilities.player.BanHandler;
+import com.nexia.core.utilities.player.GamemodeBanHandler;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
@@ -39,6 +41,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
 
 public class LobbyUtil {
 
@@ -69,18 +74,18 @@ public class LobbyUtil {
     public static final String NO_SATURATION_TAG = "no_saturation";
 
     public static String[] removedTags = {
-            "in_bedwars",
+            PlayerGameMode.BEDWARS.tag,
             "bedwars",
-            "ffa",
+            PlayerGameMode.FFA.tag,
             "ffa_classic",
             "ffa_kits",
             "ffa_sky",
             "ffa_uhc",
-            "football",
+            PlayerGameMode.FOOTBALL.tag,
             "in_football_game",
             "duels",
-            "skywars",
-            "oitc",
+            PlayerGameMode.SKYWARS.tag,
+            PlayerGameMode.OITC.tag,
             "in_oitc_game",
             NO_RANK_DISPLAY_TAG,
             NO_SATURATION_TAG,
@@ -113,10 +118,8 @@ public class LobbyUtil {
         minecraftPlayer.setGlowing(false);
         minecraftPlayer.setGameMode(GameType.ADVENTURE);
 
-        for(int i = 0; i < LobbyUtil.removedTags.length; i++){
-            if(player.hasTag(LobbyUtil.removedTags[i])){
-                player.removeTag(LobbyUtil.removedTags[i]);
-            }
+        for(String tag : LobbyUtil.removedTags) {
+            if(player.hasTag(tag)) player.removeTag(tag);
         }
 
         returnToLobby(minecraftPlayer, tp);
@@ -124,10 +127,8 @@ public class LobbyUtil {
 
     public static void returnToLobby(ServerPlayer minecraftPlayer, boolean tp) {
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
-        for(int i = 0; i < LobbyUtil.removedTags.length; i++){
-            if(player.hasTag(LobbyUtil.removedTags[i])){
-                player.removeTag(LobbyUtil.removedTags[i]);
-            }
+        for(String tag : LobbyUtil.removedTags) {
+            if(player.hasTag(tag)) player.removeTag(tag);
         }
 
         minecraftPlayer.setInvulnerable(false);
@@ -213,8 +214,54 @@ public class LobbyUtil {
         ItemStackUtil.sendInventoryRefreshPacket(minecraftPlayer);
     }
 
+    private static boolean checkGameModeBan(Player factoryPlayer, ServerPlayer player, String game) {
+        ArrayList<PlayerGameMode> bannedGameModes = GamemodeBanHandler.getBannedGameModes(player);
+        if(bannedGameModes.isEmpty()) {
+            return false;
+        }
+
+        for(PlayerGameMode gameMode : bannedGameModes) {
+            if(game.toLowerCase().contains(gameMode.id.toLowerCase())) {
+
+                JSONObject banJSON = GamemodeBanHandler.getBanList(player.getStringUUID(), gameMode);
+
+                if (banJSON != null) {
+                    if((long) banJSON.get("duration") - System.currentTimeMillis() < 0) {
+                        GamemodeBanHandler.removeBanFromList(player.getStringUUID(), gameMode);
+                        return false;
+                    } else {
+                        factoryPlayer.sendMessage(
+                                ChatFormat.nexiaMessage
+                                        .append(Component.text("You are gamemode (" + gameMode.name + ") banned for ").decoration(ChatFormat.bold, false))
+                                        .append(Component.text(BanHandler.banTimeToText((long) banJSON.get("duration") - System.currentTimeMillis())).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                        .append(Component.text(".\nReason: ").decoration(ChatFormat.bold, false))
+                                        .append(Component.text((String) banJSON.get("reason")).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                        );
+                        return true;
+                    }
+                } else {
+                    factoryPlayer.sendMessage(
+                            ChatFormat.nexiaMessage
+                                    .append(Component.text("You are gamemode (" + gameMode.name + ") banned!"))
+                    );
+                }
+
+                factoryPlayer.runCommand("/hub");
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static void sendGame(ServerPlayer minecraftPlayer, String game, boolean message, boolean tp){
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+
+        if(checkGameModeBan(player, minecraftPlayer, game)) {
+            return;
+        }
+
         minecraftPlayer.setInvulnerable(false);
 
         minecraftPlayer.abilities.mayfly = false;
@@ -254,7 +301,7 @@ public class LobbyUtil {
                 game.equalsIgnoreCase("kits ffa") ||
                 game.equalsIgnoreCase("sky ffa") ||
                 game.equalsIgnoreCase("uhc ffa")) {
-            player.addTag("ffa");
+            player.addTag(FfaUtil.FFA_TAG);
             PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.FFA;
             if(message){ player.sendActionBarMessage(Component.text("You have joined §8🗡 §7§lFFA §b🔱")); }
         }
@@ -329,7 +376,7 @@ public class LobbyUtil {
         }
 
         if(game.equalsIgnoreCase("oitc")){
-            player.addTag("oitc");
+            player.addTag(OitcGame.OITC_TAG);
             PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.OITC;
             OitcGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
 
@@ -341,7 +388,7 @@ public class LobbyUtil {
         }
 
         if(game.equalsIgnoreCase("football")){
-            player.addTag("football");
+            player.addTag(FootballGame.FOOTBALL_TAG);
             PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.FOOTBALL;
             com.nexia.minigames.games.football.util.player.PlayerDataManager.get(minecraftPlayer).gameMode = FootballGameMode.LOBBY;
 

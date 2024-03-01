@@ -70,6 +70,8 @@ public class FootballGame {
 
     private static FootballTeam winnerTeam = null;
 
+    public static final String FOOTBALL_TAG = "football";
+
     private static int endTime = 5;
 
 
@@ -108,8 +110,10 @@ public class FootballGame {
                 int color = 244 * 65536 + 166 * 256 + 71;
                 // r * 65536 + g * 256 + b;
 
-                ServerPlayer randomPlayer = winnerTeam.players.get(RandomUtil.randomInt(winnerTeam.players.size())).get();
-                if(randomPlayer != null) DuelGameHandler.winnerRockets(randomPlayer, FootballGame.world, color);
+                if(winnerTeam != null) {
+                    ServerPlayer randomPlayer = winnerTeam.players.get(RandomUtil.randomInt(winnerTeam.players.size())).get();
+                    if(randomPlayer != null) DuelGameHandler.winnerRockets(randomPlayer, FootballGame.world, color);
+                }
 
                 if(FootballGame.endTime <= 0) {
                     for(ServerPlayer player : FootballGame.getViewers()){
@@ -178,10 +182,12 @@ public class FootballGame {
 
     public static void goal(ArmorStand entity, FootballTeam team) {
 
+        if(!team1.refreshTeam() || !team2.refreshTeam()) endGame(null);
+
         if(!FootballGame.isEnding) {
-            team.goals++;
             ServerPlayer closestPlayer = (ServerPlayer) FootballGame.world.getNearestPlayer(entity.getX(), entity.getY(), entity.getZ(), 20, e -> e instanceof ServerPlayer se && !se.isSpectator() && !se.isCreative() && team.players.contains(AccuratePlayer.create(se)));
-            PlayerDataManager.get(closestPlayer).savedData.goals++;
+            if(closestPlayer != null) PlayerDataManager.get(closestPlayer).savedData.goals++;
+            team.goals++;
             if(team.goals >= FootballGame.map.maxGoals) FootballGame.endGame(team);
         }
 
@@ -254,7 +260,7 @@ public class FootballGame {
                     .append(Component.text("!").color(ChatFormat.normalColor)
                     );
             for(ServerPlayer player : FootballGame.getViewers()){
-                PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(msg, Component.text("")));
+                if(player != null && PlayerUtil.getFactoryPlayer(player) != null) PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(msg, Component.text("")));
             }
 
             return;
@@ -382,18 +388,22 @@ public class FootballGame {
             kicking.setHoverName(new TextComponent("§7§lKicking §7Sword §8[§710s cooldown§8]"));
             kicking.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
 
+            /*
             ItemStack normal = new ItemStack(Items.IRON_SWORD);
             normal.getOrCreateTag().putBoolean("Unbreakable", true);
             normal.enchant(Enchantments.KNOCKBACK, 2);
             normal.setHoverName(new TextComponent("§f§lNormal §fSword §8[§fno cooldown§8]"));
             normal.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
 
+
+             */
             FootballGame.createArmorStand();
 
             for(AccuratePlayer player : FootballGame.players) {
                 ServerPlayer serverPlayer = player.get();
-                serverPlayer.inventory.setItem(0, normal);
-                serverPlayer.inventory.setItem(1, kicking);
+                //serverPlayer.inventory.setItem(0, normal);
+                //serverPlayer.inventory.setItem(1, kicking);
+                serverPlayer.inventory.setItem(0, kicking);
 
                 PlayerData data = PlayerDataManager.get(serverPlayer);
                 data.gameMode = FootballGameMode.PLAYING;

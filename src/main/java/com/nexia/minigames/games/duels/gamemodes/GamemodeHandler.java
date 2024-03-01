@@ -29,26 +29,6 @@ import java.util.List;
 public class GamemodeHandler {
 
     public static DuelGameMode identifyGamemode(@NotNull String gameMode) {
-        /*
-        String fixedGameMode = gameMode.toLowerCase();
-        return switch (fixedGameMode) {
-            case "shield" -> DuelGameMode.SHIELD;
-            case "pot" -> DuelGameMode.POT;
-            case "neth_pot" -> DuelGameMode.NETH_POT;
-            case "uhc_shield" -> DuelGameMode.UHC_SHIELD;
-            case "og_vanilla" -> DuelGameMode.OG_VANILLA;
-            case "cart" -> DuelGameMode.CART;
-            case "diamond_crystal" -> DuelGameMode.DIAMOND_CRYSTAL;
-            case "vanilla" -> DuelGameMode.VANILLA;
-            case "neth_smp" -> DuelGameMode.NETH_SMP;
-            case "sword_only" -> DuelGameMode.SWORD_ONLY;
-            case "classic" -> DuelGameMode.CLASSIC;
-            case "uhc" -> DuelGameMode.UHC;
-            case "trident_only" -> DuelGameMode.TRIDENT_ONLY;
-            default -> null;
-        };
-
-         */
 
         for(DuelGameMode duelGameMode : DuelGameMode.duelGameModes) {
             if(duelGameMode.id.equalsIgnoreCase(gameMode)) return duelGameMode;
@@ -166,10 +146,10 @@ public class GamemodeHandler {
 
         if (teamDuelsGame != null) {
             teamDuelsGame.spectators.add(accurateExecutor);
-            List<ServerPlayer> everyTeamMember = teamDuelsGame.team1.all;
+            List<AccuratePlayer> everyTeamMember = teamDuelsGame.team1.all;
             everyTeamMember.addAll(teamDuelsGame.team2.all);
-            for (ServerPlayer players : everyTeamMember) {
-                players.sendMessage(spectateMSG, Util.NIL_UUID);
+            for (AccuratePlayer players : everyTeamMember) {
+                players.get().sendMessage(spectateMSG, Util.NIL_UUID);
             }
         } else if (duelsGame != null) {
             duelsGame.spectators.add(accurateExecutor);
@@ -238,11 +218,11 @@ public class GamemodeHandler {
         } else if (teamDuelsGame != null) {
             teamDuelsGame.spectators.remove(accurateExecutor);
 
-            List<ServerPlayer> everyTeamPlayer = teamDuelsGame.team1.all;
+            List<AccuratePlayer> everyTeamPlayer = teamDuelsGame.team1.all;
             everyTeamPlayer.addAll(teamDuelsGame.team2.all);
 
-            for (ServerPlayer players : everyTeamPlayer) {
-                players.sendMessage(spectateMSG, Util.NIL_UUID);
+            for (AccuratePlayer players : everyTeamPlayer) {
+                players.get().sendMessage(spectateMSG, Util.NIL_UUID);
             }
         }
         executorData.gameMode = DuelGameMode.LOBBY;
@@ -260,14 +240,14 @@ public class GamemodeHandler {
         PlayerData data = PlayerDataManager.get(invitor);
         PlayerData playerData = PlayerDataManager.get(player);
 
-        if (data.duelsTeam != null && data.duelsTeam.people.contains(player)) {
+        if (data.duelsTeam != null && data.duelsTeam.getPeople().contains(player)) {
             if (!silent) {
                 PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("You cannot duel people on your team!").color(ChatFormat.failColor));
             }
             return;
         }
 
-        if (data.duelsTeam != null && !data.duelsTeam.refreshLeader(invitor)) {
+        if (data.duelsTeam != null && !data.duelsTeam.isLeader(AccuratePlayer.create(invitor))) {
             if (!silent) {
                 PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
             }
@@ -411,7 +391,7 @@ public class GamemodeHandler {
             return;
         }
 
-        if (executorData.duelsTeam != null && !executorData.duelsTeam.refreshLeader(minecraftExecutor)) {
+        if (executorData.duelsTeam != null && !executorData.duelsTeam.isLeader(AccuratePlayer.create(minecraftExecutor))) {
             executor.sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
             return;
         }
@@ -428,7 +408,7 @@ public class GamemodeHandler {
                 return;
             }
         }
-        if(map != null && gameMode.gameMode == GameType.ADVENTURE && !map.isAdventureSupported) {
+        if(gameMode.gameMode == GameType.ADVENTURE && !map.isAdventureSupported) {
             executor.sendMessage(Component.text("This map is not supported for this gamemode!").color(ChatFormat.failColor));
             return;
         }

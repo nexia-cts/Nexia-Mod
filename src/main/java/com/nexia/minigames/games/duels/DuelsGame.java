@@ -349,7 +349,9 @@ public class DuelsGame { //implements Runnable{
         victim.destroyVanishingCursedItems();
         victim.inventory.dropAll();
 
-        if(source != null && source.getEntity() instanceof ServerPlayer attacker){
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim);
+
+        if(attacker != null){
             PlayerData attackerData = PlayerDataManager.get(attacker);
 
             if((victimData.inDuel && attackerData.inDuel) && victimData.duelsGame == attackerData.duelsGame){
@@ -357,11 +359,11 @@ public class DuelsGame { //implements Runnable{
             }
             return;
         }
-        if((source == null || !(source.getEntity() instanceof ServerPlayer)) && PlayerDataManager.get(victim).duelPlayer != null) {
-            ServerPlayer attacker = victimData.duelPlayer;
+        if(PlayerDataManager.get(victim).duelPlayer != null) {
+            attacker = victimData.duelPlayer;
             PlayerData attackerData = PlayerDataManager.get(attacker);
 
-            if ((victimData.inDuel && attackerData.inDuel) && (victimData.duelPlayer.getStringUUID().equalsIgnoreCase(attacker.getStringUUID())) && attackerData.duelPlayer.getStringUUID().equalsIgnoreCase(victim.getStringUUID())) {
+            if ((victimData.inDuel && attackerData.inDuel) && (victimData.duelPlayer.getUUID().equals(attacker.getUUID())) && attackerData.duelPlayer.getUUID().equals(victim.getUUID())) {
                 this.endGame(victim, attacker, true);
             }
             return;
