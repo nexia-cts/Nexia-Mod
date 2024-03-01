@@ -15,6 +15,8 @@ public class ModConfig implements ConfigData {
             0.5,
     };
 
+    public String serverType = "";
+
     public boolean debugMode = false;
 
 
