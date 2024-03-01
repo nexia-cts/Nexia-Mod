@@ -9,7 +9,7 @@ public class ServerType {
     public String domain;
     public static ServerType EU = new ServerType("eu", "eu.nexia.dev");
 
-    public static ServerType NA = new ServerType("na", "na.nexia.dev");
+    public static ServerType NA = new ServerType("na", "example.com"); // na.nexia.dev
 
     public static ServerType DEV = new ServerType("dev", "dev.nexia.dev");
 
