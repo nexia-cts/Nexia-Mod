@@ -27,7 +27,7 @@ public class ServerLoginPacketListenerMixin {
             component = new TranslatableComponent("§c§lYou have been banned.\n§7Reason: §d" + component.getString().split("Reason: ")[1] + "\n§7You can appeal your ban at §d" + Main.config.discordLink);
         }
 
-        if(!PlayerDataManager.get(gameProfile.getId()).savedData.isLinked) {
+        if(!PlayerDataManager.get(gameProfile.getId()).savedData.isLinked && ServerType.returnServer().equals(ServerType.DEV)) {
             int id = RandomUtil.randomInt(1000, 9999);
 
             if (Discord.idMinecraft.containsKey(id)) {
