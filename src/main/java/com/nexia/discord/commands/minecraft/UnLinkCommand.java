@@ -5,24 +5,14 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.misc.NxFileUtil;
-import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.discord.Discord;
 import com.nexia.discord.Main;
-import com.nexia.discord.utilities.discord.DiscordData;
-import com.nexia.discord.utilities.discord.DiscordDataManager;
 import com.nexia.discord.utilities.player.PlayerData;
 import com.nexia.discord.utilities.player.PlayerDataManager;
-import com.nexia.minigames.games.duels.DuelGameMode;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
@@ -50,15 +40,17 @@ public class UnLinkCommand {
         Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
 
         PlayerData data = PlayerDataManager.get(player.getUUID());
-        Member user = jda.getGuildById(Main.config.guildID).retrieveMemberById(data.savedData.discordID).complete();
 
         data.savedData.isLinked = false;
 
-        if(user != null) {
-            DiscordData discordData = DiscordDataManager.get(user.getIdLong());
-            discordData.savedData.isLinked = false;
-            discordData.savedData.minecraftUUID = "";
-        } else if(data.savedData.discordID != 0){
+        Member user = null;
+        try {
+            jda.getGuildById(Main.config.guildID).retrieveMemberById(data.savedData.discordID).complete();
+        } catch (NullPointerException exception) {
+            new File(FabricLoader.getInstance().getConfigDir().toString() + "/nexia/discord/discorddata", data.savedData.discordID + ".json").delete();
+        }
+
+        if(data.savedData.discordID != 0){
             new File(FabricLoader.getInstance().getConfigDir().toString() + "/nexia/discord/discorddata", data.savedData.discordID + ".json").delete();
         }
 
