@@ -74,7 +74,7 @@ public class SkywarsMap {
 
     public static SkywarsMap PLACEHOLDER = new SkywarsMap("placeholder", 0, null, null);
 
-    public static SkywarsMap BELOW = new SkywarsMap("below", 4, new ArrayList<>(Arrays.asList(
+    public static SkywarsMap BELOW = new SkywarsMap("below", 8, new ArrayList<>(Arrays.asList(
             new EntityPos(-28.5, 81.0, 69.5),
             new EntityPos(28.5,81.0,69.5),
             new EntityPos(69.5,81.0,28.5),
