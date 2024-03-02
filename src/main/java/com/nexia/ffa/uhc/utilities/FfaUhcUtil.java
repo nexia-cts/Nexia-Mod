@@ -12,6 +12,8 @@ import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.uhc.utilities.player.PlayerData;
 import com.nexia.ffa.uhc.utilities.player.PlayerDataManager;
 import com.nexia.ffa.uhc.utilities.player.SavedPlayerData;
+import net.blumbo.blfscheduler.BlfRunnable;
+import net.blumbo.blfscheduler.BlfScheduler;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
@@ -324,6 +326,16 @@ public class FfaUhcUtil {
         player.removeAllEffects();
         player.setGameMode(GameType.SURVIVAL);
         FfaAreas.spawn.teleportPlayer(FfaAreas.ffaWorld, player);
+
+        if(firstReset) {
+            BlfScheduler.delay(30, new BlfRunnable() {
+                @Override
+                public void run() {
+                    FfaAreas.resetMap(false);
+                }
+            });
+            firstReset = false;
+        }
     }
 
     static {
