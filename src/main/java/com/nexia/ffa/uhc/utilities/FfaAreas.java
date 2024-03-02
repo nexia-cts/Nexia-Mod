@@ -17,6 +17,9 @@ import net.notcoded.codelib.util.world.structure.Rotation;
 import net.notcoded.codelib.util.world.structure.StructureMap;
 
 public class FfaAreas {
+
+    public static boolean firstReset = true;
+
     public static ServerLevel ffaWorld = null;
 
     public static EntityPos spawn = new EntityPos(Main.uhc.spawnCoordinates[0], Main.uhc.spawnCoordinates[1], Main.uhc.spawnCoordinates[2], 0, 0);

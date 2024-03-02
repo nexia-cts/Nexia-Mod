@@ -4,11 +4,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.uhc.utilities.FfaAreas;
-import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.Util;
@@ -45,7 +43,8 @@ public class DevExperimentalMapCommand {
         ServerPlayer player = context.getSource().getPlayerOrException();
 
         String argument = StringArgumentType.getString(context, "argument");
-        String name = argument.split("-")[1];
+        String name = argument;
+        if(name.contains("-")) name = name.split("-")[1];
 
         if(argument.contains("cffa")){
             ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("ffa", name)).location(), (
@@ -66,9 +65,7 @@ public class DevExperimentalMapCommand {
                             .setGameRule(GameRules.RULE_SPAWN_RADIUS, 0))).asWorld();
 
             player.teleportTo(level, 0, 80, 0, 0, 0);
-        }
-
-        if(argument.contains("rluhc")) {
+        } else if(argument.equalsIgnoreCase("rluhc")) {
             FfaAreas.resetMap(true);
             player.sendMessage(LegacyChatFormat.format("Reloaded UHC Map."), Util.NIL_UUID);
         }

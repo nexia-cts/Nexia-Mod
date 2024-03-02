@@ -245,6 +245,8 @@ public class SkywarsGame {
         SkywarsMap.spawnQueueBuild(level, false);
         SkywarsGame.world = level;
 
+        SkywarsGame.map = SkywarsMap.SKYHENGE;
+
         if(Main.config.debugMode) Main.logger.info(String.format("[DEBUG]: New Skywars Map (%s) has been reset (not pasted)", SkywarsGame.id));
     }
 
