@@ -72,7 +72,7 @@ public class SkywarsMap {
             new EntityPos(49.5,88.0,23.5))
     ), new StructureMap(new ResourceLocation("skywars", "skyhenge"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-77, -7, -77), true));
 
-    public static SkywarsMap PLACEHOLDER = new SkywarsMap("placeholder", 0, null, null);
+    public static SkywarsMap PLACEHOLDER = new SkywarsMap("placeholder", 12, null, null);
 
     public static SkywarsMap BELOW = new SkywarsMap("below", 8, new ArrayList<>(Arrays.asList(
             new EntityPos(-28.5, 81.0, 69.5),
