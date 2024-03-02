@@ -43,6 +43,7 @@ public class SkywarsMap {
     private static final BlockVec3 queueC1 = new EntityPos(0, 128, 0).toBlockVec3().add(-7, -1, -7);
     private static final BlockVec3 queueC2 = new EntityPos(0, 128, 0).toBlockVec3().add(7, 6, 7);
 
+    public static final int maxJoinablePlayers = 12;
 
     public StructureMap structureMap;
 
