@@ -126,7 +126,7 @@ public class FfaSkyUtil {
     public static void joinOrRespawn(ServerPlayer player) {
         PlayerUtil.resetHealthStatus(player);
         wasInSpawn.add(player.getUUID());
-        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1000000, 0, true, false, false));
+        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1000000, 1, true, false, false));
         player.setGameMode(GameType.SURVIVAL);
         setInventory(player);
     }
