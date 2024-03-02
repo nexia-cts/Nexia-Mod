@@ -245,7 +245,7 @@ public class SkywarsGame {
         SkywarsMap.spawnQueueBuild(level, false);
         SkywarsGame.world = level;
 
-        SkywarsGame.map = SkywarsMap.SKYHENGE;
+        SkywarsGame.map = SkywarsMap.PLACEHOLDER;
 
         if(Main.config.debugMode) Main.logger.info(String.format("[DEBUG]: New Skywars Map (%s) has been reset (not pasted)", SkywarsGame.id));
     }
@@ -400,8 +400,6 @@ public class SkywarsGame {
     public static void winNearestCenter() {
         if(SkywarsGame.isEnding) return;
         ServerPlayer closestPlayer = (ServerPlayer) SkywarsGame.world.getNearestPlayer(0, 80, 0, 20, e -> e instanceof ServerPlayer se && !se.isCreative() && !se.isSpectator() && SkywarsGame.isSkywarsPlayer(se));
-
-        // welcome to pact or fap
 
         endGame(AccuratePlayer.create(closestPlayer));
     }
