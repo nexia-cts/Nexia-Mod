@@ -8,6 +8,7 @@ import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.uhc.utilities.FfaAreas;
 import com.nexia.minigames.games.skywars.SkywarsGame;
+import com.nexia.minigames.games.skywars.SkywarsMap;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
@@ -68,8 +69,16 @@ public class DevExperimentalMapCommand {
         } else if(argument.equalsIgnoreCase("rluhc")) {
             FfaAreas.resetMap(true);
             player.sendMessage(LegacyChatFormat.format("Reloaded UHC Map."), Util.NIL_UUID);
-        }
+        } else if(argument.contains("skywars")) {
+            SkywarsMap map = SkywarsMap.identifyMap(name);
+            if(map != null) {
+                SkywarsGame.map = map;
+                player.sendMessage(LegacyChatFormat.format("Map set to " + map.id), Util.NIL_UUID);
+            } else {
+                player.sendMessage(LegacyChatFormat.format("Invalid map!"), Util.NIL_UUID);
+            }
 
+        }
 
         return 1;
     }
