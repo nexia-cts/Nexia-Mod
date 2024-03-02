@@ -41,7 +41,7 @@ repositories {
 
 	maven { url 'https://github.com/not-coded/notcoded-maven/raw/fabric/' }
 	maven { url 'https://maven.nucleoid.xyz' }
-	maven { url "https://maven.rizecookey.net/" }
+	//maven { url "https://maven.rizecookey.net/" }
 	maven { url "https://maven.shedaniel.me/" }
 	maven { url "https://maven.gegy.dev/" }
 	maven { url "https://jitpack.io" }
