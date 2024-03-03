@@ -28,17 +28,17 @@ public class ItemDisplayUtil {
         ListTag listTag = display.getList("Lore", 8);
 
         if (line < 0) {
-            if (listTag.size() > 0) listTag.remove(listTag.size() - 1);
+            if (!listTag.isEmpty()) listTag.remove(listTag.size() - 1);
         } else {
             if (listTag.size() > line) {
                 listTag.remove(line);
             }
         }
 
-        if (listTag.size() > 0) display.put("Lore", listTag);
+        if (!listTag.isEmpty()) display.put("Lore", listTag);
         else display.remove("Lore");
 
-        if (display.getAllKeys().size() > 0) compoundTag.put("display", display);
+        if (!display.getAllKeys().isEmpty()) compoundTag.put("display", display);
         else compoundTag.remove("display");
 
         itemStack.setTag(compoundTag);

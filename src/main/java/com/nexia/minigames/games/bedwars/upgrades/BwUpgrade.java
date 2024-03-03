@@ -40,20 +40,16 @@ public class BwUpgrade {
         HashMap<String, BwUpgrade> newSet = new HashMap<>();
 
         newSet.put(UPGRADE_KEY_SHARPNESS, new BwUpgrade(new int[]{4}, 0, 1,
-                upgradeItemStack(Items.DIAMOND_SWORD, "Sharpened Blades", "" +
-                        "Grants sharpness enchantment\nto all swords and tridents\nfor your team.")));
+                upgradeItemStack(Items.DIAMOND_SWORD, "Sharpened Blades", "Grants sharpness enchantment\nto all swords and tridents\nfor your team.")));
         newSet.put(UPGRADE_KEY_PROTECTION, new BwUpgrade(new int[]{2, 4, 8, 16}, 0, 2,
-                upgradeItemStack(Items.IRON_CHESTPLATE, "Protection", "" +
-                        "Grants protection enchantment\nto everyone in your team.")));
+                upgradeItemStack(Items.IRON_CHESTPLATE, "Protection", "Grants protection enchantment\nto everyone in your team.")));
         newSet.put(UPGRADE_KEY_HASTE, new BwUpgrade(new int[]{2, 4}, 0, 3,
-                upgradeItemStack(Items.GOLDEN_PICKAXE, "Haste", "" +
-                        "Grants haste effect to\neveryone in your team.")));
+                upgradeItemStack(Items.GOLDEN_PICKAXE, "Haste", "Grants haste effect to\neveryone in your team.")));
         newSet.put(UPGRADE_KEY_GENERATOR, new BwUpgrade(BwGen.upgradeCosts, 0, 4,
                 upgradeItemStack(Items.FURNACE, "Better Generators",
                         null)));
         newSet.put(UPGRADE_KEY_HEALING, new BwUpgrade(new int[]{1}, 0, 5,
-                upgradeItemStack(Items.BEACON, "Heal Pool", "" +
-                        "Grants regeneration effect to\nevery team member\nat home base.")));
+                upgradeItemStack(Items.BEACON, "Heal Pool", "Grants regeneration effect to\nevery team member\nat home base.")));
 
         for (String key : newSet.keySet()) {
             newSet.get(key).displayItem.getOrCreateTag().putString(UPGRADE_TAG_KEY, key);

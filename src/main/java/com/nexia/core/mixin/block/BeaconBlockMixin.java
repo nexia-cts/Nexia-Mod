@@ -1,7 +1,6 @@
 package com.nexia.core.mixin.block;
 
 import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;

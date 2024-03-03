@@ -46,9 +46,7 @@ public class BwPlayerTracker {
         if (displayTag == null) return false;
 
         Tag lore = displayTag.get("Lore");
-        if (lore == null || !lore.toString().contains("Bedwars Player Tracker")) return false;
-
-        return true;
+        return lore != null && lore.toString().contains("Bedwars Player Tracker");
     }
 
     static void trackClosestPlayer(ServerPlayer player, ItemStack itemStack) {

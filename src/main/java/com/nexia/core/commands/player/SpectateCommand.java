@@ -11,8 +11,6 @@ import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.classic.utilities.FfaAreas;
-import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import me.lucko.fabric.api.permissions.v0.Permissions;

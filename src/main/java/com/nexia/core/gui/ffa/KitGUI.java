@@ -1,28 +1,19 @@
 package com.nexia.core.gui.ffa;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
-import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.ffa.classic.utilities.FfaAreas;
 import com.nexia.ffa.kits.FfaKit;
-import com.nexia.ffa.kits.utilities.player.PlayerDataManager;
-import com.nexia.minigames.games.duels.DuelGameMode;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import net.fabricmc.loader.impl.util.StringUtil;
 import net.kyori.adventure.text.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantments;
-
-import java.util.HashMap;
 
 public class KitGUI extends SimpleGui {
     static final TextComponent title = new TextComponent("Kits Menu");

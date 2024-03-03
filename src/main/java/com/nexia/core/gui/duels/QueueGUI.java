@@ -2,8 +2,6 @@ package com.nexia.core.gui.duels;
 
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
-import com.nexia.core.utilities.item.ItemStackUtil;
-import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import eu.pb4.sgui.api.ClickType;
@@ -15,7 +13,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.apache.commons.lang3.StringUtils;
 
 public class QueueGUI extends SimpleGui {
     static final TextComponent title = new TextComponent("Queue Menu");

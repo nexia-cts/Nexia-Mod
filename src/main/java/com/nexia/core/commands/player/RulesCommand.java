@@ -23,6 +23,7 @@ public class RulesCommand {
             "No interrupting other player's fights.",
             "No spamming/filling up chat.",
             "No stalling/combat logging.",
+            "No weapon swapping.",
             "No bedrock bridging."
     };
 

@@ -37,7 +37,7 @@ public class BwShopCost {
     protected static void removeCostLore(ItemStack itemStack) {
         CompoundTag compoundTag = itemStack.getOrCreateTag();
         ListTag listTag = compoundTag.getCompound("display").getList("Lore", 8);
-        if (listTag != null && listTag.size() > 0 && listTag.get(0).toString().contains(costFormat)) {
+        if (listTag != null && !listTag.isEmpty() && listTag.get(0).toString().contains(costFormat)) {
             ItemDisplayUtil.removeLore(itemStack, 0);
         }
     }

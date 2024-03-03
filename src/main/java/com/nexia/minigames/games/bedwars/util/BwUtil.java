@@ -178,10 +178,7 @@ public class BwUtil {
         if (item instanceof PickaxeItem || item instanceof AxeItem || item instanceof ShearsItem) {
             return false;
         }
-        if (BwUtil.isDefaultSword(itemStack)) {
-            return false;
-        }
-        return true;
+        return !BwUtil.isDefaultSword(itemStack);
     }
 
     public static boolean canDropItem(com.combatreforged.factory.api.world.item.ItemStack itemStack) {
@@ -189,10 +186,7 @@ public class BwUtil {
         if (item.contains("pickaxe") || item.contains("axe")|| item.contains("shears")) {
             return false;
         }
-        if (item.contains("stone sword")) {
-            return false;
-        }
-        return true;
+        return !item.contains("stone sword");
     }
 
     public static float playerArmorCalculation(ServerPlayer player, DamageSource damageSource, float damage) {

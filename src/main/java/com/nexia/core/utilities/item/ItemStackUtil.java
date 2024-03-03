@@ -30,9 +30,8 @@ public class ItemStackUtil {
     }
 
     public static int getArmorTier(Item item) {
-        if (!(item instanceof ArmorItem)) return 0;
+        if (!(item instanceof ArmorItem armorItem)) return 0;
 
-        ArmorItem armorItem = (ArmorItem) item;
         ArmorMaterial material = armorItem.getMaterial();
         if (!armorTiers.containsKey(material)) return 0;
 

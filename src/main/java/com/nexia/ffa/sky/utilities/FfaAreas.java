@@ -1,24 +1,19 @@
 package com.nexia.ffa.sky.utilities;
 
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.core.utilities.pos.*;
+import com.nexia.core.utilities.pos.EntityPos;
+import com.nexia.core.utilities.pos.PositionUtil;
+import com.nexia.core.utilities.pos.ProtectionBlock;
+import com.nexia.core.utilities.pos.ProtectionMap;
 import com.nexia.ffa.Main;
 import net.kyori.adventure.text.Component;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.phys.AABB;
-
-import java.util.function.Predicate;
 
 public class FfaAreas {
     public static ServerLevel ffaWorld = null;

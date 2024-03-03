@@ -1,22 +1,17 @@
 package com.nexia.core.commands.player.duels;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.gui.duels.DuelGUI;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
-import com.nexia.minigames.Main;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
-import org.jetbrains.annotations.Nullable;
 
 public class AcceptDuelCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
