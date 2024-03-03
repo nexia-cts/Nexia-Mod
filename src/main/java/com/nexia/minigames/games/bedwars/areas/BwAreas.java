@@ -7,7 +7,6 @@ import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.pos.ProtectionBlock;
 import com.nexia.core.utilities.pos.ProtectionMap;
-import com.nexia.ffa.Main;
 import com.nexia.minigames.games.bedwars.BwGame;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
