@@ -1,9 +1,6 @@
 package com.nexia.core.mixin.entity;
 
 import com.nexia.core.Main;
-import com.nexia.ffa.sky.utilities.FfaAreas;
-import com.nexia.minigames.games.bedwars.custom.BwTrident;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;

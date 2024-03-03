@@ -166,7 +166,7 @@ public class FfaSkyUtil {
             }
             data.kills++;
             FfaSkyUtil.killHeal(attacker);
-            FfaSkyUtil.giveKillLoot(attacker);
+            FfaSkyUtil.giveKillLoot(attacker, player);
         }
 
         FfaSkyUtil.clearEnderpearls(player);
@@ -196,37 +196,39 @@ public class FfaSkyUtil {
         }
     }
 
-    public static void giveKillLoot(ServerPlayer player) {
-        if(!FfaSkyUtil.isFfaPlayer(player)) return;
+    public static void giveKillLoot(ServerPlayer attacker, ServerPlayer player) {
+        if(!FfaSkyUtil.isFfaPlayer(attacker)) return;
         HashMap<Integer, ItemStack> availableRewards = (HashMap<Integer, ItemStack>) killRewards.clone();
         ArrayList<ItemStack> givenRewards = new ArrayList<>();
 
 
         for (int i = 0; i < Math.min(2, availableRewards.size()); i++) {
             // Pick reward
-            int randomIndex = player.getRandom().nextInt(availableRewards.size());
+            int randomIndex = attacker.getRandom().nextInt(availableRewards.size());
             int killRewardIndex = (Integer)availableRewards.keySet().toArray()[randomIndex];
             ItemStack reward = availableRewards.get(killRewardIndex);
             availableRewards.remove(killRewardIndex);
 
             // Give reward
-            if (player.inventory.contains(reward) || !addFromOldInv(player, reward.copy())) {
-                player.inventory.add(reward.copy());
+            if (attacker.inventory.contains(reward) || !addFromOldInv(attacker, reward.copy())) {
+                attacker.inventory.add(reward.copy());
             }
             givenRewards.add(reward.copy());
         }
 
         // Inform player about given rewards
+
+        PlayerUtil.getFactoryPlayer(attacker).sendMessage(Component.text("Killed: " + player.getScoreboardName()).color(ChatFormat.arrowColor));
         for (ItemStack givenReward : givenRewards) {
             String itemName = LegacyChatFormat.removeColors(givenReward.getHoverName().getString());
             if (givenReward.getCount() > 1) itemName += "s";
-            PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("[").color(ChatFormat.arrowColor)
+            PlayerUtil.getFactoryPlayer(attacker).sendMessage(Component.text("[").color(ChatFormat.arrowColor)
                     .append(Component.text("+" + givenReward.getCount()).color(ChatFormat.brandColor1))
                     .append(Component.text("] ").color(ChatFormat.arrowColor))
                     .append(Component.text(itemName).color(ChatFormat.brandColor2))
             );
         }
-        PlayerUtil.sendSound(player, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.MASTER, 0.75f, 1f);
+        PlayerUtil.sendSound(attacker, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.MASTER, 0.75f, 1f);
     }
 
     public static void killHeal(ServerPlayer player) {

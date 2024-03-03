@@ -46,8 +46,7 @@ public class BwTrap {
         HashMap<String, BwTrap> newSet = new HashMap<>();
 
         newSet.put(TRAP_KEY_SLOWNESS, new BwTrap(2, 2,
-                BwUpgrade.upgradeItemStack(Items.TRIPWIRE_HOOK, "Slowness & Blindness Trap", "" +
-                        "Inflicts intruders with slowness\nand blindness for 10 seconds.")));
+                BwUpgrade.upgradeItemStack(Items.TRIPWIRE_HOOK, "Slowness & Blindness Trap", "Inflicts intruders with slowness\nand blindness for 10 seconds.")));
         newSet.put(TRAP_KEY_MINING_FATIGUE, new BwTrap(2, 3,
                 BwUpgrade.upgradeItemStack(Items.STONE_PICKAXE, "Mining Fatigue Trap",
                         "Inflicts intruders with mining\nfatigue for 10 seconds.")));

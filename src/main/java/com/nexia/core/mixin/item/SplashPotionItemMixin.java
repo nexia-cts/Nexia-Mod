@@ -2,7 +2,6 @@ package com.nexia.core.mixin.item;
 
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
-import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;

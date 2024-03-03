@@ -49,6 +49,9 @@ public class FfaClassicUtil {
         }
     }
 
+
+
+
     public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
         com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
         return player.getTags().contains("ffa_classic") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.CLASSIC;
@@ -104,27 +107,6 @@ public class FfaClassicUtil {
         }
     }
 
-    /*
-    public static float calculateHealth(float health){
-        float fixedHealth = Float.parseFloat(new DecimalFormat("#.#").format(health / 2));
-
-        if(fixedHealth < 0.5){
-            return 0.5f;
-        }
-        if(fixedHealth >= 10){
-            return 10f;
-        }
-
-        if(fixedHealth % 1 == 0){ return fixedHealth; }
-
-        if(Float.parseFloat(new DecimalFormat("0.#").format(fixedHealth)) >= 0.5){
-            return Float.parseFloat(new DecimalFormat("#.5").format(fixedHealth));
-        }
-        return Float.parseFloat(new DecimalFormat("#.0").format(fixedHealth));
-    }
-
-     */
-
     public static void calculateDeath(ServerPlayer player){
         SavedPlayerData data = PlayerDataManager.get(player).savedData;
         data.deaths++;
@@ -159,65 +141,12 @@ public class FfaClassicUtil {
                 .append(Component.text(" ☠ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor))
                 .append(Component.text(" somehow killed themselves.").color(ChatFormat.chatColor2));
 
-        Component msg = invalid;
-
-        if (source == DamageSource.OUT_OF_WORLD) {
-            //msg = LegacyChatFormat.format("§c⚐ {} §7took a ride to the void.", minecraftPlayer.getScoreboardName());
-            msg = Component.text("⚐ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
-                    .append(Component.text(" took a ride to the void.").color(ChatFormat.chatColor2));
-        }
-
-        if (source == DamageSource.ON_FIRE || source == DamageSource.LAVA) {
-            //msg = LegacyChatFormat.format("§c\uD83D\uDD25 {} §7was deepfried in lava.", minecraftPlayer.getScoreboardName());
-            msg = Component.text("\uD83D\uDD25 " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
-                    .append(Component.text(" was deepfried in lava.").color(ChatFormat.chatColor2));
-        }
-
-        if (source == DamageSource.HOT_FLOOR) {
-            //msg = LegacyChatFormat.format("§c\uD83D\uDD25 {} §7stepped on hot legos.", minecraftPlayer.getScoreboardName());
-            msg = Component.text("\uD83D\uDD25 " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
-                    .append(Component.text(" stepped on hot legos.").color(ChatFormat.chatColor2));
-        }
-
-        if (source == DamageSource.IN_FIRE || source == DamageSource.ON_FIRE) {
-            msg = Component.text("\uD83D\uDD25 " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
-                    .append(Component.text(" comBusted.").color(ChatFormat.chatColor2));
-        }
-
-        if (source == DamageSource.CACTUS) {
-            //msg = LegacyChatFormat.format("§7ʕっ·ᴥ·ʔっ §c☠ {} §7hugged a cactus.", minecraftPlayer.getScoreboardName());
-            msg = Component.text("ʕっ·ᴥ·ʔっ ").color(ChatFormat.chatColor2)
-                    .append(Component.text("☠ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor))
-                    .append(Component.text(" hugged a cactus.").color(ChatFormat.chatColor2));
-        }
-
-        if (source == DamageSource.DROWN || source == DamageSource.DRY_OUT) {
-            msg = Component.text("\uD83C\uDF0A " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
-                    .append(Component.text(" had a bit too much to drink.").color(ChatFormat.chatColor2));
-        }
-
+        Component msg = FfaUtil.returnDeathMessage(minecraftPlayer, source);
 
         if(attacker != null && msg == invalid && attacker != minecraftPlayer) {
 
-            String symbol = "◆";
-            Item handItem = attacker.getMainHandItem().getItem();
-
-            if (handItem == Items.DIAMOND_SWORD) {
-                symbol = "\uD83D\uDDE1";
-            } else if (handItem == Items.TRIDENT) {
-                symbol = "\uD83D\uDD31";
-            } else if (handItem == Items.DIAMOND_AXE) {
-                symbol = "\uD83E\uDE93";
-            } else if (handItem == Items.DIAMOND_HOE) {
-                symbol = "Γ";
-            }
-
-            msg = Component.text("☠ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
-                    .append(Component.text(" was killed by ").color(ChatFormat.chatColor2))
-                    .append(Component.text(symbol + " " + attacker.getScoreboardName()).color(ChatFormat.greenColor))
-                    .append(Component.text(" with ").color(ChatFormat.chatColor2))
-                    .append(Component.text(FfaUtil.calculateHealth(attacker.getHealth()) + "❤").color(ChatFormat.failColor))
-                    .append(Component.text(" left.").color(ChatFormat.chatColor2));
+            Component component = FfaUtil.returnClassicDeathMessage(minecraftPlayer, attacker);
+            if(component != null) msg = component;
 
             calculateKill(attacker);
         }
@@ -228,7 +157,7 @@ public class FfaClassicUtil {
     }
 
     public static void setInventory(ServerPlayer player){
-        HashMap<Integer, ItemStack> availableItems = (HashMap)invItems.clone();
+        HashMap<Integer, ItemStack> availableItems = (HashMap<Integer, ItemStack>) invItems.clone();
         Inventory newInv = new Inventory(player);
         Inventory oldInv = PlayerDataManager.get(player).FfaInventory;
         int i;
@@ -240,9 +169,9 @@ public class FfaClassicUtil {
                 Iterator<Map.Entry<Integer, ItemStack>> it = availableItems.entrySet().iterator();
 
                 while(it.hasNext()) {
-                    Map.Entry<Integer, ItemStack> entry = (Map.Entry)it.next();
-                    if (((ItemStack)entry.getValue()).getItem() == item) {
-                        ItemStack itemStack = ((ItemStack)entry.getValue()).copy();
+                    Map.Entry<Integer, ItemStack> entry = it.next();
+                    if (entry.getValue().getItem() == item) {
+                        ItemStack itemStack = entry.getValue().copy();
                         newInv.setItem(i, itemStack);
                         it.remove();
                         break;
@@ -252,10 +181,9 @@ public class FfaClassicUtil {
         }
 
         for (Map.Entry<Integer, ItemStack> integerItemStackEntry : availableItems.entrySet()) {
-            Map.Entry<Integer, ItemStack> entry = (Map.Entry) integerItemStackEntry;
-            ItemStack itemStack = ((ItemStack) entry.getValue()).copy();
-            if (newInv.getItem(entry.getKey()).isEmpty()) {
-                newInv.setItem(entry.getKey(), itemStack);
+            ItemStack itemStack = integerItemStackEntry.getValue().copy();
+            if (newInv.getItem(integerItemStackEntry.getKey()).isEmpty()) {
+                newInv.setItem(integerItemStackEntry.getKey(), itemStack);
             } else {
                 newInv.add(itemStack);
             }

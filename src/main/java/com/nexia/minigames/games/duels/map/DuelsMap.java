@@ -1,6 +1,5 @@
 package com.nexia.minigames.games.duels.map;
 
-import com.combatreforged.factory.api.util.Identifier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;

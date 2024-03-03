@@ -2,8 +2,6 @@ package com.nexia.core.mixin.item;
 
 import com.nexia.core.Main;
 import com.nexia.core.utilities.item.InventoryUtil;
-import com.nexia.core.utilities.player.PlayerData;
-import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.sky.utilities.FfaAreas;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;

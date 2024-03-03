@@ -54,7 +54,7 @@ public class BwScoreboard {
         for (BwTeam team : BwTeam.teamsInOrder) {
             String statusDisplay = team.textColor + "\247l» \247r" + team.displayName + " ";
 
-            if (team.players.size() < 1) {
+            if (team.players.isEmpty()) {
                 statusDisplay += "\247c✘";
             } else if (team.bedLocation != null && BlockUtil.blockToText(world.getBlockState(team.bedLocation)).endsWith("_bed")) {
                 statusDisplay += "\247a✔";

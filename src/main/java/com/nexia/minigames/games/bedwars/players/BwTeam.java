@@ -211,7 +211,7 @@ public class BwTeam {
         BwTeam team = allTeams.get(tag);
         BlockPos blockPos = new BlockPos(entity.position());
 
-        if (team.players.size() < 1) {
+        if (team.players.isEmpty()) {
             BwAreas.bedWarsWorld.setBlock(blockPos, Blocks.AIR.defaultBlockState(), 3);
             return;
         }
@@ -241,7 +241,7 @@ public class BwTeam {
     }
 
     public static void winnerRockets(ArrayList<ServerPlayer> winners, Integer winnerColor) {
-        if (winners.size() < 1 || winnerColor == null) return;
+        if (winners.isEmpty() || winnerColor == null) return;
 
         ArrayList<EntityPos> positions = new ArrayList<>();
         for (ServerPlayer player : winners) {
