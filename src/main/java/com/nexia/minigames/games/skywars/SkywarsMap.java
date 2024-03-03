@@ -43,6 +43,7 @@ public class SkywarsMap {
     private static final BlockVec3 queueC1 = new EntityPos(0, 128, 0).toBlockVec3().add(-7, -1, -7);
     private static final BlockVec3 queueC2 = new EntityPos(0, 128, 0).toBlockVec3().add(7, 6, 7);
 
+    public static final int maxJoinablePlayers = 12;
 
     public StructureMap structureMap;
 
@@ -72,7 +73,7 @@ public class SkywarsMap {
             new EntityPos(49.5,88.0,23.5))
     ), new StructureMap(new ResourceLocation("skywars", "skyhenge"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-77, -7, -77), true));
 
-    public static SkywarsMap PLACEHOLDER = new SkywarsMap("placeholder", 0, null, null);
+    public static SkywarsMap PLACEHOLDER = new SkywarsMap("placeholder", 12, null, null);
 
     public static SkywarsMap BELOW = new SkywarsMap("below", 8, new ArrayList<>(Arrays.asList(
             new EntityPos(-28.5, 81.0, 69.5),

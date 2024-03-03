@@ -22,6 +22,8 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(LinkCommand::register);
         CommandRegistrationCallback.EVENT.register(PingCommand::register);
 
+        CommandRegistrationCallback.EVENT.register(ForceGameEndCommand::register);
+
         CommandRegistrationCallback.EVENT.register(SpectateCommand::register);
         CommandRegistrationCallback.EVENT.register(TeamCommand::register);
 

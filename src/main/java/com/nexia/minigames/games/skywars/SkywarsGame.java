@@ -172,7 +172,7 @@ public class SkywarsGame {
                     fPlayer.sendActionBarMessage(
                             Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
                                     .append(Component.text(StringUtil.capitalize(SkywarsGame.map.id)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
-                                    .append(Component.text(" (" + SkywarsGame.queue.size() + "/" + SkywarsGame.map.maxPlayers + ")").color(TextColor.fromHexString("#b3b3b3")))
+                                    .append(Component.text(" (" + SkywarsGame.queue.size() + "/" + SkywarsMap.maxJoinablePlayers + ")").color(TextColor.fromHexString("#b3b3b3")))
                                     .append(Component.text(" | ").color(ChatFormat.lineColor))
                                     .append(Component.text("Time » ").color(TextColor.fromHexString("#b3b3b3")))
                                     .append(Component.text(SkywarsGame.queueTime).color(ChatFormat.brandColor2))
@@ -213,7 +213,7 @@ public class SkywarsGame {
         PlayerUtil.resetHealthStatus(player);
 
 
-        if(SkywarsGame.isStarted || SkywarsGame.queue.size() >= SkywarsGame.map.maxPlayers){
+        if(SkywarsGame.isStarted || SkywarsGame.queue.size() >= SkywarsMap.maxJoinablePlayers){
             SkywarsGame.spectator.add(AccuratePlayer.create(player));
             PlayerDataManager.get(player).gameMode = SkywarsGameMode.SPECTATOR;
             PlayerUtil.sendBossbar(SkywarsGame.BOSSBAR, player, false);
