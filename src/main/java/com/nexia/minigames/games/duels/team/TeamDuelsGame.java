@@ -298,17 +298,7 @@ public class TeamDuelsGame { // implements Runnable{
                 return;
             }
 
-            Title title;
-            TextColor color = NamedTextColor.GREEN;
-
-            if (this.currentStartTime <= 3 && this.currentStartTime > 1) {
-                color = NamedTextColor.YELLOW;
-            } else if (this.currentStartTime <= 1) {
-                color = NamedTextColor.RED;
-            }
-
-            title = Title.title(Component.text(this.currentStartTime).color(color), Component.text(""),
-                    Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
+            Title title = getTitle();
 
             for (AccuratePlayer player : this.team1.alive) {
                 PlayerUtil.getFactoryPlayer(player.get()).sendTitle(title);
@@ -321,6 +311,22 @@ public class TeamDuelsGame { // implements Runnable{
                         1);
             }
         }
+    }
+
+    @NotNull
+    private Title getTitle() {
+        Title title;
+        TextColor color = NamedTextColor.GREEN;
+
+        if (this.currentStartTime <= 3 && this.currentStartTime > 1) {
+            color = NamedTextColor.YELLOW;
+        } else if (this.currentStartTime <= 1) {
+            color = NamedTextColor.RED;
+        }
+
+        title = Title.title(Component.text(this.currentStartTime).color(color), Component.text(""),
+                Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
+        return title;
     }
 
     public void endGame(@NotNull DuelsTeam loserTeam, @Nullable DuelsTeam winnerTeam, boolean wait) {
