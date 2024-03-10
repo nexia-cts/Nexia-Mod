@@ -11,14 +11,15 @@
   "contributors": [
     "Shinkume",
     "betterclient",
-    "r6653116"
+    "r6653116",
+    "SurgeFlame"
   ],
   "contact": {
-    "homepage": "https://nexia.mcserver.us/",
+    "homepage": "https://nexia.dev",
     "sources": "https://github.com/nexia-cts/Nexia-Mod"
   },
 
-  "license": "LGPL-3.0",
+  "license": "GPL-3.0",
   "icon": "assets/nexia/logo.png",
 
   "environment": "server",

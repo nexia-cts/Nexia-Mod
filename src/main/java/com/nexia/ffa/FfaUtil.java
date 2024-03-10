@@ -85,15 +85,18 @@ public class FfaUtil {
         if(source == null) return invalid;
 
         if (source == DamageSource.OUT_OF_WORLD) {
-            //return LegacyChatFormat.format("§c⚐ {} §7took a ride to the void.", minecraftPlayer.getScoreboardName());
             return Component.text("⚐ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
                     .append(Component.text(" took a ride to the void.").color(ChatFormat.chatColor2));
         } else if (source == DamageSource.LAVA) {
-            //return LegacyChatFormat.format("§c\uD83D\uDD25 {} §7was deepfried in lava.", minecraftPlayer.getScoreboardName());
             return Component.text("\uD83D\uDD25 " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
                     .append(Component.text(" was deepfried in lava.").color(ChatFormat.chatColor2));
         } else if (source == DamageSource.HOT_FLOOR) {
-            //return LegacyChatFormat.format("§c\uD83D\uDD25 {} §7stepped on hot legos.", minecraftPlayer.getScoreboardName());
+            return Component.text("⚐ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
+                    .append(Component.text(" took a ride to the void.").color(ChatFormat.chatColor2));
+        } else if (source == DamageSource.LAVA) {
+            return Component.text("\uD83D\uDD25 " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
+                    .append(Component.text(" was deepfried in lava.").color(ChatFormat.chatColor2));
+        } else if (source == DamageSource.HOT_FLOOR) {
             return Component.text("\uD83D\uDD25 " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
                     .append(Component.text(" stepped on hot legos.").color(ChatFormat.chatColor2));
         } else if (source == DamageSource.IN_FIRE || source == DamageSource.ON_FIRE) {
@@ -103,7 +106,6 @@ public class FfaUtil {
             return Component.text("⚓ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
                     .append(Component.text(" turned into a human doormat.").color(ChatFormat.chatColor2));
         } else if (source == DamageSource.CACTUS) {
-            //return LegacyChatFormat.format("§7ʕっ·ᴥ·ʔっ §c☠ {} §7hugged a cactus.", minecraftPlayer.getScoreboardName());
             return Component.text("ʕっ·ᴥ·ʔっ ").color(ChatFormat.chatColor2)
                     .append(Component.text("☠ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor))
                     .append(Component.text(" hugged a cactus.").color(ChatFormat.chatColor2));
@@ -119,7 +121,7 @@ public class FfaUtil {
     }
 
     public static Component returnClassicDeathMessage(@NotNull ServerPlayer minecraftPlayer, @NotNull ServerPlayer attacker) {
-        if(attacker == minecraftPlayer) return null;
+        if (attacker == minecraftPlayer) return null;
 
         String symbol = "◆";
         Item handItem = attacker.getMainHandItem().getItem();
@@ -131,6 +133,10 @@ public class FfaUtil {
             symbol = "\uD83D\uDD31";
         } else if (itemName.contains("axe")) {
             symbol = "\uD83E\uDE93";
+        } else if (handItem == Items.BOW || handItem == Items.CROSSBOW) {
+            symbol = "\uD83C\uDFF9";
+        } else if (itemName.contains("hoe")) {
+            symbol = "Γ";
         }
 
         return Component.text("☠ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)

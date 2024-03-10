@@ -5,6 +5,7 @@ import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,6 +21,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
+
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
 

@@ -217,8 +217,12 @@ public class FfaSkyUtil {
         }
 
         // Inform player about given rewards
+        PlayerUtil.getFactoryPlayer(attacker).sendMessage(Component.text("[").color(ChatFormat.arrowColor)
+                .append(Component.text("☠").color(ChatFormat.brandColor1))
+                .append(Component.text("] ").color(ChatFormat.arrowColor))
+                .append(Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2))
+        );
 
-        PlayerUtil.getFactoryPlayer(attacker).sendMessage(Component.text("Killed: " + player.getScoreboardName()).color(ChatFormat.arrowColor));
         for (ItemStack givenReward : givenRewards) {
             String itemName = LegacyChatFormat.removeColors(givenReward.getHoverName().getString());
             if (givenReward.getCount() > 1) itemName += "s";
