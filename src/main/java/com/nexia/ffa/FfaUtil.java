@@ -91,12 +91,6 @@ public class FfaUtil {
             return Component.text("\uD83D\uDD25 " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
                     .append(Component.text(" was deepfried in lava.").color(ChatFormat.chatColor2));
         } else if (source == DamageSource.HOT_FLOOR) {
-            return Component.text("⚐ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
-                    .append(Component.text(" took a ride to the void.").color(ChatFormat.chatColor2));
-        } else if (source == DamageSource.LAVA) {
-            return Component.text("\uD83D\uDD25 " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
-                    .append(Component.text(" was deepfried in lava.").color(ChatFormat.chatColor2));
-        } else if (source == DamageSource.HOT_FLOOR) {
             return Component.text("\uD83D\uDD25 " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
                     .append(Component.text(" stepped on hot legos.").color(ChatFormat.chatColor2));
         } else if (source == DamageSource.IN_FIRE || source == DamageSource.ON_FIRE) {
@@ -138,6 +132,7 @@ public class FfaUtil {
         } else if (itemName.contains("hoe")) {
             symbol = "Γ";
         }
+
 
         return Component.text("☠ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor)
                 .append(Component.text(" was killed by ").color(ChatFormat.chatColor2))
