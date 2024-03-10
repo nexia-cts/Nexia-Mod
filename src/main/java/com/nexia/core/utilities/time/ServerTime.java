@@ -135,8 +135,8 @@ public class ServerTime {
         } catch (Exception ignored) { }
 
 
-        if(totalSecondCount % 3600 == 0) {
-            com.nexia.ffa.uhc.utilities.FfaAreas.resetMap(true);
+        if(totalSecondCount % 3600 == 0 && !com.nexia.ffa.uhc.utilities.FfaAreas.shouldResetMap) {
+            com.nexia.ffa.uhc.utilities.FfaAreas.shouldResetMap = true;
         }
     }
 

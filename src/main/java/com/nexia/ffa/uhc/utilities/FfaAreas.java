@@ -18,7 +18,7 @@ import net.notcoded.codelib.util.world.structure.StructureMap;
 
 public class FfaAreas {
 
-    public static boolean firstReset = true;
+    public static boolean shouldResetMap = true;
 
     public static ServerLevel ffaWorld = null;
 

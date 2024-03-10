@@ -68,7 +68,13 @@ public class FfaKitsUtil {
             data.bestKillstreak = data.killstreak;
         }
         data.kills++;
-        player.heal(player.getMaxHealth());
+
+        BlfScheduler.delay(5, new BlfRunnable() {
+            @Override
+            public void run() {
+                player.heal(player.getMaxHealth());
+            }
+        });
 
         FfaKitsUtil.clearArrows(player);
         FfaKitsUtil.clearSpectralArrows(player);
@@ -193,13 +199,9 @@ public class FfaKitsUtil {
 
         calculateDeath(minecraftPlayer);
 
-        Component invalid = Component.text("Wow,").color(ChatFormat.chatColor2)
-                .append(Component.text(" ☠ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor))
-                .append(Component.text(" somehow killed themselves.").color(ChatFormat.chatColor2));
-
         Component msg = FfaUtil.returnDeathMessage(minecraftPlayer, source);
 
-        if(attacker != null && msg == invalid && attacker != minecraftPlayer) {
+        if(attacker != null && msg.toString().contains("somehow killed themselves")  && attacker != minecraftPlayer) {
 
             Component component = FfaUtil.returnClassicDeathMessage(minecraftPlayer, attacker);
             if(component != null) msg = component;

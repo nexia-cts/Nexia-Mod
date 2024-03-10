@@ -11,6 +11,8 @@ import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.classic.utilities.player.PlayerData;
 import com.nexia.ffa.classic.utilities.player.PlayerDataManager;
 import com.nexia.ffa.classic.utilities.player.SavedPlayerData;
+import net.blumbo.blfscheduler.BlfRunnable;
+import net.blumbo.blfscheduler.BlfScheduler;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -88,7 +90,15 @@ public class FfaClassicUtil {
             data.bestKillstreak = data.killstreak;
         }
         data.kills++;
-        player.heal(player.getMaxHealth());
+
+        BlfScheduler.delay(5, new BlfRunnable() {
+            @Override
+            public void run() {
+                player.heal(player.getMaxHealth());
+            }
+        });
+
+
 
         if(data.killstreak % 5 == 0){
             for(ServerPlayer serverPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()){
@@ -137,13 +147,9 @@ public class FfaClassicUtil {
 
         calculateDeath(minecraftPlayer);
 
-        Component invalid = Component.text("Wow,").color(ChatFormat.chatColor2)
-                .append(Component.text(" ☠ " + minecraftPlayer.getScoreboardName()).color(ChatFormat.failColor))
-                .append(Component.text(" somehow killed themselves.").color(ChatFormat.chatColor2));
-
         Component msg = FfaUtil.returnDeathMessage(minecraftPlayer, source);
 
-        if(attacker != null && msg == invalid && attacker != minecraftPlayer) {
+        if(attacker != null && msg.toString().contains("somehow killed themselves") && attacker != minecraftPlayer) {
 
             Component component = FfaUtil.returnClassicDeathMessage(minecraftPlayer, attacker);
             if(component != null) msg = component;
