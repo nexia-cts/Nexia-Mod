@@ -42,6 +42,10 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(StaffPrefixCommand::register);
         CommandRegistrationCallback.EVENT.register(DevExperimentalMapCommand::register);
 
+        CommandRegistrationCallback.EVENT.register(LoadInventoryCommand::register);
+        CommandRegistrationCallback.EVENT.register(SaveInventoryCommand::register);
+        CommandRegistrationCallback.EVENT.register(ListInventoriesCommand::register);
+
         CommandRegistrationCallback.EVENT.register(StaffReportCommand::register);
 
         CommandRegistrationCallback.EVENT.register(DuelCommand::register);

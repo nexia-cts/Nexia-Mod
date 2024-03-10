@@ -53,6 +53,6 @@ public class FfaKit {
         PlayerDataManager.get(player).kit = this;
 
         if(clearEffect) fPlayer.clearEffects();
-        InventoryUtil.loadInventory(player, "ffa_kits-" + this.id);
+        InventoryUtil.loadInventory(player, "ffa_kits", this.id);
     }
 }

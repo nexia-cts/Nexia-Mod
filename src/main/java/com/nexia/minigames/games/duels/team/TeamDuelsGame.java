@@ -154,7 +154,7 @@ public class TeamDuelsGame { // implements Runnable{
                             .append(Component.text(team2.getLeader().get().getScoreboardName() + "'s Team")
                                     .color(ChatFormat.brandColor2))));
 
-            InventoryUtil.loadInventory(player.get(), "duels-" + stringGameMode.toLowerCase());
+            InventoryUtil.loadInventory(player.get(), "duels", stringGameMode.toLowerCase());
 
             if (!gameMode.hasSaturation) {
                 factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
@@ -186,7 +186,7 @@ public class TeamDuelsGame { // implements Runnable{
                             .append(Component.text(team1.getLeader().get().getScoreboardName() + "'s Team")
                                     .color(ChatFormat.brandColor2))));
 
-            InventoryUtil.loadInventory(serverPlayer, "duels-" + stringGameMode.toLowerCase());
+            InventoryUtil.loadInventory(serverPlayer, "duels", stringGameMode.toLowerCase());
 
             if (!gameMode.hasSaturation) {
                 factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);

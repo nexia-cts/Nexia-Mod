@@ -153,8 +153,8 @@ public class DuelsGame { //implements Runnable{
                 .append(Component.text("Your opponent: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                 .append(Component.text(p2.getRawName()).color(ChatFormat.brandColor2))));
 
-        InventoryUtil.loadInventory(mcP1, "duels-" + stringGameMode.toLowerCase());
-        InventoryUtil.loadInventory(mcP2, "duels-" + stringGameMode.toLowerCase());
+        InventoryUtil.loadInventory(mcP1, "duels", stringGameMode.toLowerCase());
+        InventoryUtil.loadInventory(mcP2, "duels", stringGameMode.toLowerCase());
 
 
         playerData.gameMode = gameMode;
