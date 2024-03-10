@@ -150,7 +150,6 @@ public class FfaClassicUtil {
         Component msg = FfaUtil.returnDeathMessage(minecraftPlayer, source);
 
         if(attacker != null && msg.toString().contains("somehow killed themselves") && attacker != minecraftPlayer) {
-
             Component component = FfaUtil.returnClassicDeathMessage(minecraftPlayer, attacker);
             if(component != null) msg = component;
 

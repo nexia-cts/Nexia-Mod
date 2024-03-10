@@ -217,7 +217,6 @@ public class FfaSkyUtil {
         }
 
         // Inform player about given rewards
-        
         PlayerUtil.getFactoryPlayer(attacker).sendMessage(Component.text("[").color(ChatFormat.arrowColor)
                 .append(Component.text("☠").color(ChatFormat.brandColor1))
                 .append(Component.text("] ").color(ChatFormat.arrowColor))
