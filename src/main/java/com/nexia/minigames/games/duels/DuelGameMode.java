@@ -41,7 +41,7 @@ public class DuelGameMode {
     public static final DuelGameMode POT = new DuelGameMode("pot", true, false, GameType.ADVENTURE, new ItemStack(Items.SPLASH_POTION), false);
     public static final DuelGameMode NETH_POT = new DuelGameMode("neth_pot", true, false, GameType.ADVENTURE, new ItemStack(Items.NETHERITE_SWORD), true);
 
-    public static final DuelGameMode OG_VANILLA = new DuelGameMode("og_vanilla", true, false, GameType.SURVIVAL, new ItemStack(Items.DIAMOND_CHESTPLATE), true);
+    public static final DuelGameMode SMP = new DuelGameMode("smp", true, false, GameType.SURVIVAL, new ItemStack(Items.DIAMOND_CHESTPLATE), true);
     public static final DuelGameMode NETH_SMP = new DuelGameMode("neth_smp", true, false, GameType.SURVIVAL, new ItemStack(Items.NETHERITE_CHESTPLATE), true);
     public static final DuelGameMode CART = new DuelGameMode("cart", true, false, GameType.SURVIVAL, new ItemStack(Items.TNT_MINECART), false);
 

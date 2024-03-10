@@ -55,7 +55,7 @@ public class LoadInventoryCommand {
 
         boolean isContextPlayer;
         try {
-            isContextPlayer = context.getSource().getPlayerOrException() != null;
+            isContextPlayer = context.getSource().getPlayerOrException().equals(player);
         } catch (CommandSyntaxException ignored) {
             isContextPlayer = false;
         }
@@ -67,7 +67,7 @@ public class LoadInventoryCommand {
         } else {
             InventoryUtil.loadInventory(player, type, inventory);
 
-            context.getSource().sendSuccess(LegacyChatFormat.format("{b1}Successfully loaded '{}' in '{}' to " + ((isContextPlayer) ? "your inventory" : "the inventory of" + player.getScoreboardName()) + ".", inventory, type), false);
+            context.getSource().sendSuccess(LegacyChatFormat.format("{b1}Successfully loaded '{}' in '{}' to " + ((isContextPlayer) ? "your inventory" : "the inventory of " + player.getScoreboardName()) + ".", inventory, type), false);
 
             if(!isContextPlayer){
                 player.sendMessage(LegacyChatFormat.format("{b1}Your inventory has been replaced with '{}'.", inventory), Util.NIL_UUID);

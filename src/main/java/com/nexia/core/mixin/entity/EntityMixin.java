@@ -43,10 +43,6 @@ public abstract class EntityMixin implements Nameable, CommandSource {
 
     @Shadow public Level level;
 
-    @Shadow public abstract void setDeltaMovement(Vec3 vec3);
-
-    @Shadow public abstract void setDeltaMovement(double d, double e, double f);
-
     @Inject(method = "isInvulnerableTo", at = @At("HEAD"), cancellable = true)
     private void hurt(DamageSource damageSource, CallbackInfoReturnable<Boolean> cir) {
         if (damageSource == DamageSource.FALL && getTags().contains(LobbyUtil.NO_FALL_DAMAGE_TAG) || damageSource == DamageSource.FALL && getTags().contains("ffa")) {

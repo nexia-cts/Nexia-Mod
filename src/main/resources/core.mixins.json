@@ -35,6 +35,7 @@
     "item.CrossbowItemMixin",
     "item.EggItemMixin",
     "item.EnderPearlItemMixin",
+    "item.ExperienceBottleItemMixin",
     "item.LingeringPotionItemMixin",
     "item.PotionItemMixin",
     "item.SplashPotionItemMixin",

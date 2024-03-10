@@ -26,6 +26,7 @@ import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -153,8 +154,14 @@ public class DuelsGame { //implements Runnable{
                 .append(Component.text("Your opponent: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                 .append(Component.text(p2.getRawName()).color(ChatFormat.brandColor2))));
 
-        InventoryUtil.loadInventory(mcP1, "duels", stringGameMode.toLowerCase());
-        InventoryUtil.loadInventory(mcP2, "duels", stringGameMode.toLowerCase());
+
+        File p1File = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + mcP1.getStringUUID(), stringGameMode.toLowerCase() + ".txt");
+        if(p1File.exists()) InventoryUtil.loadInventory(mcP1, "duels/custom/" + mcP1.getStringUUID(), stringGameMode.toLowerCase());
+        else InventoryUtil.loadInventory(mcP1, "duels", stringGameMode.toLowerCase());
+
+        File p2File = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + mcP2.getStringUUID(), stringGameMode.toLowerCase() + ".txt");
+        if(p2File.exists()) InventoryUtil.loadInventory(mcP1, "duels/custom/" + mcP2.getStringUUID(), stringGameMode.toLowerCase());
+        else InventoryUtil.loadInventory(mcP2, "duels", stringGameMode.toLowerCase());
 
 
         playerData.gameMode = gameMode;

@@ -10,6 +10,7 @@ import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
+import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.team.DuelsTeam;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import com.nexia.minigames.games.football.FootballGame;
@@ -73,8 +74,7 @@ public abstract class PlayerMixin extends LivingEntity {
     @Inject(method = "canEat", cancellable = true, at = @At("HEAD"))
     private void preventFFAUsers(boolean bl, CallbackInfoReturnable<Boolean> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
-        if(com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.sky.utilities.FfaAreas.isInFfaSpawn(player) ||
-                com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(player)) {
+        if((com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.sky.utilities.FfaAreas.isInFfaSpawn(player)) || (com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(player)) || PlayerDataManager.get(player).gameMode.equals(DuelGameMode.LOBBY)) {
             cir.setReturnValue(false);
             ItemStackUtil.sendInventoryRefreshPacket(player);
         }

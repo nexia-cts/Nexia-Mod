@@ -3,6 +3,8 @@ package com.nexia.core.mixin.item;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.ffa.uhc.utilities.FfaAreas;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
+import com.nexia.minigames.games.duels.DuelGameMode;
+import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -46,7 +48,7 @@ public class BucketItemMixin extends Item {
         BlockPos blockPos3 = blockState.getBlock() instanceof LiquidBlockContainer && this.content == Fluids.WATER ? blockPos : blockPos2;
 
         if(!(player instanceof ServerPlayer serverPlayer)) return;
-        if(FfaAreas.isFfaWorld(level) && !FfaUhcUtil.beforeBuild(serverPlayer, blockPos3)) {
+        if((FfaAreas.isFfaWorld(level) && !FfaUhcUtil.beforeBuild(serverPlayer, blockPos3)) || PlayerDataManager.get(serverPlayer).gameMode.equals(DuelGameMode.LOBBY)) {
             cir.setReturnValue(new InteractionResultHolder<>(InteractionResult.FAIL, player.getItemInHand(interactionHand)));
             ItemStackUtil.sendInventoryRefreshPacket(serverPlayer);
         }
