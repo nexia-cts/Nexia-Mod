@@ -145,8 +145,7 @@ public abstract class ServerPlayerMixin extends Player {
         });
         if(nearestPosition.get() != null) {
             Vec3 nearestPos = nearestPosition.get();
-            ServerTime.factoryServer.runCommand("/player .bot look at " + nearestPos.x + " " + nearestPos.y + " " + nearestPos.z, 4, false);
+            // ServerTime.factoryServer.runCommand("/player .bot look at " + nearestPos.x + " " + nearestPos.y + " " + nearestPos.z, 4, false);
         }
     }
-
 }
