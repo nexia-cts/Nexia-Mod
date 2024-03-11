@@ -18,6 +18,7 @@ public class CommandLoader {
 
         CommandRegistrationCallback.EVENT.register(ProtectionMapCommand::register);
         CommandRegistrationCallback.EVENT.register(PrefixCommand::register);
+        CommandRegistrationCallback.EVENT.register(DetectCommand::register);
         CommandRegistrationCallback.EVENT.register(RankCommand::register);
         CommandRegistrationCallback.EVENT.register(LinkCommand::register);
         CommandRegistrationCallback.EVENT.register(PingCommand::register);
