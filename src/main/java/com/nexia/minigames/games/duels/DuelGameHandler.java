@@ -1,6 +1,7 @@
 package com.nexia.minigames.games.duels;
 
 import com.nexia.core.Main;
+import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.classic.utilities.FfaAreas;
@@ -34,8 +35,17 @@ import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQu
 
 public class DuelGameHandler {
 
+
     public static List<DuelsGame> duelsGames = new ArrayList<>();
     public static List<TeamDuelsGame> teamDuelsGames = new ArrayList<>();
+
+    public static boolean validCustomKit(ServerPlayer player, String kitID) {
+        if(kitID.trim().isEmpty()) return false;
+
+        File file = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID(), kitID + ".txt");
+        System.out.print("fil: " + file.exists());
+        return file.exists();
+    }
 
     public static void leave(ServerPlayer player, boolean leaveTeam) {
         PlayerData data = PlayerDataManager.get(player);

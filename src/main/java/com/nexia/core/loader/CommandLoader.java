@@ -2,6 +2,8 @@ package com.nexia.core.loader;
 
 import com.nexia.core.commands.player.*;
 import com.nexia.core.commands.player.duels.*;
+import com.nexia.core.commands.player.duels.custom.CustomDuelCommand;
+import com.nexia.core.commands.player.duels.custom.KitEditorCommand;
 import com.nexia.core.commands.player.ffa.*;
 import com.nexia.core.commands.staff.*;
 import com.nexia.core.commands.staff.dev.*;
@@ -49,6 +51,7 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(DeleteInventoryCommand::register);
 
         CommandRegistrationCallback.EVENT.register(KitEditorCommand::register);
+        CommandRegistrationCallback.EVENT.register(CustomDuelCommand::register);
 
         CommandRegistrationCallback.EVENT.register(StaffReportCommand::register);
 

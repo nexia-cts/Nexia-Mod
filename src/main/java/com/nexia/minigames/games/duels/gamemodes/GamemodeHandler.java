@@ -7,6 +7,7 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.map.DuelsMap;
@@ -78,7 +79,7 @@ public class GamemodeHandler {
 
         gameMode.queue.add(minecraftPlayer);
         if (gameMode.queue.size() >= 2) {
-            GamemodeHandler.joinGamemode(minecraftPlayer, gameMode.queue.get(0), stringGameMode, null, false);
+            GamemodeHandler.joinGamemode(minecraftPlayer, gameMode.queue.get(0), stringGameMode, null, false, false);
         }
     }
 
@@ -130,10 +131,13 @@ public class GamemodeHandler {
             unspectatePlayer(executor, player, false);
         }
 
+        /*
         if(playerData.teamDuelsGame != null) {
             factoryExecutor.sendMessage(Component.text("Spectating Team Duels is currently not available. We are sorry for the inconvenience.").color(ChatFormat.failColor));
             return;
         }
+         */
+        // what could go wrong?
 
         factoryExecutor.setGameMode(Minecraft.GameMode.SPECTATOR);
         executor.teleportTo(player.getLevel(), player.getX(), player.getY(), player.getZ(), 0, 0);
@@ -229,9 +233,9 @@ public class GamemodeHandler {
         executorData.spectatingPlayer = null;
         LobbyUtil.leaveAllGames(executor, teleport);
     }
-    public static void joinGamemode(ServerPlayer invitor, ServerPlayer player, String stringGameMode, @Nullable DuelsMap selectedmap, boolean silent) {
+    public static void joinGamemode(ServerPlayer invitor, ServerPlayer player, String stringGameMode, @Nullable DuelsMap selectedmap, boolean silent, boolean customDuel) {
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
-        if (gameMode == null) {
+        if (gameMode == null && !customDuel) {
             if (!silent) {
                 PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("Invalid gamemode!").color(ChatFormat.failColor));
             }
@@ -240,7 +244,7 @@ public class GamemodeHandler {
         PlayerData data = PlayerDataManager.get(invitor);
         PlayerData playerData = PlayerDataManager.get(player);
 
-        if (data.duelsTeam != null && data.duelsTeam.getPeople().contains(player)) {
+        if (data.duelsTeam != null && data.duelsTeam.getPeople().contains(AccuratePlayer.create(player))) {
             if (!silent) {
                 PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("You cannot duel people on your team!").color(ChatFormat.failColor));
             }
@@ -259,11 +263,12 @@ public class GamemodeHandler {
         }
 
         if (data.duelsTeam != null && playerData.duelsTeam != null) {
-            TeamDuelsGame.startGame(data.duelsTeam, playerData.duelsTeam, stringGameMode, selectedmap);
+            if(data.customDuel) TeamDuelsGame.startGame(data.duelsTeam, playerData.duelsTeam, data.inviteKit, selectedmap);
+            else TeamDuelsGame.startGame(data.duelsTeam, playerData.duelsTeam, stringGameMode, selectedmap);
             return;
         }
 
-        DuelsGame.startGame(invitor, player, stringGameMode, selectedmap);
+        DuelsGame.startGame(invitor, player, stringGameMode, selectedmap, customDuel);
 
     }
 
@@ -294,7 +299,7 @@ public class GamemodeHandler {
             return;
         }
 
-        GamemodeHandler.joinGamemode(minecraftExecutor, minecraftPlayer, playerData.inviteKit, playerData.inviteMap, true);
+        GamemodeHandler.joinGamemode(minecraftPlayer, minecraftExecutor, playerData.inviteKit, playerData.inviteMap, false, playerData.customDuel);
     }
 
     public static void declineDuel(@NotNull ServerPlayer minecraftExecutor, @NotNull ServerPlayer minecraftPlayer) {
@@ -341,6 +346,7 @@ public class GamemodeHandler {
         playerData.inviteKit = "";
         playerData.inviting = false;
         playerData.invitingPlayer = null;
+        playerData.customDuel = false;
 
 
         player.sendMessage(ChatFormat.nexiaMessage.append(Component.text(executor.getRawName() + " has declined your duel.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
@@ -359,7 +365,8 @@ public class GamemodeHandler {
         );
 
 
-        GamemodeHandler.joinGamemode(minecraftExecutor, minecraftPlayer, playerData.inviteKit, playerData.inviteMap, true);
+        //GamemodeHandler.joinGamemode(minecraftExecutor, minecraftPlayer, playerData.inviteKit, playerData.inviteMap, true);
+        //^^ why was this here
     }
 
     public static void challengePlayer(ServerPlayer minecraftExecutor, ServerPlayer minecraftPlayer, String stringGameMode, @Nullable DuelsMap selectedmap) {
@@ -413,21 +420,11 @@ public class GamemodeHandler {
             return;
         }
 
-        if (!executorData.inviteMap.equals(map)) {
-            executorData.inviteMap = map;
-        }
-
-        if (!executorData.inviteKit.equalsIgnoreCase(stringGameMode.toUpperCase())) {
-            executorData.inviteKit = stringGameMode.toUpperCase();
-        }
-
-        if (!executorData.inviting) {
-            executorData.inviting = true;
-        }
-
-        if (executorData.invitingPlayer != minecraftPlayer) {
-            executorData.invitingPlayer = minecraftPlayer;
-        }
+        executorData.inviteMap = map;
+        executorData.inviteKit = stringGameMode.toUpperCase();
+        executorData.inviting = true;
+        executorData.invitingPlayer = minecraftPlayer;
+        executorData.customDuel = false;
 
         // } else if((!executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) || !executorData.inviteKit.equalsIgnoreCase(playerData.inviteKit)) && (playerData.invitingPlayer == null || !playerData.invitingPlayer.getStringUUID().equalsIgnoreCase(minecraftExecutor.getStringUUID())) && playerData.gameMode == DuelGameMode.LOBBY){
 
@@ -462,6 +459,120 @@ public class GamemodeHandler {
 
         Component kit = Component.text("Kit: ").color(ChatFormat.brandColor1)
                 .append(Component.text(stringGameMode.toUpperCase()).color(ChatFormat.normalColor)
+                );
+
+        Component mapName = Component.text("Map: ").color(ChatFormat.brandColor1)
+                .append(Component.text(map.id.toUpperCase()).color(ChatFormat.normalColor)
+                );
+
+        Component yes = Component.text("[").color(NamedTextColor.DARK_GRAY)
+                .append(Component.text("ACCEPT")
+                        .color(ChatFormat.greenColor)
+                        .decorate(ChatFormat.bold)
+                        .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor2)))
+                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/acceptduel " + executor.getRawName())))
+                .append(Component.text("]  ").color(NamedTextColor.DARK_GRAY)
+                );
+
+        Component no = Component.text("[").color(NamedTextColor.DARK_GRAY)
+                .append(Component.text("DECLINE")
+                        .color(ChatFormat.failColor)
+                        .decorate(ChatFormat.bold)
+                        .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor2)))
+                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/declineduel " + executor.getRawName())))
+                .append(Component.text("]  ").color(NamedTextColor.DARK_GRAY)
+                );
+
+
+        player.sendMessage(message);
+        player.sendMessage(kit);
+        player.sendMessage(mapName);
+        player.sendMessage(yes.append(no));
+    }
+
+    public static void customChallengePlayer(ServerPlayer minecraftExecutor, ServerPlayer minecraftPlayer, String customKit, @Nullable DuelsMap selectedmap) {
+
+        Player executor = PlayerUtil.getFactoryPlayer(minecraftExecutor);
+
+        if (!DuelGameHandler.validCustomKit(minecraftExecutor, customKit)) {
+            executor.sendMessage(Component.text("Invalid kit!").color(ChatFormat.failColor));
+            return;
+        }
+
+        if (minecraftExecutor == minecraftPlayer) {
+            executor.sendMessage(Component.text("You cannot duel yourself!").color(ChatFormat.failColor));
+            return;
+        }
+
+        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+
+        PlayerData executorData = PlayerDataManager.get(minecraftExecutor);
+        PlayerData playerData = PlayerDataManager.get(minecraftPlayer);
+
+        if (executorData.inDuel || playerData.inDuel) {
+            executor.sendMessage(Component.text("That player is currently dueling someone.").color(ChatFormat.failColor));
+            return;
+        }
+
+        if (com.nexia.core.utilities.player.PlayerDataManager.get(minecraftPlayer).gameMode != PlayerGameMode.LOBBY) {
+            executor.sendMessage(Component.text("That player is not in duels!").color(ChatFormat.failColor));
+            return;
+        }
+
+        if (executorData.duelsTeam != null && !executorData.duelsTeam.isLeader(AccuratePlayer.create(minecraftExecutor))) {
+            executor.sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
+            return;
+        }
+
+        DuelsMap map = selectedmap;
+        if (map == null) {
+            map = DuelsMap.duelsMaps.get(RandomUtil.randomInt(DuelsMap.duelsMaps.size()));
+        } else {
+            if (!DuelsMap.duelsMaps.contains(map)) {
+                executor.sendMessage(Component.text("Invalid map!").color(ChatFormat.failColor));
+                return;
+            }
+        }
+
+        executorData.inviteMap = map;
+        executorData.inviteKit = customKit.toLowerCase();
+        executorData.inviting = true;
+        executorData.invitingPlayer = minecraftPlayer;
+        executorData.customDuel = true;
+
+        // } else if((!executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) || !executorData.inviteKit.equalsIgnoreCase(playerData.inviteKit)) && (playerData.invitingPlayer == null || !playerData.invitingPlayer.getStringUUID().equalsIgnoreCase(minecraftExecutor.getStringUUID())) && playerData.gameMode == DuelGameMode.LOBBY){
+
+        Component message = Component.text(executor.getRawName()).color(ChatFormat.brandColor1)
+                .append(Component.text(" has challenged you to a duel!").color(ChatFormat.normalColor)
+                );
+
+        if (executorData.duelsTeam == null) {
+            executor.sendMessage(ChatFormat.nexiaMessage
+                    .append(Component.text("Sending a custom duel request to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
+                            .append(Component.text(player.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                            .append(Component.text(" on map ")).append(Component.text(map.id.toUpperCase()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                            .append(Component.text(" with custom kit ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                            .append(Component.text(customKit).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                            .append(Component.text(".")).color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
+        } else {
+            executor.sendMessage(ChatFormat.nexiaMessage
+                    .append(Component.text("Sending a ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
+                            .append(Component.text("custom team duel").color(ChatFormat.normalColor).decoration(ChatFormat.bold, true))
+                            .append(Component.text(" request to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                            .append(Component.text(player.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                            .append(Component.text(" on map ")).append(Component.text(map.id.toUpperCase()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                            .append(Component.text(" with custom kit ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                            .append(Component.text(customKit).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                            .append(Component.text(".")).color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
+            message = Component.text(executor.getRawName()).color(ChatFormat.brandColor1)
+                    .append(Component.text(" has challenged you to a ").color(ChatFormat.normalColor))
+                    .append(Component.text("custom team duel").color(ChatFormat.normalColor).decoration(ChatFormat.bold, true))
+                    .append(Component.text("!").color(ChatFormat.normalColor));
+        }
+
+
+        Component kit = Component.text("Custom Kit: ").color(ChatFormat.brandColor1)
+                .append(Component.text(customKit.toLowerCase()).color(ChatFormat.normalColor)
                 );
 
         Component mapName = Component.text("Map: ").color(ChatFormat.brandColor1)

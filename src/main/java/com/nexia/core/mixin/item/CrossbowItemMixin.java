@@ -21,7 +21,7 @@ public class CrossbowItemMixin {
         if(livingEntity instanceof Player player){
             if((com.nexia.ffa.kits.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(player)) ||
                     (com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(player)) ||
-                            PlayerDataManager.get(player).gameMode.equals(DuelGameMode.LOBBY)
+                    (PlayerDataManager.get(player).gameMode.equals(DuelGameMode.LOBBY))
             ) {
                 ci.cancel();
                 ItemStackUtil.sendInventoryRefreshPacket((ServerPlayer) player);

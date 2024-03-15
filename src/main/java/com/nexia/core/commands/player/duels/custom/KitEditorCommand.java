@@ -1,4 +1,4 @@
-package com.nexia.core.commands.player.duels;
+package com.nexia.core.commands.player.duels.custom;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;

@@ -34,7 +34,7 @@ public class DevExperimentalMapCommand {
                             }
                         })
                         .then(Commands.argument("argument", StringArgumentType.string())
-                                .suggests(((context, builder) -> SharedSuggestionProvider.suggest((new String[]{"cffa", "rluhc"}), builder)))
+                                .suggests(((context, builder) -> SharedSuggestionProvider.suggest((new String[]{"cffa", "rluhc", "swmap"}), builder)))
                                 .executes(DevExperimentalMapCommand::run))
                 )
         );
@@ -69,7 +69,7 @@ public class DevExperimentalMapCommand {
         } else if(argument.equalsIgnoreCase("rluhc")) {
             FfaAreas.resetMap(true);
             player.sendMessage(LegacyChatFormat.format("Reloaded UHC Map."), Util.NIL_UUID);
-        } else if(argument.contains("skywars")) {
+        } else if(argument.contains("swmap")) {
             SkywarsMap map = SkywarsMap.identifyMap(name);
             if(map != null) {
                 SkywarsGame.map = map;

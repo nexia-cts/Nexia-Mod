@@ -24,6 +24,8 @@ public class PlayerData {
     public DuelsMap inviteMap;
     public String inviteKit;
 
+    public boolean customDuel;
+
 
     // Duels
     public DuelsGame duelsGame;
@@ -49,6 +51,7 @@ public class PlayerData {
         this.inviteMap = DuelsMap.CITY;
         this.inviteKit = "";
         this.duelsGame = null;
+        this.customDuel = false;
     }
 
 }

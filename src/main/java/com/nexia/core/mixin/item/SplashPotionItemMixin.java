@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class SplashPotionItemMixin {
     @Inject(method = "use", at = @At(value = "HEAD"), cancellable = true)
     public void preventFFAplayers(Level level, Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
-        if((FfaKitsUtil.isFfaPlayer(player) && FfaKitsUtil.wasInSpawn.contains(player.getUUID())) || PlayerDataManager.get(player).gameMode.equals(DuelGameMode.LOBBY)) {
+        if((FfaKitsUtil.isFfaPlayer(player) && FfaKitsUtil.wasInSpawn.contains(player.getUUID())) || (PlayerDataManager.get(player).gameMode.equals(DuelGameMode.LOBBY))) {
             cir.setReturnValue(new InteractionResultHolder<>(InteractionResult.FAIL, player.getItemInHand(interactionHand)));
             ItemStackUtil.sendInventoryRefreshPacket((ServerPlayer) player);
         }

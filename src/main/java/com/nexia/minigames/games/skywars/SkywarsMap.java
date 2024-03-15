@@ -108,6 +108,18 @@ public class SkywarsMap {
         return null;
     }
 
+    public static SkywarsMap validateMap(SkywarsMap currentMap, int currentPlayers) {
+        if(currentPlayers > currentMap.maxPlayers) {
+            SkywarsMap fixedMap = calculateMap(currentPlayers, false);
+            if(currentPlayers > fixedMap.maxPlayers) {
+                fixedMap = SkywarsMap.twelvePlayerMaps.get(RandomUtil.randomInt(SkywarsMap.twelvePlayerMaps.size()));
+            }
+            return fixedMap;
+        }
+
+        return currentMap;
+    }
+
     public static void spawnQueueBuild(ServerLevel level, boolean setAir) {
         for (BlockPos pos : BlockPos.betweenClosed(
                 queueC1.x, queueC1.y, queueC1.z,
@@ -172,14 +184,14 @@ public class SkywarsMap {
         SkywarsMap.fourPlayerMaps.add(this);
     }
     
-    public static SkywarsMap calculateMap(int oldPlayers, int newPlayers) {
-        if(newPlayers <= 4 && !SkywarsMap.fourPlayerMaps.contains(SkywarsGame.map)) {
+    public static SkywarsMap calculateMap(int players, boolean rerollPrevention) {
+        if(players <= 4 && (rerollPrevention && !SkywarsMap.fourPlayerMaps.contains(SkywarsGame.map))) {
             return SkywarsMap.fourPlayerMaps.get(RandomUtil.randomInt(SkywarsMap.fourPlayerMaps.size()));
         }
-        else if(oldPlayers >= 5 && newPlayers <= 8 && !SkywarsMap.eightPlayerMaps.contains(SkywarsGame.map)) {
+        else if(players >= 5 && players <= 8 && (rerollPrevention && !SkywarsMap.eightPlayerMaps.contains(SkywarsGame.map))) {
             return SkywarsMap.eightPlayerMaps.get(RandomUtil.randomInt(SkywarsMap.eightPlayerMaps.size()));
         }
-        else if(newPlayers >= 9 && !SkywarsMap.twelvePlayerMaps.contains(SkywarsGame.map)) {
+        else if(players >= 9 && (rerollPrevention && !SkywarsMap.twelvePlayerMaps.contains(SkywarsGame.map))) {
             return SkywarsMap.twelvePlayerMaps.get(RandomUtil.randomInt(SkywarsMap.twelvePlayerMaps.size()));
         }
         return SkywarsGame.map;

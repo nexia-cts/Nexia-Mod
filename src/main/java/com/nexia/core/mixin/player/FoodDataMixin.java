@@ -61,7 +61,7 @@ public abstract class FoodDataMixin {
         // Duels
         DuelGameMode duelGameMode = PlayerDataManager.get(player).gameMode;
         PlayerGameMode gameMode = com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode;
-        if(gameMode.equals(PlayerGameMode.LOBBY) && !duelGameMode.hasSaturation) return;
+        if(gameMode.equals(PlayerGameMode.LOBBY) && (duelGameMode != null && !duelGameMode.hasSaturation)) return;
 
         data.setFoodLevel(20);
     }

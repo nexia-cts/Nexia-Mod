@@ -31,7 +31,7 @@ public class PotionItemMixin {
     private void finishUsingItem(ItemStack itemStack, Level level, LivingEntity livingEntity, CallbackInfoReturnable<ItemStack> cir) {
         if (livingEntity instanceof ServerPlayer) {
             this.player = (ServerPlayer) livingEntity;
-            if((FfaKitsUtil.isFfaPlayer(player) && FfaKitsUtil.wasInSpawn.contains(player.getUUID())) || (FfaSkyUtil.isFfaPlayer(player) && FfaSkyUtil.wasInSpawn.contains(player.getUUID())) || PlayerDataManager.get(player).gameMode.equals(DuelGameMode.LOBBY)) {
+            if((FfaKitsUtil.isFfaPlayer(player) && FfaKitsUtil.wasInSpawn.contains(player.getUUID())) || (FfaSkyUtil.isFfaPlayer(player) && FfaSkyUtil.wasInSpawn.contains(player.getUUID())) || (PlayerDataManager.get(player).gameMode.equals(DuelGameMode.LOBBY))) {
                 cir.setReturnValue(itemStack);
                 ItemStackUtil.sendInventoryRefreshPacket(player);
             }

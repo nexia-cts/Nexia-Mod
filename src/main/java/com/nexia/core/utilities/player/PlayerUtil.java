@@ -7,7 +7,6 @@ import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import net.minecraft.Util;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -30,7 +29,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 
 public class PlayerUtil {
 
@@ -133,18 +134,12 @@ public class PlayerUtil {
     }
 
     public static Player getFactoryPlayer(@NotNull ServerPlayer minecraftPlayer) {
-        try {
-            return ServerTime.factoryServer.getPlayer(minecraftPlayer.getUUID());
-        } catch (Exception ignored) { }
-        return null;
+        return ServerTime.factoryServer.getPlayer(minecraftPlayer.getUUID());
     }
 
     public static Player getFactoryPlayerFromName(@NotNull String player) {
         if(player.trim().isEmpty()) return null;
-        try {
-            return ServerTime.factoryServer.getPlayer(player);
-        } catch (Exception ignored) { }
-        return null;
+        return ServerTime.factoryServer.getPlayer(player);
     }
 
     public static ServerPlayer getMinecraftPlayer(@NotNull Player player){
@@ -180,16 +175,6 @@ public class PlayerUtil {
                 ClientboundSetTitlesPacket.Type.TITLE, new TextComponent(title)));
         player.connection.send(new ClientboundSetTitlesPacket(
                 ClientboundSetTitlesPacket.Type.SUBTITLE, new TextComponent(sub)));
-    }
-
-
-
-    public static boolean hasPermission(@NotNull CommandSourceStack permission, @NotNull String command, int level) {
-        return me.lucko.fabric.api.permissions.v0.Permissions.check(permission, command, level);
-    }
-
-    public static boolean hasPermission(@NotNull CommandSourceStack permission, @NotNull String command) {
-        return me.lucko.fabric.api.permissions.v0.Permissions.check(permission, command);
     }
 
     public static ServerPlayer getPlayerAttacker(@Nullable net.minecraft.world.entity.player.Player player, Entity attackerEntity) {

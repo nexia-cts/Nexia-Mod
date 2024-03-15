@@ -8,6 +8,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.classic.utilities.FfaAreas;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -29,7 +30,7 @@ public class MapCommand {
         dispatcher.register((Commands.literal("map")
                 .requires(commandSourceStack -> {
                     try {
-                        return PlayerUtil.hasPermission(commandSourceStack, "nexia.staff.map", 2);
+                        return Permissions.check(commandSourceStack, "nexia.staff.map", 2);
                     } catch (Exception ignored) {
                         return false;
                     }

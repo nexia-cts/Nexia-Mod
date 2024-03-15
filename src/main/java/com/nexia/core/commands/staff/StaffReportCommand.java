@@ -9,6 +9,7 @@ import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -21,7 +22,7 @@ public class StaffReportCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
 
         dispatcher.register(Commands.literal("staffreport")
-                .requires(commandSourceStack -> PlayerUtil.hasPermission(commandSourceStack, "nexia.staff.report", 1))
+                .requires(commandSourceStack -> Permissions.check(commandSourceStack, "nexia.staff.report", 1))
                 .then(Commands.argument("type", StringArgumentType.string())
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest((new String[]{"ban", "unban"}), builder)))
                         .then(Commands.argument("player", EntityArgument.player())

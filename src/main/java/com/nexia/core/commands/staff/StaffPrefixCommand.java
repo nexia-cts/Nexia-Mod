@@ -9,6 +9,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -20,7 +21,7 @@ public class StaffPrefixCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
 
         dispatcher.register(Commands.literal("staffprefix")
-                .requires(commandSourceStack -> PlayerUtil.hasPermission(commandSourceStack, "nexia.staff.prefix"))
+                .requires(commandSourceStack -> Permissions.check(commandSourceStack, "nexia.staff.prefix"))
                 .then(Commands.argument("type", StringArgumentType.string())
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest((new String[]{"set", "add", "remove"}), builder)))
                         .then(Commands.argument("player", EntityArgument.player())
