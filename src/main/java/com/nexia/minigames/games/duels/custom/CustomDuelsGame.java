@@ -1,4 +1,4 @@
-package com.nexia.minigames.games.duels;
+package com.nexia.minigames.games.duels.custom;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.Main;
@@ -9,6 +9,8 @@ import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.ffa.FfaUtil;
+import com.nexia.minigames.games.duels.DuelGameHandler;
+import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.util.DuelOptions;
@@ -35,13 +37,13 @@ import java.util.UUID;
 
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 
-public class DuelsGame { //implements Runnable{
+public class CustomDuelsGame { //implements Runnable{
     public AccuratePlayer p1;
 
     public UUID uuid;
     public AccuratePlayer p2;
 
-    public DuelGameMode gameMode;
+    public String kitID;
 
     public DuelsMap map;
 
@@ -68,22 +70,20 @@ public class DuelsGame { //implements Runnable{
 
     private boolean shouldWait = false;
 
-    public DuelsGame(ServerPlayer p1, ServerPlayer p2, DuelGameMode gameMode, DuelsMap map, ServerLevel level, int endTime, int startTime){
+    public CustomDuelsGame(ServerPlayer p1, ServerPlayer p2, String kitID, DuelsMap map, ServerLevel level, int endTime, int startTime){
         this.p1 = AccuratePlayer.create(p1);
         this.p2 = AccuratePlayer.create(p2);
-        this.gameMode = gameMode;
+        this.kitID = kitID;
         this.map = map;
         this.endTime = endTime;
         this.startTime = startTime;
         this.level = level;
     }
 
-    public static DuelsGame startGame(ServerPlayer mcP1, ServerPlayer mcP2, String stringGameMode, @Nullable DuelsMap selectedMap){
-        DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
-        if(gameMode == null){
-            gameMode = DuelGameMode.CLASSIC;
-            Main.logger.error(String.format("[Nexia]: Invalid duel gamemode (%s) selected! Using fallback one.", stringGameMode));
-            stringGameMode = "CLASSIC";
+    public static CustomDuelsGame startGame(ServerPlayer mcP1, ServerPlayer mcP2, String kitID, @Nullable DuelsMap selectedMap){
+        if(!DuelGameHandler.validCustomKit(mcP1, kitID)){
+            Main.logger.error(String.format("[Nexia]: Invalid custom duel kit (%s) selected!", kitID));
+            kitID = "";
         }
 
         PlayerData invitorData = PlayerDataManager.get(mcP1);
@@ -102,20 +102,12 @@ public class DuelsGame { //implements Runnable{
 
         UUID gameUUID = UUID.randomUUID();
 
-        ServerLevel duelLevel = DuelGameHandler.createWorld(gameUUID.toString(), gameMode.hasRegen);
+        ServerLevel duelLevel = DuelGameHandler.createWorld(gameUUID.toString(), true);
         if(selectedMap == null){
             selectedMap = DuelsMap.duelsMaps.get(RandomUtil.randomInt(0, DuelsMap.duelsMaps.size()));
-            while(!selectedMap.isAdventureSupported && gameMode.gameMode.equals(GameType.ADVENTURE)) {
-                selectedMap = DuelsMap.duelsMaps.get(RandomUtil.randomInt(0, DuelsMap.duelsMaps.size()));
-            }
         }
 
         selectedMap.structureMap.pasteMap(duelLevel);
-
-        if(!gameMode.hasSaturation) {
-            p1.addTag(LobbyUtil.NO_SATURATION_TAG);
-            p2.addTag(LobbyUtil.NO_SATURATION_TAG);
-        }
 
         PlayerUtil.resetHealthStatus(p1);
         PlayerUtil.resetHealthStatus(p2);
@@ -147,24 +139,25 @@ public class DuelsGame { //implements Runnable{
                 .append(Component.text("Your opponent: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                 .append(Component.text(p2.getRawName()).color(ChatFormat.brandColor2))));
 
-        File p1File = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + mcP1.getStringUUID() + File.separator + "layout", stringGameMode.toLowerCase() + ".txt");
-        if(p1File.exists()) InventoryUtil.loadInventory(mcP1, "duels/custom/" + mcP1.getStringUUID() + "/layout", stringGameMode.toLowerCase());
-        else InventoryUtil.loadInventory(mcP1, "duels", stringGameMode.toLowerCase());
+        File p1File = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + mcP1.getStringUUID(), kitID.toLowerCase() + ".txt");
+        if(p1File.exists()) {
+            InventoryUtil.loadInventory(mcP1, "duels/custom/" + mcP1.getStringUUID(), kitID.toLowerCase());
+            InventoryUtil.loadInventory(mcP2, "duels/custom/" + mcP1.getStringUUID(), kitID.toLowerCase());
+        }
+        else {
+            InventoryUtil.loadInventory(mcP1, "duels", "classic");
+            InventoryUtil.loadInventory(mcP2, "duels", "classic");
+        }
 
-        File p2File = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + mcP2.getStringUUID() + File.separator + "layout", stringGameMode.toLowerCase() + ".txt");
-        if(p2File.exists()) InventoryUtil.loadInventory(mcP2, "duels/custom/" + mcP2.getStringUUID() + "/layout", stringGameMode.toLowerCase());
-        else InventoryUtil.loadInventory(mcP2, "duels", stringGameMode.toLowerCase());
+        playerData.gameMode = DuelGameMode.CLASSIC;
+        invitorData.gameMode = DuelGameMode.CLASSIC;
 
-
-        playerData.gameMode = gameMode;
-        invitorData.gameMode = gameMode;
-
-        DuelsGame game = new DuelsGame(mcP1, mcP2, gameMode, selectedMap, duelLevel, 5, 5);
+        CustomDuelsGame game = new CustomDuelsGame(mcP1, mcP2, kitID, selectedMap, duelLevel, 5, 5);
 
         playerData.gameOptions = new DuelOptions.GameOptions(game, AccuratePlayer.create(mcP1));
         invitorData.gameOptions = new DuelOptions.GameOptions(game, AccuratePlayer.create(mcP2));
 
-        DuelGameHandler.duelsGames.add(game);
+        DuelGameHandler.customDuelsGames.add(game);
 
         game.uuid = gameUUID;
 
@@ -224,7 +217,7 @@ public class DuelsGame { //implements Runnable{
                 }
 
                 DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
-                DuelGameHandler.duelsGames.remove(this);
+                DuelGameHandler.customDuelsGames.remove(this);
                 return;
             }
         }
@@ -241,11 +234,11 @@ public class DuelsGame { //implements Runnable{
             if (this.startTime - this.currentStartTime >= this.startTime) {
                 PlayerUtil.sendSound(p1, new EntityPos(p1), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
                 PlayerUtil.sendSound(p2, new EntityPos(p2), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
-                p1.setGameMode((this.gameMode != null) ? this.gameMode.gameMode : GameType.SURVIVAL);
+                p1.setGameMode(GameType.SURVIVAL);
                 p1.removeTag(LobbyUtil.NO_DAMAGE_TAG);
                 p1.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
-                p2.setGameMode((this.gameMode != null) ? this.gameMode.gameMode : GameType.SURVIVAL);
+                p2.setGameMode(GameType.SURVIVAL);
                 p2.removeTag(LobbyUtil.NO_DAMAGE_TAG);
                 p2.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
                 this.hasStarted = true;

@@ -86,15 +86,15 @@ public class TeamCommand {
 
         com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(invitor);
 
-        if(data.duelsTeam == null) {
+        if(data.duelOptions.duelsTeam == null) {
             DuelsTeam.createTeam(invitor, false);
         }
-        data.duelsTeam.invitePlayer(invitor, player);
+        data.duelOptions.duelsTeam.invitePlayer(invitor, player);
         return 1;
     }
 
     public static int joinTeam(CommandContext<CommandSourceStack> context, ServerPlayer player) throws CommandSyntaxException {
-        com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).duelsTeam.joinTeam(context.getSource().getPlayerOrException());
+        com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).duelOptions.duelsTeam.joinTeam(context.getSource().getPlayerOrException());
         return 1;
     }
 
@@ -103,17 +103,17 @@ public class TeamCommand {
 
         com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(executor);
 
-        if(data.duelsTeam == null) {
+        if(data.duelOptions.duelsTeam == null) {
             PlayerUtil.getFactoryPlayer(executor).sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
             return 1;
         }
 
-        data.duelsTeam.listTeam(executor);
+        data.duelOptions.duelsTeam.listTeam(executor);
         return 1;
     }
 
     public static int declinePlayer(CommandContext<CommandSourceStack> context, ServerPlayer player) throws CommandSyntaxException {
-        com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).duelsTeam.declineTeam(context.getSource().getPlayerOrException());
+        com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).duelOptions.duelsTeam.declineTeam(context.getSource().getPlayerOrException());
         return 1;
     }
 
@@ -127,12 +127,12 @@ public class TeamCommand {
 
         com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(executor);
 
-        if(data.duelsTeam == null) {
+        if(data.duelOptions.duelsTeam == null) {
             PlayerUtil.getFactoryPlayer(executor).sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
             return 1;
         }
 
-        data.duelsTeam.replaceLeader(AccuratePlayer.create(executor), AccuratePlayer.create(player), true);
+        data.duelOptions.duelsTeam.replaceLeader(AccuratePlayer.create(executor), AccuratePlayer.create(player), true);
         return 1;
     }
 
@@ -141,12 +141,12 @@ public class TeamCommand {
 
         com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(executor);
 
-        if(data.duelsTeam == null) {
+        if(data.duelOptions.duelsTeam == null) {
             PlayerUtil.getFactoryPlayer(executor).sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
             return 1;
         }
 
-        data.duelsTeam.kickPlayer(executor, player);
+        data.duelOptions.duelsTeam.kickPlayer(executor, player);
         return 1;
     }
 
@@ -155,12 +155,12 @@ public class TeamCommand {
 
         com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
 
-        if(data.duelsTeam == null) {
+        if(data.duelOptions.duelsTeam == null) {
             PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
             return 1;
         }
 
-        com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).duelsTeam.disbandTeam(AccuratePlayer.create(player), true);
+        com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).duelOptions.duelsTeam.disbandTeam(AccuratePlayer.create(player), true);
         return 1;
     }
     public static int leaveTeam(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -168,12 +168,12 @@ public class TeamCommand {
 
         com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
 
-        if(data.duelsTeam == null) {
+        if(data.duelOptions.duelsTeam == null) {
             PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
             return 1;
         }
 
-        com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).duelsTeam.leaveTeam(AccuratePlayer.create(player), true);
+        com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).duelOptions.duelsTeam.leaveTeam(AccuratePlayer.create(player), true);
         return 1;
     }
 }

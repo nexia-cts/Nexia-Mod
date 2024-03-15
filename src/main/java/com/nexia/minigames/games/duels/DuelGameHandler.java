@@ -5,6 +5,8 @@ import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.classic.utilities.FfaAreas;
+import com.nexia.minigames.games.duels.custom.CustomDuelsGame;
+import com.nexia.minigames.games.duels.custom.team.CustomTeamDuelsGame;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
@@ -39,39 +41,45 @@ public class DuelGameHandler {
     public static List<DuelsGame> duelsGames = new ArrayList<>();
     public static List<TeamDuelsGame> teamDuelsGames = new ArrayList<>();
 
+    public static List<CustomDuelsGame> customDuelsGames = new ArrayList<>();
+    public static List<CustomTeamDuelsGame> customTeamDuelsGames = new ArrayList<>();
+
     public static boolean validCustomKit(ServerPlayer player, String kitID) {
         if(kitID.trim().isEmpty()) return false;
 
         File file = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID(), kitID + ".txt");
-        System.out.print("fil: " + file.exists());
         return file.exists();
     }
 
     public static void leave(ServerPlayer player, boolean leaveTeam) {
         PlayerData data = PlayerDataManager.get(player);
-        if (data.duelsGame != null) {
-            data.duelsGame.death(player, player.getLastDamageSource());
+        if (data.gameOptions != null && data.gameOptions.duelsGame != null) {
+            data.gameOptions.duelsGame.death(player, player.getLastDamageSource());
         }
-        if (data.teamDuelsGame != null) {
-            data.teamDuelsGame.death(player, player.getLastDamageSource());
+        if (data.gameOptions != null && data.gameOptions.teamDuelsGame != null) {
+            data.gameOptions.teamDuelsGame.death(player, player.getLastDamageSource());
+        }
+        if (data.gameOptions != null && data.gameOptions.customDuelsGame != null) {
+            data.gameOptions.customDuelsGame.death(player, player.getLastDamageSource());
+        }
+        if (data.gameOptions != null && data.gameOptions.customTeamDuelsGame != null) {
+            data.gameOptions.customTeamDuelsGame.death(player, player.getLastDamageSource());
         }
         if (data.gameMode == DuelGameMode.SPECTATING) {
-            GamemodeHandler.unspectatePlayer(player, data.spectatingPlayer, false);
+            GamemodeHandler.unspectatePlayer(AccuratePlayer.create(player), data.duelOptions.spectatingPlayer, false);
         }
-        data.inviting = false;
         data.inDuel = false;
-        data.duelPlayer = null;
+        data.inviteOptions.reset();
         removeQueue(player, null, true);
         data.gameMode = DuelGameMode.LOBBY;
-        data.spectatingPlayer = null;
         if (leaveTeam) {
-            if (data.duelsTeam != null) {
-                data.duelsTeam.leaveTeam(AccuratePlayer.create(player), true);
+            if (data.duelOptions.duelsTeam != null) {
+                data.duelOptions.duelsTeam.leaveTeam(AccuratePlayer.create(player), true);
             }
-            data.duelsTeam = null;
+            data.duelOptions.duelsTeam = null;
         }
-        data.teamDuelsGame = null;
-        data.duelsGame = null;
+        data.gameOptions = null;
+        data.duelOptions.spectatingPlayer = null;
 
         if(Main.config.debugMode) Main.logger.info(String.format("[DEBUG]: Player %s left Duels.", player.getScoreboardName()));
     }
@@ -100,6 +108,9 @@ public class DuelGameHandler {
 
         DuelGameHandler.duelsGames.clear();
         DuelGameHandler.teamDuelsGames.clear();
+
+        DuelGameHandler.customDuelsGames.clear();
+        DuelGameHandler.customTeamDuelsGames.clear();
     }
 
     public static ServerLevel createWorld(String uuid, boolean doRegeneration) {

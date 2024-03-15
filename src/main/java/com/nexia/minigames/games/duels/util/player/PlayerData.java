@@ -1,11 +1,8 @@
 package com.nexia.minigames.games.duels.util.player;
 
 import com.nexia.minigames.games.duels.DuelGameMode;
-import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.map.DuelsMap;
-import com.nexia.minigames.games.duels.team.DuelsTeam;
-import com.nexia.minigames.games.duels.team.TeamDuelsGame;
-import net.minecraft.server.level.ServerPlayer;
+import com.nexia.minigames.games.duels.util.DuelOptions;
 
 public class PlayerData {
 
@@ -17,31 +14,23 @@ public class PlayerData {
     // Global
     public DuelGameMode gameMode;
     public boolean inDuel;
-    public boolean inviting;
-    public ServerPlayer invitingPlayer;
-    public ServerPlayer spectatingPlayer;
-    public boolean isDead;
-    public DuelsMap inviteMap;
-    public String inviteKit;
-
-    public boolean customDuel;
-
 
     // Duels
-    public DuelsGame duelsGame;
-    public ServerPlayer duelPlayer;
-
-
-    // Team Duels
-    public TeamDuelsGame teamDuelsGame;
-    public DuelsTeam duelsTeam;
+    public DuelOptions duelOptions;
+    public DuelOptions.GameOptions gameOptions;
+    public DuelOptions.InviteOptions inviteOptions;
 
     public PlayerData(SavedPlayerData savedData) {
         this.savedData = savedData;
 
-        this.inDuel = false;
-        this.inviting = false;
         this.gameMode = DuelGameMode.LOBBY;
+        this.inDuel = false;
+
+        this.duelOptions = new DuelOptions(null, null);
+        this.inviteOptions = new DuelOptions.InviteOptions(null, false, DuelsMap.CITY, "null", false);
+        this.gameOptions = null;
+
+        /*
         this.invitingPlayer = null;
         this.isDead = false;
         this.duelsTeam = null;
@@ -51,7 +40,8 @@ public class PlayerData {
         this.inviteMap = DuelsMap.CITY;
         this.inviteKit = "";
         this.duelsGame = null;
-        this.customDuel = false;
+
+         */
     }
 
 }

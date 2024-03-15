@@ -17,6 +17,8 @@ import com.nexia.minigames.games.bedwars.areas.BwDimension;
 import com.nexia.minigames.games.bedwars.shop.BwLoadShop;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelsGame;
+import com.nexia.minigames.games.duels.custom.CustomDuelsGame;
+import com.nexia.minigames.games.duels.custom.team.CustomTeamDuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
@@ -129,6 +131,20 @@ public class ServerTime {
 
         try {
             for (TeamDuelsGame game : DuelGameHandler.teamDuelsGames) {
+                if (game == null) return;
+                game.duelSecond();
+            }
+        } catch (Exception ignored) { }
+
+        try {
+            for (CustomDuelsGame game : DuelGameHandler.customDuelsGames) {
+                if (game == null) return;
+                game.duelSecond();
+            }
+        } catch (Exception ignored) { }
+
+        try {
+            for (CustomTeamDuelsGame game : DuelGameHandler.customTeamDuelsGames) {
                 if (game == null) return;
                 game.duelSecond();
             }

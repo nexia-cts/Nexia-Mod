@@ -21,6 +21,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
+import net.notcoded.codelib.players.AccuratePlayer;
 
 public class SpectateCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
@@ -90,7 +91,7 @@ public class SpectateCommand {
         Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor);
 
         if(PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) {
-            GamemodeHandler.spectatePlayer(executor, player);
+            GamemodeHandler.spectatePlayer(AccuratePlayer.create(executor), AccuratePlayer.create(player));
             return 1;
         }
 

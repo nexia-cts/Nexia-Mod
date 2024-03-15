@@ -26,7 +26,7 @@ public class PotBlockMixin {
         if (!(player instanceof ServerPlayer serverPlayer)) return;
         PlayerData playerData = PlayerDataManager.get(serverPlayer);
 
-        if (BwUtil.isInBedWars(serverPlayer) || (playerData.duelsGame != null || playerData.teamDuelsGame != null) || LobbyUtil.isLobbyWorld(serverPlayer.getLevel()) || (FfaAreas.isFfaWorld(serverPlayer.getLevel()) || com.nexia.ffa.kits.utilities.FfaAreas.isFfaWorld(serverPlayer.getLevel())) && !serverPlayer.isCreative()) {
+        if (BwUtil.isInBedWars(serverPlayer) || (playerData.gameOptions != null && (playerData.gameOptions.duelsGame != null || playerData.gameOptions.teamDuelsGame != null || playerData.gameOptions.customTeamDuelsGame != null || playerData.gameOptions.customDuelsGame != null)) || LobbyUtil.isLobbyWorld(serverPlayer.getLevel()) || (FfaAreas.isFfaWorld(serverPlayer.getLevel()) || com.nexia.ffa.kits.utilities.FfaAreas.isFfaWorld(serverPlayer.getLevel())) && !serverPlayer.isCreative()) {
             cir.setReturnValue(InteractionResult.FAIL);
             return;
         }

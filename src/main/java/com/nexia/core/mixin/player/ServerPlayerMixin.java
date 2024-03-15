@@ -6,7 +6,6 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.duels.DuelGUI;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
@@ -115,11 +114,19 @@ public abstract class ServerPlayerMixin extends Player {
         else if(gameMode == PlayerGameMode.SKYWARS) {
             SkywarsGame.death(player, damageSource);
         }
-        else if(gameMode == PlayerGameMode.LOBBY && duelsData.duelsGame != null){
-            duelsData.duelsGame.death(player, damageSource);
-        } else if(gameMode == PlayerGameMode.LOBBY && duelsData.teamDuelsGame != null) {
-            duelsData.teamDuelsGame.death(player, damageSource);
+        else if(gameMode == PlayerGameMode.LOBBY && duelsData.gameOptions != null && duelsData.gameOptions.duelsGame != null){
+            duelsData.gameOptions.duelsGame.death(player, damageSource);
         }
+        else if(gameMode == PlayerGameMode.LOBBY && duelsData.gameOptions != null && duelsData.gameOptions.teamDuelsGame != null) {
+            duelsData.gameOptions.teamDuelsGame.death(player, damageSource);
+        }
+        else if(gameMode == PlayerGameMode.LOBBY && duelsData.gameOptions != null && duelsData.gameOptions.customDuelsGame != null){
+            duelsData.gameOptions.customDuelsGame.death(player, damageSource);
+        }
+        else if(gameMode == PlayerGameMode.LOBBY && duelsData.gameOptions != null && duelsData.gameOptions.customTeamDuelsGame != null) {
+            duelsData.gameOptions.customTeamDuelsGame.death(player, damageSource);
+        }
+
     }
 
     @Redirect(method = "doCloseContainer", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/AbstractContainerMenu;removed(Lnet/minecraft/world/entity/player/Player;)V"))

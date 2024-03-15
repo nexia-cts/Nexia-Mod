@@ -115,7 +115,7 @@ public class DuelsTeam {
 
         TextComponent msg = LegacyChatFormat.format("§7The duels team has been disbanded.");
         for(AccuratePlayer player : all) {
-            PlayerDataManager.get(player.get()).duelsTeam = null;
+            PlayerDataManager.get(player.get()).duelOptions.duelsTeam = null;
             if(message) player.get().sendMessage(msg, Util.NIL_UUID);
         }
         this.people.clear();
@@ -137,7 +137,7 @@ public class DuelsTeam {
         if(this.isLeader(player) && !this.people.isEmpty()) this.leader = this.people.get(RandomUtil.randomInt(this.people.size()));
 
 
-        data.duelsTeam = null;
+        data.duelOptions.duelsTeam = null;
         this.people.remove(player);
         this.all.remove(player);
         this.alive.remove(player);
@@ -173,7 +173,7 @@ public class DuelsTeam {
             return;
         }
 
-        if(PlayerDataManager.get(player).duelsTeam != null) {
+        if(PlayerDataManager.get(player).duelOptions.duelsTeam != null) {
             factoryInvitor.sendMessage(Component.text("That player is already in a team!").color(ChatFormat.failColor));
             return;
         }
@@ -243,7 +243,7 @@ public class DuelsTeam {
             return;
         }
 
-        if(!this.people.contains(player)) {
+        if(!this.people.contains(accuratePlayer)) {
             factoryInviter.sendMessage(Component.text("That player is not in your team!").color(ChatFormat.failColor));
             return;
         }
@@ -253,7 +253,7 @@ public class DuelsTeam {
             ap.get().sendMessage(LegacyChatFormat.format("§d{} §7has been removed from the team.", factoryPlayer.getRawName()), Util.NIL_UUID);
         }
 
-        data.duelsTeam = null;
+        data.duelOptions.duelsTeam = null;
         this.people.remove(accuratePlayer);
         this.alive.remove(accuratePlayer);
         this.all.remove(accuratePlayer);
@@ -267,12 +267,12 @@ public class DuelsTeam {
         AccuratePlayer accuratePlayer = AccuratePlayer.create(player);
         PlayerData data = PlayerDataManager.get(player);
 
-        if(data.duelsTeam != null) {
+        if(data.duelOptions.duelsTeam != null) {
             factoryPlayer.sendMessage(Component.text("You are currently in a team!").color(ChatFormat.failColor));
             return;
         }
 
-        if(!this.invited.contains(player)) {
+        if(!this.invited.contains(accuratePlayer)) {
             factoryInviter.sendMessage(Component.text("That player did not invite you!").color(ChatFormat.failColor));
             return;
         }
@@ -281,7 +281,7 @@ public class DuelsTeam {
         this.all.add(accuratePlayer);
         this.people.add(accuratePlayer);
 
-        data.duelsTeam = this;
+        data.duelOptions.duelsTeam = this;
         factoryPlayer.sendMessage(Component.text("You have joined " + factoryInviter.getRawName() + "'s team").color(ChatFormat.normalColor));
         for(AccuratePlayer ap : this.all) {
             ap.get().sendMessage(LegacyChatFormat.format("§d{} §7has joined the team.", factoryPlayer.getRawName()), Util.NIL_UUID);
@@ -294,7 +294,7 @@ public class DuelsTeam {
         AccuratePlayer accuratePlayer = AccuratePlayer.create(player);
         PlayerData data = PlayerDataManager.get(player);
 
-        if(data.duelsTeam != null) {
+        if(data.duelOptions.duelsTeam != null) {
             factoryPlayer.sendMessage(Component.text("You are currently in a team!").color(ChatFormat.failColor));
             return;
         }
@@ -313,7 +313,7 @@ public class DuelsTeam {
         PlayerData data = PlayerDataManager.get(player);
         Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
 
-        if(data.duelsTeam != null) {
+        if(data.duelOptions.duelsTeam != null) {
             if(message) {
                 factoryPlayer.sendMessage(Component.text("You are currently in a team!").color(ChatFormat.failColor));
             }
@@ -330,7 +330,7 @@ public class DuelsTeam {
         }
 
         DuelsTeam team = new DuelsTeam(AccuratePlayer.create(player), new ArrayList<>());
-        data.duelsTeam = team;
+        data.duelOptions.duelsTeam = team;
 
         return team;
     }

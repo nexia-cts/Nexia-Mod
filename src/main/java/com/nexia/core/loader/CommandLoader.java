@@ -51,6 +51,8 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(DeleteInventoryCommand::register);
 
         CommandRegistrationCallback.EVENT.register(KitEditorCommand::register);
+        CommandRegistrationCallback.EVENT.register(KitLayoutCommand::register);
+
         CommandRegistrationCallback.EVENT.register(CustomDuelCommand::register);
 
         CommandRegistrationCallback.EVENT.register(StaffReportCommand::register);

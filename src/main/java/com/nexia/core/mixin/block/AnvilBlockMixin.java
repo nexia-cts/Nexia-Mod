@@ -27,7 +27,7 @@ public class AnvilBlockMixin {
         if (!(player instanceof ServerPlayer serverPlayer)) return;
         PlayerData playerData = PlayerDataManager.get(serverPlayer);
 
-        if (BwUtil.isInBedWars(serverPlayer) || (playerData.duelsGame != null || playerData.teamDuelsGame != null) || LobbyUtil.isLobbyWorld(serverPlayer.getLevel()) || (FfaUtil.isFfaPlayer(player) && !serverPlayer.isCreative())) {
+        if (BwUtil.isInBedWars(serverPlayer) || (playerData.gameOptions != null && (playerData.gameOptions.duelsGame != null || playerData.gameOptions.teamDuelsGame != null || playerData.gameOptions.customDuelsGame != null || playerData.gameOptions.customTeamDuelsGame != null)) || LobbyUtil.isLobbyWorld(serverPlayer.getLevel()) || (FfaUtil.isFfaPlayer(player) && !serverPlayer.isCreative())) {
             cir.setReturnValue(InteractionResult.FAIL);
             return;
         }

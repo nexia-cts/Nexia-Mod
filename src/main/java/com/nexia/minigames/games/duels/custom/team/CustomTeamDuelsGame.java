@@ -1,4 +1,4 @@
-package com.nexia.minigames.games.duels.team;
+package com.nexia.minigames.games.duels.custom.team;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.Main;
@@ -11,7 +11,7 @@ import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.map.DuelsMap;
-import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
+import com.nexia.minigames.games.duels.team.DuelsTeam;
 import com.nexia.minigames.games.duels.util.DuelOptions;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
@@ -35,14 +35,14 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.UUID;
 
-public class TeamDuelsGame { // implements Runnable{
+public class CustomTeamDuelsGame { // implements Runnable{
     public DuelsTeam team1;
 
     public DuelsTeam team2;
 
     public UUID uuid;
 
-    public DuelGameMode gameMode;
+    public String kitID;
 
     public DuelsMap map;
 
@@ -69,10 +69,10 @@ public class TeamDuelsGame { // implements Runnable{
 
     private boolean shouldWait = false;
 
-    public TeamDuelsGame(DuelsTeam team1, DuelsTeam team2, DuelGameMode gameMode, DuelsMap map, ServerLevel level, int endTime, int startTime) {
+    public CustomTeamDuelsGame(DuelsTeam team1, DuelsTeam team2, String kitID, DuelsMap map, ServerLevel level, int endTime, int startTime) {
         this.team1 = team1;
         this.team2 = team2;
-        this.gameMode = gameMode;
+        this.kitID = kitID;
         this.map = map;
         this.endTime = endTime;
         this.startTime = startTime;
@@ -111,12 +111,10 @@ public class TeamDuelsGame { // implements Runnable{
 
     }
 
-    public static TeamDuelsGame startGame(@NotNull DuelsTeam team1, @NotNull DuelsTeam team2, String stringGameMode, @Nullable DuelsMap selectedMap) {
-        DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
-        if (gameMode == null) {
-            gameMode = DuelGameMode.CLASSIC;
-            Main.logger.error(String.format("[Nexia]: Invalid duel gamemode (%s) selected! Using fallback one.", stringGameMode));
-            stringGameMode = "CLASSIC";
+    public static CustomTeamDuelsGame startGame(@NotNull DuelsTeam team1, @NotNull DuelsTeam team2, String kitID, @Nullable DuelsMap selectedMap) {
+        if(!DuelGameHandler.validCustomKit(team1.getLeader().get(), kitID)){
+            Main.logger.error(String.format("[Nexia]: Invalid custom duel kit (%s) selected!", kitID));
+            kitID = "";
         }
 
         team1.alive.clear();
@@ -127,15 +125,17 @@ public class TeamDuelsGame { // implements Runnable{
 
         UUID gameUUID = UUID.randomUUID();
 
-        ServerLevel duelLevel = DuelGameHandler.createWorld(gameUUID.toString(), gameMode.hasRegen);
+        ServerLevel duelLevel = DuelGameHandler.createWorld(gameUUID.toString(), true);
         if (selectedMap == null) {
             selectedMap = DuelsMap.duelsMaps.get(RandomUtil.randomInt(0, DuelsMap.duelsMaps.size()));
         }
 
         selectedMap.structureMap.pasteMap(duelLevel);
 
-        TeamDuelsGame game = new TeamDuelsGame(team1, team2, gameMode, selectedMap, duelLevel, 5, 5);
-        DuelGameHandler.teamDuelsGames.add(game);
+        CustomTeamDuelsGame game = new CustomTeamDuelsGame(team1, team2, kitID, selectedMap, duelLevel, 5, 5);
+        DuelGameHandler.customTeamDuelsGames.add(game);
+
+        File kitFile = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + team1.getLeader().get().getStringUUID(), kitID.toLowerCase() + ".txt");
 
         for (AccuratePlayer player : team1.all) {
             ServerPlayer serverPlayer = player.get();
@@ -144,7 +144,7 @@ public class TeamDuelsGame { // implements Runnable{
 
             DuelGameHandler.leave(serverPlayer, false);
 
-            data.gameMode = gameMode;
+            data.gameMode = DuelGameMode.CLASSIC;
             data.gameOptions = new DuelOptions.GameOptions(game, team2);
             data.inDuel = true;
 
@@ -157,14 +157,8 @@ public class TeamDuelsGame { // implements Runnable{
                             .append(Component.text(team2.getLeader().get().getScoreboardName() + "'s Team")
                                     .color(ChatFormat.brandColor2))));
 
-            File file = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.get().getStringUUID() + File.separator + "layout", stringGameMode.toLowerCase() + ".txt");
-            if(file.exists()) InventoryUtil.loadInventory(player.get(), "duels/custom/" + player.get().getStringUUID() + "/layout", stringGameMode.toLowerCase());
-            else InventoryUtil.loadInventory(player.get(), "duels", stringGameMode.toLowerCase());
-
-
-            if (!gameMode.hasSaturation) {
-                factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
-            }
+            if(kitFile.exists()) InventoryUtil.loadInventory(serverPlayer, "duels/custom/" + team1.getLeader().get().getStringUUID(), kitID.toLowerCase());
+            else InventoryUtil.loadInventory(serverPlayer, "duels", "classic");
 
             factoryPlayer.addTag(LobbyUtil.NO_DAMAGE_TAG);
             factoryPlayer.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
@@ -179,7 +173,7 @@ public class TeamDuelsGame { // implements Runnable{
 
             DuelGameHandler.leave(serverPlayer, false);
 
-            data.gameMode = gameMode;
+            data.gameMode = DuelGameMode.CLASSIC;
             data.gameOptions = new DuelOptions.GameOptions(game, team1);
             data.inDuel = true;
 
@@ -192,11 +186,8 @@ public class TeamDuelsGame { // implements Runnable{
                             .append(Component.text(team1.getLeader().get().getScoreboardName() + "'s Team")
                                     .color(ChatFormat.brandColor2))));
 
-            InventoryUtil.loadInventory(serverPlayer, "duels", stringGameMode.toLowerCase());
-
-            if (!gameMode.hasSaturation) {
-                factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
-            }
+            if(kitFile.exists()) InventoryUtil.loadInventory(serverPlayer, "duels/custom/" + team1.getLeader().get().getStringUUID(), kitID.toLowerCase());
+            else InventoryUtil.loadInventory(serverPlayer, "duels", "classic");
 
             factoryPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
             factoryPlayer.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
@@ -269,7 +260,7 @@ public class TeamDuelsGame { // implements Runnable{
                 DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
                 this.team1.refreshTeam();
                 this.team2.refreshTeam();
-                DuelGameHandler.teamDuelsGames.remove(this);
+                DuelGameHandler.customTeamDuelsGames.remove(this);
                 return;
             }
         }
@@ -289,14 +280,14 @@ public class TeamDuelsGame { // implements Runnable{
                 for (AccuratePlayer player : this.team1.alive) {
                     PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS,
                             10, 2);
-                    player.get().setGameMode(this.gameMode.gameMode);
+                    player.get().setGameMode(GameType.SURVIVAL);
                     player.get().removeTag(LobbyUtil.NO_DAMAGE_TAG);
                     player.get().removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
                 }
                 for (AccuratePlayer player : this.team2.alive) {
                     PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS,
                             10, 2);
-                    player.get().setGameMode(this.gameMode.gameMode);
+                    player.get().setGameMode(GameType.SURVIVAL);
                     player.get().removeTag(LobbyUtil.NO_DAMAGE_TAG);
                     player.get().removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
                 }
@@ -417,7 +408,7 @@ public class TeamDuelsGame { // implements Runnable{
 
         if (attacker != null) {
             PlayerData attackerData = PlayerDataManager.get(attacker);
-            if (attackerData.gameOptions.teamDuelsGame != null && attackerData.gameOptions.teamDuelsGame.equals(this) && isVictimTeamDead) {
+            if (attackerData.gameOptions.customTeamDuelsGame != null && attackerData.gameOptions.customTeamDuelsGame.equals(this) && isVictimTeamDead) {
                 this.endGame(victimTeam, attackerData.duelOptions.duelsTeam, true);
             }
             return;
