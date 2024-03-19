@@ -20,7 +20,6 @@ import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -127,12 +126,6 @@ public class ServerGamePacketListenerMixin {
             }
         }
 
-    }
-
-
-    @Inject(at = @At("HEAD"), method = "onDisconnect")
-    private void getLeavePlayer(Component component, CallbackInfo ci) {
-        ServerTime.leavePlayer = player;
     }
 
     @Inject(method = "handlePlayerAction", cancellable = true, at = @At("HEAD"))

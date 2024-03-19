@@ -22,6 +22,8 @@ public class ChatFormat {
 
     public static TextColor greenColor = TextColor.fromHexString("#5bf574");
 
+    public static TextColor goldColor = TextColor.fromHexString("#f5bc42");
+
     public static TextColor lineColor = systemColor;
 
     public static TextColor arrowColor = TextColor.fromHexString("#4a4a4a");

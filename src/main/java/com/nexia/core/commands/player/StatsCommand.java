@@ -15,7 +15,6 @@ import com.nexia.ffa.classic.utilities.player.PlayerDataManager;
 import com.nexia.ffa.classic.utilities.player.SavedPlayerData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -107,9 +106,9 @@ public class StatsCommand {
 
             player.sendMessage(start
                             .append(Component.text(" Killstreak: ").color(ChatFormat.brandColor2))
-                                    .append(Component.text(killstreak).color(TextColor.fromHexString("#f5bc42")))
+                                    .append(Component.text(killstreak).color(ChatFormat.goldColor))
                                             .append(Component.text("/").color(ChatFormat.arrowColor))
-                                                    .append(Component.text(bestKillstreak).color(TextColor.fromHexString("#f5bc42")))
+                                                    .append(Component.text(bestKillstreak).color(ChatFormat.goldColor))
             );
         }
 
@@ -286,9 +285,9 @@ public class StatsCommand {
 
             player.sendMessage(start
                     .append(Component.text(" Killstreak: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(killstreak).color(TextColor.fromHexString("#f5bc42")))
+                    .append(Component.text(killstreak).color(ChatFormat.goldColor))
                     .append(Component.text("/").color(ChatFormat.arrowColor))
-                    .append(Component.text(bestKillstreak).color(TextColor.fromHexString("#f5bc42")))
+                    .append(Component.text(bestKillstreak).color(ChatFormat.goldColor))
             );
         }
 

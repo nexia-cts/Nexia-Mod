@@ -1,16 +1,19 @@
 package com.nexia.core.mixin.player;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.StringReader;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.player.BanHandler;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.discord.Main;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -34,11 +37,16 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 import java.net.SocketAddress;
 
 import static com.nexia.core.utilities.player.BanHandler.banTimeToText;
-import static com.nexia.core.utilities.time.ServerTime.joinPlayer;
-import static com.nexia.core.utilities.time.ServerTime.leavePlayer;
 
 @Mixin(PlayerList.class)
 public abstract class PlayerListMixin {
+
+    @Unique
+    private ServerPlayer joinPlayer = null;
+
+    @Unique
+    private ServerPlayer leavePlayer = null;
+
     @ModifyArgs(method = "broadcastMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ClientboundChatPacket;<init>(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
     private void handleChat(Args args) {
         try {
@@ -82,10 +90,35 @@ public abstract class PlayerListMixin {
     @Unique
     private static Component joinFormat(Component original, ServerPlayer joinPlayer) {
         try {
-            String name = String.valueOf(joinPlayer.getScoreboardName());
+            String name = joinPlayer.getScoreboardName();
             if(name.isEmpty()) { return original; }
-            if(joinPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) < 1) { return LegacyChatFormat.format("§8[§6!§8] §6{}", name); }
-            return LegacyChatFormat.format("§8[§a+§8] §a{}", name);
+
+            Component component;
+            boolean firstJoiner = joinPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) < 1;
+
+            try {
+                // this is so hacky lmfao
+
+                component = ComponentArgument.textComponent().parse(new StringReader(
+                        "[{\"text\":\"[\",\"color\":\"#4A4A4A\"},{\"text\":\"+\",\"color\":\"#5BF574\"},{\"text\":\"]\",\"color\":\"#4A4A4A\"},{\"text\":\" " + name + "\",\"color\":\"#5BF574\"}]"
+                ));
+
+                if(firstJoiner) {
+                    component = ComponentArgument.textComponent().parse(new StringReader(
+                            "[{\"text\":\"[\",\"color\":\"#4A4A4A\"},{\"text\":\"!\",\"color\":\"#F5BC42\"},{\"text\":\"]\",\"color\":\"#4A4A4A\"},{\"text\":\" " + name + "\",\"color\":\"#F5BC42\"}]"
+                    ));
+                }
+
+            } catch (Throwable ignored) {
+                component = LegacyChatFormat.format("§8[§a+§8] §a{}", name);
+
+                if(firstJoiner) {
+                    component = LegacyChatFormat.format("§8[§6!§8] §6{}", name);
+                }
+            }
+
+
+            return component;
         } catch (Exception var8) {
             return original;
         }
@@ -94,9 +127,20 @@ public abstract class PlayerListMixin {
     @Unique
     private static Component leaveFormat(Component original, ServerPlayer leavePlayer) {
         try {
-            String name = String.valueOf(leavePlayer.getScoreboardName());
+            String name = leavePlayer.getScoreboardName();
             if(name.isEmpty()) { return original; }
-            return LegacyChatFormat.format("§8[§c-§8] §c{}", name);
+
+            Component component;
+            try {
+                // this is so hacky lmfao
+                component = ComponentArgument.textComponent().parse(new StringReader(
+                        "[{\"text\":\"[\",\"color\":\"#4A4A4A\"},{\"text\":\"-\",\"color\":\"#FF2B1C\"},{\"text\":\"]\",\"color\":\"#4A4A4A\"},{\"text\":\" " + name + "\",\"color\":\"#FF2B1C\"}]"
+                ));
+            } catch (Throwable ignored) {
+                component = LegacyChatFormat.format("§8[§c-§8] §c{}", name);
+            }
+
+            return component;
         } catch (Exception var8) {
             return original;
         }
@@ -117,7 +161,7 @@ public abstract class PlayerListMixin {
             String textBanTime = banTimeToText(banTime);
 
             if(banTime > 0){
-                cir.setReturnValue(new TextComponent("§c§lYou have been banned.\n§7Duration: §d" + textBanTime + "\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + com.nexia.discord.Main.config.discordLink));
+                cir.setReturnValue(new TextComponent("§c§lYou have been banned.\n§7Duration: §d" + textBanTime + "\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + Main.config.discordLink));
             } else {
                 BanHandler.removeBanFromList(gameProfile);
             }
@@ -127,6 +171,11 @@ public abstract class PlayerListMixin {
     @Inject(method = "placeNewPlayer", at = @At("HEAD"))
     private void setJoinMessage(Connection connection, ServerPlayer serverPlayer, CallbackInfo ci){
         joinPlayer = serverPlayer;
+    }
+
+    @Inject(method = "remove", at = @At("HEAD"))
+    private void setLeaveMessage(ServerPlayer serverPlayer, CallbackInfo ci){
+        leavePlayer = serverPlayer;
     }
 
     @Unique

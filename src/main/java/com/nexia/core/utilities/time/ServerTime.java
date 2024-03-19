@@ -35,10 +35,6 @@ public class ServerTime {
 
     public static MinecraftServer minecraftServer = null;
 
-    public static ServerPlayer joinPlayer = null;
-
-    public static ServerPlayer leavePlayer = null;
-
     public static FactoryServer factoryServer = null;
 
     public static FactoryAPI factoryAPI = null;

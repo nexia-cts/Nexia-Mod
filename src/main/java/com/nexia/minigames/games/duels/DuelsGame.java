@@ -35,7 +35,7 @@ import java.util.UUID;
 
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 
-public class DuelsGame { //implements Runnable{
+public class DuelsGame {
     public AccuratePlayer p1;
 
     public UUID uuid;
@@ -154,7 +154,6 @@ public class DuelsGame { //implements Runnable{
         File p2File = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + mcP2.getStringUUID() + File.separator + "layout", stringGameMode.toLowerCase() + ".txt");
         if(p2File.exists()) InventoryUtil.loadInventory(mcP2, "duels/custom/" + mcP2.getStringUUID() + "/layout", stringGameMode.toLowerCase());
         else InventoryUtil.loadInventory(mcP2, "duels", stringGameMode.toLowerCase());
-
 
         playerData.gameMode = gameMode;
         invitorData.gameMode = gameMode;
