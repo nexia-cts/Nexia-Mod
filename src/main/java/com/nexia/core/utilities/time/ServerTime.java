@@ -29,6 +29,7 @@ import net.minecraft.server.level.ServerPlayer;
 import xyz.nucleoid.fantasy.Fantasy;
 
 public class ServerTime {
+    public static ServerPlayer leavePlayer = null;
 
     public static int totalTickCount = -1;
     public static int totalSecondCount = -1;

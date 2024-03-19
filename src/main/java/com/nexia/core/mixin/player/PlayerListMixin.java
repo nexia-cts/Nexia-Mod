@@ -37,15 +37,13 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 import java.net.SocketAddress;
 
 import static com.nexia.core.utilities.player.BanHandler.banTimeToText;
+import static com.nexia.core.utilities.time.ServerTime.leavePlayer;
 
 @Mixin(PlayerList.class)
 public abstract class PlayerListMixin {
 
     @Unique
     private ServerPlayer joinPlayer = null;
-
-    @Unique
-    private ServerPlayer leavePlayer = null;
 
     @ModifyArgs(method = "broadcastMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ClientboundChatPacket;<init>(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
     private void handleChat(Args args) {
@@ -171,11 +169,6 @@ public abstract class PlayerListMixin {
     @Inject(method = "placeNewPlayer", at = @At("HEAD"))
     private void setJoinMessage(Connection connection, ServerPlayer serverPlayer, CallbackInfo ci){
         joinPlayer = serverPlayer;
-    }
-
-    @Inject(method = "remove", at = @At("HEAD"))
-    private void setLeaveMessage(ServerPlayer serverPlayer, CallbackInfo ci){
-        leavePlayer = serverPlayer;
     }
 
     @Unique

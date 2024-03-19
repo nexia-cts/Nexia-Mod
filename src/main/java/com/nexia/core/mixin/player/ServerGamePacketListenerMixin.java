@@ -20,6 +20,7 @@ import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -69,6 +70,11 @@ public class ServerGamePacketListenerMixin {
     @Redirect(method = "handleInteract", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;getCurrentAttackReach(F)F"))
     public float redirectReachLonger(ServerPlayer playerEntity, float f) {
         return playerEntity.getCurrentAttackReach(f) + 0.75F;
+    }
+
+    @Inject(at = @At("HEAD"), method = "onDisconnect")
+    private void getLeavePlayer(Component component, CallbackInfo ci) {
+        ServerTime.leavePlayer = player;
     }
 
     @Inject(method = "handleUseItemOn", at = @At("HEAD"), cancellable = true)

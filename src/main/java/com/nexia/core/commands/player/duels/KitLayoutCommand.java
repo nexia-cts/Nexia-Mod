@@ -4,6 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.natamus.collective_fabric.functions.PlayerFunctions;
+import com.natamus.collective_fabric.functions.StringFunctions;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
@@ -11,16 +13,13 @@ import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.DuelGameMode;
-import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,57 +51,54 @@ public class KitLayoutCommand {
         ServerPlayer player = context.getSource().getPlayerOrException();
 
         if(inventory.trim().isEmpty() || !InventoryUtil.getListOfInventories("duels").contains(inventory.toLowerCase())) {
-            context.getSource().sendFailure(LegacyChatFormat.format("Invalid inventory name!"));
+            context.getSource().sendFailure(LegacyChatFormat.format("Invalid gamemode!"));
             return 0;
         }
 
         if(argument.equalsIgnoreCase("save")) {
+            // TODO: check if player is even in edit mode
+            String gearstring = PlayerFunctions.getPlayerGearString(player);
+
             Path playerPath = Path.of(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID() + File.separator + "layout");
             File playerDir = playerPath.toFile();
             try {
                 if(!playerDir.exists()) Files.createDirectory(playerPath);
             } catch (IOException ignored) { }
 
-            if (!playerDir.exists()) {
+
+            if (StringFunctions.sequenceCount(gearstring, "\n") < 40 || !playerDir.exists()) {
                 context.getSource().sendFailure(LegacyChatFormat.format("Something went wrong while generating the save file content for your inventory."));
 
                 ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
                 return 0;
+            } else if (!InventoryUtil.writeGearStringToFile("duels/custom/" + player.getStringUUID() + "/layout", inventory, gearstring)) {
+                context.getSource().sendFailure(LegacyChatFormat.format("Something went wrong while saving the content of your inventory as '{}'.", inventory));
+
+                ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
+                return 0;
+            } else {
+                context.getSource().sendFailure(LegacyChatFormat.format("Successfully saved your inventory as '{}'.", inventory));
+
+                ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
+                return 1;
             }
 
-
-            SavableInventory savableInventory = new SavableInventory(player.inventory);
-            writeSavedInventory(player, inventory, savableInventory);
-
-            context.getSource().sendSuccess(LegacyChatFormat.format("{b1}Successfully saved your inventory as '{}'.", inventory), false);
-
-            ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
-            return 1;
         }
 
         if (argument.equalsIgnoreCase("edit")) {
 
-            File playerFile = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID() + File.separator + "layout" + File.separator + inventory + ".json");
-            if(playerFile.exists()) {
-                try {
-                    Inventory savedInventory = SavableInventory.fromSave(Files.readString(playerFile.toPath())).asPlayerInventory();
-                    player.inventory.replaceWith(savedInventory);
-                } catch (IOException ignored) {
-                    InventoryUtil.loadInventory(player, "duels", inventory);
-                }
-            }
-            else {
-                InventoryUtil.loadInventory(player, "duels", inventory);
-            }
+            File playerFile = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID() + File.separator + "layout" + File.separator + inventory + ".txt");
+            if(playerFile.exists()) InventoryUtil.loadInventory(player, "duels/custom/" + player.getStringUUID() + "/layout", inventory);
+            else InventoryUtil.loadInventory(player, "duels", inventory);
 
             return 1;
         }
 
         if(argument.equalsIgnoreCase("reset")) {
 
-            File playerFile = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID() + File.separator + "layout" + File.separator + inventory + ".json");
+            File playerFile = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID() + File.separator + "layout" + File.separator + inventory + ".txt");
             if(playerFile.exists() && playerFile.delete()) {
-                context.getSource().sendSuccess(LegacyChatFormat.format("{b1}Successfully deleted saved kit '{}'!", inventory), false);
+                context.getSource().sendSuccess(LegacyChatFormat.format("{b1}Successfully reset saved kit '{}'!", inventory), false);
             } else {
                 context.getSource().sendFailure(LegacyChatFormat.format("Saved Kit does not exist!"));
             }
@@ -112,20 +108,5 @@ public class KitLayoutCommand {
 
         context.getSource().sendFailure(LegacyChatFormat.format("Invalid argument!"));
         return 1;
-    }
-
-    private static void writeSavedInventory(ServerPlayer player, String name, SavableInventory inventory) {
-        try {
-
-            Path playerPath = Path.of(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID() + File.separator + "layout" + File.separator + name);
-            String json = inventory.toSave();
-
-            FileWriter fileWriter = new FileWriter(playerPath.toAbsolutePath() + ".json");
-            fileWriter.write(json);
-            fileWriter.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }
