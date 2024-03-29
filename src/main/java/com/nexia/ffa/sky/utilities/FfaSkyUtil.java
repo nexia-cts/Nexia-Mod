@@ -270,7 +270,7 @@ public class FfaSkyUtil {
 
     public static boolean canGoToSpawn(ServerPlayer player) {
         if(!FfaSkyUtil.isFfaPlayer(player) || FfaSkyUtil.wasInSpawn.contains(player.getUUID())) return true;
-        return !(player.getHealth() < 20);
+        return !(Math.round(player.getHealth()) < 20);
     }
 
     public static void sendToSpawn(ServerPlayer player) {

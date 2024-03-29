@@ -64,11 +64,16 @@ public class CustomDuelsGame { //implements Runnable{
     public ArrayList<AccuratePlayer> spectators = new ArrayList<>();
 
     // Winner thingie
+
     public AccuratePlayer winner = null;
 
     public AccuratePlayer loser = null;
 
     private boolean shouldWait = false;
+
+    public String perCustomKitID;
+
+    public boolean perCustomDuel;
 
     public CustomDuelsGame(ServerPlayer p1, ServerPlayer p2, String kitID, DuelsMap map, ServerLevel level, int endTime, int startTime){
         this.p1 = AccuratePlayer.create(p1);
@@ -80,7 +85,24 @@ public class CustomDuelsGame { //implements Runnable{
         this.level = level;
     }
 
+    public CustomDuelsGame(ServerPlayer p1, ServerPlayer p2, String perCustomKitID, String perCustomKitID2, DuelsMap map, ServerLevel level, int endTime, int startTime){
+        this.p1 = AccuratePlayer.create(p1);
+        this.p2 = AccuratePlayer.create(p2);
+        this.map = map;
+        this.endTime = endTime;
+        this.startTime = startTime;
+        this.level = level;
+
+        this.kitID = perCustomKitID;
+        this.perCustomKitID = perCustomKitID2;
+
+        this.perCustomDuel = true;
+    }
+
     public static CustomDuelsGame startGame(ServerPlayer mcP1, ServerPlayer mcP2, String kitID, @Nullable DuelsMap selectedMap){
+
+        String perCustomKitID = null;
+
         if(!DuelGameHandler.validCustomKit(mcP1, kitID)){
             Main.logger.error(String.format("[Nexia]: Invalid custom duel kit (%s) selected!", kitID));
             kitID = "";
@@ -88,6 +110,12 @@ public class CustomDuelsGame { //implements Runnable{
 
         PlayerData invitorData = PlayerDataManager.get(mcP1);
         PlayerData playerData = PlayerDataManager.get(mcP2);
+
+        if(invitorData.inviteOptions.perCustomDuel && !DuelGameHandler.validCustomKit(mcP2, invitorData.inviteOptions.inviteKit2)) {
+            Main.logger.error(String.format("[Nexia]: Invalid per-custom (2) duel kit (%s) selected!", invitorData.inviteOptions.inviteKit2));
+        } else {
+            perCustomKitID = invitorData.inviteOptions.inviteKit2;
+        }
 
         if(invitorData.duelOptions.spectatingPlayer != null) {
             GamemodeHandler.unspectatePlayer(AccuratePlayer.create(mcP1), invitorData.duelOptions.spectatingPlayer, false);
@@ -119,11 +147,11 @@ public class CustomDuelsGame { //implements Runnable{
         playerData.duelOptions.spectatingPlayer = null;
 
         selectedMap.p1Pos.teleportPlayer(duelLevel, mcP1);
-        invitorData.inviteOptions.inviting = false;
-        invitorData.inviteOptions.invitingPlayer = null;
+
         invitorData.inDuel = true;
         removeQueue(mcP2, null, true);
         invitorData.duelOptions.spectatingPlayer = null;
+
         mcP1.setGameMode(GameType.ADVENTURE);
         mcP2.setGameMode(GameType.ADVENTURE);
 
@@ -142,17 +170,35 @@ public class CustomDuelsGame { //implements Runnable{
         File p1File = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + mcP1.getStringUUID(), kitID.toLowerCase() + ".txt");
         if(p1File.exists()) {
             InventoryUtil.loadInventory(mcP1, "duels/custom/" + mcP1.getStringUUID(), kitID.toLowerCase());
-            InventoryUtil.loadInventory(mcP2, "duels/custom/" + mcP1.getStringUUID(), kitID.toLowerCase());
+
+            if(perCustomKitID != null && !perCustomKitID.trim().isEmpty()) {
+                File p2File = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + mcP2.getStringUUID(), perCustomKitID.toLowerCase() + ".txt");
+                if(p2File.exists()) {
+                    InventoryUtil.loadInventory(mcP1, "duels/custom/" + mcP2.getStringUUID(), perCustomKitID.toLowerCase());
+                } else {
+                    InventoryUtil.loadInventory(mcP2, "duels/custom/" + mcP1.getStringUUID(), kitID.toLowerCase());
+                }
+
+            } else {
+                InventoryUtil.loadInventory(mcP2, "duels/custom/" + mcP1.getStringUUID(), kitID.toLowerCase());
+            }
+
+
         }
         else {
             InventoryUtil.loadInventory(mcP1, "duels", "classic");
             InventoryUtil.loadInventory(mcP2, "duels", "classic");
         }
 
+        invitorData.inviteOptions.reset();
+
         playerData.gameMode = DuelGameMode.CLASSIC;
         invitorData.gameMode = DuelGameMode.CLASSIC;
 
-        CustomDuelsGame game = new CustomDuelsGame(mcP1, mcP2, kitID, selectedMap, duelLevel, 5, 5);
+        CustomDuelsGame game;
+
+        if(perCustomKitID != null) game = new CustomDuelsGame(mcP1, mcP2, kitID, perCustomKitID, selectedMap, duelLevel, 5, 5);
+        else game = new CustomDuelsGame(mcP1, mcP2, kitID, selectedMap, duelLevel, 5, 5);
 
         playerData.gameOptions = new DuelOptions.GameOptions(game, AccuratePlayer.create(mcP1));
         invitorData.gameOptions = new DuelOptions.GameOptions(game, AccuratePlayer.create(mcP2));

@@ -61,7 +61,7 @@ public class FfaClassicUtil {
 
     public static boolean canGoToSpawn(ServerPlayer player) {
         if(!FfaClassicUtil.isFfaPlayer(player) || FfaClassicUtil.wasInSpawn.contains(player.getUUID())) return true;
-        return !(player.getHealth() < 20);
+        return !(Math.round(player.getHealth()) < 20);
     }
 
     public static void fiveTick() {

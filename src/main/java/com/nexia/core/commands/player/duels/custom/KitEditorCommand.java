@@ -1,9 +1,6 @@
 package com.nexia.core.commands.player.duels.custom;
 
-import com.google.common.base.Functions;
-import com.google.common.collect.Lists;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -20,6 +17,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.server.level.ServerPlayer;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -31,7 +29,7 @@ import java.util.List;
 
 public class KitEditorCommand {
 
-    private static final List<Integer> allowedSlots = Arrays.asList(1, 2, 3);
+    private static final List<String> slots = Arrays.asList("1", "2", "3", "smp", "vanilla");
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
         dispatcher.register((Commands.literal("kiteditor")
@@ -45,27 +43,37 @@ public class KitEditorCommand {
                 })
                 .then(Commands.argument("argument", StringArgumentType.string())
                                 .suggests(((context, builder) -> SharedSuggestionProvider.suggest((new String[]{"save", "edit", "delete"}), builder)))
-                                .then(Commands.argument("slot", IntegerArgumentType.integer())
-                                        .suggests(((context, builder) -> SharedSuggestionProvider.suggest(Lists.transform(allowedSlots, Functions.toStringFunction()), builder)))
-                                        .executes(context -> run(context, StringArgumentType.getString(context, "argument"), IntegerArgumentType.getInteger(context, "slot")))
+                                .executes(context -> run(context, StringArgumentType.getString(context, "argument"), ""))
+                                .then(Commands.argument("slot", StringArgumentType.string())
+                                        .suggests(((context, builder) -> SharedSuggestionProvider.suggest(slots, builder)))
+                                        .executes(context -> run(context, StringArgumentType.getString(context, "argument"), StringArgumentType.getString(context, "slot")))
                                 )
                         )
                 )
         );
     }
 
-    private static int run(CommandContext<CommandSourceStack> context, @NotNull String argument, int slot) throws CommandSyntaxException {
+    private static int run(CommandContext<CommandSourceStack> context, @NotNull String argument, String slot) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
 
-        if (!allowedSlots.contains(slot)) {
+        if (!slots.contains(slot) && !argument.equalsIgnoreCase("save")) {
             context.getSource().sendFailure(LegacyChatFormat.format("Invalid slot!"));
             return 0;
         }
 
-        String inventory = "custom_" + slot;
+
+
+        String inventory = StringUtils.isNumeric(slot) ? "custom_" + slot : slot;
 
         if(argument.equalsIgnoreCase("save")) {
-            // TODO: check if player is even in edit mode
+
+            if(com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).editingKit.isEmpty()) {
+                context.getSource().sendFailure(LegacyChatFormat.format("You aren't editing a kit!"));
+                return 0;
+            }
+
+            inventory = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).editingKit;
+
             String gearstring = PlayerFunctions.getPlayerGearString(player);
 
             Path playerPath = Path.of(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID());
@@ -95,14 +103,19 @@ public class KitEditorCommand {
 
         if (argument.equalsIgnoreCase("edit")) {
 
-            // TODO
-            // create and send player to custom create room or something
+            if(!com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).editingKit.isEmpty()) {
+                context.getSource().sendFailure(LegacyChatFormat.format("You are still editing a kit! Save it or run /hub!"));
+                return 0;
+            }
 
             File playerFile = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID(), inventory + ".txt");
             if(playerFile.exists()) {
                 context.getSource().sendFailure(LegacyChatFormat.format("You must delete the contents of your slot ({}) before editing it!", slot));
                 return 0;
             }
+
+            //com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).editingKit = inventory;
+
             context.getSource().sendFailure(LegacyChatFormat.format("hey, this isnt done what are you doing???"));
 
             return 1;

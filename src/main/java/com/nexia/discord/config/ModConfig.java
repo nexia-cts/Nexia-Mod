@@ -12,4 +12,7 @@ public class ModConfig implements ConfigData {
 
     @Comment("What the discord link should be.")
     public String discordLink = "";
+
+    @Comment("Webhook used for /report.")
+    public String reportWebhook = "";
 }

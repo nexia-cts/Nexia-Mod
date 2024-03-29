@@ -37,6 +37,7 @@ public class KitLayoutCommand {
                 })
                 .then(Commands.argument("argument", StringArgumentType.string())
                                 .suggests(((context, builder) -> SharedSuggestionProvider.suggest((new String[]{"save", "edit", "reset"}), builder)))
+                                .executes(context -> run(context, StringArgumentType.getString(context, "argument"), ""))
                                 .then(Commands.argument("inventory", StringArgumentType.string())
                                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest(InventoryUtil.getListOfInventories("duels"), builder)))
                                         .executes(context -> run(context, StringArgumentType.getString(context, "argument"), StringArgumentType.getString(context, "inventory")))
@@ -50,13 +51,20 @@ public class KitLayoutCommand {
 
         ServerPlayer player = context.getSource().getPlayerOrException();
 
-        if(inventory.trim().isEmpty() || !InventoryUtil.getListOfInventories("duels").contains(inventory.toLowerCase())) {
+        if((inventory.trim().isEmpty() || !InventoryUtil.getListOfInventories("duels").contains(inventory.toLowerCase())) && !argument.equalsIgnoreCase("save")) {
             context.getSource().sendFailure(LegacyChatFormat.format("Invalid gamemode!"));
             return 0;
         }
 
         if(argument.equalsIgnoreCase("save")) {
-            // TODO: check if player is even in edit mode
+
+            if(com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).editingLayout.isEmpty()) {
+                context.getSource().sendFailure(LegacyChatFormat.format("You aren't editing a layout!"));
+                return 0;
+            }
+
+            inventory = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).editingLayout;
+
             String gearstring = PlayerFunctions.getPlayerGearString(player);
 
             Path playerPath = Path.of(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID() + File.separator + "layout");
@@ -87,9 +95,16 @@ public class KitLayoutCommand {
 
         if (argument.equalsIgnoreCase("edit")) {
 
+            if(!com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).editingLayout.isEmpty()) {
+                context.getSource().sendFailure(LegacyChatFormat.format("You are still editing a layout! Save it or run /hub!"));
+                return 0;
+            }
+
             File playerFile = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID() + File.separator + "layout" + File.separator + inventory + ".txt");
             if(playerFile.exists()) InventoryUtil.loadInventory(player, "duels/custom/" + player.getStringUUID() + "/layout", inventory);
             else InventoryUtil.loadInventory(player, "duels", inventory);
+
+            com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).editingLayout = inventory;
 
             return 1;
         }
@@ -98,9 +113,9 @@ public class KitLayoutCommand {
 
             File playerFile = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID() + File.separator + "layout" + File.separator + inventory + ".txt");
             if(playerFile.exists() && playerFile.delete()) {
-                context.getSource().sendSuccess(LegacyChatFormat.format("{b1}Successfully reset saved kit '{}'!", inventory), false);
+                context.getSource().sendSuccess(LegacyChatFormat.format("{b1}Successfully reset saved layout '{}'!", inventory), false);
             } else {
-                context.getSource().sendFailure(LegacyChatFormat.format("Saved Kit does not exist!"));
+                context.getSource().sendFailure(LegacyChatFormat.format("Saved Layout does not exist!"));
             }
 
             return 1;

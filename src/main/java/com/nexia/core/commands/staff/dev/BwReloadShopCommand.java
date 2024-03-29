@@ -19,8 +19,7 @@ public class BwReloadShopCommand {
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 
-        boolean success = BwLoadShop.loadBedWarsShop(false) &&
-                BwLoadShop.loadBedWarsShop(false);
+        boolean success = BwLoadShop.loadBedWarsShop(false);
 
         if (success) {
             String message = LegacyChatFormat.brandColor1 + "Reloaded Bedwars shop successfully!";

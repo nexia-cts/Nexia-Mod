@@ -17,7 +17,7 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
 import net.notcoded.codelib.players.AccuratePlayer;
 
-public class TeamCommand {
+public class PartyCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
         dispatcher.register(Commands.literal("party")
                 .requires(commandSourceStack -> {
@@ -30,24 +30,24 @@ public class TeamCommand {
                     return false;
                 })
                 .then(Commands.literal("invite")
-                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> TeamCommand.invitePlayer(context, EntityArgument.getPlayer(context, "player"))))
+                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> PartyCommand.invitePlayer(context, EntityArgument.getPlayer(context, "player"))))
                 )
                 .then(Commands.literal("promote")
-                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> TeamCommand.promotePlayer(context, EntityArgument.getPlayer(context, "player"))))
+                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> PartyCommand.promotePlayer(context, EntityArgument.getPlayer(context, "player"))))
                 )
                 .then(Commands.literal("join")
-                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> TeamCommand.joinTeam(context, EntityArgument.getPlayer(context, "player"))))
+                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> PartyCommand.joinTeam(context, EntityArgument.getPlayer(context, "player"))))
                 )
                 .then(Commands.literal("kick")
-                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> TeamCommand.kickPlayer(context, EntityArgument.getPlayer(context, "player"))))
+                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> PartyCommand.kickPlayer(context, EntityArgument.getPlayer(context, "player"))))
                 )
                 .then(Commands.literal("decline")
-                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> TeamCommand.declinePlayer(context, EntityArgument.getPlayer(context, "player"))))
+                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> PartyCommand.declinePlayer(context, EntityArgument.getPlayer(context, "player"))))
                 )
-                .then(Commands.literal("disband").executes(TeamCommand::disbandTeam))
-                .then(Commands.literal("create").executes(TeamCommand::createTeam))
-                .then(Commands.literal("list").executes(TeamCommand::listTeam))
-                .then(Commands.literal("leave").executes(TeamCommand::leaveTeam))
+                .then(Commands.literal("disband").executes(PartyCommand::disbandTeam))
+                .then(Commands.literal("create").executes(PartyCommand::createTeam))
+                .then(Commands.literal("list").executes(PartyCommand::listTeam))
+                .then(Commands.literal("leave").executes(PartyCommand::leaveTeam))
         );
         dispatcher.register(Commands.literal("duelsteam")
                 .requires(commandSourceStack -> {
@@ -60,24 +60,24 @@ public class TeamCommand {
                     return false;
                 })
                 .then(Commands.literal("invite")
-                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> TeamCommand.invitePlayer(context, EntityArgument.getPlayer(context, "player"))))
+                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> PartyCommand.invitePlayer(context, EntityArgument.getPlayer(context, "player"))))
                 )
                 .then(Commands.literal("promote")
-                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> TeamCommand.promotePlayer(context, EntityArgument.getPlayer(context, "player"))))
+                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> PartyCommand.promotePlayer(context, EntityArgument.getPlayer(context, "player"))))
                 )
                 .then(Commands.literal("join")
-                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> TeamCommand.joinTeam(context, EntityArgument.getPlayer(context, "player"))))
+                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> PartyCommand.joinTeam(context, EntityArgument.getPlayer(context, "player"))))
                 )
                 .then(Commands.literal("kick")
-                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> TeamCommand.kickPlayer(context, EntityArgument.getPlayer(context, "player"))))
+                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> PartyCommand.kickPlayer(context, EntityArgument.getPlayer(context, "player"))))
                 )
                 .then(Commands.literal("decline")
-                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> TeamCommand.declinePlayer(context, EntityArgument.getPlayer(context, "player"))))
+                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> PartyCommand.declinePlayer(context, EntityArgument.getPlayer(context, "player"))))
                 )
-                .then(Commands.literal("disband").executes(TeamCommand::disbandTeam))
-                .then(Commands.literal("create").executes(TeamCommand::createTeam))
-                .then(Commands.literal("list").executes(TeamCommand::listTeam))
-                .then(Commands.literal("leave").executes(TeamCommand::leaveTeam))
+                .then(Commands.literal("disband").executes(PartyCommand::disbandTeam))
+                .then(Commands.literal("create").executes(PartyCommand::createTeam))
+                .then(Commands.literal("list").executes(PartyCommand::listTeam))
+                .then(Commands.literal("leave").executes(PartyCommand::leaveTeam))
         );
     }
 

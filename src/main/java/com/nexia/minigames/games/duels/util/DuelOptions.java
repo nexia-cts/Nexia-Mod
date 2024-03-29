@@ -20,17 +20,34 @@ public class DuelOptions {
         public AccuratePlayer invitingPlayer;
 
         public DuelsMap inviteMap;
+
         public String inviteKit;
+        public String inviteKit2;
 
         public boolean customDuel;
+
+        public boolean perCustomDuel;
 
         public InviteOptions(AccuratePlayer invitingPlayer, boolean inviting, DuelsMap inviteMap, String inviteKit, boolean customDuel) {
             this.invitingPlayer = invitingPlayer;
             this.inviting = inviting;
             this.inviteMap = inviteMap;
             this.inviteKit = inviteKit;
+            this.inviteKit2 = null;
 
             this.customDuel = customDuel;
+            this.perCustomDuel = false;
+        }
+
+        public InviteOptions(AccuratePlayer invitingPlayer, boolean inviting, DuelsMap inviteMap, String inviteKit, String inviteKit2, boolean customDuel) {
+            this.invitingPlayer = invitingPlayer;
+            this.inviting = inviting;
+            this.inviteMap = inviteMap;
+            this.inviteKit = inviteKit;
+            this.inviteKit2 = inviteKit2;
+
+            this.customDuel = customDuel;
+            this.perCustomDuel = customDuel && (inviteKit2 != null && !inviteKit2.trim().isEmpty());
         }
 
         public InviteOptions reset() {
@@ -38,7 +55,9 @@ public class DuelOptions {
             this.inviting = false;
             this.inviteMap = DuelsMap.CITY;
             this.inviteKit = "";
+            this.inviteKit2 = null;
             this.customDuel = false;
+            this.perCustomDuel = false;
             return this;
         }
     }

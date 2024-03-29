@@ -1,12 +1,11 @@
 package com.nexia.core.listeners.factory;
 
 import com.combatreforged.factory.api.event.player.PlayerDisconnectEvent;
-
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.ffa.classic.utilities.FfaClassicUtil;
+import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
@@ -42,8 +41,8 @@ public class PlayerLeaveListener {
     private static void processDisconnect(Player player, ServerPlayer minecraftPlayer){
 
         if (BwUtil.isInBedWars(minecraftPlayer)) BwPlayerEvents.leaveInBedWars(minecraftPlayer);
-        else if (FfaClassicUtil.isFfaPlayer(minecraftPlayer)) {
-            FfaClassicUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
+        else if (FfaUtil.isFfaPlayer(minecraftPlayer)) {
+            FfaUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
         }
         else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(minecraftPlayer, true);
         else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.SKYWARS) SkywarsGame.leave(minecraftPlayer);

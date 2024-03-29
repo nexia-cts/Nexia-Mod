@@ -214,7 +214,7 @@ public class LobbyUtil {
         ItemStackUtil.sendInventoryRefreshPacket(minecraftPlayer);
     }
 
-    private static boolean checkGameModeBan(Player factoryPlayer, ServerPlayer player, String game) {
+    public static boolean checkGameModeBan(Player factoryPlayer, ServerPlayer player, String game) {
         ArrayList<PlayerGameMode> bannedGameModes = GamemodeBanHandler.getBannedGameModes(player);
         if(bannedGameModes.isEmpty()) {
             return false;
@@ -276,8 +276,10 @@ public class LobbyUtil {
             return;
         }
 
-        player.removeTag("duels");
-        DuelGameHandler.leave(minecraftPlayer, true);
+        if(player.hasTag("duels")) {
+            player.removeTag("duels");
+            DuelGameHandler.leave(minecraftPlayer, true);
+        }
 
         if (!LobbyUtil.isLobbyWorld(minecraftPlayer.getLevel())) {
             LobbyUtil.leaveAllGames(minecraftPlayer, false);

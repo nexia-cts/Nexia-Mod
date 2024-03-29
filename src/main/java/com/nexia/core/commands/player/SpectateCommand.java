@@ -5,6 +5,7 @@ import com.combatreforged.factory.api.world.types.Minecraft;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerData;
@@ -72,9 +73,11 @@ public class SpectateCommand {
             );
         }
 
-        // Check if player is in combat (or full health), then put them in spectator.
+        if(LobbyUtil.checkGameModeBan(factoryExecutor, executor, "ffa")) {
+            return 0;
+        }
 
-        if(factoryExecutor.getHealth() < 20) {
+        if(Math.round(factoryExecutor.getHealth()) < 20) {
             factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("You must be fully healed to go into spectator!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
             );
@@ -111,6 +114,10 @@ public class SpectateCommand {
             );
         }
 
+        if(LobbyUtil.checkGameModeBan(factoryExecutor, executor, "ffa")) {
+            return 0;
+        }
+
         if(PlayerDataManager.get(executor).gameMode != PlayerGameMode.FFA) {
             factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("This can only be used in FFA!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
@@ -129,7 +136,7 @@ public class SpectateCommand {
 
         // Check if player is in combat (or full health), then put them in spectator.
 
-        if(factoryExecutor.getHealth() < 20) {
+        if(Math.round(factoryExecutor.getHealth()) < 20) {
             factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("You must be fully healed to go into spectator!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
             );

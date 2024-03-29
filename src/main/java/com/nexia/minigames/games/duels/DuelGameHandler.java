@@ -72,6 +72,8 @@ public class DuelGameHandler {
         data.inviteOptions.reset();
         removeQueue(player, null, true);
         data.gameMode = DuelGameMode.LOBBY;
+        data.editingLayout = "";
+        data.editingKit = "";
         if (leaveTeam) {
             if (data.duelOptions.duelsTeam != null) {
                 data.duelOptions.duelsTeam.leaveTeam(AccuratePlayer.create(player), true);

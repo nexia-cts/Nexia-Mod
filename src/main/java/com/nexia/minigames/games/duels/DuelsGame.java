@@ -127,11 +127,11 @@ public class DuelsGame {
         playerData.duelOptions.spectatingPlayer = null;
 
         selectedMap.p1Pos.teleportPlayer(duelLevel, mcP1);
-        invitorData.inviteOptions.inviting = false;
-        invitorData.inviteOptions.invitingPlayer = null;
+        invitorData.inviteOptions.reset();
         invitorData.inDuel = true;
         removeQueue(mcP2, null, true);
         invitorData.duelOptions.spectatingPlayer = null;
+
         mcP1.setGameMode(GameType.ADVENTURE);
         mcP2.setGameMode(GameType.ADVENTURE);
 

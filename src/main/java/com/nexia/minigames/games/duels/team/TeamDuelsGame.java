@@ -146,6 +146,7 @@ public class TeamDuelsGame { // implements Runnable{
 
             data.gameMode = gameMode;
             data.gameOptions = new DuelOptions.GameOptions(game, team2);
+            data.inviteOptions.reset();
             data.inDuel = true;
 
             serverPlayer.setGameMode(GameType.ADVENTURE);
@@ -181,6 +182,7 @@ public class TeamDuelsGame { // implements Runnable{
 
             data.gameMode = gameMode;
             data.gameOptions = new DuelOptions.GameOptions(game, team1);
+            data.inviteOptions.reset();
             data.inDuel = true;
 
             serverPlayer.setGameMode(GameType.ADVENTURE);
@@ -214,7 +216,7 @@ public class TeamDuelsGame { // implements Runnable{
         if (isBroken != null) {
             Component error = ChatFormat.nexiaMessage
                     .append(Component.text(
-                                    "The game you were in was identified as broken, please contact NotCoded or any other dev.")
+                                    "The game you were in was identified as broken, please contact a developer with a video of the last 30 seconds.")
                             .color(ChatFormat.normalColor)
                             .decoration(ChatFormat.bold, false));
 

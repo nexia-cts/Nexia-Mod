@@ -24,16 +24,12 @@ public class PlayerData {
 
     public LocalDateTime combatTagEnd;
 
-    public boolean isReportBanned;
-
     public ServerPlayer lastMessageSender;
 
     public PlayerData(SavedPlayerData savedData) {
         this.savedData = savedData;
 
         this.combatTagEnd = LocalDateTime.now();
-
-        this.isReportBanned = false;
 
         this.gameMode = PlayerGameMode.LOBBY;
         this.ffaGameMode = null;

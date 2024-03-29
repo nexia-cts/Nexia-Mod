@@ -3,6 +3,7 @@ package com.nexia.core.mixin.player;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
 import com.nexia.core.games.util.LobbyUtil;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.player.BanHandler;
@@ -98,12 +99,12 @@ public abstract class PlayerListMixin {
                 // this is so hacky lmfao
 
                 component = ComponentArgument.textComponent().parse(new StringReader(
-                        "[{\"text\":\"[\",\"color\":\"#4A4A4A\"},{\"text\":\"+\",\"color\":\"#5BF574\"},{\"text\":\"]\",\"color\":\"#4A4A4A\"},{\"text\":\" " + name + "\",\"color\":\"#5BF574\"}]"
+                        "[{\"text\":\"[\",\"color\":\"#4A4A4A\"},{\"text\":\"+\",\"color\":\"" + ChatFormat.greenColor.asHexString().toUpperCase() + "\"},{\"text\":\"]\",\"color\":\"#4A4A4A\"},{\"text\":\" " + name + "\",\"color\":\"" + ChatFormat.greenColor.asHexString().toUpperCase() + "\"}]"
                 ));
 
                 if(firstJoiner) {
                     component = ComponentArgument.textComponent().parse(new StringReader(
-                            "[{\"text\":\"[\",\"color\":\"#4A4A4A\"},{\"text\":\"!\",\"color\":\"#F5BC42\"},{\"text\":\"]\",\"color\":\"#4A4A4A\"},{\"text\":\" " + name + "\",\"color\":\"#F5BC42\"}]"
+                            "[{\"text\":\"[\",\"color\":\"#4A4A4A\"},{\"text\":\"!\",\"color\":\"" + ChatFormat.goldColor.asHexString().toUpperCase() + "\"},{\"text\":\"]\",\"color\":\"#4A4A4A\"},{\"text\":\" " + name + "\",\"color\":\"" + ChatFormat.goldColor.asHexString().toUpperCase() + "\"}]"
                     ));
                 }
 
@@ -132,7 +133,7 @@ public abstract class PlayerListMixin {
             try {
                 // this is so hacky lmfao
                 component = ComponentArgument.textComponent().parse(new StringReader(
-                        "[{\"text\":\"[\",\"color\":\"#4A4A4A\"},{\"text\":\"-\",\"color\":\"#FF2B1C\"},{\"text\":\"]\",\"color\":\"#4A4A4A\"},{\"text\":\" " + name + "\",\"color\":\"#FF2B1C\"}]"
+                        "[{\"text\":\"[\",\"color\":\"#4A4A4A\"},{\"text\":\"-\",\"color\":\"" + ChatFormat.failColor.asHexString().toUpperCase() + "\"},{\"text\":\"]\",\"color\":\"#4A4A4A\"},{\"text\":\" " + name + "\",\"color\":\"" + ChatFormat.failColor.asHexString().toUpperCase() + "\"}]"
                 ));
             } catch (Throwable ignored) {
                 component = LegacyChatFormat.format("§8[§c-§8] §c{}", name);

@@ -19,6 +19,8 @@ import com.nexia.minigames.games.duels.util.DuelOptions;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.Util;
 import net.minecraft.network.chat.TextComponent;
@@ -307,15 +309,25 @@ public class GamemodeHandler {
     }
 
     public static void joinCustomGamemode(ServerPlayer invitor, ServerPlayer player, String kitID, @Nullable DuelsMap selectedmap, boolean silent) {
-        if (DuelGameHandler.validCustomKit(invitor, kitID)) {
+        if (!DuelGameHandler.validCustomKit(invitor, kitID)) {
             if (!silent) {
                 PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("Invalid custom kit!").color(ChatFormat.failColor));
             }
             return;
         }
+
         PlayerData data = PlayerDataManager.get(invitor);
         PlayerData playerData = PlayerDataManager.get(player);
 
+        if(data.inviteOptions.inviteKit2 != null && !DuelGameHandler.validCustomKit(player, data.inviteOptions.inviteKit2)) {
+            if (!silent) {
+                PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("Invalid per-custom kit (2)!").color(ChatFormat.failColor));
+            }
+            return;
+        } else if(data.inviteOptions.inviteKit2 != null && DuelGameHandler.validCustomKit(player, data.inviteOptions.inviteKit2)){
+            data.inviteOptions.perCustomDuel = true;
+        }
+        
         if (data.duelOptions.duelsTeam != null && data.duelOptions.duelsTeam.getPeople().contains(AccuratePlayer.create(player))) {
             if (!silent) {
                 PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("You cannot duel people on your team!").color(ChatFormat.failColor));
@@ -521,8 +533,8 @@ public class GamemodeHandler {
                 .append(Component.text("ACCEPT")
                         .color(ChatFormat.greenColor)
                         .decorate(ChatFormat.bold)
-                        .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor2)))
-                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/acceptduel " + executor.getRawName())))
+                        .hoverEvent(HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor2)))
+                        .clickEvent(ClickEvent.runCommand("/acceptduel " + executor.getRawName())))
                 .append(Component.text("]  ").color(NamedTextColor.DARK_GRAY)
                 );
 
@@ -530,8 +542,8 @@ public class GamemodeHandler {
                 .append(Component.text("DECLINE")
                         .color(ChatFormat.failColor)
                         .decorate(ChatFormat.bold)
-                        .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor2)))
-                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/declineduel " + executor.getRawName())))
+                        .hoverEvent(HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor2)))
+                        .clickEvent(ClickEvent.runCommand("/declineduel " + executor.getRawName())))
                 .append(Component.text("]  ").color(NamedTextColor.DARK_GRAY)
                 );
 
@@ -638,8 +650,8 @@ public class GamemodeHandler {
                 .append(Component.text("ACCEPT")
                         .color(ChatFormat.greenColor)
                         .decorate(ChatFormat.bold)
-                        .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor2)))
-                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/acceptduel " + executor.getRawName())))
+                        .hoverEvent(HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor2)))
+                        .clickEvent(ClickEvent.runCommand("/acceptduel " + executor.getRawName())))
                 .append(Component.text("]  ").color(NamedTextColor.DARK_GRAY)
                 );
 
@@ -647,8 +659,8 @@ public class GamemodeHandler {
                 .append(Component.text("DECLINE")
                         .color(ChatFormat.failColor)
                         .decorate(ChatFormat.bold)
-                        .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor2)))
-                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/declineduel " + executor.getRawName())))
+                        .hoverEvent(HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor2)))
+                        .clickEvent(ClickEvent.runCommand("/declineduel " + executor.getRawName())))
                 .append(Component.text("]  ").color(NamedTextColor.DARK_GRAY)
                 );
 

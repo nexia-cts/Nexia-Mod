@@ -15,6 +15,12 @@ public class PlayerData {
     public DuelGameMode gameMode;
     public boolean inDuel;
 
+    // Kit Editor
+    public String editingKit;
+
+    // Kit Layout
+    public String editingLayout;
+
     // Duels
     public DuelOptions duelOptions;
     public DuelOptions.GameOptions gameOptions;
@@ -29,6 +35,9 @@ public class PlayerData {
         this.duelOptions = new DuelOptions(null, null);
         this.inviteOptions = new DuelOptions.InviteOptions(null, false, DuelsMap.CITY, "null", false);
         this.gameOptions = null;
+
+        this.editingKit = "";
+        this.editingLayout = "";
 
         /*
         this.invitingPlayer = null;

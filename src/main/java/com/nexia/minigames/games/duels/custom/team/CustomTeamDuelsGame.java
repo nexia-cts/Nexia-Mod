@@ -69,6 +69,11 @@ public class CustomTeamDuelsGame { // implements Runnable{
 
     private boolean shouldWait = false;
 
+
+    public String perCustomKitID;
+
+    public boolean perCustomDuel;
+
     public CustomTeamDuelsGame(DuelsTeam team1, DuelsTeam team2, String kitID, DuelsMap map, ServerLevel level, int endTime, int startTime) {
         this.team1 = team1;
         this.team2 = team2;
@@ -77,6 +82,20 @@ public class CustomTeamDuelsGame { // implements Runnable{
         this.endTime = endTime;
         this.startTime = startTime;
         this.level = level;
+    }
+
+    public CustomTeamDuelsGame(DuelsTeam team1, DuelsTeam team2, String perCustomKitID, String perCustomKitID2, DuelsMap map, ServerLevel level, int endTime, int startTime) {
+        this.team1 = team1;
+        this.team2 = team2;
+        this.map = map;
+        this.endTime = endTime;
+        this.startTime = startTime;
+        this.level = level;
+
+        this.kitID = perCustomKitID;
+        this.perCustomKitID = perCustomKitID2;
+
+        this.perCustomDuel = true;
     }
 
     public String detectBrokenGame() {
@@ -112,9 +131,19 @@ public class CustomTeamDuelsGame { // implements Runnable{
     }
 
     public static CustomTeamDuelsGame startGame(@NotNull DuelsTeam team1, @NotNull DuelsTeam team2, String kitID, @Nullable DuelsMap selectedMap) {
+
+        String perCustomKitID = null;
+
         if(!DuelGameHandler.validCustomKit(team1.getLeader().get(), kitID)){
             Main.logger.error(String.format("[Nexia]: Invalid custom duel kit (%s) selected!", kitID));
             kitID = "";
+        }
+
+        PlayerData team2LeaderData = PlayerDataManager.get(team2.getLeader().get());
+        if(team2LeaderData.inviteOptions.perCustomDuel && !DuelGameHandler.validCustomKit(team2.getLeader().get(), team2LeaderData.inviteOptions.inviteKit2)) {
+            Main.logger.error(String.format("[Nexia]: Invalid per-custom (team 2) duel kit (%s) selected!", team2LeaderData.inviteOptions.inviteKit2));
+        } else {
+            perCustomKitID = team2LeaderData.inviteOptions.inviteKit2;
         }
 
         team1.alive.clear();
@@ -132,10 +161,20 @@ public class CustomTeamDuelsGame { // implements Runnable{
 
         selectedMap.structureMap.pasteMap(duelLevel);
 
-        CustomTeamDuelsGame game = new CustomTeamDuelsGame(team1, team2, kitID, selectedMap, duelLevel, 5, 5);
-        DuelGameHandler.customTeamDuelsGames.add(game);
-
         File kitFile = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + team1.getLeader().get().getStringUUID(), kitID.toLowerCase() + ".txt");
+        File p2File = null;
+
+        if(perCustomKitID != null && !perCustomKitID.trim().isEmpty()) {
+            p2File = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + team2.getLeader().get().getStringUUID(), perCustomKitID.toLowerCase() + ".txt");
+        }
+
+        CustomTeamDuelsGame game;
+
+
+        if(p2File != null && p2File.exists()) game = new CustomTeamDuelsGame(team1, team2, kitID, perCustomKitID, selectedMap, duelLevel, 5, 5);
+        else game = new CustomTeamDuelsGame(team1, team2, kitID, selectedMap, duelLevel, 5, 5);
+
+        DuelGameHandler.customTeamDuelsGames.add(game);
 
         for (AccuratePlayer player : team1.all) {
             ServerPlayer serverPlayer = player.get();
@@ -146,6 +185,7 @@ public class CustomTeamDuelsGame { // implements Runnable{
 
             data.gameMode = DuelGameMode.CLASSIC;
             data.gameOptions = new DuelOptions.GameOptions(game, team2);
+            data.inviteOptions.reset();
             data.inDuel = true;
 
             serverPlayer.setGameMode(GameType.ADVENTURE);
@@ -175,6 +215,7 @@ public class CustomTeamDuelsGame { // implements Runnable{
 
             data.gameMode = DuelGameMode.CLASSIC;
             data.gameOptions = new DuelOptions.GameOptions(game, team1);
+            data.inviteOptions.reset();
             data.inDuel = true;
 
             serverPlayer.setGameMode(GameType.ADVENTURE);
@@ -186,8 +227,14 @@ public class CustomTeamDuelsGame { // implements Runnable{
                             .append(Component.text(team1.getLeader().get().getScoreboardName() + "'s Team")
                                     .color(ChatFormat.brandColor2))));
 
-            if(kitFile.exists()) InventoryUtil.loadInventory(serverPlayer, "duels/custom/" + team1.getLeader().get().getStringUUID(), kitID.toLowerCase());
-            else InventoryUtil.loadInventory(serverPlayer, "duels", "classic");
+
+            if(game.perCustomDuel) {
+                if(p2File != null && p2File.exists()) InventoryUtil.loadInventory(serverPlayer, "duels/custom/" + team2.getLeader().get().getStringUUID(), perCustomKitID.toLowerCase());
+                else InventoryUtil.loadInventory(serverPlayer, "duels", "classic");
+            } else {
+                if(kitFile.exists()) InventoryUtil.loadInventory(serverPlayer, "duels/custom/" + team1.getLeader().get().getStringUUID(), kitID.toLowerCase());
+                else InventoryUtil.loadInventory(serverPlayer, "duels", "classic");
+            }
 
             factoryPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
             factoryPlayer.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
@@ -205,7 +252,7 @@ public class CustomTeamDuelsGame { // implements Runnable{
         if (isBroken != null) {
             Component error = ChatFormat.nexiaMessage
                     .append(Component.text(
-                                    "The game you were in was identified as broken, please contact NotCoded or any other dev.")
+                                    "The game you were in was identified as broken, please contact a developer with a video of the last 30 seconds.")
                             .color(ChatFormat.normalColor)
                             .decoration(ChatFormat.bold, false));
 

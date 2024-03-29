@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import me.lucko.fabric.api.permissions.v0.Permissions;
@@ -46,6 +47,9 @@ public class ShoutCommand {
 
     public static int shout(CommandContext<CommandSourceStack> context, String message) throws CommandSyntaxException {
         ServerPlayer executor = context.getSource().getPlayerOrException();
+
+        if (PlayerMutes.muted(executor)) return 0;
+
         Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor);
         if(ShoutCommand.cooldownTime.get(executor.getUUID()) == null) ShoutCommand.cooldownTime.put(executor.getUUID(), System.currentTimeMillis());
         long longTime = ShoutCommand.cooldownTime.get(executor.getUUID());
