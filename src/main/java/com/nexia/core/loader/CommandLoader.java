@@ -2,75 +2,80 @@ package com.nexia.core.loader;
 
 import com.nexia.core.commands.player.*;
 import com.nexia.core.commands.player.duels.*;
-import com.nexia.core.commands.player.ffa.*;
+import com.nexia.core.commands.player.ffa.BiomeCommand;
+import com.nexia.core.commands.player.ffa.KitCommand;
 import com.nexia.core.commands.staff.*;
 import com.nexia.core.commands.staff.dev.*;
-import com.nexia.discord.commands.minecraft.*;
+import com.nexia.discord.commands.minecraft.LinkCommand;
+import com.nexia.discord.commands.minecraft.UnLinkCommand;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.Event;
 
 public class CommandLoader {
 
     public static void registerCommands() {
 
-        CommandRegistrationCallback.EVENT.register(DiscordCommand::register);
-        CommandRegistrationCallback.EVENT.register(LeaveCommand::register);
+        Event<CommandRegistrationCallback> callbackEvent = CommandRegistrationCallback.EVENT;
+        
+        callbackEvent.register(DiscordCommand::register);
+        callbackEvent.register(LeaveCommand::register);
 
 
-        CommandRegistrationCallback.EVENT.register(ProtectionMapCommand::register);
-        CommandRegistrationCallback.EVENT.register(PrefixCommand::register);
-        CommandRegistrationCallback.EVENT.register(RankCommand::register);
-        CommandRegistrationCallback.EVENT.register(LinkCommand::register);
-        CommandRegistrationCallback.EVENT.register(PingCommand::register);
+        callbackEvent.register(ProtectionMapCommand::register);
+        callbackEvent.register(PrefixCommand::register);
+        callbackEvent.register(RankCommand::register);
+        callbackEvent.register(LinkCommand::register);
+        callbackEvent.register(PingCommand::register);
 
-        CommandRegistrationCallback.EVENT.register(ForceGameEndCommand::register);
+        callbackEvent.register(ForceGameEndCommand::register);
 
-        CommandRegistrationCallback.EVENT.register(SpectateCommand::register);
-        CommandRegistrationCallback.EVENT.register(TeamCommand::register);
+        callbackEvent.register(SpectateCommand::register);
+        callbackEvent.register(TeamCommand::register);
 
-        CommandRegistrationCallback.EVENT.register(TempBanCommand::register);
-        CommandRegistrationCallback.EVENT.register(ShoutCommand::register);
-        CommandRegistrationCallback.EVENT.register(RanksCommand::register);
-        CommandRegistrationCallback.EVENT.register(UnTempBanCommand::register);
-        CommandRegistrationCallback.EVENT.register(UnLinkCommand::register);
+        callbackEvent.register(TempBanCommand::register);
+        callbackEvent.register(ShoutCommand::register);
+        callbackEvent.register(RanksCommand::register);
+        callbackEvent.register(UnTempBanCommand::register);
+        callbackEvent.register(UnLinkCommand::register);
 
-        CommandRegistrationCallback.EVENT.register(GamemodeBanCommand::register);
-        CommandRegistrationCallback.EVENT.register(UnGamemodeBanCommand::register);
+        callbackEvent.register(GamemodeBanCommand::register);
+        callbackEvent.register(UnGamemodeBanCommand::register);
 
-        CommandRegistrationCallback.EVENT.register(AcceptDuelCommand::register);
-        CommandRegistrationCallback.EVENT.register(DeclineDuelCommand::register);
+        callbackEvent.register(AcceptDuelCommand::register);
+        callbackEvent.register(DeclineDuelCommand::register);
 
-        CommandRegistrationCallback.EVENT.register(StaffPrefixCommand::register);
-        CommandRegistrationCallback.EVENT.register(DevExperimentalMapCommand::register);
+        callbackEvent.register(StaffPrefixCommand::register);
+        callbackEvent.register(DevExperimentalMapCommand::register);
 
-        CommandRegistrationCallback.EVENT.register(StaffReportCommand::register);
+        callbackEvent.register(StaffReportCommand::register);
 
-        CommandRegistrationCallback.EVENT.register(DuelCommand::register);
-        CommandRegistrationCallback.EVENT.register(QueueCommand::register);
-        CommandRegistrationCallback.EVENT.register(MapCommand::register);
+        callbackEvent.register(DuelCommand::register);
+        callbackEvent.register(QueueCommand::register);
+        callbackEvent.register(MapCommand::register);
 
-        CommandRegistrationCallback.EVENT.register(BiomeCommand::register);
+        callbackEvent.register(BiomeCommand::register);
 
-        CommandRegistrationCallback.EVENT.register(MuteCommand::register);
-        CommandRegistrationCallback.EVENT.register(UnMuteCommand::register);
+        callbackEvent.register(MuteCommand::register);
+        callbackEvent.register(UnMuteCommand::register);
 
-        CommandRegistrationCallback.EVENT.register(PlayCommand::register);
-        CommandRegistrationCallback.EVENT.register(KitCommand::register);
+        callbackEvent.register(PlayCommand::register);
+        callbackEvent.register(KitCommand::register);
 
-        CommandRegistrationCallback.EVENT.register(BanCommand::register);
-        CommandRegistrationCallback.EVENT.register(UnBanCommand::register);
-        CommandRegistrationCallback.EVENT.register(StatsCommand::register);
-        CommandRegistrationCallback.EVENT.register(RulesCommand::register);
-        CommandRegistrationCallback.EVENT.register(HelpCommand::register);
-        CommandRegistrationCallback.EVENT.register(ReportCommand::register);
+        callbackEvent.register(BanCommand::register);
+        callbackEvent.register(UnBanCommand::register);
+        callbackEvent.register(StatsCommand::register);
+        callbackEvent.register(RulesCommand::register);
+        callbackEvent.register(HelpCommand::register);
+        callbackEvent.register(ReportCommand::register);
 
-        CommandRegistrationCallback.EVENT.register(MessageCommand::registerMsg);
-        CommandRegistrationCallback.EVENT.register(MessageCommand::registerReply);
+        callbackEvent.register(MessageCommand::registerMsg);
+        callbackEvent.register(MessageCommand::registerReply);
 
-        CommandRegistrationCallback.EVENT.register(RandomCommand::register);
+        callbackEvent.register(RandomCommand::register);
 
-        CommandRegistrationCallback.EVENT.register(HealCommand::register);
-        CommandRegistrationCallback.EVENT.register(BwReloadShopCommand::register);
-        CommandRegistrationCallback.EVENT.register(BwReloadTeamColorsCommand::register);
-        CommandRegistrationCallback.EVENT.register(SkipQueueCommand::register);
+        callbackEvent.register(HealCommand::register);
+        callbackEvent.register(BwReloadShopCommand::register);
+        callbackEvent.register(BwReloadTeamColorsCommand::register);
+        callbackEvent.register(SkipQueueCommand::register);
     }
 }

@@ -191,7 +191,7 @@ public class FfaKitsUtil {
 
     public static boolean canGoToSpawn(ServerPlayer player) {
         if(!FfaKitsUtil.isFfaPlayer(player) || FfaKitsUtil.wasInSpawn.contains(player.getUUID())) return true;
-        return !(player.getHealth() < 20);
+        return !(Math.round(player.getHealth()) < 20);
     }
 
     public static void setDeathMessage(@NotNull ServerPlayer minecraftPlayer, @Nullable DamageSource source) {

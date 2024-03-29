@@ -6,9 +6,13 @@ public class SavedPlayerData {
 
     public String muteReason;
 
+    public boolean isReportBanned;
+
     public SavedPlayerData() {
         this.muteEnd = System.currentTimeMillis();
         this.muteReason = null;
+
+        this.isReportBanned = false;
     }
 
 }

@@ -2,14 +2,9 @@ package com.nexia.core.listeners.factory;
 
 import com.combatreforged.factory.api.event.player.PlayerHotbarDropItemEvent;
 import com.combatreforged.factory.api.world.entity.player.Player;
-import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
+import com.nexia.core.utilities.misc.EventUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
-import com.nexia.minigames.games.bedwars.util.BwUtil;
-import com.nexia.minigames.games.football.FootballGame;
-import com.nexia.minigames.games.oitc.OitcGame;
 import net.minecraft.server.level.ServerPlayer;
 
 public class PlayerDropItemListener {
@@ -19,33 +14,9 @@ public class PlayerDropItemListener {
             Player player = playerDropItemEvent.getPlayer();
             ServerPlayer minecraftPlayer = PlayerUtil.getMinecraftPlayer(player);
 
-            if (FfaUtil.isFfaPlayer(minecraftPlayer) && !FfaUhcUtil.isFfaPlayer(minecraftPlayer)) {
+            if (!EventUtil.dropItem(minecraftPlayer, playerDropItemEvent.getItemStack())) {
                 playerDropItemEvent.setCancelled(true);
-                return;
-            }
-
-            if(LobbyUtil.isLobbyWorld(minecraftPlayer.getLevel())){
-                playerDropItemEvent.setCancelled(true);
-                return;
-            }
-
-
-            if (BwUtil.isBedWarsPlayer(minecraftPlayer)) {
-                if (!BwUtil.canDropItem(playerDropItemEvent.getItemStack())) {
-                    ItemStackUtil.sendInventoryRefreshPacket(minecraftPlayer);
-                    playerDropItemEvent.setCancelled(true);
-                    return;
-                }
-            }
-
-            if(OitcGame.isOITCPlayer(minecraftPlayer)){
-                playerDropItemEvent.setCancelled(true);
-                return;
-            }
-
-            if(FootballGame.isFootballPlayer(minecraftPlayer)){
-                playerDropItemEvent.setCancelled(true);
-                return;
+                ItemStackUtil.sendInventoryRefreshPacket(minecraftPlayer);
             }
         });
     }

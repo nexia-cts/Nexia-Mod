@@ -26,11 +26,11 @@ public class WorldUtil {
         return ServerTime.factoryServer.getWorld(WorldUtil.getWorldName(WorldUtil.getWorldName(level)));
     }
 
-    private static String getWorldName(@NotNull Level level) {
+    public static String getWorldName(@NotNull Level level) {
         return level.dimension().toString().replaceAll("dimension / ", "").replaceAll("]", "").replaceAll("ResourceKey\\[minecraft:", "");
     }
 
-    private static Identifier getWorldName(String name) {
+    public static Identifier getWorldName(String name) {
         String[] splitName = name.split(":");
         return new Identifier(splitName[0], splitName[1]);
     }

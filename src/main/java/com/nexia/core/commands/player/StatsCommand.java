@@ -213,7 +213,7 @@ public class StatsCommand {
 
     public static float calculateKDR(int kills, int deaths){
 
-        if(deaths == 0 || kills == 0) { return 0; }
+        if(deaths <= 0 || kills <= 0) { return 0; }
         return Float.parseFloat(new DecimalFormat("#.##").format((float) kills / deaths));
     }
 

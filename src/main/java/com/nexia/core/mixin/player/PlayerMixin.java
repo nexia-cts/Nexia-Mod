@@ -4,16 +4,14 @@ import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.item.ItemStackUtil;
+import com.nexia.core.utilities.misc.EventUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.team.DuelsTeam;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
-import com.nexia.minigames.games.football.FootballGame;
-import com.nexia.minigames.games.oitc.OitcGame;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -142,28 +140,10 @@ public abstract class PlayerMixin extends LivingEntity {
 
         ItemStack dropped = inventory.getItem(inventory.selected);
 
-        if (FfaUtil.isFfaPlayer(player)) {
+        if (!EventUtil.dropItem(player, dropped)) {
             cir.setReturnValue(false);
+            ItemStackUtil.sendInventoryRefreshPacket(player);
             return;
-        }
-         if(LobbyUtil.isLobbyWorld(player.getLevel())){
-             cir.setReturnValue(false);
-             return;
-         }
-        if (BwUtil.isBedWarsPlayer(player)) {
-            if (!BwUtil.canDropItem(dropped)) {
-                ItemStackUtil.sendInventoryRefreshPacket(player);
-                cir.setReturnValue(false);
-                return;
-            }
-        }
-
-        if(FootballGame.isFootballPlayer(player)) {
-            cir.setReturnValue(false);
-        }
-
-        if(OitcGame.isOITCPlayer(player)){
-            cir.setReturnValue(false);
         }
 
     }
