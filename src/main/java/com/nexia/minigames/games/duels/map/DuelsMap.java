@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.duels.map;
 
-import com.combatreforged.factory.api.util.Identifier;
+import com.combatreforged.metis.api.util.Identifier;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.world.structure.Rotation;
 import com.nexia.world.structure.StructureMap;

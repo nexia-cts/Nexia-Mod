@@ -1,6 +1,6 @@
 package com.nexia.ffa.uhc.utilities;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.metis.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -28,7 +28,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -333,7 +332,7 @@ public class FfaUhcUtil {
             calculateKill(attacker);
         }
 
-        for (Player player : ServerTime.factoryServer.getPlayers()) {
+        for (Player player : ServerTime.metisServer.getPlayers()) {
             if (player.hasTag("ffa_uhc")) player.sendMessage(msg);
         }
     }

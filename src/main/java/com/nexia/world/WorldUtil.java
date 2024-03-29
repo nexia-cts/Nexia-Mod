@@ -1,7 +1,7 @@
 package com.nexia.world;
 
-import com.combatreforged.factory.api.util.Identifier;
-import com.combatreforged.factory.api.world.World;
+import com.combatreforged.metis.api.util.Identifier;
+import com.combatreforged.metis.api.world.World;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.DuelGameHandler;
@@ -22,7 +22,7 @@ import java.util.List;
 
 public class WorldUtil {
     public static World getWorld(@NotNull Level level) {
-        return ServerTime.factoryServer.getWorld(WorldUtil.getWorldName(WorldUtil.getWorldName(level)));
+        return ServerTime.metisServer.getWorld(WorldUtil.getWorldName(WorldUtil.getWorldName(level)));
     }
 
     public static String getWorldName(@NotNull Level level) {
@@ -40,7 +40,7 @@ public class WorldUtil {
             worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(
                     ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(identifier.getNamespace(), identifier.getId())).location(),
                     new RuntimeWorldConfig());
-            ServerTime.factoryServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getId(), false);
+            ServerTime.metisServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getId(), false);
             FileUtils.forceDeleteOnExit(new File("/world/dimensions/" + identifier.getNamespace(), identifier.getId()));
         } catch (Exception ignored) {
             Main.logger.error("Error occurred while deleting world: " + identifier.getNamespace() + ":" + identifier.getId());

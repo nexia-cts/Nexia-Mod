@@ -45,23 +45,4 @@ public abstract class FoodDataMixin {
         return 1f;
     }
 
-    @Inject(method = "tick", at = @At("TAIL"))
-    private void modifyHunger(Player player, CallbackInfo ci) {
-        if (!(player instanceof ServerPlayer serverPlayer)) return;
-
-        FoodData data = (FoodData)(Object)this;
-
-        if (BwUtil.isInBedWars(serverPlayer)) {
-            BwPlayerEvents.afterHungerTick((FoodData)(Object)this);
-            BwPlayerEvents.afterHungerTick(data);
-        }
-
-        // Duels
-        DuelGameMode duelGameMode = PlayerDataManager.get(player).gameMode;
-        PlayerGameMode gameMode = com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode;
-        if(gameMode.equals(PlayerGameMode.LOBBY) && !duelGameMode.hasSaturation) return;
-
-        data.setFoodLevel(20);
-    }
-
 }

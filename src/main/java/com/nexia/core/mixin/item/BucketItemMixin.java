@@ -37,7 +37,7 @@ public class BucketItemMixin extends Item {
 
     @Shadow @Final private Fluid content;
 
-    public BucketItemMixin(Fluid fluid, Item.Properties properties) {
+    public BucketItemMixin(Item.Properties properties) {
         super(properties);
     }
 

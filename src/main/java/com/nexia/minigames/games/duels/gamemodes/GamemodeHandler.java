@@ -1,7 +1,7 @@
 package com.nexia.minigames.games.duels.gamemodes;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
-import com.combatreforged.factory.api.world.types.Minecraft;
+import com.combatreforged.metis.api.world.entity.player.Player;
+import com.combatreforged.metis.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;

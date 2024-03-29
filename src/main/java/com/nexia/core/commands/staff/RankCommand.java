@@ -1,6 +1,6 @@
 package com.nexia.core.commands.staff;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.metis.api.world.entity.player.Player;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -56,8 +56,8 @@ public class RankCommand {
                 }
 
                 if(rank.equalsIgnoreCase("pro") || rank.equalsIgnoreCase("god")){
-                    ServerTime.factoryServer.runCommand("/staffprefix add " + otherFactoryPlayer.getRawName() + " " + rank, 3, true);
-                    ServerTime.factoryServer.runCommand("/staffprefix set " + otherFactoryPlayer.getRawName() + " " + rank, 3, true);
+                    ServerTime.metisServer.runCommand("/staffprefix add " + otherFactoryPlayer.getRawName() + " " + rank, 3, true);
+                    ServerTime.metisServer.runCommand("/staffprefix set " + otherFactoryPlayer.getRawName() + " " + rank, 3, true);
                     return Command.SINGLE_SUCCESS;
                 }
 
@@ -73,7 +73,7 @@ public class RankCommand {
                     otherFactoryPlayer.removeTag(Main.config.ranks[i2]);
                 }
 
-                ServerTime.factoryServer.runCommand(String.format("/lp user %s parent set %s", otherFactoryPlayer.getRawName(), Main.config.ranks[i]));
+                ServerTime.metisServer.runCommand(String.format("/lp user %s parent set %s", otherFactoryPlayer.getRawName(), Main.config.ranks[i]));
 
                 otherFactoryPlayer.addTag(Main.config.ranks[i]);
             }

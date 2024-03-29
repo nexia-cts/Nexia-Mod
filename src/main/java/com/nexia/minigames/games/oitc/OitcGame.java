@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.oitc;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.metis.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.misc.RandomUtil;

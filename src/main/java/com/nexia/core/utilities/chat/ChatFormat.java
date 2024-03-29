@@ -1,18 +1,11 @@
 package com.nexia.core.utilities.chat;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.metis.api.world.entity.player.Player;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.server.level.ServerPlayer;
-import org.apache.commons.lang3.tuple.MutablePair;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class ChatFormat {
 

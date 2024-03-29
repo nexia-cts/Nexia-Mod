@@ -1,6 +1,6 @@
 package com.nexia.core.gui.ffa;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.metis.api.world.entity.player.Player;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.player.PlayerUtil;

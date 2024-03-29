@@ -51,7 +51,7 @@ public class BwPlayerEvents {
 
     public static void tryToJoin(ServerPlayer player, boolean throughEvent) {
 
-        com.combatreforged.factory.api.world.entity.player.Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
+        com.combatreforged.metis.api.world.entity.player.Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
 
         if (BwUtil.isInBedWars(player)) {
             factoryPlayer.sendMessage(Component.text("You are already in the game.").color(ChatFormat.failColor));
@@ -71,7 +71,7 @@ public class BwPlayerEvents {
 
     public static boolean spectatorTeleport(ServerPlayer player, ServerboundTeleportToEntityPacket packet) {
 
-        com.combatreforged.factory.api.world.entity.player.Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
+        com.combatreforged.metis.api.world.entity.player.Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
 
         if (BwUtil.isBedWarsPlayer(player)) {
             factoryPlayer.sendMessage(Component.text("You can't spectate others while in the game.").color(ChatFormat.failColor));
@@ -300,9 +300,4 @@ public class BwPlayerEvents {
 
         return true;
     }
-
-    public static void afterHungerTick(FoodData foodData) {
-        foodData.setFoodLevel(20);
-    }
-
 }

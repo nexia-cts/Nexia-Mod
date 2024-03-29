@@ -1,18 +1,35 @@
 package com.nexia.core.loader;
 
+import com.combatreforged.metis.api.command.CommandSourceInfo;
+import com.mojang.brigadier.CommandDispatcher;
+import com.nexia.core.Main;
 import com.nexia.core.commands.player.*;
 import com.nexia.core.commands.player.duels.*;
 import com.nexia.core.commands.player.ffa.*;
 import com.nexia.core.commands.staff.*;
 import com.nexia.core.commands.staff.dev.*;
+import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.discord.commands.minecraft.*;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 
 public class CommandLoader {
 
+    public static void registerMetisCommands() {
+        Main.logger.info("Registering metis commands....");
+        CommandDispatcher<CommandSourceInfo> commandDispatcher = ServerTime.metisServer.getCommandDispatcher();
+
+        DiscordCommand.register(commandDispatcher);
+        RulesCommand.register(commandDispatcher);
+        HelpCommand.register(commandDispatcher);
+        MessageCommand.registerMsg(commandDispatcher);
+        MessageCommand.registerReply(commandDispatcher);
+        PingCommand.register(commandDispatcher);
+
+        Main.logger.info("Registered commands.");
+    }
+
     public static void registerCommands() {
 
-        CommandRegistrationCallback.EVENT.register(DiscordCommand::register);
         CommandRegistrationCallback.EVENT.register(LeaveCommand::register);
 
 
@@ -20,7 +37,6 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(PrefixCommand::register);
         CommandRegistrationCallback.EVENT.register(RankCommand::register);
         CommandRegistrationCallback.EVENT.register(LinkCommand::register);
-        CommandRegistrationCallback.EVENT.register(PingCommand::register);
 
         CommandRegistrationCallback.EVENT.register(SpectateCommand::register);
         CommandRegistrationCallback.EVENT.register(TeamCommand::register);
@@ -54,12 +70,7 @@ public class CommandLoader {
         CommandRegistrationCallback.EVENT.register(BanCommand::register);
         CommandRegistrationCallback.EVENT.register(UnBanCommand::register);
         CommandRegistrationCallback.EVENT.register(StatsCommand::register);
-        CommandRegistrationCallback.EVENT.register(RulesCommand::register);
-        CommandRegistrationCallback.EVENT.register(HelpCommand::register);
         CommandRegistrationCallback.EVENT.register(ReportCommand::register);
-
-        CommandRegistrationCallback.EVENT.register(MessageCommand::registerMsg);
-        CommandRegistrationCallback.EVENT.register(MessageCommand::registerReply);
 
         CommandRegistrationCallback.EVENT.register(RandomCommand::register);
 

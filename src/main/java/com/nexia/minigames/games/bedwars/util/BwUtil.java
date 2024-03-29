@@ -184,7 +184,7 @@ public class BwUtil {
         return true;
     }
 
-    public static boolean canDropItem(com.combatreforged.factory.api.world.item.ItemStack itemStack) {
+    public static boolean canDropItem(com.combatreforged.metis.api.world.item.ItemStack itemStack) {
         String item = itemStack.getDisplayName().toString().toLowerCase();
         if (item.contains("pickaxe") || item.contains("axe")|| item.contains("shears")) {
             return false;
@@ -375,6 +375,10 @@ public class BwUtil {
     }
 
     public static boolean isInBedWars(ServerPlayer player) {
+        return PlayerDataManager.get(player).gameMode == PlayerGameMode.BEDWARS;
+    }
+
+    public static boolean isInBedWars(com.combatreforged.metis.api.world.entity.player.Player player) {
         return PlayerDataManager.get(player).gameMode == PlayerGameMode.BEDWARS;
     }
 

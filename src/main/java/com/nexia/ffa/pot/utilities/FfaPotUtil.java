@@ -1,6 +1,6 @@
 package com.nexia.ffa.pot.utilities;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.metis.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -326,7 +326,7 @@ public class FfaPotUtil {
 
          if(attacker != null) calculateKill(attacker);
 
-        for (Player player : ServerTime.factoryServer.getPlayers()) {
+        for (Player player : ServerTime.metisServer.getPlayers()) {
             if (player.hasTag("ffa_pot")) player.sendMessage(msg);
         }
     }

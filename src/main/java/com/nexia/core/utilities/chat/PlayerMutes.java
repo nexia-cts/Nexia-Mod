@@ -1,10 +1,10 @@
 package com.nexia.core.utilities.chat;
 
+import com.combatreforged.metis.api.world.entity.player.Player;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.player.SavedPlayerData;
 import net.kyori.adventure.text.Component;
-import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -62,13 +62,17 @@ public class PlayerMutes {
     }
 
     public static boolean muted(ServerPlayer player) {
+        return PlayerMutes.muted(PlayerUtil.getFactoryPlayer(player));
+    }
+
+    public static boolean muted(Player player) {
         SavedPlayerData savedData = PlayerDataManager.get(player).savedData;
         long muteTime = savedData.muteEnd - System.currentTimeMillis();
         String reason = savedData.muteReason;
 
         if (muteTime > 0) {
 
-            PlayerUtil.getFactoryPlayer(player).sendMessage(
+            player.sendMessage(
                     ChatFormat.nexiaMessage
                             .append(Component.text("You have been muted for "))
                             .append(Component.text(muteTimeToText(muteTime)).color(ChatFormat.brandColor2))

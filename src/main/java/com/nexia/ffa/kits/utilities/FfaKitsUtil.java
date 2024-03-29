@@ -1,6 +1,6 @@
 package com.nexia.ffa.kits.utilities;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.metis.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.ffa.KitGUI;
@@ -14,8 +14,6 @@ import com.nexia.ffa.kits.FfaKit;
 import com.nexia.ffa.kits.utilities.player.PlayerData;
 import com.nexia.ffa.kits.utilities.player.PlayerDataManager;
 import com.nexia.ffa.kits.utilities.player.SavedPlayerData;
-import net.blumbo.blfscheduler.BlfRunnable;
-import net.blumbo.blfscheduler.BlfScheduler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.minecraft.core.BlockPos;
@@ -38,9 +36,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
 import static com.nexia.ffa.kits.utilities.FfaAreas.*;
@@ -292,7 +288,7 @@ public class FfaKitsUtil {
             calculateKill(attacker);
         }
 
-        for (Player player : ServerTime.factoryServer.getPlayers()) {
+        for (Player player : ServerTime.metisServer.getPlayers()) {
             if (player.hasTag("ffa_kits")) player.sendMessage(msg);
         }
     }

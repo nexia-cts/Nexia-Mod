@@ -1,11 +1,10 @@
 package com.nexia.minigames.games.skywars;
 
-import com.combatreforged.factory.api.util.Identifier;
+import com.combatreforged.metis.api.util.Identifier;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.minigames.games.bedwars.BwGame;
 import com.nexia.world.structure.Rotation;
 import com.nexia.world.structure.StructureMap;
 import net.minecraft.core.BlockPos;
@@ -13,7 +12,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Blocks;
 import org.apache.commons.io.FileUtils;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
@@ -98,7 +96,7 @@ public class SkywarsMap {
             worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(
                     ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("skywars", id)).location(),
                     new RuntimeWorldConfig());
-            ServerTime.factoryServer.unloadWorld("skywars:" + id, false);
+            ServerTime.metisServer.unloadWorld("skywars:" + id, false);
             FileUtils.forceDeleteOnExit(new File("/world/dimensions/skywars", id));
         } catch (Exception ignored) {
             Main.logger.error("Error occurred while deleting world: skywars:" + id);

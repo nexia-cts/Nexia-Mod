@@ -1,13 +1,12 @@
 package com.nexia.minigames.games.bedwars.areas;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.metis.api.world.entity.player.Player;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.pos.ProtectionBlock;
 import com.nexia.core.utilities.pos.ProtectionMap;
-import com.nexia.ffa.Main;
 import com.nexia.minigames.games.bedwars.BwGame;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;

@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.duels;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.metis.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;

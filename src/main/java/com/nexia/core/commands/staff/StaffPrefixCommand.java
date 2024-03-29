@@ -1,6 +1,6 @@
 package com.nexia.core.commands.staff;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.metis.api.world.entity.player.Player;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -96,7 +96,7 @@ public class StaffPrefixCommand {
                                                         }
 
 
-                                                        ServerTime.factoryServer.runCommand(String.format("/lp user %s permission unset nexia.prefix.%s", otherPlayer.getRawName(), Main.config.ranks[i]));
+                                                        ServerTime.metisServer.runCommand(String.format("/lp user %s permission unset nexia.prefix.%s", otherPlayer.getRawName(), Main.config.ranks[i]));
                                                     }
                                                 }
                                             }
@@ -117,7 +117,7 @@ public class StaffPrefixCommand {
                                                             executor.sendSuccess(LegacyChatFormat.format("{b1}You have added the prefix {b2}{b}{} {b1}to {b2}{}{b1}.", Main.config.ranks[i], otherPlayer.getRawName()), false);
                                                         }
 
-                                                        ServerTime.factoryServer.runCommand(String.format("/lp user %s permission set nexia.prefix.%s true", otherPlayer.getRawName(), Main.config.ranks[i]));
+                                                        ServerTime.metisServer.runCommand(String.format("/lp user %s permission set nexia.prefix.%s true", otherPlayer.getRawName(), Main.config.ranks[i]));
                                                     }
                                                 }
                                             }

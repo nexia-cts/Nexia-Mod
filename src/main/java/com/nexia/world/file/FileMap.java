@@ -1,6 +1,6 @@
 package com.nexia.world.file;
 
-import com.combatreforged.factory.api.util.Identifier;
+import com.combatreforged.metis.api.util.Identifier;
 import com.nexia.core.utilities.time.ServerTime;
 import net.minecraft.server.level.ServerLevel;
 
@@ -34,7 +34,7 @@ public class FileMap {
 
     public boolean pasteMap(Identifier world) {
         try {
-            ServerTime.factoryServer.unloadWorld(this.identifier.getNamespace() + ":" + this.identifier.getId(), true);
+            ServerTime.metisServer.unloadWorld(this.identifier.getNamespace() + ":" + this.identifier.getId(), true);
         } catch (Exception ignored) { }
 
 

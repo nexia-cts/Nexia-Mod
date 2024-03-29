@@ -1,11 +1,10 @@
 package com.nexia.core.commands.player;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.metis.api.world.entity.player.Player;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.http.DiscordWebhook;
 import com.nexia.core.utilities.player.PlayerDataManager;

@@ -117,7 +117,7 @@ public class DuelGameHandler {
             worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(
                     ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", id)).location(),
                     new RuntimeWorldConfig());
-            ServerTime.factoryServer.unloadWorld("duels:" + id, false);
+            ServerTime.metisServer.unloadWorld("duels:" + id, false);
             FileUtils.forceDeleteOnExit(new File("/world/dimensions/duels", id));
         } catch (Exception ignored) {
             Main.logger.error("Error occurred while deleting world: duels:" + id);

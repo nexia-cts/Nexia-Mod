@@ -1,18 +1,17 @@
 package com.nexia.core.commands.player;
 
+import com.combatreforged.metis.api.command.CommandSourceInfo;
+import com.combatreforged.metis.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.player.PlayerUtil;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 
 public class RulesCommand {
 
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
-        dispatcher.register(Commands.literal("rules").executes(RulesCommand::run));
+    public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
+        dispatcher.register(CommandUtils.literal("rules").executes(RulesCommand::run));
     }
 
     private static final String[] rules = {
@@ -26,7 +25,7 @@ public class RulesCommand {
             "No bedrock bridging."
     };
 
-    public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    public static int run(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
 
         /*
         Apparently this just doesn't work.....
@@ -62,7 +61,7 @@ public class RulesCommand {
 
         message = message.append(Component.text("\n").append(ChatFormat.separatorLine(null)));
 
-        PlayerUtil.getFactoryPlayer(context.getSource().getPlayerOrException()).sendMessage(message);
+        context.getSource().sendMessage(message);
 
         return 1;
     }

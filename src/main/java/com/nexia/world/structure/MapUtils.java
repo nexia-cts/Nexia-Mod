@@ -1,6 +1,6 @@
 package com.nexia.world.structure;
 
-import com.combatreforged.factory.api.util.Identifier;
+import com.combatreforged.metis.api.util.Identifier;
 
 import java.io.File;
 

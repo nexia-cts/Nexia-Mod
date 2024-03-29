@@ -1,5 +1,6 @@
 package com.nexia.core.utilities.player;
 
+import com.combatreforged.metis.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.pos.EntityPos;
@@ -26,7 +27,7 @@ public class PlayerData {
 
     public boolean isReportBanned;
 
-    public ServerPlayer lastMessageSender;
+    public Player lastMessageSender;
 
     public PlayerData(SavedPlayerData savedData) {
         this.savedData = savedData;

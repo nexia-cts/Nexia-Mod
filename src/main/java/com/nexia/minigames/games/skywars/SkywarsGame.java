@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.skywars;
 
-import  com.combatreforged.factory.api.world.entity.player.Player;
+import  com.combatreforged.metis.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -217,7 +217,7 @@ public class SkywarsGame {
                 new ResourceLocation("skywars", SkywarsGame.id)).asWorld();
 
         SkywarsGame.map.structureMap.pasteMap(level);
-        ServerTime.factoryServer.runCommand(String.format("execute in skywars:%s run worldborder set 200", SkywarsGame.id));
+        ServerTime.metisServer.runCommand(String.format("execute in skywars:%s run worldborder set 200", SkywarsGame.id));
         SkywarsMap.spawnQueueBuild(level);
         SkywarsGame.world = level;
     }

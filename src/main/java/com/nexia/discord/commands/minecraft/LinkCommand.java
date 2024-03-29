@@ -1,19 +1,15 @@
 package com.nexia.discord.commands.minecraft;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.metis.api.world.entity.player.Player;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.discord.Discord;
-import com.nexia.discord.Main;
-import com.nexia.discord.utilities.player.PlayerData;
 import com.nexia.discord.utilities.player.PlayerDataManager;
-import com.nexia.minigames.games.duels.DuelGameMode;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;

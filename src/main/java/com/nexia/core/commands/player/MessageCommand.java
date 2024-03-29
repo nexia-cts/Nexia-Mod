@@ -1,112 +1,99 @@
 package com.nexia.core.commands.player;
 
+import com.combatreforged.metis.api.command.CommandSourceInfo;
+import com.combatreforged.metis.api.command.CommandUtils;
+import com.combatreforged.metis.api.world.entity.player.Player;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import net.kyori.adventure.text.Component;
-import net.minecraft.Util;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
+
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
 
 
 public class MessageCommand {
 
-    public static void registerMsg(CommandDispatcher<CommandSourceStack> commandDispatcher, boolean bl) {
-        commandDispatcher.register(Commands.literal("msg")
-                .then(Commands.argument("player", EntityArgument.player())
-                        .then(Commands.argument("message", StringArgumentType.greedyString())
+    public static void registerMsg(CommandDispatcher<CommandSourceInfo> commandDispatcher) {
+        commandDispatcher.register(CommandUtils.literal("msg")
+                .then(CommandUtils.argument("player", EntityArgument.player())
+                        .then(CommandUtils.argument("message", StringArgumentType.greedyString())
                                 .executes(MessageCommand::msgCommand)
                         )
                 ));
-        commandDispatcher.register(Commands.literal("message")
-                .then(Commands.argument("player", EntityArgument.player())
-                        .then(Commands.argument("message", StringArgumentType.greedyString())
+        commandDispatcher.register(CommandUtils.literal("message")
+                .then(CommandUtils.argument("player", EntityArgument.player())
+                        .then(CommandUtils.argument("message", StringArgumentType.greedyString())
                                 .executes(MessageCommand::msgCommand)
                         )
                 )
         );
-        commandDispatcher.register(Commands.literal("tell")
-                .then(Commands.argument("player", EntityArgument.player())
-                        .then(Commands.argument("message", StringArgumentType.greedyString())
+        commandDispatcher.register(CommandUtils.literal("tell")
+                .then(CommandUtils.argument("player", EntityArgument.player())
+                        .then(CommandUtils.argument("message", StringArgumentType.greedyString())
                                 .executes(MessageCommand::msgCommand)
                         )
                 )
         );
     }
 
-    public static void registerReply(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
-        dispatcher.register(Commands.literal("r")
-                .then(Commands.argument("message", StringArgumentType.greedyString())
+    public static void registerReply(CommandDispatcher<CommandSourceInfo> dispatcher) {
+        dispatcher.register(CommandUtils.literal("r")
+                .then(CommandUtils.argument("message", StringArgumentType.greedyString())
                         .executes(MessageCommand::replyCommand)
                 ));
-        dispatcher.register(Commands.literal("reply")
-                .then(Commands.argument("message", StringArgumentType.greedyString())
+        dispatcher.register(CommandUtils.literal("reply")
+                .then(CommandUtils.argument("message", StringArgumentType.greedyString())
                         .executes(MessageCommand::replyCommand)
                 )
         );
     }
 
-    private static int msgCommand(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ServerPlayer sender = context.getSource().getPlayerOrException();
-        ServerPlayer receiver = EntityArgument.getPlayer(context, "player");
-        String message = StringArgumentType.getString(context, "message");
-
-        sendMessage(sender, receiver, message);
-
+    private static int msgCommand(CommandContext<CommandSourceInfo> context) {
+        if(!PlayerUtil.checkPlayerInCommand(context)) return 1;
+        sendMessage(PlayerUtil.getPlayer(context), PlayerUtil.getFactoryPlayer(context.getArgument("player", ServerPlayer.class)), StringArgumentType.getString(context, "message"));
         return 1;
     }
 
-    private static int replyCommand(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ServerPlayer sender = context.getSource().getPlayerOrException();
-        PlayerData senderData = PlayerDataManager.get(sender);
-        ServerPlayer receiver = PlayerUtil.getFixedPlayer(senderData.lastMessageSender);
+    private static int replyCommand(CommandContext<CommandSourceInfo> context) {
+        if(!PlayerUtil.checkPlayerInCommand(context)) return 1;
+        Player player = PlayerUtil.getPlayer(context);
+
+        PlayerData senderData = PlayerDataManager.get(player);
+        Player receiver = senderData.lastMessageSender;
 
         if (receiver == null) {
-            sender.sendMessage(LegacyChatFormat.format("{s}Nobody to reply to"), Util.NIL_UUID);
+            player.sendMessage(Component.text("No one to reply to.").color(ChatFormat.systemColor));
             return 1;
         }
 
         String message = StringArgumentType.getString(context, "message");
 
-        sendMessage(sender, receiver, message);
+        sendMessage(PlayerUtil.getPlayer(context), receiver, message);
         return 1;
     }
 
-    private static void sendMessage(ServerPlayer sender, ServerPlayer receiver, String message) {
+    private static void sendMessage(Player sender, Player receiver, String message) {
         if (PlayerMutes.muted(sender) || sender == receiver) return;
 
-        PlayerUtil.getFactoryPlayer(sender).sendMessage(
-                Component.text(String.format("To %s", receiver.getScoreboardName())).color(ChatFormat.brandColor2)
+        sender.sendMessage(
+                Component.text(String.format("To %s", receiver.getRawName())).color(ChatFormat.brandColor2)
                                 .append(Component.text(" » ").color(ChatFormat.arrowColor)
                                                 .append(Component.text(message).color(ChatFormat.brandColor2))
 
         ));
 
-        PlayerUtil.getFactoryPlayer(receiver).sendMessage(
-                Component.text(String.format("From %s", sender.getScoreboardName())).color(ChatFormat.brandColor2)
+        sender.sendMessage(
+                Component.text(String.format("From %s", sender.getRawName())).color(ChatFormat.brandColor2)
                         .append(Component.text(" » ").color(ChatFormat.arrowColor)
                                 .append(Component.text(message).color(ChatFormat.brandColor2))
 
                         ));
-
-        /*
-        sender.sendMessage(LegacyChatFormat.format("{b1}To {} {s}» {b1}{}", receiver.getScoreboardName(), message),
-                Util.NIL_UUID);
-        PlayerDataManager.get(sender).lastMessageSender = receiver;
-
-        receiver.sendMessage(LegacyChatFormat.format("{b1}From {} {s}» {b1}{}", sender.getScoreboardName(), message),
-                Util.NIL_UUID);
-
-         */
         PlayerDataManager.get(receiver).lastMessageSender = sender;
     }
 

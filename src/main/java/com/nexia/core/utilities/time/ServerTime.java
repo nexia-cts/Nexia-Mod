@@ -1,9 +1,8 @@
 package com.nexia.core.utilities.time;
 
-import com.combatreforged.factory.api.FactoryAPI;
-import com.combatreforged.factory.api.FactoryServer;
-import com.combatreforged.factory.api.scheduler.TaskScheduler;
-import com.nexia.core.Main;
+import com.combatreforged.metis.api.MetisAPI;
+import com.combatreforged.metis.api.MetisServer;
+import com.combatreforged.metis.api.scheduler.TaskScheduler;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.ffa.classic.utilities.FfaAreas;
@@ -38,9 +37,9 @@ public class ServerTime {
 
     public static ServerPlayer leavePlayer = null;
 
-    public static FactoryServer factoryServer = null;
+    public static MetisServer metisServer = null;
 
-    public static FactoryAPI factoryAPI = null;
+    public static MetisAPI metisAPI = null;
 
     public static TaskScheduler scheduler = null;
 

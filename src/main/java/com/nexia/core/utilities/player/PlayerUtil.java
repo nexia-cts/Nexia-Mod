@@ -1,6 +1,8 @@
 package com.nexia.core.utilities.player;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.metis.api.command.CommandSourceInfo;
+import com.combatreforged.metis.api.world.entity.player.Player;
+import com.mojang.brigadier.context.CommandContext;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.pos.EntityPos;
@@ -24,14 +26,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 public class PlayerUtil {
-
-    public static HashMap<Player, ServerPlayer> cachedServerPlayer = new HashMap<>();
-
-    public static HashMap<ServerPlayer, Player> cachedFactoryPlayers = new HashMap<>();
 
     public static void broadcast(List<ServerPlayer> players, String string) {
         broadcast(players, new TextComponent(string));
@@ -84,27 +81,16 @@ public class PlayerUtil {
     }
 
     public static Player getFactoryPlayer(@NotNull ServerPlayer minecraftPlayer) {
-        Player fPlayer = cachedFactoryPlayers.get(minecraftPlayer);
-        if(fPlayer == null) {
-            fPlayer = ServerTime.factoryServer.getPlayer(minecraftPlayer.getUUID());
-            cachedFactoryPlayers.put(minecraftPlayer, fPlayer);
-        }
-        return fPlayer;
+        return ServerTime.metisServer.getPlayer(minecraftPlayer.getUUID());
     }
 
     public static Player getFactoryPlayerFromName(@NotNull String player) {
-        if(player.trim().length() == 0) return null;
-        return ServerTime.factoryServer.getPlayer(player);
+        if(player.trim().isEmpty()) return null;
+        return ServerTime.metisServer.getPlayer(player);
     }
 
     public static ServerPlayer getMinecraftPlayer(@NotNull Player player){
-
-        ServerPlayer sPlayer = cachedServerPlayer.get(player);
-        if(sPlayer == null) {
-            sPlayer = ServerTime.minecraftServer.getPlayerList().getPlayer(player.getUUID());
-            cachedServerPlayer.put(player, sPlayer);
-        }
-        return sPlayer;
+        return ServerTime.minecraftServer.getPlayerList().getPlayer(player.getUUID());
     }
 
     public static ServerPlayer getMinecraftPlayerFromName(@NotNull String player){
@@ -137,16 +123,6 @@ public class PlayerUtil {
         player.connection.send(new ClientboundSetTitlesPacket(
                 ClientboundSetTitlesPacket.Type.SUBTITLE, new TextComponent(sub)));
     }
-
-
-    public static boolean doesPlayerExist(String player){
-        return getFactoryPlayerFromName(player) != null;
-    }
-
-    public static String returnSetPlayer(Player player, String message){
-        return message.replaceAll("%player%", String.valueOf(player.getRawName()));
-    }
-
 
     public static boolean hasPermission(@NotNull CommandSourceStack permission, @NotNull String command, int level) {
         return me.lucko.fabric.api.permissions.v0.Permissions.check(permission, command, level);
@@ -212,11 +188,12 @@ public class PlayerUtil {
                 position.x, position.y, position.z, 16f * volume, pitch));
     }
 
-    public static boolean containsUuid(Collection<Player> playerList, Player player) {
-        for (Player listPlayer : playerList) {
-            if (listPlayer.getUUID().equals(player.getUUID())) return true;
-        }
-        return false;
+    public static boolean checkPlayerInCommand(CommandContext<CommandSourceInfo> context)  {
+        return context.getSource().getExecutingEntity() instanceof Player;
     }
 
+    public static Player getPlayer(CommandContext<CommandSourceInfo> context) {
+        if(!checkPlayerInCommand(context)) return null;
+        return (Player) context.getSource().getExecutingEntity();
+    }
 }

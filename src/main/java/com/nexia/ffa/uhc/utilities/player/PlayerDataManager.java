@@ -67,6 +67,52 @@ public class PlayerDataManager {
         }
     }
 
+    public static PlayerData get(com.combatreforged.metis.api.world.entity.player.Player player) {
+        if (!allPlayerData.containsKey(player.getUUID())) {
+            addPlayerData(player);
+        }
+
+        return (PlayerData)allPlayerData.get(player.getUUID());
+    }
+
+    public static void addPlayerData(com.combatreforged.metis.api.world.entity.player.Player player) {
+        PlayerData playerData = new PlayerData(loadPlayerData(player));
+        allPlayerData.put(player.getUUID(), playerData);
+    }
+
+    public static void removePlayerData(com.combatreforged.metis.api.world.entity.player.Player player) {
+        if (allPlayerData.containsKey(player.getUUID())) {
+            savePlayerData(player);
+            allPlayerData.remove(player.getUUID());
+        }
+    }
+
+    private static void savePlayerData(com.combatreforged.metis.api.world.entity.player.Player player) {
+        try {
+            PlayerData playerData = get(player);
+            Gson gson = new Gson();
+            String json = gson.toJson(playerData.savedData);
+            String directory = getDataDir();
+            FileWriter fileWriter = new FileWriter(directory + "/" + player.getUUID() + ".json");
+            fileWriter.write(json);
+            fileWriter.close();
+        } catch (Exception var6) {
+            var6.printStackTrace();
+        }
+
+    }
+
+    private static SavedPlayerData loadPlayerData(com.combatreforged.metis.api.world.entity.player.Player player) {
+        try {
+            String directory = getDataDir();
+            String json = Files.readString(Path.of(directory + "/" + player.getUUID() + ".json"));
+            Gson gson = new Gson();
+            return gson.fromJson(json, SavedPlayerData.class);
+        } catch (Exception var4) {
+            return new SavedPlayerData();
+        }
+    }
+
     private static String getDataDir() {
         (new File(playerDataDirectory)).mkdirs();
         return playerDataDirectory;

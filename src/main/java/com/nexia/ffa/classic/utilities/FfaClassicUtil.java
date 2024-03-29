@@ -1,6 +1,6 @@
 package com.nexia.ffa.classic.utilities;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.metis.api.world.entity.player.Player;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemStackUtil;
@@ -18,7 +18,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -51,6 +50,11 @@ public class FfaClassicUtil {
     }
 
     public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
+        com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
+        return player.getTags().contains("ffa_classic") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.CLASSIC;
+    }
+
+    public static boolean isFfaPlayer(Player player) {
         com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
         return player.getTags().contains("ffa_classic") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.CLASSIC;
     }
@@ -227,7 +231,7 @@ public class FfaClassicUtil {
             calculateKill(attacker);
         }
 
-        for (Player player : ServerTime.factoryServer.getPlayers()) {
+        for (Player player : ServerTime.metisServer.getPlayers()) {
             if (player.hasTag("ffa_kits")) player.sendMessage(msg);
         }
     }

@@ -1,6 +1,6 @@
 package com.nexia.core.listeners;
 
-import com.nexia.core.listeners.factory.*;
+import com.nexia.core.listeners.metis.*;
 
 public class ListenerHelper {
     public static void registerListeners() {
@@ -9,6 +9,8 @@ public class ListenerHelper {
         PlayerLeaveListener.registerListener();
         UseItemListener.registerListener();
         PlayerDropItemListener.registerListener();
+        PlayerFoodLevelsChangeListener.registerListener();
+        PlayerInteractBlockListener.registerListener();
         PlayerRespawnListener.registerListener();
     }
 }

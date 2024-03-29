@@ -35,8 +35,6 @@ public class PlayGUI extends SimpleGui {
 
         int players = FfaAreas.ffaWorld.players().size();
         players = players + com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld.players().size();
-        players = players + com.nexia.ffa.pot.utilities.FfaAreas.ffaWorld.players().size();
-        players = players + com.nexia.ffa.uhc.utilities.FfaAreas.ffaWorld.players().size();
 
         ItemStack ffa = new ItemStack(Items.NETHERITE_SWORD, 1);
         ffa.setHoverName(new TextComponent("§3FFA"));
@@ -141,7 +139,7 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(pot, "§7The classic snapshot", 1);
         ItemDisplayUtil.addLore(pot, "§7Free For All gamemodes.", 2);
         ItemDisplayUtil.addLore(pot, "§5", 3);
-        ItemDisplayUtil.addLore(pot, "§d◆ There are " + com.nexia.ffa.pot.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
+        ItemDisplayUtil.addLore(pot, "§d◆ There are " + com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
 
 
 
@@ -154,7 +152,7 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(uhc, "§7The classic snapshot", 1);
         ItemDisplayUtil.addLore(uhc, "§7Free For All gamemodes.", 2);
         ItemDisplayUtil.addLore(uhc, "§f", 3);
-        ItemDisplayUtil.addLore(uhc, "§6◆ There are " + com.nexia.ffa.uhc.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
+        ItemDisplayUtil.addLore(uhc, "§6◆ There are " + com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
 
 
 
@@ -216,16 +214,6 @@ public class PlayGUI extends SimpleGui {
 
             if(name.getString().equalsIgnoreCase("§bKit FFA")){
                 LobbyUtil.sendGame(this.player, "kits ffa", true, true);
-                this.close();
-            }
-
-            if(name.getString().equalsIgnoreCase("§dPot FFA")){
-                LobbyUtil.sendGame(this.player, "pot ffa", true, true);
-                this.close();
-            }
-
-            if(name.getString().equalsIgnoreCase("§6UHC FFA")){
-                LobbyUtil.sendGame(this.player, "uhc ffa", true, true);
                 this.close();
             }
 
