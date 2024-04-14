@@ -9,7 +9,6 @@ import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.player.BanHandler;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.discord.Main;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
@@ -40,7 +39,6 @@ import java.time.LocalDateTime;
 
 import static com.nexia.core.utilities.player.BanHandler.banTimeToText;
 import static com.nexia.core.utilities.player.BanHandler.getBanTime;
-import static com.nexia.core.utilities.time.ServerTime.joinPlayer;
 import static com.nexia.core.utilities.time.ServerTime.leavePlayer;
 
 @Mixin(PlayerList.class)
