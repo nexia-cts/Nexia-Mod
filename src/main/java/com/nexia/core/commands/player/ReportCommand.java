@@ -56,7 +56,7 @@ public class ReportCommand {
         ServerPlayer mcExecutor = context.getSource().getPlayerOrException();
         Player executor = PlayerUtil.getFactoryPlayer(mcExecutor);
 
-        if(PlayerDataManager.get(mcExecutor).savedData.isReportBanned) {
+        if(PlayerDataManager.get(mcExecutor).savedData.isReportBanned()) {
             executor.sendMessage(
                     ChatFormat.nexiaMessage
                             .append(Component.text("You are report banned!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false)

@@ -41,27 +41,20 @@ public class MuteCommand {
         CommandSourceStack sender = context.getSource();
         ServerPlayer muted = EntityArgument.getPlayer(context, "player");
 
-        ServerPlayer player;
-
         int durationInSeconds;
         try {
             durationInSeconds = parseTimeArg(durationArg);
         } catch (Exception e) {
-            try {
-                player = sender.getPlayerOrException();
-                PlayerUtil.getFactoryPlayer(player).sendMessage(
-                        ChatFormat.nexiaMessage
-                                        .append(Component.text("Invalid duration. Examples: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                                        .append(Component.text("1s / 2m / 3h").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
-                );
-            } catch(Exception ignored) {
-                sender.sendFailure(LegacyChatFormat.format("{f}Invalid duration. Examples: 1s / 2m / 3h"));
-            }
+
+            PlayerUtil.safeSendMessage(sender, LegacyChatFormat.format("{f}Invalid duration. Examples: 1s / 2m / 3h / 4d / 5w"),
+                    ChatFormat.nexiaMessage
+                    .append(Component.text("Invalid duration. Examples: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                    .append(Component.text("1s / 2m / 3h / 4d / 5w").color(ChatFormat.failColor).decoration(ChatFormat.bold, false)),false);
 
             return 1;
         }
 
-        PlayerMutes.mute(sender, muted, durationInSeconds * 1000, reason);
+        PlayerMutes.mute(sender, muted, durationInSeconds, reason);
 
         return 1;
     }
@@ -84,6 +77,8 @@ public class MuteCommand {
         units.put("s", 1);
         units.put("m", 60);
         units.put("h", 3600);
+        units.put("d", 86400);
+        units.put("w", 604800);
     }
 
 }

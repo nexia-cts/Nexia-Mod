@@ -32,8 +32,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.net.SocketAddress;
+import java.time.LocalDateTime;
 
 import static com.nexia.core.utilities.player.BanHandler.banTimeToText;
+import static com.nexia.core.utilities.player.BanHandler.getBanTime;
 import static com.nexia.core.utilities.time.ServerTime.joinPlayer;
 import static com.nexia.core.utilities.time.ServerTime.leavePlayer;
 
@@ -108,15 +110,15 @@ public abstract class PlayerListMixin {
             return;
         }
 
-        JSONObject object = BanHandler.getBanList(gameProfile.getId().toString());
+        JSONObject banJSON = BanHandler.getBanList(gameProfile.getId().toString());
 
-        if(object != null) {
-            long banTime = (long) object.get("duration") - System.currentTimeMillis();
-            String reason = (String) object.get("reason");
+        if(banJSON != null) {
+            LocalDateTime banTime = getBanTime((String) banJSON.get("duration"));
+            String reason = (String) banJSON.get("reason");
 
             String textBanTime = banTimeToText(banTime);
 
-            if(banTime > 0){
+            if(LocalDateTime.now().isBefore(banTime)){
                 cir.setReturnValue(new TextComponent("§c§lYou have been banned.\n§7Duration: §d" + textBanTime + "\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + com.nexia.discord.Main.config.discordLink));
             } else {
                 BanHandler.removeBanFromList(gameProfile);

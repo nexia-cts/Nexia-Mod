@@ -67,15 +67,15 @@ public class GamemodeBanCommand {
                 executor.sendMessage(
                         ChatFormat.nexiaMessage
                                 .append(Component.text("Invalid duration. Examples: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                .append(Component.text("1s / 2m / 3h").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
+                                .append(Component.text("1s / 2m / 3h / 4d / 5w").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
                 );
             } else {
-                sender.sendFailure(LegacyChatFormat.format("{f}Invalid duration. Examples: 1s / 2m / 3h"));
+                sender.sendFailure(LegacyChatFormat.format("{f}Invalid duration. Examples: 1s / 2m / 3h / 4d / 5w"));
             }
             return 1;
         }
 
-        GamemodeBanHandler.tryGamemodeBan(sender, player, gameMode, durationInSeconds * 1000, reason);
+        GamemodeBanHandler.tryGamemodeBan(sender, player, gameMode, durationInSeconds, reason);
 
         return 1;
     }

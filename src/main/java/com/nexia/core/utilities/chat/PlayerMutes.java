@@ -6,34 +6,38 @@ import com.nexia.core.utilities.player.SavedPlayerData;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
+import org.apache.commons.lang3.time.DurationFormatUtils;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class PlayerMutes {
 
-    public static void mute(CommandSourceStack sender, ServerPlayer muted, int duration, String reason) {
+    public static void mute(CommandSourceStack sender, ServerPlayer muted, long duration, String reason) {
         if (PlayerUtil.hasPermission(muted.createCommandSourceStack(), "nexia.staff.mute", 1)) {
             sender.sendSuccess(LegacyChatFormat.format("{f}You can't mute staff."), false);
             return;
         }
 
         SavedPlayerData mutedData = PlayerDataManager.get(muted).savedData;
-        long currentMuteTime = mutedData.muteEnd - System.currentTimeMillis();
+        LocalDateTime currentMuteTime = mutedData.getMuteEnd();
 
-        if (currentMuteTime > 0) {
+        if (LocalDateTime.now().isBefore(currentMuteTime)) {
             sender.sendSuccess(LegacyChatFormat.format("{s}This player has already been muted for {f}{}{s}." +
-                    "\n{s}Reason: {f}{}", muteTimeToText(currentMuteTime), mutedData.muteReason), false);
+                    "\n{s}Reason: {f}{}", muteTimeToText(currentMuteTime), mutedData.getMuteReason()), false);
             return;
         }
 
-        mutedData.muteEnd = System.currentTimeMillis() + duration;
-        mutedData.muteReason = reason;
+        mutedData.setMuteEnd(LocalDateTime.now().plusSeconds(duration));
+        mutedData.setMuteReason(reason);
 
         sender.sendSuccess(LegacyChatFormat.format("{s}Muted {b2}{} {s}for {b2}{}{s}." +
-                "\n{s}Reason: {b2}{}", muted.getScoreboardName(), muteTimeToText(duration), reason), false);
+                "\n{s}Reason: {b2}{}", muted.getScoreboardName(), muteTimeToText(mutedData.getMuteEnd()), reason), false);
 
         PlayerUtil.getFactoryPlayer(muted).sendMessage(
                 ChatFormat.nexiaMessage
                                 .append(Component.text("You have been muted for ").decoration(ChatFormat.bold, false))
-                                        .append(Component.text(muteTimeToText(duration)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                        .append(Component.text(muteTimeToText(mutedData.getMuteEnd())).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                                                 .append(Component.text(".\nReason: ").decoration(ChatFormat.bold, false))
                                                         .append(Component.text(reason).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
         );
@@ -42,51 +46,50 @@ public class PlayerMutes {
 
     public static void unMute(CommandSourceStack sender, ServerPlayer unMuted) {
         SavedPlayerData unMutedData = PlayerDataManager.get(unMuted).savedData;
-        long currentMuteTime = unMutedData.muteEnd - System.currentTimeMillis();
+        LocalDateTime currentMuteTime = unMutedData.getMuteEnd();
 
-        if (currentMuteTime <= 0) {
+        if (LocalDateTime.now().isAfter(currentMuteTime)) {
             sender.sendSuccess(LegacyChatFormat.format("{s}This player is not muted."), false);
             return;
         }
 
-        unMutedData.muteEnd = System.currentTimeMillis();
-        unMutedData.muteReason = null;
+        unMutedData.setMuteEnd(LocalDateTime.MIN);
+        unMutedData.setMuteReason(null);
 
         sender.sendSuccess(LegacyChatFormat.format("{s}Unmuted {b2}{}{s}.", unMuted.getScoreboardName()), false);
 
         PlayerUtil.getFactoryPlayer(unMuted).sendMessage(
                 ChatFormat.nexiaMessage
-                                .append(Component.text("You have been unmuted."))
+                                .append(Component.text("You have been unmuted.").decoration(ChatFormat.bold, false))
         );
     }
 
     public static boolean muted(ServerPlayer player) {
         SavedPlayerData savedData = PlayerDataManager.get(player).savedData;
-        long muteTime = savedData.muteEnd - System.currentTimeMillis();
-        String reason = savedData.muteReason;
+        LocalDateTime muteTime = savedData.getMuteEnd();
+        String reason = savedData.getMuteReason();
 
-        if (muteTime > 0) {
+        if (LocalDateTime.now().isBefore(muteTime)) {
 
             PlayerUtil.getFactoryPlayer(player).sendMessage(
                     ChatFormat.nexiaMessage
-                            .append(Component.text("You have been muted for "))
-                            .append(Component.text(muteTimeToText(muteTime)).color(ChatFormat.brandColor2))
-                            .append(Component.text(".\nReason: "))
-                            .append(Component.text(reason).color(ChatFormat.brandColor2))
+                            .append(Component.text("You have been muted for ").decoration(ChatFormat.bold, false))
+                            .append(Component.text(muteTimeToText(muteTime)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                            .append(Component.text(".\nReason: ").decoration(ChatFormat.bold, false))
+                            .append(Component.text(reason).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
             );
             return true;
         }
         return false;
     }
 
-    private static String muteTimeToText(long millis) {
-        long seconds = millis / 1000;
-        long minutes = seconds / 60;
-        seconds %= 60;
-        long hours = minutes / 60;
-        minutes %= 60;
+    private static String muteTimeToText(LocalDateTime localDateTime) {
+        LocalDateTime now = LocalDateTime.now();
 
-        return hours + "h, " + minutes + "m, " + seconds + "s";
+        Duration duration = Duration.between(now, localDateTime);
+        String t = DurationFormatUtils.formatDuration(duration.toMillis(), "d'd', HH'h', mm'm', ss's", true);
+
+        return t;
     }
 
 }

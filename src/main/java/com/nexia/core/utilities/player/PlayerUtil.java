@@ -2,6 +2,7 @@ package com.nexia.core.utilities.player;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.google.gson.JsonParser;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.pos.EntityPos;
@@ -30,7 +31,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 
 public class PlayerUtil {
 
@@ -59,6 +62,17 @@ public class PlayerUtil {
 
         return null;
     }
+
+
+    public static void safeSendMessage(CommandSourceStack source, Component safeMessage, net.kyori.adventure.text.Component fancyMessage, boolean bl) {
+        try {
+            ServerPlayer player = source.getPlayerOrException();
+            PlayerUtil.getFactoryPlayer(player).sendMessage(fancyMessage);
+        } catch(CommandSyntaxException ignored) {
+            source.sendSuccess(safeMessage, bl);
+        }
+    }
+
 
     public static ItemStack getPlayerHead(@NotNull UUID playerUUID) {
         ItemStack playerHead = Items.PLAYER_HEAD.getDefaultInstance();
@@ -133,26 +147,11 @@ public class PlayerUtil {
     }
 
     public static Player getFactoryPlayer(@NotNull ServerPlayer minecraftPlayer) {
-        try {
-            return ServerTime.factoryServer.getPlayer(minecraftPlayer.getUUID());
-        } catch (Exception ignored) { }
-        return null;
-    }
-
-    public static Player getFactoryPlayerFromName(@NotNull String player) {
-        if(player.trim().isEmpty()) return null;
-        try {
-            return ServerTime.factoryServer.getPlayer(player);
-        } catch (Exception ignored) { }
-        return null;
+       return ServerTime.factoryServer.getPlayer(minecraftPlayer.getUUID());
     }
 
     public static ServerPlayer getMinecraftPlayer(@NotNull Player player){
         return ServerTime.minecraftServer.getPlayerList().getPlayer(player.getUUID());
-    }
-
-    public static ServerPlayer getMinecraftPlayerFromName(@NotNull String player){
-        return ServerTime.minecraftServer.getPlayerList().getPlayerByName(player);
     }
 
     public static void resetHealthStatus(@NotNull Player player) {
@@ -302,12 +301,4 @@ public class PlayerUtil {
         player.connection.send(new ClientboundSoundPacket(soundEvent, soundSource,
                 position.x, position.y, position.z, 16f * volume, pitch));
     }
-
-    public static boolean containsUuid(Collection<Player> playerList, Player player) {
-        for (Player listPlayer : playerList) {
-            if (listPlayer.getUUID().equals(player.getUUID())) return true;
-        }
-        return false;
-    }
-
 }
