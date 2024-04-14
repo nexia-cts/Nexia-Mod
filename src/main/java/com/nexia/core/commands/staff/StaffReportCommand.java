@@ -44,7 +44,7 @@ public class StaffReportCommand {
                                     PlayerData data = PlayerDataManager.get(mcOtherPlayer);
 
                                     if(type.equalsIgnoreCase("ban")) {
-                                        if(data.savedData.isReportBanned) {
+                                        if(data.savedData.isReportBanned()) {
                                             if(factoryExecutor != null) {
                                                 factoryExecutor.sendMessage(Component.text("That player is already report banned!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false));
                                             } else {
@@ -52,7 +52,7 @@ public class StaffReportCommand {
                                             }
                                             return 0;
                                         }
-                                        data.savedData.isReportBanned = true;
+                                        data.savedData.setReportBanned(true);
                                         if(factoryExecutor != null) {
                                             factoryExecutor.sendMessage(
                                                     ChatFormat.nexiaMessage
@@ -68,7 +68,7 @@ public class StaffReportCommand {
                                     }
 
                                     if(type.equalsIgnoreCase("unban") || type.equalsIgnoreCase("pardon")) {
-                                        if(!data.savedData.isReportBanned) {
+                                        if(!data.savedData.isReportBanned()) {
                                             if(factoryExecutor != null) {
                                                 factoryExecutor.sendMessage(Component.text("That player is not report banned!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false));
                                             } else {
@@ -76,7 +76,7 @@ public class StaffReportCommand {
                                             }
                                             return 0;
                                         }
-                                        data.savedData.isReportBanned = false;
+                                        data.savedData.setReportBanned(false);
                                         if(factoryExecutor != null) {
                                             factoryExecutor.sendMessage(
                                                     ChatFormat.nexiaMessage

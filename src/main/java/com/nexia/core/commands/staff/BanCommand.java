@@ -19,7 +19,6 @@ import net.minecraft.server.players.UserBanList;
 import net.minecraft.server.players.UserBanListEntry;
 
 import java.util.Collection;
-import java.util.Date;
 
 public class BanCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
@@ -47,7 +46,7 @@ public class BanCommand {
             if (!userBanList.isBanned(gameProfile)) {
                 ServerPlayer serverPlayer = ServerTime.minecraftServer.getPlayerList().getPlayer(gameProfile.getId());
 
-                UserBanListEntry userBanListEntry = new UserBanListEntry(gameProfile, (Date) null, context.getTextName(), (Date) null, reason);
+                UserBanListEntry userBanListEntry = new UserBanListEntry(gameProfile, null, context.getTextName(), null, reason);
                 userBanList.add(userBanListEntry);
                 ++i;
                 if(player != null){

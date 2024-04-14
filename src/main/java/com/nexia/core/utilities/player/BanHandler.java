@@ -9,19 +9,23 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.HashMap;
 
 public class BanHandler {
 
     static final String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/tempbans";
-    static String playerDataDirectory = dataDirectory + "/playerdata";
 
     public static int parseTimeArg(String durationArg) throws Exception {
         StringReader stringReader = new StringReader(durationArg);
@@ -36,13 +40,13 @@ public class BanHandler {
         return time;
     }
 
-    public static void addBanToList(GameProfile profile, String reason, int duration) {
+    public static void addBanToList(GameProfile profile, String reason, LocalDateTime duration) {
         try {
             JSONObject jsonObject = new JSONObject();
 
             jsonObject.put("uuid", profile.getId().toString());
             jsonObject.put("reason", reason);
-            jsonObject.put("duration", duration + System.currentTimeMillis());
+            jsonObject.put("duration", duration.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 
             String json = jsonObject.toJSONString();
 
@@ -67,6 +71,8 @@ public class BanHandler {
         units.put("s", 1);
         units.put("m", 60);
         units.put("h", 3600);
+        units.put("d", 86400);
+        units.put("w", 604800);
     }
 
     public static JSONObject getBanList(String uuid) {
@@ -83,38 +89,48 @@ public class BanHandler {
         JSONObject banJSON = getBanList(profile.getId().toString());
 
         if (banJSON != null) {
-            if((long) banJSON.get("duration") - System.currentTimeMillis() > 0) {
+            LocalDateTime banTime = getBanTime((String) banJSON.get("duration"));
+            if(LocalDateTime.now().isAfter(banTime)) {
                 removeBanFromList(profile);
             } else {
                 sender.sendSuccess(LegacyChatFormat.format("{s}This player has already been banned for {f}{}{s}." +
-                        "\n{s}Reason: {f}{}", banTimeToText((long) banJSON.get("duration") - System.currentTimeMillis()), banJSON.get("reason")), false);
+                        "\n{s}Reason: {f}{}", banTimeToText(banTime), banJSON.get("reason")), false);
                 return;
             }
         }
 
+        LocalDateTime banTime = LocalDateTime.now().plusSeconds(duration);
 
-        addBanToList(profile, reason, duration);
+        addBanToList(profile, reason, LocalDateTime.now().plusSeconds(duration));
 
         sender.sendSuccess(LegacyChatFormat.format("{s}Temp banned {b2}{} {s}for {b2}{}{s}." +
-                "\n{s}Reason: {b2}{}", profile.getName(), banTimeToText(duration), reason), false);
+                "\n{s}Reason: {b2}{}", profile.getName(), banTimeToText(banTime), reason), false);
 
         ServerPlayer banned = ServerTime.minecraftServer.getPlayerList().getPlayer(profile.getId());
 
         if (banned != null) {
-            banned.connection.disconnect(new TextComponent("§c§lYou have been banned.\n§7Duration: §d" + banTimeToText(duration) + "\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + Main.config.discordLink));
+            banned.connection.disconnect(new TextComponent("§c§lYou have been banned.\n§7Duration: §d" + banTimeToText(banTime) + "\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + Main.config.discordLink));
         }
     }
 
 
+    public static LocalDateTime getBanTime(String duration) {
+        LocalDateTime banTime;
+        try {
+            banTime = LocalDateTime.parse(duration, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        } catch (DateTimeParseException ignored) {
+            banTime = LocalDateTime.MIN;
+        }
+        return banTime;
+    }
 
-    public static String banTimeToText(long millis) {
-        long seconds = millis / 1000;
-        long minutes = seconds / 60;
-        seconds %= 60;
-        long hours = minutes / 60;
-        minutes %= 60;
+    public static String banTimeToText(LocalDateTime localDateTime) {
+        LocalDateTime now = LocalDateTime.now();
 
-        return hours + "h, " + minutes + "m, " + seconds + "s";
+        Duration duration = Duration.between(now, localDateTime);
+        String t = DurationFormatUtils.formatDuration(duration.toMillis(), "d'd', HH'h', mm'm', ss's", true);
+
+        return t;
     }
 
     public static void tryUnBan(CommandSourceStack sender, Collection<GameProfile> collection) {

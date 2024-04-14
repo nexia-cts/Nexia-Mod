@@ -1,6 +1,5 @@
 package com.nexia.core.commands.staff;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -13,7 +12,6 @@ import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.GameProfileArgument;
-import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Collection;
 
@@ -31,34 +29,18 @@ public class TempBanCommand {
 
 
     public static int ban(CommandSourceStack sender, Collection<GameProfile> collection, String reason, String durationArg) {
-        ServerPlayer mcPlayer = null;
-        Player player = null;
-
-        try {
-            mcPlayer = sender.getPlayerOrException();
-        } catch (Exception ignored){ }
-
-        if(mcPlayer != null) {
-            player = PlayerUtil.getFactoryPlayer(mcPlayer);
-        }
-
         int durationInSeconds;
         try {
             durationInSeconds = BanHandler.parseTimeArg(durationArg);
         } catch (Exception e) {
-            if (player != null) {
-                player.sendMessage(
-                        ChatFormat.nexiaMessage
-                                .append(Component.text("Invalid duration. Examples: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                .append(Component.text("1s / 2m / 3h").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
-                );
-            } else {
-                sender.sendFailure(LegacyChatFormat.format("{f}Invalid duration. Examples: 1s / 2m / 3h"));
-            }
+            PlayerUtil.safeSendMessage(sender, LegacyChatFormat.format("{f}Invalid duration. Examples: 1s / 2m / 3h / 4d / 5w"), ChatFormat.nexiaMessage
+                    .append(Component.text("Invalid duration. Examples: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                    .append(Component.text("1s / 2m / 3h / 4d / 5w").color(ChatFormat.failColor).decoration(ChatFormat.bold, false)), false);
+
             return 1;
         }
         
-        BanHandler.tryBan(sender, collection, durationInSeconds * 1000, reason);
+        BanHandler.tryBan(sender, collection, durationInSeconds, reason);
         
         return 1;
     }

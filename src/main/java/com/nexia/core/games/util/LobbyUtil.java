@@ -43,7 +43,10 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import org.json.simple.JSONObject;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+
+import static com.nexia.core.utilities.player.BanHandler.getBanTime;
 
 public class LobbyUtil {
 
@@ -226,14 +229,15 @@ public class LobbyUtil {
                 JSONObject banJSON = GamemodeBanHandler.getBanList(player.getStringUUID(), gameMode);
 
                 if (banJSON != null) {
-                    if((long) banJSON.get("duration") - System.currentTimeMillis() < 0) {
+                    LocalDateTime banTime = getBanTime((String) banJSON.get("duration"));
+                    if(LocalDateTime.now().isAfter(banTime)) {
                         GamemodeBanHandler.removeBanFromList(player.getStringUUID(), gameMode);
                         return false;
                     } else {
                         factoryPlayer.sendMessage(
                                 ChatFormat.nexiaMessage
                                         .append(Component.text("You are gamemode (" + gameMode.name + ") banned for ").decoration(ChatFormat.bold, false))
-                                        .append(Component.text(BanHandler.banTimeToText((long) banJSON.get("duration") - System.currentTimeMillis())).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                        .append(Component.text(BanHandler.banTimeToText(banTime)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                                         .append(Component.text(".\nReason: ").decoration(ChatFormat.bold, false))
                                         .append(Component.text((String) banJSON.get("reason")).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                         );
