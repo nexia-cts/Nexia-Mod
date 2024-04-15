@@ -85,11 +85,9 @@ public class PlayerMutes {
 
     private static String muteTimeToText(LocalDateTime localDateTime) {
         LocalDateTime now = LocalDateTime.now();
-
         Duration duration = Duration.between(now, localDateTime);
-        String t = DurationFormatUtils.formatDuration(duration.toMillis(), "d'd', HH'h', mm'm', ss's", true);
 
-        return t;
+        return DurationFormatUtils.formatDuration(duration.toMillis(), "d'd', HH'h', mm'm', ss's'", true);
     }
 
 }

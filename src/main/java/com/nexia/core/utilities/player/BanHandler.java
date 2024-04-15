@@ -128,9 +128,7 @@ public class BanHandler {
         LocalDateTime now = LocalDateTime.now();
 
         Duration duration = Duration.between(now, localDateTime);
-        String t = DurationFormatUtils.formatDuration(duration.toMillis(), "d'd', HH'h', mm'm', ss's", true);
-
-        return t;
+        return DurationFormatUtils.formatDuration(duration.toMillis(), "d'd', HH'h', mm'm', ss's'", true);
     }
 
     public static void tryUnBan(CommandSourceStack sender, Collection<GameProfile> collection) {
