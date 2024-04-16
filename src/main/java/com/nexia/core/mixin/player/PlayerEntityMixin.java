@@ -13,28 +13,21 @@ public class PlayerEntityMixin {
     public PlayerEntityMixin() {
     }
 
-    /*@Inject(
-            method = "attack",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;setVelocity(Lnet/minecraft/util/math/Vec3d;)V", shift = At.Shift.AFTER)
-    )
-    public void attack2(Entity target, CallbackInfo ci) {
-        if (isPlayerSprintFixed.get(player.getUuid())) {
-            double x = player.getVelocity().getX() / 0.6;
-            double z = player.getVelocity().getZ() / 0.6;
-            player.setVelocity(x, player.getVelocity().getY(), z);
-        }
-    }*/
-
     @Inject(
             method = "attack",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;setSprinting(Z)V", shift = At.Shift.AFTER)
     )
     public void attack3(Entity target, CallbackInfo ci) {
+        boolean found = false;
         for (String tag : player.getTags()) {
             if (tag == "sprintfixdisable") {
-                return;
+                found = true;
+                break;
             }
         }
-        player.setSprinting(true);
+
+        if (!found) {
+            player.setSprinting(true);
+        }
     }
 }
