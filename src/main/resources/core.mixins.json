@@ -58,7 +58,8 @@
     "player.ServerGamePacketListenerMixin",
     "player.ServerLoginPacketListenerMixin",
     "player.ServerPlayerGameModeMixin",
-    "player.ServerPlayerMixin"
+    "player.ServerPlayerMixin",
+    "player.PlayerEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1
