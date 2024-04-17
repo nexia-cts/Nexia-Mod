@@ -18,6 +18,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -40,6 +41,8 @@ public abstract class PlayerMixin extends LivingEntity {
     @Shadow @Final public Inventory inventory;
 
     @Shadow public abstract ItemCooldowns getCooldowns();
+
+    @Unique public final Player player = Player.class.cast(this);
 
     protected PlayerMixin(EntityType<? extends LivingEntity> entityType, Level level) {
         super(entityType, level);
@@ -156,5 +159,13 @@ public abstract class PlayerMixin extends LivingEntity {
             BwUtil.setAttackSpeed(player);
         }
 
+    }
+
+    @Inject(
+            method = "attack",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;setSprinting(Z)V", shift = At.Shift.AFTER)
+    )
+    public void attack3(Entity target, CallbackInfo ci) {
+        player.setSprinting(!player.getTags().contains("sprint_fix_disable"));
     }
 }

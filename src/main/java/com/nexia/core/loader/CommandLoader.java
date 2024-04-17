@@ -17,7 +17,8 @@ public class CommandLoader {
 
     public static void registerCommands() {
         Event<CommandRegistrationCallback> callbackEvent = CommandRegistrationCallback.EVENT;
-        
+
+        callbackEvent.register(SprintFixCommand::register);
         callbackEvent.register(DiscordCommand::register);
         callbackEvent.register(LeaveCommand::register);
         callbackEvent.register(ProtectionMapCommand::register);
