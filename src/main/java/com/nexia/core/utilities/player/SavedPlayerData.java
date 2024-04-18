@@ -18,7 +18,7 @@ public class SavedPlayerData {
         setMuteEnd(LocalDateTime.MIN);
         this.muteReason = null;
         this.isReportBanned = false;
-        this.sprintFix = true;
+        this.sprintFix = false;
     }
 
     public LocalDateTime getMuteEnd() {
