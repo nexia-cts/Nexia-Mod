@@ -18,7 +18,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -31,6 +30,7 @@ import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -41,8 +41,6 @@ public abstract class PlayerMixin extends LivingEntity {
     @Shadow @Final public Inventory inventory;
 
     @Shadow public abstract ItemCooldowns getCooldowns();
-
-    @Unique public final Player player = Player.class.cast(this);
 
     protected PlayerMixin(EntityType<? extends LivingEntity> entityType, Level level) {
         super(entityType, level);
@@ -161,11 +159,9 @@ public abstract class PlayerMixin extends LivingEntity {
 
     }
 
-    @Inject(
-            method = "attack",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;setSprinting(Z)V", shift = At.Shift.AFTER)
-    )
-    public void attack3(Entity target, CallbackInfo ci) {
-        player.setSprinting(!player.getTags().contains("sprint_fix_disable"));
+
+    @ModifyArg(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;setSprinting(Z)V"))
+    public boolean setSprintFix(boolean par1) {
+        return com.nexia.core.utilities.player.PlayerDataManager.get((Player) (Object) this).savedData.isSprintFix();
     }
 }

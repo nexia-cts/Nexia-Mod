@@ -1,12 +1,16 @@
 package com.nexia.core.commands.player;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.player.SavedPlayerData;
+import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.server.level.ServerPlayer;
 
 public class SprintFixCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
@@ -14,13 +18,10 @@ public class SprintFixCommand {
     }
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        Player player = PlayerUtil.getFactoryPlayer(context.getSource().getPlayerOrException());
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        SavedPlayerData data = PlayerDataManager.get(player).savedData;
 
-        if (player.hasTag("sprint_fix_disable")) {
-            player.removeTag("sprint_fix_disable");
-        } else {
-            player.addTag("sprint_fix_disable");
-        }
+        PlayerUtil.getFactoryPlayer(player).sendMessage(ChatFormat.nexiaMessage.append(Component.text((data.setSprintFix(true) ? "Enabled" : "Disabled") + " Sprint Fix!").decoration(ChatFormat.bold, false)));
 
         return 1;
     }

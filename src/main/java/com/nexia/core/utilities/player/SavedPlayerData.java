@@ -10,12 +10,15 @@ public class SavedPlayerData {
 
     private String muteReason;
 
-    public boolean isReportBanned;
+    private boolean isReportBanned;
+
+    private boolean sprintFix;
 
     public SavedPlayerData() {
         setMuteEnd(LocalDateTime.MIN);
         this.muteReason = null;
         this.isReportBanned = false;
+        this.sprintFix = false;
     }
 
     public LocalDateTime getMuteEnd() {
@@ -46,5 +49,13 @@ public class SavedPlayerData {
 
     public boolean setReportBanned(boolean reportBanned) {
         return isReportBanned = reportBanned;
+    }
+
+    public boolean isSprintFix() {
+        return sprintFix;
+    }
+
+    public boolean setSprintFix(boolean sprintFix) {
+        return this.sprintFix = sprintFix;
     }
 }
