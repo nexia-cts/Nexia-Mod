@@ -19,37 +19,12 @@ import net.notcoded.codelib.players.AccuratePlayer;
 
 public class PartyCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
-        dispatcher.register(Commands.literal("party")
-                .requires(commandSourceStack -> {
-                    try {
-                        com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException());
-                        PlayerData playerData1 = PlayerDataManager.get(commandSourceStack.getPlayerOrException());
-                        return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
-                    } catch (Exception ignored) {
-                    }
-                    return false;
-                })
-                .then(Commands.literal("invite")
-                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> PartyCommand.invitePlayer(context, EntityArgument.getPlayer(context, "player"))))
-                )
-                .then(Commands.literal("promote")
-                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> PartyCommand.promotePlayer(context, EntityArgument.getPlayer(context, "player"))))
-                )
-                .then(Commands.literal("join")
-                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> PartyCommand.joinTeam(context, EntityArgument.getPlayer(context, "player"))))
-                )
-                .then(Commands.literal("kick")
-                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> PartyCommand.kickPlayer(context, EntityArgument.getPlayer(context, "player"))))
-                )
-                .then(Commands.literal("decline")
-                        .then(Commands.argument("player", EntityArgument.player()).executes(context -> PartyCommand.declinePlayer(context, EntityArgument.getPlayer(context, "player"))))
-                )
-                .then(Commands.literal("disband").executes(PartyCommand::disbandTeam))
-                .then(Commands.literal("create").executes(PartyCommand::createTeam))
-                .then(Commands.literal("list").executes(PartyCommand::listTeam))
-                .then(Commands.literal("leave").executes(PartyCommand::leaveTeam))
-        );
-        dispatcher.register(Commands.literal("duelsteam")
+        register(dispatcher, "party");
+        register(dispatcher, "duelsteam");
+    }
+
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, String string) {
+        dispatcher.register(Commands.literal(string)
                 .requires(commandSourceStack -> {
                     try {
                         com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException());

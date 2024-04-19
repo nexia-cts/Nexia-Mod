@@ -7,9 +7,9 @@ import com.nexia.core.gui.duels.DuelGUI;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
+import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
@@ -62,7 +62,7 @@ public abstract class ServerPlayerMixin extends Player {
     @Inject(method = "<init>", at = @At("TAIL"))
     private void init(MinecraftServer minecraftServer, ServerLevel serverLevel, GameProfile gameProfile, ServerPlayerGameMode serverPlayerGameMode, CallbackInfo ci) {
         ServerPlayer player = (ServerPlayer)(Object)this;
-        if (FfaSkyUtil.isFfaPlayer(player)) {
+        if (FfaUtil.isFfaPlayer(player) || BwUtil.isBedWarsPlayer(player) || OitcGame.isOITCPlayer(player)) {
             spawnInvulnerableTime = 0;
         }
     }

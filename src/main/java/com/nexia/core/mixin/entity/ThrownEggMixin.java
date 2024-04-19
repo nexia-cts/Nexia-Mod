@@ -15,7 +15,7 @@ public class ThrownEggMixin {
     private int modifyChickenSpawnOdds(Random random, int bound) {
 
         // Spawns chicken if return value is 0
-        if ((Object)this instanceof BwBridgeEgg) {
+        if ((Object) this instanceof BwBridgeEgg) {
             return 1;
         }
         return random.nextInt(bound);

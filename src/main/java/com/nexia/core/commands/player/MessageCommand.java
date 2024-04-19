@@ -21,20 +21,14 @@ import net.minecraft.server.level.ServerPlayer;
 public class MessageCommand {
 
     public static void registerMsg(CommandDispatcher<CommandSourceStack> commandDispatcher, boolean bl) {
-        commandDispatcher.register(Commands.literal("msg")
-                .then(Commands.argument("player", EntityArgument.player())
-                        .then(Commands.argument("message", StringArgumentType.greedyString())
-                                .executes(MessageCommand::msgCommand)
-                        )
-                ));
-        commandDispatcher.register(Commands.literal("message")
-                .then(Commands.argument("player", EntityArgument.player())
-                        .then(Commands.argument("message", StringArgumentType.greedyString())
-                                .executes(MessageCommand::msgCommand)
-                        )
-                )
-        );
-        commandDispatcher.register(Commands.literal("tell")
+        registerMsg(commandDispatcher, "msg");
+        registerMsg(commandDispatcher, "message");
+        registerMsg(commandDispatcher, "tell");
+        registerMsg(commandDispatcher, "whisper");
+    }
+
+    public static void registerMsg(CommandDispatcher<CommandSourceStack> commandDispatcher, String string) {
+        commandDispatcher.register(Commands.literal(string)
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.argument("message", StringArgumentType.greedyString())
                                 .executes(MessageCommand::msgCommand)
@@ -42,6 +36,8 @@ public class MessageCommand {
                 )
         );
     }
+
+
 
     public static void registerReply(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
         dispatcher.register(Commands.literal("r")
@@ -98,15 +94,6 @@ public class MessageCommand {
 
                         ));
 
-        /*
-        sender.sendMessage(LegacyChatFormat.format("{b1}To {} {s}» {b1}{}", receiver.getScoreboardName(), message),
-                Util.NIL_UUID);
-        PlayerDataManager.get(sender).lastMessageSender = receiver;
-
-        receiver.sendMessage(LegacyChatFormat.format("{b1}From {} {s}» {b1}{}", sender.getScoreboardName(), message),
-                Util.NIL_UUID);
-
-         */
         PlayerDataManager.get(receiver).lastMessageSender = sender;
     }
 

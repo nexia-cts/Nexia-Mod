@@ -42,31 +42,6 @@ public class BiomeCommand {
                         })
                 )
         );
-        dispatcher.register(Commands.literal("spawn")
-                .executes(context -> {
-                    ServerPlayer player = context.getSource().getPlayerOrException();
-                    if(!FfaClassicUtil.canGoToSpawn(player)) {
-                        PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You must be fully healed to change biomes!").color(ChatFormat.failColor));
-                        return 1;
-                    }
-                    LobbyUtil.sendGame(player, "classic ffa", false, true);
-                    run(context);
-                    return 1;
-                })
-                .then(Commands.argument("biome", StringArgumentType.string())
-                        .suggests(((context, builder) -> SharedSuggestionProvider.suggest(SpawnGUI.mapLocations.keySet(), builder)))
-                        .executes(context -> {
-                            ServerPlayer player = context.getSource().getPlayerOrException();
-                            if(!FfaClassicUtil.canGoToSpawn(player)) {
-                                PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You must be fully healed to change biomes!").color(ChatFormat.failColor));
-                                return 1;
-                            }
-                            LobbyUtil.sendGame(player, "classic ffa", false, true);
-                            selectedMap(context);
-                            return 1;
-                        })
-                )
-        );
     }
 
     public static void run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

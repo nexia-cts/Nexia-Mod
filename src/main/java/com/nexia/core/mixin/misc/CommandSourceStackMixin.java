@@ -3,6 +3,7 @@ package com.nexia.core.mixin.misc;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -23,7 +24,7 @@ public class CommandSourceStackMixin {
     private void broadcastToAdmins(Component component, CallbackInfo ci) {
 
         // If sourced from datapack
-        if ((!(source instanceof Entity)) && entity != null) {
+        if (source instanceof MinecraftServer && entity != null) {
             ci.cancel();
             return;
         }

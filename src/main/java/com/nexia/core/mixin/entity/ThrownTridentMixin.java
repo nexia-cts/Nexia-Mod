@@ -38,7 +38,7 @@ public abstract class ThrownTridentMixin extends AbstractArrow {
         if ((Object)this instanceof BwTrident) {
             bonus -= 1;
         }
-         */
+        */
 
         if(Main.config.enhancements.tridentDamagePatch) bonus -= 2;
 

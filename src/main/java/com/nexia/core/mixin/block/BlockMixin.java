@@ -25,14 +25,9 @@ public class BlockMixin {
     private static void dropResources(BlockState blockState, Level level, BlockPos blockPos, BlockEntity blockEntity, Entity breakerEntity, ItemStack tool, CallbackInfo ci) {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-        if (BwAreas.isBedWarsWorld(serverLevel) && !(BwUtil.dropResources(blockState))) {
+        if ((BwAreas.isBedWarsWorld(serverLevel) && !(BwUtil.dropResources(blockState))) || FfaAreas.isFfaWorld(serverLevel)) {
             ci.cancel();
         }
-
-        if (FfaAreas.isFfaWorld(serverLevel)) {
-            ci.cancel();
-        }
-
     }
 
 }

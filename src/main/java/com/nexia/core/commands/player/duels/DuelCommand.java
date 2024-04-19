@@ -19,8 +19,14 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
 public class DuelCommand {
+
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
-        dispatcher.register(Commands.literal("duel")
+        register(dispatcher, "duel");
+        register(dispatcher, "challenge");
+    }
+
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, String string) {
+        dispatcher.register(Commands.literal(string)
                 .requires(commandSourceStack -> {
                     try {
                         com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException());
@@ -28,24 +34,6 @@ public class DuelCommand {
                         return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
                     } catch (Exception ignored) {
                     }
-                    return false;
-                })
-                .then(Commands.argument("player", EntityArgument.player())
-                        .executes(context -> DuelGUI.openDuelGui(context.getSource().getPlayerOrException(), EntityArgument.getPlayer(context, "player")))
-                        .then(Commands.argument("gamemode", StringArgumentType.string())
-                                .suggests(((context, builder) -> SharedSuggestionProvider.suggest((DuelGameMode.stringDuelGameModes), builder)))
-                                .executes(context -> DuelCommand.challenge(context, EntityArgument.getPlayer(context, "player"), StringArgumentType.getString(context, "gamemode"), null))
-                                .then(Commands.argument("map", StringArgumentType.string())
-                                        .suggests(((context, builder) -> SharedSuggestionProvider.suggest((DuelsMap.stringDuelsMaps), builder)))
-                                        .executes(context -> DuelCommand.challenge(context, EntityArgument.getPlayer(context, "player"), StringArgumentType.getString(context, "gamemode"), StringArgumentType.getString(context, "map")))
-                                ))));
-        dispatcher.register(Commands.literal("challenge")
-                .requires(commandSourceStack -> {
-                    try {
-                        com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException());
-                        PlayerData playerData1 = PlayerDataManager.get(commandSourceStack.getPlayerOrException());
-                        return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
-                    } catch (Exception ignored) {}
                     return false;
                 })
                 .then(Commands.argument("player", EntityArgument.player())

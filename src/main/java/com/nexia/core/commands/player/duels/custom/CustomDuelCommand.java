@@ -20,7 +20,12 @@ import org.jetbrains.annotations.Nullable;
 
 public class CustomDuelCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
-        dispatcher.register(Commands.literal("customduel")
+        register(dispatcher, "customduel");
+        register(dispatcher, "customchallenge");
+    }
+
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, String string) {
+        dispatcher.register(Commands.literal(string)
                 .requires(commandSourceStack -> {
                     try {
                         com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException());

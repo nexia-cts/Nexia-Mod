@@ -45,7 +45,7 @@ public abstract class EntityMixin implements Nameable, CommandSource {
 
     @Inject(method = "isInvulnerableTo", at = @At("HEAD"), cancellable = true)
     private void hurt(DamageSource damageSource, CallbackInfoReturnable<Boolean> cir) {
-        if (damageSource == DamageSource.FALL && getTags().contains(LobbyUtil.NO_FALL_DAMAGE_TAG) || damageSource == DamageSource.FALL && getTags().contains("ffa")) {
+        if ((damageSource == DamageSource.FALL && getTags().contains(LobbyUtil.NO_FALL_DAMAGE_TAG)) || (damageSource == DamageSource.FALL && getTags().contains("ffa"))) {
             cir.setReturnValue(true);
         }
     }

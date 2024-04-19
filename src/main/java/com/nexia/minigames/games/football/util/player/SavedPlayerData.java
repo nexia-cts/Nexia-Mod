@@ -7,6 +7,7 @@ public class SavedPlayerData {
     public int loss;
 
     public int goals;
+
     public SavedPlayerData() {
         this.wins = 0;
         this.loss = 0;

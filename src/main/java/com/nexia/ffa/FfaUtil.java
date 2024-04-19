@@ -14,6 +14,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +25,12 @@ public class FfaUtil {
     public static final String FFA_TAG = "ffa";
 
     public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
-        return player.getTags().contains("ffa") || player.getTags().contains("ffa_classic") || player.getTags().contains("ffa_kits") || player.getTags().contains("ffa_sky") || player.getTags().contains("ffa_uhc") && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.FFA;
+        return (player.getTags().contains(FFA_TAG)
+                || player.getTags().contains("ffa_classic")
+                || player.getTags().contains("ffa_kits")
+                || player.getTags().contains("ffa_sky")
+                || player.getTags().contains("ffa_uhc"))
+                && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.FFA;
     }
 
     public static float calculateHealth(float health){
@@ -74,6 +80,13 @@ public class FfaUtil {
         }
 
         if(leaving) data.ffaGameMode = null;
+    }
+
+    public static boolean isFfaWorld(Level level) {
+        return level == com.nexia.ffa.classic.utilities.FfaAreas.ffaWorld ||
+                level == com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld ||
+                level == com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld ||
+                level == com.nexia.ffa.uhc.utilities.FfaAreas.ffaWorld;
     }
 
     public static Component returnDeathMessage(@NotNull ServerPlayer minecraftPlayer, @Nullable DamageSource source) {
