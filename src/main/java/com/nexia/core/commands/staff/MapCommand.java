@@ -7,21 +7,23 @@ import com.mojang.brigadier.context.CommandContext;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.ffa.classic.utilities.FfaAreas;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.Registry;
+import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.dimension.DimensionType;
 import org.apache.commons.io.FileUtils;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
+import xyz.nucleoid.fantasy.util.VoidChunkGenerator;
 
 import java.io.File;
 
@@ -75,8 +77,8 @@ public class MapCommand {
 
             ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), (
                     new RuntimeWorldConfig()
-                            .setDimensionType(FfaAreas.ffaWorld.dimensionType())
-                            .setGenerator(FfaAreas.ffaWorld.getChunkSource().getGenerator())
+                            .setDimensionType(DimensionType.OVERWORLD_LOCATION)
+                            .setGenerator(new VoidChunkGenerator(BuiltinRegistries.BIOME))
                             .setDifficulty(Difficulty.HARD)
                             .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
                             .setGameRule(GameRules.RULE_MOBGRIEFING, false)

@@ -6,7 +6,6 @@ import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.ffa.classic.utilities.FfaAreas;
 import com.nexia.minigames.games.duels.custom.CustomDuelsGame;
 import com.nexia.minigames.games.duels.custom.team.CustomTeamDuelsGame;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
@@ -16,6 +15,7 @@ import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.minecraft.core.Registry;
+import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -26,11 +26,13 @@ import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.notcoded.codelib.players.AccuratePlayer;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
+import xyz.nucleoid.fantasy.util.VoidChunkGenerator;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -157,8 +159,8 @@ public class DuelGameHandler {
 
     public static ServerLevel createWorld(String uuid, boolean doRegeneration) {
         RuntimeWorldConfig config = new RuntimeWorldConfig()
-                .setDimensionType(FfaAreas.ffaWorld.dimensionType())
-                .setGenerator(FfaAreas.ffaWorld.getChunkSource().getGenerator())
+                .setDimensionType(DimensionType.OVERWORLD_LOCATION)
+                .setGenerator(new VoidChunkGenerator(BuiltinRegistries.BIOME))
                 .setDifficulty(Difficulty.HARD)
                 .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
                 .setGameRule(GameRules.RULE_MOBGRIEFING, false)
