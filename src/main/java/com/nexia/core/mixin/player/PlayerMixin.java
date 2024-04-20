@@ -27,6 +27,7 @@ import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -73,8 +74,11 @@ public abstract class PlayerMixin extends LivingEntity {
     @Inject(method = "canEat", cancellable = true, at = @At("HEAD"))
     private void preventFFAUsers(boolean bl, CallbackInfoReturnable<Boolean> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
-        if((com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.sky.utilities.FfaAreas.isInFfaSpawn(player)) || (com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(player)) || PlayerDataManager.get(player).gameMode.equals(DuelGameMode.LOBBY)) {
+        if((com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.sky.utilities.FfaAreas.isInFfaSpawn(player))
+                || (com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(player))
+                || (com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode.equals(PlayerGameMode.LOBBY) && PlayerDataManager.get(player).gameMode.equals(DuelGameMode.LOBBY))) {
             cir.setReturnValue(false);
+            player.stopUsingItem();
             ItemStackUtil.sendInventoryRefreshPacket(player);
         }
     }
@@ -100,7 +104,7 @@ public abstract class PlayerMixin extends LivingEntity {
             if(attacker.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) cir.setReturnValue(false);
 
             DuelsTeam team = PlayerDataManager.get(player).duelOptions.duelsTeam;
-            if(team != null && team.all.contains(attacker) && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) cir.setReturnValue(false);
+            if(team != null && team.all.contains(AccuratePlayer.create(attacker)) && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) cir.setReturnValue(false);
         }
     }
 
