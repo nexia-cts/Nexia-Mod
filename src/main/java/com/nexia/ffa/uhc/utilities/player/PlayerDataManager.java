@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class PlayerDataManager {
-    static String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/ffa/uhc";
+    public static String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/ffa/uhc";
     static String playerDataDirectory;
     static HashMap<UUID, PlayerData> allPlayerData;
 
@@ -26,7 +26,7 @@ public class PlayerDataManager {
             addPlayerData(player);
         }
 
-        return (PlayerData)allPlayerData.get(player.getUUID());
+        return allPlayerData.get(player.getUUID());
     }
 
     public static void addPlayerData(Player player) {
@@ -74,6 +74,6 @@ public class PlayerDataManager {
 
     static {
         playerDataDirectory = dataDirectory + "/playerdata";
-        allPlayerData = new HashMap();
+        allPlayerData = new HashMap<>();
     }
 }
