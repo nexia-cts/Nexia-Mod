@@ -109,32 +109,33 @@ public class PlayGUI extends SimpleGui {
     }
 
     public void setFFALayout(){
-        ItemStack classic = new ItemStack(Items.NETHERITE_SWORD, 1);
-        classic.setHoverName(new TextComponent("§cClassic FFA"));
+        ItemStack classic = new ItemStack(Items.DIAMOND_SWORD, 1);
+        classic.setHoverName(new TextComponent("§bClassic FFA"));
         ItemDisplayUtil.addGlint(classic);
         classic.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
-        ItemDisplayUtil.addLore(classic, "§5", 0);
+        ItemDisplayUtil.addLore(classic, "§b", 0);
         ItemDisplayUtil.addLore(classic, "§7The classic snapshot", 1);
         ItemDisplayUtil.addLore(classic, "§7Free For All gamemode.", 2);
         ItemDisplayUtil.addLore(classic, "§f", 3);
-        ItemDisplayUtil.addLore(classic, "§c◆ There are " + FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
+        ItemDisplayUtil.addLore(classic, "§b◆ There are " + FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
 
-        ItemStack kit = new ItemStack(Items.DIAMOND_SWORD, 1);
-        kit.setHoverName(new TextComponent("§aKit FFA"));
-        ItemDisplayUtil.addGlint(classic);
+        ItemStack kit = new ItemStack(Items.CROSSBOW, 1);
+        kit.setHoverName(new TextComponent("§fKit FFA"));
+        ItemDisplayUtil.addGlint(kit);
         kit.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         ItemDisplayUtil.addLore(kit, "§5", 0);
         ItemDisplayUtil.addLore(kit, "§7Fight against players", 1);
         ItemDisplayUtil.addLore(kit, "§7with various kits!", 2);
         ItemDisplayUtil.addLore(kit, "§f", 3);
-        ItemDisplayUtil.addLore(kit, "§a◆ There are " + com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
+        ItemDisplayUtil.addLore(kit, "§f◆ There are " + com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
 
 
 
         ItemStack pot = new ItemStack(Items.POTION, 1);
-        pot.setHoverName(new TextComponent("§bSky FFA"));
+        pot.setHoverName(new TextComponent("§eSky FFA"));
+        pot.getOrCreateTag().putInt("CustomPotionColor", 16771584);
         ItemDisplayUtil.addGlint(pot);
         pot.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
@@ -142,7 +143,7 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(pot, "§7Fight people on sky islands", 1);
         ItemDisplayUtil.addLore(pot, "§7and drink Piss Juice™ to survive!", 2);
         ItemDisplayUtil.addLore(pot, "§5", 3);
-        ItemDisplayUtil.addLore(pot, "§b◆ There are " + com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
+        ItemDisplayUtil.addLore(pot, "§e◆ There are " + com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
 
 
 
@@ -196,7 +197,7 @@ public class PlayGUI extends SimpleGui {
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
 
-        ItemStack football = new ItemStack(Items.BEDROCK, 1);
+        ItemStack football = new ItemStack(Items.ARMOR_STAND, 1);
         football.setHoverName(new TextComponent("§fFootball"));
         ItemDisplayUtil.addGlint(football);
         football.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
@@ -222,17 +223,17 @@ public class PlayGUI extends SimpleGui {
         if(element != null && clickType != ClickType.MOUSE_DOUBLE_CLICK) {
             ItemStack itemStack = element.getItemStack();
             Component name = itemStack.getHoverName();
-            if(name.getString().equalsIgnoreCase("§cClassic FFA")){
+            if(name.getString().equalsIgnoreCase("§bClassic FFA")){
                 LobbyUtil.sendGame(this.player, "classic ffa", true, true);
                 this.close();
             }
 
-            if(name.getString().equalsIgnoreCase("§aKit FFA")){
+            if(name.getString().equalsIgnoreCase("§fKit FFA")){
                 LobbyUtil.sendGame(this.player, "kits ffa", true, true);
                 this.close();
             }
 
-            if(name.getString().equalsIgnoreCase("§bSky FFA")){
+            if(name.getString().equalsIgnoreCase("§eSky FFA")){
                 LobbyUtil.sendGame(this.player, "sky ffa", true, true);
                 this.close();
             }
