@@ -1,7 +1,9 @@
 package com.nexia.minigames.games.duels;
 
+import com.google.gson.Gson;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.item.InventoryUtil;
+import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.classic.utilities.FfaAreas;
@@ -11,6 +13,8 @@ import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import io.github.blumbo.inventorymerger.InventoryMerger;
+import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceKey;
@@ -29,6 +33,8 @@ import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -49,6 +55,40 @@ public class DuelGameHandler {
 
         File file = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID(), kitID + ".txt");
         return file.exists();
+    }
+
+    public static void loadInventory(ServerPlayer player, String gameMode) {
+        String file = InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID() + File.separator + "layout" + File.separator + gameMode.toLowerCase() + ".json";
+
+        SavableInventory defaultInventory = null;
+        SavableInventory layout = null;
+
+        try {
+            String defaultJson = Files.readString(Path.of(InventoryUtil.dirpath + "/duels/default-layouts/" + gameMode.toLowerCase() + ".json"));
+            Gson gson = new Gson();
+            defaultInventory = gson.fromJson(defaultJson, SavableInventory.class);
+
+            if(new File(file).exists()) {
+                String layoutJson = Files.readString(Path.of(file));
+                layout = gson.fromJson(layoutJson, SavableInventory.class);
+            }
+        } catch (Exception var4) {
+            InventoryUtil.loadInventory(player, "duels", gameMode.toLowerCase());
+            var4.printStackTrace();
+        }
+
+        if(defaultInventory == null) {
+            InventoryUtil.loadInventory(player, "duels", gameMode.toLowerCase());
+            return;
+        }
+
+        if(layout != null) {
+            InventoryMerger.mergeSafe(player, layout.asPlayerInventory(), defaultInventory.asPlayerInventory());
+        } else {
+            InventoryUtil.loadInventory(player, "duels", gameMode.toLowerCase());
+        }
+
+        ItemStackUtil.sendInventoryRefreshPacket(player);
     }
 
     public static void leave(ServerPlayer player, boolean leaveTeam) {

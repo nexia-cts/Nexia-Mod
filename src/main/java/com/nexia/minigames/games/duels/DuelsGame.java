@@ -4,7 +4,6 @@ import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
@@ -28,7 +27,6 @@ import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -147,13 +145,8 @@ public class DuelsGame {
                 .append(Component.text("Your opponent: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                 .append(Component.text(p2.getRawName()).color(ChatFormat.brandColor2))));
 
-        File p1File = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + mcP1.getStringUUID() + File.separator + "layout", stringGameMode.toLowerCase() + ".txt");
-        if(p1File.exists()) InventoryUtil.loadInventory(mcP1, "duels/custom/" + mcP1.getStringUUID() + "/layout", stringGameMode.toLowerCase());
-        else InventoryUtil.loadInventory(mcP1, "duels", stringGameMode.toLowerCase());
-
-        File p2File = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + mcP2.getStringUUID() + File.separator + "layout", stringGameMode.toLowerCase() + ".txt");
-        if(p2File.exists()) InventoryUtil.loadInventory(mcP2, "duels/custom/" + mcP2.getStringUUID() + "/layout", stringGameMode.toLowerCase());
-        else InventoryUtil.loadInventory(mcP2, "duels", stringGameMode.toLowerCase());
+        DuelGameHandler.loadInventory(mcP1, stringGameMode);
+        DuelGameHandler.loadInventory(mcP2, stringGameMode);
 
         playerData.gameMode = gameMode;
         invitorData.gameMode = gameMode;

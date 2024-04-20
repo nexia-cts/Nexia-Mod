@@ -4,14 +4,13 @@ import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelGameMode;
-import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
+import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.util.DuelOptions;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
@@ -29,7 +28,6 @@ import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Random;
@@ -158,10 +156,7 @@ public class TeamDuelsGame { // implements Runnable{
                             .append(Component.text(team2.getLeader().get().getScoreboardName() + "'s Team")
                                     .color(ChatFormat.brandColor2))));
 
-            File file = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.get().getStringUUID() + File.separator + "layout", stringGameMode.toLowerCase() + ".txt");
-            if(file.exists()) InventoryUtil.loadInventory(player.get(), "duels/custom/" + player.get().getStringUUID() + "/layout", stringGameMode.toLowerCase());
-            else InventoryUtil.loadInventory(player.get(), "duels", stringGameMode.toLowerCase());
-
+            DuelGameHandler.loadInventory(serverPlayer, stringGameMode);
 
             if (!gameMode.hasSaturation) {
                 factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
@@ -194,7 +189,7 @@ public class TeamDuelsGame { // implements Runnable{
                             .append(Component.text(team1.getLeader().get().getScoreboardName() + "'s Team")
                                     .color(ChatFormat.brandColor2))));
 
-            InventoryUtil.loadInventory(serverPlayer, "duels", stringGameMode.toLowerCase());
+            DuelGameHandler.loadInventory(serverPlayer, stringGameMode);
 
             if (!gameMode.hasSaturation) {
                 factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
