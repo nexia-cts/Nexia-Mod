@@ -49,7 +49,8 @@ public class FfaKitsUtil {
     }
 
     public static void ffaSecond() {
-        if (ffaWorld == null || ffaWorld.players().isEmpty()) return;
+        if(ffaWorld == null) return;
+        if(ffaWorld.players().isEmpty())
         for (ServerPlayer player : ffaWorld.players()) {
             if (!isFfaPlayer(player)) continue;
 
@@ -96,6 +97,8 @@ public class FfaKitsUtil {
     }
 
     public static void fiveTick() {
+        if (ffaWorld == null) return;
+        if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
 
             if(!com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(minecraftPlayer) && PlayerDataManager.get(minecraftPlayer).kit == null) {

@@ -45,6 +45,7 @@ public class FfaClassicUtil {
 
     public static void ffaSecond() {
         if (ffaWorld == null) return;
+        if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer player : ffaWorld.players()) {
             if (!isFfaPlayer(player)) continue;
 
@@ -70,6 +71,8 @@ public class FfaClassicUtil {
     }
 
     public static void fiveTick() {
+        if(ffaWorld == null) return;
+        if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
             if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !FfaAreas.isInFfaSpawn(minecraftPlayer)){
                 wasInSpawn.remove(minecraftPlayer.getUUID());

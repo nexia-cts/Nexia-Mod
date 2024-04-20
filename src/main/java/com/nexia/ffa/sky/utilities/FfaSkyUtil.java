@@ -11,7 +11,6 @@ import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.sky.SkyFfaBlocks;
-import com.nexia.ffa.sky.utilities.player.PlayerData;
 import com.nexia.ffa.sky.utilities.player.PlayerDataManager;
 import com.nexia.ffa.sky.utilities.player.SavedPlayerData;
 import io.github.blumbo.inventorymerger.InventoryMerger;
@@ -30,6 +29,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.item.Item;
@@ -64,7 +64,6 @@ public class FfaSkyUtil {
             Items.LIME_WOOL, Items.LIGHT_BLUE_WOOL, Items.MAGENTA_WOOL};
     public static int woolId = 0;
     public static final HashMap<Integer, ItemStack> killRewards = new HashMap<>();
-    public static HashMap<Integer, ItemStack> invItems;
 
     public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
         com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
@@ -72,6 +71,8 @@ public class FfaSkyUtil {
     }
 
     public static void fiveTick() {
+        if(ffaWorld == null) return;
+        if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
             if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !FfaAreas.isInFfaSpawn(minecraftPlayer)){
                 Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
@@ -139,7 +140,12 @@ public class FfaSkyUtil {
         for (int i = 0; i < 41; i++) {
             Item item = player.inventory.getItem(i).getItem();
             if (item.toString().endsWith("_wool")) {
-                player.inventory.setItem(i, setWoolColor(new ItemStack(Items.WHITE_WOOL, 64)));
+                ItemStack coloredWool = setWoolColor(new ItemStack(Items.WHITE_WOOL, 64));
+                if(i > 36) { /* offhand */
+                    player.setItemSlot(EquipmentSlot.OFFHAND, coloredWool);
+                } else {
+                    player.inventory.setItem(i, coloredWool);
+                }
             }
         }
 
@@ -233,7 +239,7 @@ public class FfaSkyUtil {
             availableRewards.remove(killRewardIndex);
 
             // Give reward
-            if (attacker.inventory.contains(reward) || !addFromOldInv(attacker, reward.copy())) {
+            if (attacker.inventory.contains(reward)) {
                 attacker.inventory.add(reward.copy());
             }
             givenRewards.add(reward.copy());
@@ -273,36 +279,6 @@ public class FfaSkyUtil {
         } else {
             player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, heal, 5, false, false));
         }
-    }
-
-
-    private static boolean addFromOldInv(ServerPlayer player, ItemStack itemStack) {
-        PlayerData playerData = PlayerDataManager.get(player);
-        SavableInventory layout = null;
-
-        try {
-            String file = dataDirectory + "/inventory";
-            Gson gson = new Gson();
-
-            String layoutPath = String.format(file + "/savedInventories/%s.json", player.getStringUUID());
-            if(new File(layoutPath).exists()) {
-                String layoutJson = Files.readString(Path.of(layoutPath));
-                layout = gson.fromJson(layoutJson, SavableInventory.class);
-            }
-        } catch (Exception var4) {
-            var4.printStackTrace();
-        }
-
-        if (layout == null) return false;
-
-        for (int i = 0; i < 41; i++) {
-            Item item = layout.asPlayerInventory().getItem(i).getItem();
-            if (itemStack.getItem() == item && player.inventory.getItem(i).isEmpty()) {
-                player.inventory.setItem(i, itemStack);
-                return true;
-            }
-        }
-        return false;
     }
 
     public static boolean canGoToSpawn(ServerPlayer player) {

@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.function.Predicate;
 
+import static com.nexia.ffa.uhc.utilities.FfaAreas.ffaWorld;
 import static com.nexia.ffa.uhc.utilities.FfaAreas.*;
 import static com.nexia.ffa.uhc.utilities.player.PlayerDataManager.dataDirectory;
 
@@ -58,7 +59,8 @@ public class FfaUhcUtil {
     }
 
     public static void ffaSecond() {
-        if (ffaWorld == null || ffaWorld.players().isEmpty()) return;
+        if (ffaWorld == null) return;
+        if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer player : ffaWorld.players()) {
             if (!isFfaPlayer(player)) continue;
 
@@ -104,6 +106,8 @@ public class FfaUhcUtil {
     }
 
     public static void fiveTick() {
+        if (ffaWorld == null) return;
+        if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
             if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !FfaAreas.isInFfaSpawn(minecraftPlayer)){
                 Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
