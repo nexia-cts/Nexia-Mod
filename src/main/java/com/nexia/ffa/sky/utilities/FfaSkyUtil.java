@@ -1,19 +1,24 @@
 package com.nexia.ffa.sky.utilities;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.google.gson.Gson;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.sky.SkyFfaBlocks;
 import com.nexia.ffa.sky.utilities.player.PlayerData;
 import com.nexia.ffa.sky.utilities.player.PlayerDataManager;
 import com.nexia.ffa.sky.utilities.player.SavedPlayerData;
+import io.github.blumbo.inventorymerger.InventoryMerger;
+import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,7 +30,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.item.Item;
@@ -38,10 +42,17 @@ import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 import static com.nexia.ffa.sky.utilities.FfaAreas.*;
+import static com.nexia.ffa.sky.utilities.player.PlayerDataManager.dataDirectory;
 
 public class FfaSkyUtil {
 
@@ -72,52 +83,64 @@ public class FfaSkyUtil {
         }
     }
 
-    public static void saveInventory(ServerPlayer minecraftPlayer){
-        PlayerData playerData = PlayerDataManager.get(minecraftPlayer);
-        Inventory newInv = playerData.ffaInventory = new Inventory(minecraftPlayer);
+    public static void saveInventory(ServerPlayer player){
+        // /config/nexia/ffa/sky/inventory/savedInventories/uuid.json
 
-        for(int i = 0; i < newInv.getContainerSize(); ++i) {
-            newInv.setItem(i, minecraftPlayer.inventory.getItem(i).copy());
+        SavableInventory savableInventory = new SavableInventory(player.inventory);
+        String stringInventory = savableInventory.toSave();
+
+        try {
+            String file = dataDirectory + "/inventory/savedInventories/" + player.getStringUUID() + ".json";
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write(stringInventory);
+            fileWriter.close();
+        } catch (Exception var6) {
+            ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
+            player.sendMessage(LegacyChatFormat.format("{f}Failed to save Sky FFA inventory. Please try again or contact a developer."), Util.NIL_UUID);
+            return;
         }
     }
 
     public static void setInventory(ServerPlayer player){
-        HashMap<Integer, ItemStack> availableItems = (HashMap<Integer, ItemStack>)invItems.clone();
-        Inventory newInv = new Inventory(player);
-        Inventory oldInv = PlayerDataManager.get(player).ffaInventory;
 
-        if (oldInv != null) {
-            // Attempt to match new given items with previous inventory layout
-            for (int i = 0; i < 41; i++) {
-                Item item = oldInv.getItem(i).getItem();
-                if (item.toString().endsWith("_wool")) item = Items.WHITE_WOOL;
-                for (Iterator<Map.Entry<Integer, ItemStack>> it = availableItems.entrySet().iterator(); it.hasNext();) {
-                    Map.Entry<Integer, ItemStack> entry = it.next();
-                    if (entry.getValue().getItem() == item) {
-                        ItemStack itemStack = setWoolColor(entry.getValue().copy());
-                        newInv.setItem(i, itemStack);
-                        it.remove();
-                        break;
-                    }
-                }
+        // /config/nexia/ffa/sky/inventory/savedInventories/uuid.json
+        // /config/nexia/ffa/sky/inventory/default.json
+
+        SavableInventory defaultInventory = null;
+        SavableInventory layout = null;
+
+        try {
+            String file = dataDirectory + "/inventory";
+            String defaultJson = Files.readString(Path.of(file + "/default.json"));
+            Gson gson = new Gson();
+            defaultInventory = gson.fromJson(defaultJson, SavableInventory.class);
+
+            String layoutPath = String.format(file + "/savedInventories/%s.json", player.getStringUUID());
+            if(new File(layoutPath).exists()) {
+                String layoutJson = Files.readString(Path.of(layoutPath));
+                layout = gson.fromJson(layoutJson, SavableInventory.class);
             }
+        } catch (Exception var4) {
+            var4.printStackTrace();
         }
 
-
-        // Add items that could not be matched
-        for (Map.Entry<Integer, ItemStack> entry : availableItems.entrySet()) {
-            ItemStack itemStack = setWoolColor(entry.getValue().copy());
-            if (newInv.getItem(entry.getKey()).isEmpty()) {
-                newInv.setItem(entry.getKey(), itemStack);
-            } else {
-                newInv.add(itemStack);
-            }
+        if(defaultInventory == null) {
+            ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
+            player.sendMessage(LegacyChatFormat.format("{f}Failed to set Sky FFA inventory. Please try again or contact a developer."), Util.NIL_UUID);
+            return;
         }
-        // Give player the items
+        
+        if(layout != null) {
+            InventoryMerger.mergeSafe(player, layout.asPlayerInventory(), defaultInventory.asPlayerInventory());
+        } else {
+            player.inventory.replaceWith(defaultInventory.asPlayerInventory());
+        }
+
         for (int i = 0; i < 41; i++) {
-            ItemStack itemStack = newInv.getItem(i);
-            if (itemStack == null) itemStack = ItemStack.EMPTY;
-            player.inventory.setItem(i, itemStack);
+            Item item = player.inventory.getItem(i).getItem();
+            if (item.toString().endsWith("_wool")) {
+                player.inventory.setItem(i, setWoolColor(new ItemStack(Items.WHITE_WOOL, 64)));
+            }
         }
 
         ItemStackUtil.sendInventoryRefreshPacket(player);
@@ -255,11 +278,25 @@ public class FfaSkyUtil {
 
     private static boolean addFromOldInv(ServerPlayer player, ItemStack itemStack) {
         PlayerData playerData = PlayerDataManager.get(player);
-        Inventory invLayout = playerData.ffaInventory;
-        if (invLayout == null) return false;
+        SavableInventory layout = null;
+
+        try {
+            String file = dataDirectory + "/inventory";
+            Gson gson = new Gson();
+
+            String layoutPath = String.format(file + "/savedInventories/%s.json", player.getStringUUID());
+            if(new File(layoutPath).exists()) {
+                String layoutJson = Files.readString(Path.of(layoutPath));
+                layout = gson.fromJson(layoutJson, SavableInventory.class);
+            }
+        } catch (Exception var4) {
+            var4.printStackTrace();
+        }
+
+        if (layout == null) return false;
 
         for (int i = 0; i < 41; i++) {
-            Item item = invLayout.getItem(i).getItem();
+            Item item = layout.asPlayerInventory().getItem(i).getItem();
             if (itemStack.getItem() == item && player.inventory.getItem(i).isEmpty()) {
                 player.inventory.setItem(i, itemStack);
                 return true;
@@ -283,28 +320,6 @@ public class FfaSkyUtil {
         player.setGameMode(GameType.ADVENTURE);
         FfaAreas.spawn.teleportPlayer(FfaAreas.ffaWorld, player);
         FfaSkyUtil.setInventory(player);
-    }
-
-    static {
-        invItems = new HashMap<>();
-
-        invItems.put(0, new ItemStack(Items.IRON_SWORD));
-        invItems.put(1, new ItemStack(Items.WHITE_WOOL, 64));
-        invItems.put(2, new ItemStack(Items.BOW));
-        killRewards.put(3, gApplePotion());
-        killRewards.put(4, new ItemStack(Items.ENDER_PEARL, 1));
-        killRewards.put(5, new ItemStack(Items.COBWEB, 2));
-        invItems.put(8, shears());
-
-        killRewards.put(9, new ItemStack(Items.ARROW, 4));
-
-        for (Map.Entry<Integer, ItemStack> killReward : killRewards.entrySet()) {
-            invItems.put(killReward.getKey(), killReward.getValue().copy());
-        }
-
-        for (ItemStack itemStack : invItems.values()) {
-            if (itemStack.isDamageableItem()) itemStack.getOrCreateTag().putBoolean("Unbreakable", true);
-        }
     }
 
     private static ItemStack gApplePotion() {
