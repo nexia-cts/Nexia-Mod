@@ -68,7 +68,7 @@ public class PlayerRespawnListener {
                 LobbyUtil.giveItems(player);
 
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
-                respawnEvent.setSpawnpoint(new Location(duelsGame.winner.get().getX(), duelsGame.winner.get().getY(), duelsGame.winner.get().getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getWorldName(duelsGame.level)))));
+                respawnEvent.setSpawnpoint(new Location(duelsGame.winner.get().getX(), duelsGame.winner.get().getY(), duelsGame.winner.get().getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getWorldName(duelsGame.level).split(":")[1]))));
             } else if(teamDuelsGame != null && duelsData.duelOptions.duelsTeam != null) {
                 factoryPlayer.getInventory().clear();
                 LobbyUtil.giveItems(player);
@@ -87,14 +87,14 @@ public class PlayerRespawnListener {
                 }
 
 
-                respawnEvent.setSpawnpoint(new Location(player1.getX(), player1.getY(), player1.getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getWorldName(teamDuelsGame.level)))));
+                respawnEvent.setSpawnpoint(new Location(player1.getX(), player1.getY(), player1.getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getWorldName(teamDuelsGame.level).split(":")[1]))));
                 //player.teleportTo(duelsGame.level, duelsGame.winner.getX(), duelsGame.winner.getY(), duelsGame.winner.getZ(), 0, 0);
             } if(customDuelsGame != null && customDuelsGame.isEnding && customDuelsGame.winner != null) {
                 factoryPlayer.getInventory().clear();
                 LobbyUtil.giveItems(player);
 
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
-                respawnEvent.setSpawnpoint(new Location(customDuelsGame.winner.get().getX(), customDuelsGame.winner.get().getY(), customDuelsGame.winner.get().getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getWorldName(customDuelsGame.level)))));
+                respawnEvent.setSpawnpoint(new Location(customDuelsGame.winner.get().getX(), customDuelsGame.winner.get().getY(), customDuelsGame.winner.get().getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getWorldName(customDuelsGame.level).split(":")[1]))));
                 //player.teleportTo(duelsGame.level, duelsGame.winner.getX(), duelsGame.winner.getY(), duelsGame.winner.getZ(), 0, 0);
             } else if(customTeamDuelsGame != null && duelsData.duelOptions.duelsTeam != null) {
                 factoryPlayer.getInventory().clear();
@@ -114,7 +114,7 @@ public class PlayerRespawnListener {
                 }
 
 
-                respawnEvent.setSpawnpoint(new Location(player1.getX(), player1.getY(), player1.getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getWorldName(customTeamDuelsGame.level)))));
+                respawnEvent.setSpawnpoint(new Location(player1.getX(), player1.getY(), player1.getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getWorldName(customTeamDuelsGame.level).split(":")[1]))));
             }
 
         });
