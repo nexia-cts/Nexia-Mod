@@ -3,17 +3,18 @@
 package com.nexia.ffa.classic.utilities.player;
 
 import com.google.gson.Gson;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.world.entity.player.Player;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.UUID;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.world.entity.player.Player;
 
 public class PlayerDataManager {
-    static String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/ffa/classic";
+    public static String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/ffa/classic";
     static String playerDataDirectory;
     static HashMap<UUID, PlayerData> allPlayerData;
 
@@ -66,7 +67,7 @@ public class PlayerDataManager {
         }
     }
 
-    private static String getDataDir() {
+    public static String getDataDir() {
         (new File(playerDataDirectory)).mkdirs();
         return playerDataDirectory;
     }

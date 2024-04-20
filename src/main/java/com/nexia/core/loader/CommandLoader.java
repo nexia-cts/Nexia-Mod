@@ -40,7 +40,7 @@ public class CommandLoader {
         callbackEvent.register(AcceptDuelCommand::register);
         callbackEvent.register(DeclineDuelCommand::register);
         callbackEvent.register(StaffPrefixCommand::register);
-        callbackEvent.register(DevExperimentalMapCommand::register);
+        callbackEvent.register(DevExperimentalCommandsCommand::register);
         callbackEvent.register(LoadInventoryCommand::register);
         callbackEvent.register(SaveInventoryCommand::register);
         callbackEvent.register(ListInventoriesCommand::register);
