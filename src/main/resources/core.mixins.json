@@ -7,6 +7,7 @@
     "block.AnvilBlockMixin",
     "block.BeaconBlockMixin",
     "block.BlockMixin",
+    "block.ChestBlockMixin",
     "block.CommandBlockMixin",
     "block.CraftingTableMixin",
     "block.DispenserBlockMixin",
