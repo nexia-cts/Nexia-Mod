@@ -90,6 +90,7 @@ public class LobbyUtil {
             PlayerGameMode.SKYWARS.tag,
             PlayerGameMode.OITC.tag,
             "in_oitc_game",
+            "in_kitroom",
             NO_RANK_DISPLAY_TAG,
             NO_SATURATION_TAG,
             NO_FALL_DAMAGE_TAG

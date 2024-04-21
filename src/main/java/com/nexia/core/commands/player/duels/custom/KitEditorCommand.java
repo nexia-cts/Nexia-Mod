@@ -13,10 +13,16 @@ import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.DuelGameMode;
+import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.CustomKitRoom;
+import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.KitRoom;
+import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.SmpKitRoom;
+import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.VanillaKitRoom;
+import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.server.level.ServerPlayer;
+import net.notcoded.codelib.players.AccuratePlayer;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -67,7 +73,9 @@ public class KitEditorCommand {
 
         if(argument.equalsIgnoreCase("save")) {
 
-            if(com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).editingKit.isEmpty()) {
+            com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
+
+            if(playerData.editingKit.isEmpty() || playerData.kitRoom == null) {
                 context.getSource().sendFailure(LegacyChatFormat.format("You aren't editing a kit!"));
                 return 0;
             }
@@ -82,20 +90,24 @@ public class KitEditorCommand {
                 if(!playerDir.exists()) Files.createDirectory(playerPath);
             } catch (IOException ignored) { }
 
+            KitRoom kitRoom = playerData.kitRoom;
 
             if (StringFunctions.sequenceCount(gearstring, "\n") < 40 || !playerDir.exists()) {
                 context.getSource().sendFailure(LegacyChatFormat.format("Something went wrong while generating the save file content for your inventory."));
 
+                kitRoom.leave();
                 ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
                 return 0;
             } else if (!InventoryUtil.writeGearStringToFile("duels/custom/" + player.getStringUUID(), inventory, gearstring)) {
                 context.getSource().sendFailure(LegacyChatFormat.format("Something went wrong while saving the content of your inventory as '{}'.", inventory));
 
+                kitRoom.leave();
                 ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
                 return 0;
             } else {
                 context.getSource().sendFailure(LegacyChatFormat.format("Successfully saved your inventory as '{}'.", inventory));
 
+                kitRoom.leave();
                 ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
                 return 1;
             }
@@ -114,9 +126,26 @@ public class KitEditorCommand {
                 return 0;
             }
 
-            //com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).editingKit = inventory;
+            KitRoom kitRoom;
+            com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
+            AccuratePlayer accuratePlayer = AccuratePlayer.create(player);
 
-            context.getSource().sendFailure(LegacyChatFormat.format("hey, this isnt done what are you doing???"));
+
+            switch (slot) {
+                case "1", "2", "3" -> kitRoom = new CustomKitRoom(accuratePlayer);
+                case "vanilla" -> kitRoom = new VanillaKitRoom(accuratePlayer);
+                case "smp" -> kitRoom = new SmpKitRoom(accuratePlayer);
+                default -> {
+                    player.sendMessage(LegacyChatFormat.formatFail("Something went wrong whilst creating your kit room."), Util.NIL_UUID);
+                    ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
+                    return 0;
+                }
+            }
+
+            playerData.editingKit = inventory;
+            playerData.kitRoom = kitRoom;
+
+            if(kitRoom.generate()) kitRoom.teleport();
 
             return 1;
         }

@@ -106,15 +106,22 @@ public class DuelGameHandler {
         if (data.gameOptions != null && data.gameOptions.customTeamDuelsGame != null) {
             data.gameOptions.customTeamDuelsGame.death(player, player.getLastDamageSource());
         }
+
         if (data.gameMode == DuelGameMode.SPECTATING) {
             GamemodeHandler.unspectatePlayer(AccuratePlayer.create(player), data.duelOptions.spectatingPlayer, false);
         }
+
+        if(data.kitRoom != null) {
+            data.kitRoom.leave();
+        }
+
         data.inDuel = false;
         data.inviteOptions.reset();
         removeQueue(player, null, true);
         data.gameMode = DuelGameMode.LOBBY;
         data.editingLayout = "";
         data.editingKit = "";
+        data.kitRoom = null;
         if (leaveTeam) {
             if (data.duelOptions.duelsTeam != null) {
                 data.duelOptions.duelsTeam.leaveTeam(AccuratePlayer.create(player), true);

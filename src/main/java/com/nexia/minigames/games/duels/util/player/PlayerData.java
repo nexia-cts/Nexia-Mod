@@ -1,6 +1,7 @@
 package com.nexia.minigames.games.duels.util.player;
 
 import com.nexia.minigames.games.duels.DuelGameMode;
+import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.KitRoom;
 import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.util.DuelOptions;
 
@@ -14,6 +15,7 @@ public class PlayerData {
     // Global
     public DuelGameMode gameMode;
     public boolean inDuel;
+    public KitRoom kitRoom;
 
     // Kit Editor
     public String editingKit;
@@ -36,6 +38,7 @@ public class PlayerData {
         this.inviteOptions = new DuelOptions.InviteOptions(null, false, DuelsMap.CITY, "null", false);
         this.gameOptions = null;
 
+        this.kitRoom = null;
         this.editingKit = "";
         this.editingLayout = "";
 
