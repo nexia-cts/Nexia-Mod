@@ -62,10 +62,8 @@ public class KitRoom {
     }
 
     public boolean generate() {
-        System.out.println("yes1");
         if(this.kitRoom == null) return false;
         this.uuid = UUID.randomUUID();
-        System.out.println(this.uuid);
 
         RuntimeWorldConfig config = new RuntimeWorldConfig()
                 .setDimensionType(DimensionType.OVERWORLD_LOCATION)
@@ -83,13 +81,11 @@ public class KitRoom {
                 .setGameRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS, false)
                 .setTimeOfDay(6000);
 
-        if(Main.config.debugMode) Main.logger.info("[DEBUG]: Created world: kitroom:" + uuid);
+        if(Main.config.debugMode) Main.logger.info("[DEBUG]: Created world: kitroom:{}", uuid);
 
         this.handle = ServerTime.fantasy.openTemporaryWorld(config, new ResourceLocation("kitroom", String.valueOf(uuid)));
         this.level = this.handle.asWorld();
         this.hasBeenGenerated = this.level != null;
-
-        System.out.println(this.hasBeenGenerated);
 
         this.kitRoom.pasteMap(this.level);
 
@@ -97,7 +93,6 @@ public class KitRoom {
     }
 
     public boolean teleport() {
-        System.out.println("teleporttest");
         if(!this.hasBeenGenerated || this.level == null) return false;
 
         this.player.get().teleportTo(this.level, 0, 80, 0, 0, 0);
