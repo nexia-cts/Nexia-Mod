@@ -200,7 +200,9 @@ public class FfaKitsUtil {
     public static void setDeathMessage(@NotNull ServerPlayer minecraftPlayer, @Nullable DamageSource source) {
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(minecraftPlayer);
 
-        calculateDeath(minecraftPlayer);
+        boolean isBot = minecraftPlayer.getTags().contains("bot");
+
+        if(!isBot) calculateDeath(minecraftPlayer);
 
         Component msg = FfaUtil.returnDeathMessage(minecraftPlayer, source);
 
@@ -209,7 +211,7 @@ public class FfaKitsUtil {
             Component component = FfaUtil.returnClassicDeathMessage(minecraftPlayer, attacker);
             if(component != null) msg = component;
 
-            calculateKill(attacker);
+            if(!isBot) calculateKill(attacker);
         }
 
         for (Player player : ServerTime.factoryServer.getPlayers()) {
