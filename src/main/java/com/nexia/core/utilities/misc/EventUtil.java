@@ -48,10 +48,10 @@ public class EventUtil {
     public static void onSignClick(CallbackInfoReturnable<InteractionResult> ci, BlockPos signPos, Level level, ServerPlayer p) {
         if (level.equals(com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld)) {
             List<BlockPos> bp = new ArrayList<>(Arrays.asList(
-                    new BlockPos(0, 128, 3),
-                    new BlockPos(3, 128, 0),
-                    new BlockPos(0, 128, -3),
-                    new BlockPos(-3, 128, 0)
+                    new BlockPos(0, 81, 6),
+                    new BlockPos(-6, 81, 0),
+                    new BlockPos(0, 81, -6),
+                    new BlockPos(6, 81, 0)
             ));
 
             if(bp.contains(signPos)) {
