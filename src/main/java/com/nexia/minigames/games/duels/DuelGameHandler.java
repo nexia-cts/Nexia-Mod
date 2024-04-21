@@ -161,7 +161,7 @@ public class DuelGameHandler {
     public static ServerLevel createWorld(String uuid, boolean doRegeneration) {
         RuntimeWorldConfig config = new RuntimeWorldConfig()
                 .setDimensionType(DimensionType.OVERWORLD_LOCATION)
-                .setGenerator(new VoidChunkGenerator(BuiltinRegistries.BIOME, Biomes.PLAINS))
+                .setGenerator(new VoidChunkGenerator(BuiltinRegistries.BIOME))
                 .setDifficulty(Difficulty.HARD)
                 .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
                 .setGameRule(GameRules.RULE_MOBGRIEFING, false)

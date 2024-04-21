@@ -79,7 +79,7 @@ public class MapCommand {
             ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), (
                     new RuntimeWorldConfig()
                             .setDimensionType(DimensionType.OVERWORLD_LOCATION)
-                            .setGenerator(new VoidChunkGenerator(BuiltinRegistries.BIOME, Biomes.PLAINS))
+                            .setGenerator(new VoidChunkGenerator(BuiltinRegistries.BIOME))
                             .setDifficulty(Difficulty.HARD)
                             .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
                             .setGameRule(GameRules.RULE_MOBGRIEFING, false)
