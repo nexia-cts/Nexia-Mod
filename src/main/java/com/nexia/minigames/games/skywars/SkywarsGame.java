@@ -21,7 +21,6 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
-import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.bossevents.CustomBossEvent;
@@ -34,17 +33,17 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.notcoded.codelib.players.AccuratePlayer;
 import net.notcoded.codelib.util.TickUtil;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
-import xyz.nucleoid.fantasy.util.VoidChunkGenerator;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.UUID;
+
+import static com.nexia.world.WorldUtil.getChunkGenerator;
 
 public class SkywarsGame {
     public static ArrayList<AccuratePlayer> alive = new ArrayList<>();
@@ -57,7 +56,7 @@ public class SkywarsGame {
 
     public static RuntimeWorldConfig config = new RuntimeWorldConfig()
             .setDimensionType(DimensionType.OVERWORLD_LOCATION)
-            .setGenerator(new VoidChunkGenerator(BuiltinRegistries.BIOME, Biomes.PLAINS))
+            .setGenerator(getChunkGenerator())
             .setDifficulty(Difficulty.EASY)
             .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
             .setGameRule(GameRules.RULE_MOBGRIEFING, true)

@@ -18,7 +18,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.Registry;
-import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -26,12 +25,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.dimension.DimensionType;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
-import xyz.nucleoid.fantasy.util.VoidChunkGenerator;
 
 import java.io.FileWriter;
+
+import static com.nexia.world.WorldUtil.getChunkGenerator;
 
 public class DevExperimentalCommandsCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
@@ -61,7 +60,7 @@ public class DevExperimentalCommandsCommand {
             ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("ffa", name)).location(), (
                     new RuntimeWorldConfig()
                             .setDimensionType(DimensionType.OVERWORLD_LOCATION)
-                            .setGenerator(new VoidChunkGenerator(BuiltinRegistries.BIOME, Biomes.WARPED_FOREST))
+                            .setGenerator(getChunkGenerator())
                             .setDifficulty(Difficulty.HARD)
                             .setGameRule(GameRules.RULE_KEEPINVENTORY, true)
                             .setGameRule(GameRules.RULE_MOBGRIEFING, false)

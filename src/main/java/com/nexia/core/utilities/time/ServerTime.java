@@ -53,6 +53,7 @@ public class ServerTime {
         fantasy = Fantasy.get(minecraftServer);
 
         LobbyUtil.setLobbyWorld(minecraftServer);
+        WorldUtil.setVoidWorld(minecraftServer);
 
         FfaAreas.setFfaWorld(minecraftServer);
         com.nexia.ffa.kits.utilities.FfaAreas.setFfaWorld(minecraftServer);

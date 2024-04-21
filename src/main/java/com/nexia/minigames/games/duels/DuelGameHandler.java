@@ -15,8 +15,6 @@ import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.minecraft.core.Registry;
-import net.minecraft.data.BuiltinRegistries;
-import net.minecraft.data.worldgen.biome.Biomes;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -33,7 +31,6 @@ import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
-import xyz.nucleoid.fantasy.util.VoidChunkGenerator;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -43,6 +40,7 @@ import java.util.List;
 import java.util.Random;
 
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
+import static com.nexia.world.WorldUtil.getChunkGenerator;
 
 public class DuelGameHandler {
 
@@ -161,7 +159,7 @@ public class DuelGameHandler {
     public static ServerLevel createWorld(String uuid, boolean doRegeneration) {
         RuntimeWorldConfig config = new RuntimeWorldConfig()
                 .setDimensionType(DimensionType.OVERWORLD_LOCATION)
-                .setGenerator(new VoidChunkGenerator(BuiltinRegistries.BIOME))
+                .setGenerator(getChunkGenerator())
                 .setDifficulty(Difficulty.HARD)
                 .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
                 .setGameRule(GameRules.RULE_MOBGRIEFING, false)

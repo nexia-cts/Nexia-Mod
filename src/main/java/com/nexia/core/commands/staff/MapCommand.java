@@ -13,20 +13,19 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.Registry;
-import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.dimension.DimensionType;
 import org.apache.commons.io.FileUtils;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
-import xyz.nucleoid.fantasy.util.VoidChunkGenerator;
 
 import java.io.File;
+
+import static com.nexia.world.WorldUtil.getChunkGenerator;
 
 public class MapCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
@@ -79,7 +78,7 @@ public class MapCommand {
             ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), (
                     new RuntimeWorldConfig()
                             .setDimensionType(DimensionType.OVERWORLD_LOCATION)
-                            .setGenerator(new VoidChunkGenerator(BuiltinRegistries.BIOME))
+                            .setGenerator(getChunkGenerator())
                             .setDifficulty(Difficulty.HARD)
                             .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
                             .setGameRule(GameRules.RULE_MOBGRIEFING, false)
