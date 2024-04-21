@@ -4,7 +4,6 @@ import com.nexia.core.commands.player.*;
 import com.nexia.core.commands.player.duels.*;
 import com.nexia.core.commands.player.duels.custom.CustomDuelCommand;
 import com.nexia.core.commands.player.duels.custom.KitEditorCommand;
-import com.nexia.core.commands.player.ffa.BiomeCommand;
 import com.nexia.core.commands.player.ffa.KitCommand;
 import com.nexia.core.commands.staff.*;
 import com.nexia.core.commands.staff.dev.*;
@@ -52,7 +51,6 @@ public class CommandLoader {
         callbackEvent.register(DuelCommand::register);
         callbackEvent.register(QueueCommand::register);
         callbackEvent.register(MapCommand::register);
-        callbackEvent.register(BiomeCommand::register);
         callbackEvent.register(MuteCommand::register);
         callbackEvent.register(UnMuteCommand::register);
         callbackEvent.register(PlayCommand::register);
