@@ -36,6 +36,7 @@
     "item.CraftingMixin",
     "item.CrossbowItemMixin",
     "item.EggItemMixin",
+    "item.ElytraItemMixin",
     "item.EnderPearlItemMixin",
     "item.ExperienceBottleItemMixin",
     "item.LingeringPotionItemMixin",
