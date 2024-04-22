@@ -78,7 +78,6 @@ public abstract class PlayerMixin extends LivingEntity {
                 || (com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(player))
                 || (com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode.equals(PlayerGameMode.LOBBY) && PlayerDataManager.get(player).gameMode.equals(DuelGameMode.LOBBY))) {
             cir.setReturnValue(false);
-            player.stopUsingItem();
             ItemStackUtil.sendInventoryRefreshPacket(player);
         }
     }

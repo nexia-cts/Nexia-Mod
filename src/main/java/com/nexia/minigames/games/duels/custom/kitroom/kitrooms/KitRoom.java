@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.dimension.DimensionType;
@@ -47,6 +48,10 @@ public class KitRoom {
         this.kitRoom = null;
         this.handle = null;
         this.hasBeenGenerated = false;
+    }
+
+    public static boolean isInKitRoom(Player player) {
+        return PlayerDataManager.get(player).kitRoom != null && !PlayerDataManager.get(player).editingKit.isEmpty();
     }
 
     public void setType(String string) {
