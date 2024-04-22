@@ -14,10 +14,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.HashMap;
+
 @Mixin(ChestBlockEntity.class)
 public abstract class ChestBlockMixin extends BlockEntity {
     @Unique
-    CompoundTag compoundTag = new CompoundTag();
+    HashMap<String, CompoundTag> nbtList = new HashMap<String, CompoundTag>();
 
     @Shadow public abstract CompoundTag save(CompoundTag compoundTag);
 
@@ -30,15 +32,16 @@ public abstract class ChestBlockMixin extends BlockEntity {
     @Inject(method = "startOpen", at = @At("HEAD"))
     public void onOpen(Player player, CallbackInfo ci) {
         if (KitRoom.isInKitRoom(player)) {
-            this.save(compoundTag);
+            nbtList.put(player.getName().toString(), new CompoundTag());
+            this.save(nbtList.get(player.getName().toString()));
         }
     }
 
     @Inject(method = "stopOpen", at = @At("HEAD"))
     public void onClose(Player player, CallbackInfo ci) {
         if (KitRoom.isInKitRoom(player)) {
-            this.load(this.getBlockState(), compoundTag);
-            compoundTag = new CompoundTag();
+            this.load(this.getBlockState(), nbtList.get(player.getName().toString()));
+            nbtList.remove(player.getName().toString());
         }
     }
 }
