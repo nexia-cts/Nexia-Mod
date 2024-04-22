@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.notcoded.codelib.players.AccuratePlayer;
 import net.notcoded.codelib.util.world.structure.Rotation;
@@ -100,6 +101,7 @@ public class KitRoom {
         this.player.get().getEnderChestInventory().clearContent();
         this.player.get().inventory.clearContent();
         this.player.get().setExperiencePoints(0);
+        this.player.get().setGameMode(GameType.ADVENTURE);
         this.player.get().setExperienceLevels(0);
         PlayerUtil.resetHealthStatus(this.player.get());
 
