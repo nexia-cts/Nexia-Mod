@@ -62,24 +62,27 @@ public class FfaKitsUtil {
         }
     }
 
-    public static void calculateKill(ServerPlayer player){
-        SavedPlayerData data = PlayerDataManager.get(player).savedData;
+    public static void calculateKill(ServerPlayer attacker, ServerPlayer player){
+
+        BlfScheduler.delay(5, new BlfRunnable() {
+            @Override
+            public void run() {
+                attacker.heal(attacker.getMaxHealth());
+            }
+        });
+
+        FfaKitsUtil.clearArrows(attacker);
+        FfaKitsUtil.clearSpectralArrows(attacker);
+        FfaKitsUtil.clearThrownTridents(attacker);
+
+        if(player.getTags().contains("bot")) return;
+
+        SavedPlayerData data = PlayerDataManager.get(attacker).savedData;
         data.killstreak++;
         if(data.killstreak > data.bestKillstreak){
             data.bestKillstreak = data.killstreak;
         }
         data.kills++;
-
-        BlfScheduler.delay(5, new BlfRunnable() {
-            @Override
-            public void run() {
-                player.heal(player.getMaxHealth());
-            }
-        });
-
-        FfaKitsUtil.clearArrows(player);
-        FfaKitsUtil.clearSpectralArrows(player);
-        FfaKitsUtil.clearThrownTridents(player);
 
         if(data.killstreak % 5 == 0) {
             for (ServerPlayer serverPlayer : FfaAreas.ffaWorld.players()) {
@@ -87,7 +90,7 @@ public class FfaKitsUtil {
                         Component.text("[").color(ChatFormat.lineColor)
                                 .append(Component.text("☠").color(ChatFormat.failColor))
                                 .append(Component.text("] ").color(ChatFormat.lineColor))
-                                .append(Component.text(player.getScoreboardName()).color(ChatFormat.normalColor))
+                                .append(Component.text(attacker.getScoreboardName()).color(ChatFormat.normalColor))
                                 .append(Component.text(" now has a killstreak of ").color(ChatFormat.chatColor2))
                                 .append(Component.text(data.killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
                                 .append(Component.text("!").color(ChatFormat.chatColor2))
@@ -117,6 +120,8 @@ public class FfaKitsUtil {
     }
 
     public static void calculateDeath(ServerPlayer player){
+        if(player.getTags().contains("bot")) return;
+
         SavedPlayerData data = PlayerDataManager.get(player).savedData;
         data.deaths++;
         if(data.killstreak > data.bestKillstreak){
@@ -200,9 +205,7 @@ public class FfaKitsUtil {
     public static void setDeathMessage(@NotNull ServerPlayer minecraftPlayer, @Nullable DamageSource source) {
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(minecraftPlayer);
 
-        boolean isBot = minecraftPlayer.getTags().contains("bot");
-
-        if(!isBot) calculateDeath(minecraftPlayer);
+        calculateDeath(minecraftPlayer);
 
         Component msg = FfaUtil.returnDeathMessage(minecraftPlayer, source);
 
@@ -211,7 +214,7 @@ public class FfaKitsUtil {
             Component component = FfaUtil.returnClassicDeathMessage(minecraftPlayer, attacker);
             if(component != null) msg = component;
 
-            if(!isBot) calculateKill(attacker);
+            calculateKill(attacker, minecraftPlayer);
         }
 
         for (Player player : ServerTime.factoryServer.getPlayers()) {
