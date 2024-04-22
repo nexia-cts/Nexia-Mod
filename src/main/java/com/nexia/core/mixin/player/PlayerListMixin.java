@@ -15,10 +15,7 @@ import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.network.Connection;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
@@ -36,6 +33,7 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.net.SocketAddress;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static com.nexia.core.utilities.player.BanHandler.banTimeToText;
 import static com.nexia.core.utilities.player.BanHandler.getBanTime;
@@ -62,6 +60,15 @@ public abstract class PlayerListMixin {
             }
 
         } catch (Exception ignored) {}
+    }
+
+    @Inject(method = "broadcastMessage", at = @At("HEAD"), cancellable = true)
+    private void handleBotMessages(Component component, ChatType chatType, UUID uUID, CallbackInfo ci) {
+        String key = ((TranslatableComponent) component).getKey();
+
+        if ((key.contains("multiplayer.player.left") && leavePlayer.getTags().contains("bot"))
+                || (key.contains("multiplayer.player.join") && joinPlayer.getTags().contains("bot"))
+        ) ci.cancel();
     }
 
     @Inject(at = @At("RETURN"), method = "respawn")
