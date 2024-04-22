@@ -27,6 +27,7 @@
     "entity.ThrownEggMixin",
     "entity.ThrownEnderpearlMixin",
     "entity.ThrownTridentMixin",
+    "item.ArmorItemMixin",
     "item.AxeItemMixin",
     "item.BlockItemMixin",
     "item.BowItemMixin",
