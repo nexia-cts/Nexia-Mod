@@ -1,51 +1,44 @@
 package com.nexia.core.mixin.block;
 
-import net.minecraft.core.BlockPos;
+import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.KitRoom;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.stats.Stat;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.monster.piglin.PiglinAi;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ChestBlock.class)
-public abstract class ChestBlockMixin {
-    @Shadow @Nullable public abstract MenuProvider getMenuProvider(BlockState blockState, Level level, BlockPos blockPos);
+@Mixin(ChestBlockEntity.class)
+public abstract class ChestBlockMixin extends BlockEntity {
+    @Unique
+    CompoundTag compoundTag = new CompoundTag();
 
-    @Shadow protected abstract Stat<ResourceLocation> getOpenChestStat();
+    @Shadow public abstract CompoundTag save(CompoundTag compoundTag);
 
-    /**
-     * @author infinityy
-     * @reason figure out a better way to do this lol
-     */
-    @Overwrite()
-    public InteractionResult use(BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult) {
-        CompoundTag compoundTag = new CompoundTag();
+    @Shadow public abstract void load(BlockState blockState, CompoundTag compoundTag);
 
-        level.getBlockEntity(blockPos).save(compoundTag);
+    public ChestBlockMixin(BlockEntityType<?> blockEntityType) {
+        super(blockEntityType);
+    }
 
-        if (level.isClientSide) {
-            return InteractionResult.SUCCESS;
-        } else {
-            MenuProvider menuProvider = this.getMenuProvider(blockState, level, blockPos);
-            if (menuProvider != null) {
-                player.openMenu(menuProvider);
-                player.awardStat(this.getOpenChestStat());
-                PiglinAi.angerNearbyPiglins(player, true);
-            }
+    @Inject(method = "startOpen", at = @At("HEAD"))
+    public void onOpen(Player player, CallbackInfo ci) {
+        if (KitRoom.isInKitRoom(player)) {
+            this.save(compoundTag);
+        }
+    }
 
-            level.getBlockEntity(blockPos).load(blockState, compoundTag);
-            return InteractionResult.CONSUME;
+    @Inject(method = "stopOpen", at = @At("HEAD"))
+    public void onClose(Player player, CallbackInfo ci) {
+        if (KitRoom.isInKitRoom(player)) {
+            this.load(this.getBlockState(), compoundTag);
+            compoundTag = new CompoundTag();
         }
     }
 }
