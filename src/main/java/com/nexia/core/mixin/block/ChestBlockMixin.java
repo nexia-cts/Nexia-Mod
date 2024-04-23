@@ -32,16 +32,16 @@ public abstract class ChestBlockMixin extends BlockEntity {
     @Inject(method = "startOpen", at = @At("HEAD"))
     public void onOpen(Player player, CallbackInfo ci) {
         if (KitRoom.isInKitRoom(player)) {
-            nbtList.put(player.getName().toString(), new CompoundTag());
-            this.save(nbtList.get(player.getName().toString()));
+            nbtList.put(player.getStringUUID(), new CompoundTag());
+            this.save(nbtList.get(player.getStringUUID()));
         }
     }
 
     @Inject(method = "stopOpen", at = @At("HEAD"))
     public void onClose(Player player, CallbackInfo ci) {
         if (KitRoom.isInKitRoom(player)) {
-            this.load(this.getBlockState(), nbtList.get(player.getName().toString()));
-            nbtList.remove(player.getName().toString());
+            this.load(this.getBlockState(), nbtList.get(player.getStringUUID()));
+            nbtList.remove(player.getStringUUID());
         }
     }
 }
