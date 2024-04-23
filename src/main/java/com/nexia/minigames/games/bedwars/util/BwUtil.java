@@ -248,8 +248,8 @@ public class BwUtil {
     }
 
     public static boolean shouldExplode(BlockPos blockPos, BlockState blockState) {
-        //return !(BwAreas.isImmuneBlock(blockPos) || blockState.getBlock() instanceof BedBlock);
-        return !BwAreas.isImmuneBlock(blockPos) && !(blockState.getBlock() instanceof BedBlock);
+        return !(BwAreas.isImmuneBlock(blockPos) || blockState.getBlock() instanceof BedBlock);
+        //return !BwAreas.isImmuneBlock(blockPos) && !(blockState.getBlock() instanceof BedBlock);
     }
 
     public static float getExplosionDamage(float original) {

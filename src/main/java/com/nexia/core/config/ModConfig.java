@@ -9,6 +9,9 @@ public class ModConfig implements ConfigData {
 
     @Comment("List of ranks.")
     public String[] ranks = {""};
+
+    public String[] rules = {""};
+
     public double[] lobbyPos = {
             0.5,
             65.0,
