@@ -3,6 +3,7 @@ package com.nexia.core.mixin.block;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.ffa.classic.utilities.FfaAreas;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
+import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.KitRoom;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.minecraft.core.BlockPos;
@@ -26,7 +27,7 @@ public class PotBlockMixin {
         if (!(player instanceof ServerPlayer serverPlayer)) return;
         PlayerData playerData = PlayerDataManager.get(serverPlayer);
 
-        if (BwUtil.isInBedWars(serverPlayer) || (playerData.gameOptions != null && (playerData.gameOptions.duelsGame != null || playerData.gameOptions.teamDuelsGame != null || playerData.gameOptions.customTeamDuelsGame != null || playerData.gameOptions.customDuelsGame != null)) || LobbyUtil.isLobbyWorld(serverPlayer.getLevel()) || (FfaAreas.isFfaWorld(serverPlayer.getLevel()) || com.nexia.ffa.kits.utilities.FfaAreas.isFfaWorld(serverPlayer.getLevel())) && !serverPlayer.isCreative()) {
+        if (BwUtil.isInBedWars(serverPlayer) || KitRoom.isInKitRoom(player) || (playerData.gameOptions != null && (playerData.gameOptions.duelsGame != null || playerData.gameOptions.teamDuelsGame != null || playerData.gameOptions.customTeamDuelsGame != null || playerData.gameOptions.customDuelsGame != null)) || LobbyUtil.isLobbyWorld(serverPlayer.getLevel()) || (FfaAreas.isFfaWorld(serverPlayer.getLevel()) || com.nexia.ffa.kits.utilities.FfaAreas.isFfaWorld(serverPlayer.getLevel())) && !serverPlayer.isCreative()) {
             cir.setReturnValue(InteractionResult.FAIL);
             return;
         }

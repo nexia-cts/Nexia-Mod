@@ -401,12 +401,12 @@ public class LobbyUtil {
 
             FootballGame.joinQueue(minecraftPlayer);
 
-            if(message){player.sendActionBarMessage(Component.text("You have joined §7? §7§lFootball §7?"));}
+            if(message){player.sendActionBarMessage(Component.text("You have joined §7○ §7§lFootball §7\uD83D\uDDE1"));}
         }
 
 
         if(game.equalsIgnoreCase("skywars")){
-            player.addTag("skywars");
+            player.addTag(PlayerGameMode.SKYWARS.tag);
             PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.SKYWARS;
             SkywarsGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
 

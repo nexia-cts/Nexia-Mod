@@ -52,7 +52,7 @@ public abstract class ArmorStandMixin extends LivingEntity {
     @Inject(method = "interactAt", cancellable = true, at = @At("HEAD"))
     private void canTakeItem(Player player, Vec3 vec3, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResult> cir) {
 
-        // Disable interacting with armor stands in ffa
+        // Disable interacting with armor stands
         if ((FfaUtil.isFfaPlayer(player) || FootballGame.isFootballPlayer(player) || KitRoom.isInKitRoom(player)) && !player.isCreative()) {
             cir.setReturnValue(InteractionResult.FAIL);
         }

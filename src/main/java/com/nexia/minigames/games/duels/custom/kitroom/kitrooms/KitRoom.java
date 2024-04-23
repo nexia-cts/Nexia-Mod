@@ -4,7 +4,6 @@ import com.nexia.core.Main;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
-import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
@@ -13,7 +12,6 @@ import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.notcoded.codelib.players.AccuratePlayer;
-import net.notcoded.codelib.util.world.structure.Rotation;
 import net.notcoded.codelib.util.world.structure.StructureMap;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
@@ -54,21 +52,17 @@ public class KitRoom {
         return PlayerDataManager.get(player).kitRoom != null && !PlayerDataManager.get(player).editingKit.isEmpty();
     }
 
-    public void setType(String string) {
-        if(string.equalsIgnoreCase("custom") || string.equalsIgnoreCase("vanilla") || string.equalsIgnoreCase("smp")) {
-            this.kitRoom = new StructureMap(
-                    new ResourceLocation("duels", "kitroom_" + string.toLowerCase()),
-                    Rotation.NO_ROTATION,
-                    true,
-                    new BlockPos(0, 80, 0),
-                    new BlockPos(0, 80, 0),
-                    true
-            );
-        }
+    public StructureMap getKitRoom() {
+        return this.kitRoom;
+    }
+
+    public StructureMap setKitRoom(StructureMap structureMap) {
+        this.kitRoom = structureMap;
+        return this.kitRoom;
     }
 
     public boolean generate() {
-        if(this.kitRoom == null) return false;
+        if(this.getKitRoom() == null) return false;
         this.uuid = UUID.randomUUID();
 
         RuntimeWorldConfig config = new RuntimeWorldConfig()
@@ -93,7 +87,7 @@ public class KitRoom {
         this.level = this.handle.asWorld();
         this.hasBeenGenerated = this.level != null;
 
-        this.kitRoom.pasteMap(this.level);
+        this.getKitRoom().pasteMap(this.level);
 
         return this.hasBeenGenerated;
     }
