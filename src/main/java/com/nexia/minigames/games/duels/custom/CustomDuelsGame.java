@@ -378,7 +378,7 @@ public class CustomDuelsGame { //implements Runnable{
 
     public void death(@NotNull ServerPlayer victim, @Nullable DamageSource source){
         PlayerData victimData = PlayerDataManager.get(victim);
-        if(victimData.gameOptions == null || victimData.gameOptions.duelsGame == null || victimData.gameOptions.duelsGame.isEnding) return;
+        if(victimData.gameOptions == null || victimData.gameOptions.customDuelsGame == null || victimData.gameOptions.customDuelsGame.isEnding) return;
 
         victim.destroyVanishingCursedItems();
         victim.inventory.dropAll();
@@ -388,7 +388,7 @@ public class CustomDuelsGame { //implements Runnable{
         if(attacker != null){
             PlayerData attackerData = PlayerDataManager.get(attacker);
 
-            if((victimData.inDuel && attackerData.inDuel) && victimData.gameOptions.duelsGame == attackerData.gameOptions.duelsGame){
+            if((victimData.inDuel && attackerData.inDuel) && victimData.gameOptions.customDuelsGame == attackerData.gameOptions.customDuelsGame){
                 this.endGame(victim, attacker, true);
             }
             return;
