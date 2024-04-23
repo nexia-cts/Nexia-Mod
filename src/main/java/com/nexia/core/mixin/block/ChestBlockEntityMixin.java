@@ -15,33 +15,34 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 @Mixin(ChestBlockEntity.class)
-public abstract class ChestBlockMixin extends BlockEntity {
+public abstract class ChestBlockEntityMixin extends BlockEntity {
     @Unique
-    HashMap<String, CompoundTag> nbtList = new HashMap<String, CompoundTag>();
+    HashMap<UUID, CompoundTag> nbtList = new HashMap<>();
 
     @Shadow public abstract CompoundTag save(CompoundTag compoundTag);
 
     @Shadow public abstract void load(BlockState blockState, CompoundTag compoundTag);
 
-    public ChestBlockMixin(BlockEntityType<?> blockEntityType) {
+    public ChestBlockEntityMixin(BlockEntityType<?> blockEntityType) {
         super(blockEntityType);
     }
 
     @Inject(method = "startOpen", at = @At("HEAD"))
     public void onOpen(Player player, CallbackInfo ci) {
         if (KitRoom.isInKitRoom(player)) {
-            nbtList.put(player.getStringUUID(), new CompoundTag());
-            this.save(nbtList.get(player.getStringUUID()));
+            nbtList.put(player.getUUID(), new CompoundTag());
+            this.save(nbtList.get(player.getUUID()));
         }
     }
 
     @Inject(method = "stopOpen", at = @At("HEAD"))
     public void onClose(Player player, CallbackInfo ci) {
         if (KitRoom.isInKitRoom(player)) {
-            this.load(this.getBlockState(), nbtList.get(player.getStringUUID()));
-            nbtList.remove(player.getStringUUID());
+            this.load(this.getBlockState(), nbtList.get(player.getUUID()));
+            nbtList.remove(player.getUUID());
         }
     }
 }
