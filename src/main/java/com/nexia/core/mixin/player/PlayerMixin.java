@@ -170,7 +170,7 @@ public abstract class PlayerMixin extends LivingEntity {
 
     @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)
     public void shieldBlockExplosion(DamageSource damageSource, float f, CallbackInfoReturnable<Boolean> cir) {
-        if (damageSource.isExplosion() && this.getItemInHand(this.getUsedItemHand()) == Items.SHIELD.getDefaultInstance()) {
+        if (damageSource.isExplosion() && this.useItem.getItem() == Items.SHIELD) {
             this.hurtCurrentlyUsedShield(f);
             cir.setReturnValue(false);
         }
