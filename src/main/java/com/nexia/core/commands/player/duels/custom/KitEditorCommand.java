@@ -120,12 +120,6 @@ public class KitEditorCommand {
                 return 0;
             }
 
-            File playerFile = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID(), inventory + ".txt");
-            if(playerFile.exists()) {
-                context.getSource().sendFailure(LegacyChatFormat.format("You must delete the contents of your slot ({}) before editing it!", slot));
-                return 0;
-            }
-
             KitRoom kitRoom;
             com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
             AccuratePlayer accuratePlayer = AccuratePlayer.create(player);
@@ -146,6 +140,11 @@ public class KitEditorCommand {
             playerData.kitRoom = kitRoom;
 
             if(kitRoom.generate()) kitRoom.teleport();
+
+            File playerFile = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID(), inventory + ".txt");
+            if(playerFile.exists()) {
+                InventoryUtil.loadInventory(player, "duels/custom/" + player.getStringUUID(), inventory.toLowerCase());
+            }
 
             return 1;
         }

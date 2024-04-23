@@ -41,7 +41,7 @@ public class CustomDuelCommand {
                                 .executes(context -> CustomDuelCommand.challenge(context, EntityArgument.getPlayer(context, "player"), StringArgumentType.getString(context, "kit"), null))
                                 .then(Commands.argument("map", StringArgumentType.string())
                                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest((DuelsMap.stringDuelsMaps), builder)))
-                                        .executes(context -> CustomDuelCommand.challenge(context, EntityArgument.getPlayer(context, "player"), StringArgumentType.getString(context, "gamemode"), StringArgumentType.getString(context, "map")))
+                                        .executes(context -> CustomDuelCommand.challenge(context, EntityArgument.getPlayer(context, "player"), StringArgumentType.getString(context, "kit"), StringArgumentType.getString(context, "map")))
                                 ))));
     }
 
