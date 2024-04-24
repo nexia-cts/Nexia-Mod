@@ -34,8 +34,6 @@ public abstract class ChestBlockEntityMixin extends BlockEntity {
     @Inject(method = "startOpen", at = @At("HEAD"))
     public void onOpen(Player player, CallbackInfo ci) {
         if (KitRoom.isInKitRoom(player)) {
-            if (this.level.getBlockState(this.getBlockPos()).getBlock() == Blocks.AIR) return;
-
             nbtList.put(player.getUUID(), new CompoundTag());
             this.save(nbtList.get(player.getUUID()));
         }

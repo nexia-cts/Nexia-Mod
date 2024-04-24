@@ -16,7 +16,7 @@ public class SmpKitRoom extends KitRoom {
                         Rotation.NO_ROTATION,
                         true,
                         new BlockPos(0, 80, 0),
-                        new BlockPos(-9, -1, -9),
+                        new BlockPos(-9.5, -1, -9.5),
                         true
                 )
         );
