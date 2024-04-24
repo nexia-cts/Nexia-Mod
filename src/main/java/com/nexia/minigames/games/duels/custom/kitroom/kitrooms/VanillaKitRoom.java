@@ -16,7 +16,7 @@ public class VanillaKitRoom extends KitRoom {
                         Rotation.NO_ROTATION,
                         true,
                         new BlockPos(0, 80, 0),
-                        new BlockPos(0, 80, 0),
+                        new BlockPos(-5, -1, -5),
                         true
                 )
         );

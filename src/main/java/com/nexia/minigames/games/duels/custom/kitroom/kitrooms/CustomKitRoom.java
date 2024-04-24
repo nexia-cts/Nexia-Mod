@@ -15,7 +15,7 @@ public class CustomKitRoom extends KitRoom {
                         new ResourceLocation("duels", "kitroom_custom"),
                         Rotation.NO_ROTATION,
                         true,
-                        new BlockPos(0, 78, 0),
+                        new BlockPos(0, 80, 0),
                         new BlockPos(-22, -1, -11),
                         true
                 )
