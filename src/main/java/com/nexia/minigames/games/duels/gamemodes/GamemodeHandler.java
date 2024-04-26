@@ -323,6 +323,7 @@ public class GamemodeHandler {
             if (!silent) {
                 PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("Invalid per-custom kit (2)!").color(ChatFormat.failColor));
             }
+            data.inviteOptions.inviteKit2 = null;
             return;
         } else if(data.inviteOptions.inviteKit2 != null && DuelGameHandler.validCustomKit(player, data.inviteOptions.inviteKit2)){
             data.inviteOptions.perCustomDuel = true;
@@ -555,11 +556,20 @@ public class GamemodeHandler {
     }
 
     public static void customChallengePlayer(ServerPlayer minecraftExecutor, ServerPlayer minecraftPlayer, String customKit, @Nullable DuelsMap selectedmap) {
-
         Player executor = PlayerUtil.getFactoryPlayer(minecraftExecutor);
+        PlayerData executorData = PlayerDataManager.get(minecraftExecutor);
+        DuelOptions.InviteOptions inviteOptions = executorData.inviteOptions;
+
+        if(customKit.equalsIgnoreCase("vanilla") || customKit.equalsIgnoreCase("smp")) com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(minecraftExecutor).inviteOptions.inviteKit2 = customKit;
 
         if (!DuelGameHandler.validCustomKit(minecraftExecutor, customKit)) {
             executor.sendMessage(Component.text("Invalid kit!").color(ChatFormat.failColor));
+            return;
+        }
+
+        if(inviteOptions.inviteKit2 != null && !DuelGameHandler.validCustomKit(minecraftPlayer, inviteOptions.inviteKit2)) {
+            executor.sendMessage(Component.text("The other player does not have a valid custom kit for " + customKit + ".").color(ChatFormat.failColor));
+            inviteOptions.inviteKit2 = null;
             return;
         }
 
@@ -569,8 +579,6 @@ public class GamemodeHandler {
         }
 
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
-
-        PlayerData executorData = PlayerDataManager.get(minecraftExecutor);
         PlayerData playerData = PlayerDataManager.get(minecraftPlayer);
 
         if (executorData.inDuel || playerData.inDuel) {
@@ -598,14 +606,13 @@ public class GamemodeHandler {
             }
         }
 
-        DuelOptions.InviteOptions inviteOptions = executorData.inviteOptions;
-
         inviteOptions.inviteMap = map;
         inviteOptions.inviteKit = customKit.toLowerCase();
         inviteOptions.inviting = true;
         inviteOptions.invitingPlayer = AccuratePlayer.create(minecraftPlayer);
         inviteOptions.customDuel = true;
 
+        inviteOptions.perCustomDuel = inviteOptions.inviteKit2 != null && !inviteOptions.inviteKit2.trim().isEmpty();
 
         // } else if((!executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) || !executorData.inviteKit.equalsIgnoreCase(playerData.inviteKit)) && (playerData.invitingPlayer == null || !playerData.invitingPlayer.getStringUUID().equalsIgnoreCase(minecraftExecutor.getStringUUID())) && playerData.gameMode == DuelGameMode.LOBBY){
 
@@ -615,16 +622,16 @@ public class GamemodeHandler {
 
         if (executorData.duelOptions.duelsTeam == null) {
             executor.sendMessage(ChatFormat.nexiaMessage
-                    .append(Component.text("Sending a custom duel request to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
+                    .append(Component.text("Sending a " + (inviteOptions.perCustomDuel ? "per-" : "") + "custom duel request to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                             .append(Component.text(player.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                             .append(Component.text(" on map ")).append(Component.text(map.id.toUpperCase()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                            .append(Component.text(" with custom kit ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                            .append(Component.text(" with " + "custom kit ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                             .append(Component.text(customKit).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                             .append(Component.text(".")).color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
         } else {
             executor.sendMessage(ChatFormat.nexiaMessage
                     .append(Component.text("Sending a ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                            .append(Component.text("custom team duel").color(ChatFormat.normalColor).decoration(ChatFormat.bold, true))
+                            .append(Component.text((inviteOptions.perCustomDuel ? "per-" : "") + "custom team duel").color(ChatFormat.normalColor).decoration(ChatFormat.bold, true))
                             .append(Component.text(" request to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                             .append(Component.text(player.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                             .append(Component.text(" on map ")).append(Component.text(map.id.toUpperCase()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
@@ -633,7 +640,7 @@ public class GamemodeHandler {
                             .append(Component.text(".")).color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
             message = Component.text(executor.getRawName()).color(ChatFormat.brandColor1)
                     .append(Component.text(" has challenged you to a ").color(ChatFormat.normalColor))
-                    .append(Component.text("custom team duel").color(ChatFormat.normalColor).decoration(ChatFormat.bold, true))
+                    .append(Component.text((inviteOptions.perCustomDuel ? "per-" : "") +"custom team duel").color(ChatFormat.normalColor).decoration(ChatFormat.bold, true))
                     .append(Component.text("!").color(ChatFormat.normalColor));
         }
 

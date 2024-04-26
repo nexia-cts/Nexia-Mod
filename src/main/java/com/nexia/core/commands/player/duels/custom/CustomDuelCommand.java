@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.core.gui.duels.CustomDuelGUI;
 import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
@@ -36,6 +37,7 @@ public class CustomDuelCommand {
                     return false;
                 })
                 .then(Commands.argument("player", EntityArgument.player())
+                        .executes(context -> CustomDuelGUI.openDuelGui(context.getSource().getPlayerOrException(), EntityArgument.getPlayer(context, "player")))
                         .then(Commands.argument("kit", StringArgumentType.string())
                                 .suggests(((context, builder) -> SharedSuggestionProvider.suggest((InventoryUtil.getListOfInventories("duels/custom/" + context.getSource().getPlayerOrException().getStringUUID())), builder)))
                                 .executes(context -> CustomDuelCommand.challenge(context, EntityArgument.getPlayer(context, "player"), StringArgumentType.getString(context, "kit"), null))

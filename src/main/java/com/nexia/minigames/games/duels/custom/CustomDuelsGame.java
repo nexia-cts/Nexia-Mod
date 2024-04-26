@@ -174,7 +174,7 @@ public class CustomDuelsGame { //implements Runnable{
             if(perCustomKitID != null && !perCustomKitID.trim().isEmpty()) {
                 File p2File = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + mcP2.getStringUUID(), perCustomKitID.toLowerCase() + ".txt");
                 if(p2File.exists()) {
-                    InventoryUtil.loadInventory(mcP1, "duels/custom/" + mcP2.getStringUUID(), perCustomKitID.toLowerCase());
+                    InventoryUtil.loadInventory(mcP2, "duels/custom/" + mcP2.getStringUUID(), perCustomKitID.toLowerCase());
                 } else {
                     InventoryUtil.loadInventory(mcP2, "duels/custom/" + mcP1.getStringUUID(), kitID.toLowerCase());
                 }

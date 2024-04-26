@@ -3,6 +3,7 @@ package com.nexia.core.mixin.player;
 import com.mojang.authlib.GameProfile;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.core.gui.duels.CustomDuelGUI;
 import com.nexia.core.gui.duels.DuelGUI;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
@@ -70,7 +71,8 @@ public abstract class ServerPlayerMixin extends Player {
     public void onAttack(Entity entity, CallbackInfo ci) {
         ServerPlayer attacker = (ServerPlayer) (Object) this;
         if(level == LobbyUtil.lobbyWorld && entity instanceof ServerPlayer player && player != attacker) {
-            if(this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("queue sword")) DuelGUI.openDuelGui(attacker, player);
+            if(this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("duel sword")) DuelGUI.openDuelGui(attacker, player);
+            if(this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("custom duel sword")) CustomDuelGUI.openDuelGui(attacker, player);
             if(this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("team axe")) PlayerUtil.getFactoryPlayer(attacker).runCommand("/party invite " + player.getScoreboardName());
             return;
         }

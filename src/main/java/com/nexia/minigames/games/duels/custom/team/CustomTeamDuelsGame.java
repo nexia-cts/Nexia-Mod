@@ -143,7 +143,9 @@ public class CustomTeamDuelsGame { // implements Runnable{
         if(team2LeaderData.inviteOptions.perCustomDuel && !DuelGameHandler.validCustomKit(team2.getLeader().get(), team2LeaderData.inviteOptions.inviteKit2)) {
             Main.logger.error(String.format("[Nexia]: Invalid per-custom (team 2) duel kit (%s) selected!", team2LeaderData.inviteOptions.inviteKit2));
         } else {
+            System.out.println("a: " + perCustomKitID);
             perCustomKitID = team2LeaderData.inviteOptions.inviteKit2;
+            System.out.println(perCustomKitID);
         }
 
         team1.alive.clear();

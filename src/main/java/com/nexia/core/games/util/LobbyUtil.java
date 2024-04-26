@@ -189,7 +189,7 @@ public class LobbyUtil {
         ItemDisplayUtil.addLore(nameTag, "§eRight click §7to open the menu.", 0);
 
         ItemStack queueSword = new ItemStack(Items.IRON_SWORD);
-        queueSword.setHoverName(new TextComponent("§eQueue Sword"));
+        queueSword.setHoverName(new TextComponent("§eDuel Sword"));
         ItemDisplayUtil.addGlint(queueSword);
         ItemDisplayUtil.addLore(queueSword, "§eRight click §7to queue menu.", 0);
         ItemDisplayUtil.addLore(queueSword, "§eHit a player §7to duel them.", 1);
@@ -199,6 +199,11 @@ public class LobbyUtil {
         ItemDisplayUtil.addGlint(teamSword);
         ItemDisplayUtil.addLore(teamSword, "§eRight click §7to list the team.", 0);
         ItemDisplayUtil.addLore(teamSword, "§eHit a player §7to invite them to your team.", 1);
+
+        ItemStack customDuelSword = new ItemStack(Items.DIAMOND_SWORD);
+        customDuelSword.setHoverName(new TextComponent("§eCustom Duel Sword"));
+        ItemDisplayUtil.addGlint(customDuelSword);
+        ItemDisplayUtil.addLore(customDuelSword, "§eHit a player §7to duel them in your custom kit.", 0);
 
         if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter")) {
             ItemStack elytra = new ItemStack(Items.ELYTRA);
@@ -211,6 +216,7 @@ public class LobbyUtil {
         }
 
 
+        minecraftPlayer.setSlot(0, customDuelSword); // 1st slot
         minecraftPlayer.setSlot(4, compass); //middle slot
         minecraftPlayer.setSlot(3, nameTag); //left
         minecraftPlayer.setSlot(5, queueSword); //right

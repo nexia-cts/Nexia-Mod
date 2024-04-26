@@ -342,8 +342,8 @@ public class DuelsGame {
 
             if((victimData.inDuel && attackerData.inDuel) && victimData.gameOptions.duelsGame == attackerData.gameOptions.duelsGame){
                 this.endGame(victim, attacker, true);
+                return;
             }
-            return;
         }
         if(victimData.gameOptions.duelPlayer != null) {
             AccuratePlayer accurateAttacker = victimData.gameOptions.duelPlayer;
@@ -352,8 +352,8 @@ public class DuelsGame {
 
             if ((victimData.inDuel && attackerData.inDuel) && accurateAttacker.equals(attackerData.gameOptions.duelPlayer)) {
                 this.endGame(victim, attacker, true);
+                return;
             }
-            return;
         }
 
         if(victimData.inDuel) {

@@ -37,7 +37,7 @@ public class UseItemListener {
                     return;
                 }
 
-                if(sName.contains("queue sword")) {
+                if(sName.contains("duel sword")) {
                     //QueueGUI.openQueueGUI(minecraftPlayer);
                     player.runCommand("/queue", 0, false);
                     return;
