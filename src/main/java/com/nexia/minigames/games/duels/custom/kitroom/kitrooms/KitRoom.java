@@ -95,7 +95,7 @@ public class KitRoom {
     public boolean teleport() {
         if(!this.hasBeenGenerated || this.level == null) return false;
 
-        this.player.get().teleportTo(this.level, 0, 80, 0, 0, 0);
+        this.player.get().teleportTo(this.level, 0.5, 80, 0.5, 0, 0);
         this.player.get().clearFire();
         this.player.get().getEnderChestInventory().clearContent();
         this.player.get().inventory.clearContent();
