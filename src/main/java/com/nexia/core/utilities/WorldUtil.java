@@ -1,4 +1,4 @@
-package com.nexia.world;
+package com.nexia.core.utilities;
 
 import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.world.World;

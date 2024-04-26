@@ -43,7 +43,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import static com.nexia.world.WorldUtil.getChunkGenerator;
+import static com.nexia.core.utilities.WorldUtil.getChunkGenerator;
 
 public class SkywarsGame {
     public static ArrayList<AccuratePlayer> alive = new ArrayList<>();

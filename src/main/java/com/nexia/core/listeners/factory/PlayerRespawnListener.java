@@ -17,7 +17,7 @@ import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.minigames.games.skywars.SkywarsGameMode;
-import com.nexia.world.WorldUtil;
+import com.nexia.core.utilities.WorldUtil;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Random;

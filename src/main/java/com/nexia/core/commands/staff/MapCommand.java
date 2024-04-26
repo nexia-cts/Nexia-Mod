@@ -25,7 +25,7 @@ import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.io.File;
 
-import static com.nexia.world.WorldUtil.getChunkGenerator;
+import static com.nexia.core.utilities.WorldUtil.getChunkGenerator;
 
 public class MapCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {

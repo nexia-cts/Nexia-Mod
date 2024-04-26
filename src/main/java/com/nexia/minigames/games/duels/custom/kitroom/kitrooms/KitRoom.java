@@ -18,7 +18,7 @@ import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
 import java.util.UUID;
 
-import static com.nexia.world.WorldUtil.getChunkGenerator;
+import static com.nexia.core.utilities.WorldUtil.getChunkGenerator;
 
 public class KitRoom {
 
