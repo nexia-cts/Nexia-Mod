@@ -34,7 +34,7 @@ public class DuelGameMode {
     public static final DuelGameMode SWORD_ONLY = new DuelGameMode("sword_only", true, true, GameType.ADVENTURE, new ItemStack(Items.DIAMOND_SWORD), false);
     public static final DuelGameMode TRIDENT_ONLY = new DuelGameMode("trident_only", true, true, GameType.ADVENTURE, new ItemStack(Items.TRIDENT), false);
     public static final DuelGameMode CLASSIC = new DuelGameMode("classic", true, true, GameType.ADVENTURE, new ItemStack(Items.DIAMOND_SWORD), true);
-    public static final DuelGameMode SHIELD = new DuelGameMode("shield", true, false, GameType.ADVENTURE, new ItemStack(Items.SHIELD), false);
+    public static final DuelGameMode SHIELD = new DuelGameMode("shield", true, true, GameType.ADVENTURE, new ItemStack(Items.SHIELD), false);
     public static final DuelGameMode UHC_SHIELD = new DuelGameMode("uhc_shield", false, false, GameType.SURVIVAL, new ItemStack(Items.GOLDEN_APPLE), false);
     public static final DuelGameMode UHC = new DuelGameMode("uhc", false, false, GameType.SURVIVAL, new ItemStack(Items.LAVA_BUCKET), false);
 
