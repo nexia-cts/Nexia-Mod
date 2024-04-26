@@ -1,6 +1,8 @@
 package com.nexia.minigames.games.duels.custom.kitroom.kitrooms;
 
+import com.combatreforged.factory.api.util.Identifier;
 import com.nexia.core.Main;
+import com.nexia.core.utilities.WorldUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
@@ -114,7 +116,6 @@ public class KitRoom {
         this.player.get().inventory.clearContent();
         this.player.get().getEnderChestInventory().clearContent();
         this.player.get().clearFire();
-        this.player.get().getEnderChestInventory().clearContent();
         this.player.get().setExperiencePoints(0);
         this.player.get().setExperienceLevels(0);
         PlayerUtil.resetHealthStatus(this.player.get());
@@ -124,6 +125,6 @@ public class KitRoom {
 
     private void delete() {
         if(this.level == null || this.handle == null) return;
-        this.handle.delete();
+        WorldUtil.deleteWorld(new Identifier("kitroom", String.valueOf(uuid)));
     }
 }
