@@ -1,22 +1,17 @@
 package com.nexia.minigames.games.skywars;
 
-import com.nexia.core.Main;
+import com.combatreforged.factory.api.util.Identifier;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.world.WorldUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.notcoded.codelib.util.world.structure.Rotation;
 import net.notcoded.codelib.util.world.structure.StructureMap;
-import org.apache.commons.io.FileUtils;
-import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -147,24 +142,7 @@ public class SkywarsMap {
     }
 
     public static void deleteWorld(String id) {
-        RuntimeWorldHandle worldHandle;
-        try {
-            worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(
-                    ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("skywars", id)).location(),
-                    null);
-            FileUtils.forceDeleteOnExit(new File("/world/dimensions/skywars", id));
-            ServerTime.factoryServer.unloadWorld("skywars:" + id, false);
-        } catch (Exception e) {
-            Main.logger.error("Error occurred while deleting world: skywars:" + id);
-            if(Main.config.debugMode) e.printStackTrace();
-            try {
-                ServerTime.factoryServer.unloadWorld("skywars:" + id, false);
-            } catch (Exception e2) {
-                if(Main.config.debugMode) e2.printStackTrace();
-            }
-            return;
-        }
-        worldHandle.delete();
+        WorldUtil.deleteWorld(new Identifier("skywars", id));
     }
 
     public SkywarsMap(String id, int maxPlayers, ArrayList<EntityPos> positions, StructureMap structureMap) {

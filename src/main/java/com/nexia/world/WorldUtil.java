@@ -4,9 +4,7 @@ import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.world.World;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.skywars.SkywarsGame;
-import com.nexia.minigames.games.skywars.SkywarsMap;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -69,6 +67,13 @@ public class WorldUtil {
             ServerTime.factoryServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getId(), false);
         } catch (Exception e) {
             Main.logger.error("Error occurred while deleting world: {}:{}", identifier.getNamespace(), identifier.getId());
+
+            try {
+                ServerTime.factoryServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getId(), false);
+            } catch (Exception ignored2) {
+                if(Main.config.debugMode) e.printStackTrace();
+            }
+
             if(Main.config.debugMode) e.printStackTrace();
             return;
         }
@@ -85,26 +90,20 @@ public class WorldUtil {
 
     public static void deleteTempWorlds() {
         if(Main.config.debugMode) Main.logger.info("[DEBUG]: Deleting Temporary Worlds");
-        List<String> skywarsDelete = new ArrayList<>();
-        List<String> duelsDelete = new ArrayList<>();
+        List<Identifier> delete = new ArrayList<>();
 
         for (ServerLevel level : ServerTime.minecraftServer.getAllLevels()) {
             Identifier split = WorldUtil.getIdentifierWorldName(level);
-            if (split.getNamespace().toLowerCase().contains("duels")) {
-                duelsDelete.add(split.getId());
-            }
-
-            if (split.getNamespace().toLowerCase().contains("skywars") && !split.getId().toLowerCase().contains(SkywarsGame.id)) {
-                skywarsDelete.add(split.getId());
+            if (split.getNamespace().equalsIgnoreCase("duels") ||
+                    (split.getNamespace().equalsIgnoreCase("skywars") && !split.getId().equalsIgnoreCase(SkywarsGame.id)) ||
+                    split.getNamespace().equalsIgnoreCase("kitroom")
+            ) {
+                delete.add(split);
             }
         }
 
-        for(String deletion : skywarsDelete) {
-            SkywarsMap.deleteWorld(deletion);
-        }
-
-        for(String deletion : duelsDelete) {
-            DuelGameHandler.deleteWorld(deletion);
+        for (Identifier deletion : delete) {
+            WorldUtil.deleteWorld(deletion);
         }
     }
 }
