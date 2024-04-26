@@ -415,7 +415,7 @@ public class SkywarsGame {
 
     public static void winNearestCenter() {
         if(SkywarsGame.isEnding) return;
-        ServerPlayer closestPlayer = (ServerPlayer) SkywarsGame.world.getNearestPlayer(0, 80, 0, 200, e -> e instanceof ServerPlayer se && !se.isCreative() && !se.isSpectator() && SkywarsGame.isSkywarsPlayer(se));
+        ServerPlayer closestPlayer = (ServerPlayer) SkywarsGame.world.getNearestPlayer(0, 80, 0, 1000, e -> e instanceof ServerPlayer se && !se.isCreative() && !se.isSpectator() && SkywarsGame.isSkywarsPlayer(se));
 
         endGame(AccuratePlayer.create(closestPlayer));
     }
