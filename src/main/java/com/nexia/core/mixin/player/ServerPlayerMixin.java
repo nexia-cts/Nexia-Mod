@@ -34,16 +34,12 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Mixin(ServerPlayer.class)
 public abstract class ServerPlayerMixin extends Player {
@@ -135,20 +131,5 @@ public abstract class ServerPlayerMixin extends Player {
         }
 
         player.containerMenu.removed(player);
-    }
-    @Inject(method = "tick", at = @At("HEAD"))
-    private void detect(CallbackInfo ci){
-        List<Player> playersNearby = level.getEntitiesOfClass(ServerPlayer.class,getBoundingBox().inflate(12, 0.25, 12));
-        Vec3 eyePos = getEyePosition(1);
-        AtomicReference<Vec3> nearestPosition = new AtomicReference<>();
-        playersNearby.forEach(player -> {
-            Vec3 currentPos = player.getBoundingBox().getNearestPointTo(eyePos);
-            if(nearestPosition.get() == null || nearestPosition.get().distanceToSqr(eyePos) > currentPos.distanceToSqr(eyePos))
-                nearestPosition.set(currentPos);
-        });
-        if(nearestPosition.get() != null) {
-            Vec3 nearestPos = nearestPosition.get();
-            // ServerTime.factoryServer.runCommand("/player .bot look at " + nearestPos.x + " " + nearestPos.y + " " + nearestPos.z, 4, false);
-        }
     }
 }
