@@ -86,7 +86,7 @@ public class ReportCommand {
         if(!sendWebhook(executor.getRawName(), player.getScoreboardName(), reason)) {
             executor.sendMessage(
                     ChatFormat.nexiaMessage
-                            .append(Component.text("Failed to send webhook! Don't worry, staff who are currently online will see your report!\nIf there are no staff online, feel free to re-send this report."))
+                            .append(Component.text("Failed to send webhook! Don't worry, staff who are currently online will see your report!").decoration(ChatFormat.bold, false).color(ChatFormat.normalColor))
             );
         }
 
