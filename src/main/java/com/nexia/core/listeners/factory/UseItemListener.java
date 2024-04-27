@@ -24,23 +24,28 @@ public class UseItemListener {
 
             String sName = name.toString().toLowerCase();
 
-            if(sName.contains("gamemode selector") && gameMode == PlayerGameMode.LOBBY){
-                //PlayGUI.openMainGUI(minecraftPlayer);
-                player.runCommand("/play", 0, false);
-            }
+            if(gameMode == PlayerGameMode.LOBBY) {
+                if(sName.contains("gamemode selector")){
+                    //PlayGUI.openMainGUI(minecraftPlayer);
+                    player.runCommand("/play", 0, false);
+                    return;
+                }
 
-            if(sName.contains("prefix selector") && gameMode == PlayerGameMode.LOBBY){
-                //PrefixGUI.openRankGUI(minecraftPlayer);
-                player.runCommand("/prefix", 0, false);
-            }
+                if(sName.contains("prefix selector")){
+                    //PrefixGUI.openRankGUI(minecraftPlayer);
+                    player.runCommand("/prefix", 0, false);
+                    return;
+                }
 
-            if(sName.contains("queue sword") && gameMode == PlayerGameMode.LOBBY) {
-                //QueueGUI.openQueueGUI(minecraftPlayer);
-                player.runCommand("/queue", 0, false);
-            }
+                if(sName.contains("duel sword")) {
+                    //QueueGUI.openQueueGUI(minecraftPlayer);
+                    player.runCommand("/queue", 0, false);
+                    return;
+                }
 
-            if(sName.contains("team axe") && gameMode == PlayerGameMode.LOBBY) {
-                player.runCommand("/party list");
+                if(sName.contains("team axe")) {
+                    player.runCommand("/party list");
+                }
             }
         });
     }

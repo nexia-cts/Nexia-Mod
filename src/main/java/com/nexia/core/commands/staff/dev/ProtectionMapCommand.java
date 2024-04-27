@@ -3,9 +3,8 @@ package com.nexia.core.commands.staff.dev;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.ffa.uhc.utilities.FfaAreas;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,7 +13,7 @@ public class ProtectionMapCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
         dispatcher.register(Commands.literal("protectionmap")
-                .requires(commandSourceStack -> PlayerUtil.hasPermission(commandSourceStack, "nexia.dev.protectionmap", 4))
+                .requires(commandSourceStack -> Permissions.check(commandSourceStack, "nexia.dev.protectionmap", 4))
 
                 .then(Commands.literal("bedwars").executes(ProtectionMapCommand::bedwars))
                 .then(Commands.literal("ffa")

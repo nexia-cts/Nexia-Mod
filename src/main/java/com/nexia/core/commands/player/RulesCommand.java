@@ -3,6 +3,7 @@ package com.nexia.core.commands.player;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
 import net.kyori.adventure.text.Component;
@@ -14,18 +15,6 @@ public class RulesCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
         dispatcher.register(Commands.literal("rules").executes(RulesCommand::run));
     }
-
-    private static final String[] rules = {
-            "No hacking, cheating, griefing or exploiting bugs.",
-            "Be respectful. No toxicity and/or annoying behaviour.",
-            "No advertising.",
-            "No encouraging of illegal activity.",
-            "No interrupting other player's fights.",
-            "No spamming/filling up chat.",
-            "No stalling/combat logging.",
-            "No weapon swapping.",
-            "No bedrock bridging."
-    };
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 
@@ -43,7 +32,7 @@ public class RulesCommand {
                         .append(Component.text(" ]").color(ChatFormat.lineColor).decoration(ChatFormat.strikeThrough, false))
                         .append(Component.text("                           ").color(ChatFormat.lineColor).decoration(ChatFormat.strikeThrough, true)));
 
-        for (int i = 0; i < rules.length; i++) {
+        for (int i = 0; i < Main.config.rules.length; i++) {
 
             message = message.append(Component.text("\n" + (i+1) + ". ")
                     .color(ChatFormat.brandColor1)
@@ -53,7 +42,7 @@ public class RulesCommand {
                             .color(ChatFormat.arrowColor)
                             .decoration(ChatFormat.bold, false)
                             .decoration(ChatFormat.strikeThrough, false)
-                            .append(Component.text(rules[i])
+                            .append(Component.text(Main.config.rules[i])
                                     .decoration(ChatFormat.bold, false)
                                     .decoration(ChatFormat.strikeThrough, false)
                                     .color(ChatFormat.normalColor)

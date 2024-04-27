@@ -181,16 +181,6 @@ public class PlayerUtil {
                 ClientboundSetTitlesPacket.Type.SUBTITLE, new TextComponent(sub)));
     }
 
-
-
-    public static boolean hasPermission(@NotNull CommandSourceStack permission, @NotNull String command, int level) {
-        return me.lucko.fabric.api.permissions.v0.Permissions.check(permission, command, level);
-    }
-
-    public static boolean hasPermission(@NotNull CommandSourceStack permission, @NotNull String command) {
-        return me.lucko.fabric.api.permissions.v0.Permissions.check(permission, command);
-    }
-
     public static ServerPlayer getPlayerAttacker(@Nullable net.minecraft.world.entity.player.Player player, Entity attackerEntity) {
 
         if(player == null) {

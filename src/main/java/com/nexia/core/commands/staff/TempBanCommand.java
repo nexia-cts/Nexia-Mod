@@ -7,6 +7,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.player.BanHandler;
 import com.nexia.core.utilities.player.PlayerUtil;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -17,7 +18,7 @@ import java.util.Collection;
 public class TempBanCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
         dispatcher.register(Commands.literal("tempban")
-                .requires(commandSourceStack -> PlayerUtil.hasPermission(commandSourceStack, "nexia.staff.ban", 3))
+                .requires(commandSourceStack -> Permissions.check(commandSourceStack, "nexia.staff.ban", 3))
                 .then(Commands.argument("player", GameProfileArgument.gameProfile())
                         .then(Commands.argument("duration", StringArgumentType.word())
                                 .then(Commands.argument("reason", StringArgumentType.greedyString())

@@ -1,30 +1,31 @@
 package com.nexia.ffa.uhc.utilities;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.google.gson.Gson;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.uhc.utilities.player.PlayerData;
 import com.nexia.ffa.uhc.utilities.player.PlayerDataManager;
 import com.nexia.ffa.uhc.utilities.player.SavedPlayerData;
+import io.github.blumbo.inventorymerger.InventoryMerger;
+import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.blumbo.blfscheduler.BlfRunnable;
 import net.blumbo.blfscheduler.BlfScheduler;
-import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.ThrownTrident;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -33,14 +34,21 @@ import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 import java.util.function.Predicate;
 
+import static com.nexia.ffa.uhc.utilities.FfaAreas.ffaWorld;
 import static com.nexia.ffa.uhc.utilities.FfaAreas.*;
+import static com.nexia.ffa.uhc.utilities.player.PlayerDataManager.dataDirectory;
 
 public class FfaUhcUtil {
 
-    public static String ffaUhcDir = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/ffa/uhc";
     public static ArrayList<UUID> wasInSpawn = new ArrayList<>();
 
     public static HashMap<Integer, ItemStack> invItems;
@@ -51,7 +59,8 @@ public class FfaUhcUtil {
     }
 
     public static void ffaSecond() {
-        if (ffaWorld == null || ffaWorld.players().isEmpty()) return;
+        if (ffaWorld == null) return;
+        if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer player : ffaWorld.players()) {
             if (!isFfaPlayer(player)) continue;
 
@@ -97,6 +106,8 @@ public class FfaUhcUtil {
     }
 
     public static void fiveTick() {
+        if (ffaWorld == null) return;
+        if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
             if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !FfaAreas.isInFfaSpawn(minecraftPlayer)){
                 Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
@@ -107,56 +118,57 @@ public class FfaUhcUtil {
         }
     }
 
-    public static void saveInventory(ServerPlayer minecraftPlayer){
-        PlayerData playerData = PlayerDataManager.get(minecraftPlayer);
-        Inventory newInv = playerData.ffaInventory = new Inventory(minecraftPlayer);
+    public static void saveInventory(ServerPlayer player){
+        // /config/nexia/ffa/uhc/inventory/savedInventories/uuid.json
 
-        for(int i = 0; i < newInv.getContainerSize(); ++i) {
-            newInv.setItem(i, minecraftPlayer.inventory.getItem(i).copy());
+        SavableInventory savableInventory = new SavableInventory(player.inventory);
+        String stringInventory = savableInventory.toSave();
+
+        try {
+            String file = dataDirectory + "/inventory/savedInventories/" + player.getStringUUID() + ".json";
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write(stringInventory);
+            fileWriter.close();
+        } catch (Exception var6) {
+            ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
+            player.sendMessage(LegacyChatFormat.format("{f}Failed to save UHC FFA inventory. Please try again or contact a developer."), Util.NIL_UUID);
+            return;
         }
     }
 
     public static void setInventory(ServerPlayer player){
-        HashMap<Integer, ItemStack> availableItems = (HashMap<Integer, ItemStack>) invItems.clone();
-        Inventory newInv = new Inventory(player);
-        Inventory oldInv = PlayerDataManager.get(player).ffaInventory;
-        int i;
 
-        if (oldInv != null) {
-            for(i = 0; i < oldInv.getContainerSize(); ++i) {
-                Item item = oldInv.getItem(i).getItem();
+        // /config/nexia/ffa/uhc/inventory/savedInventories/uuid.json
+        // /config/nexia/ffa/uhc/inventory/default.json
 
-                Iterator<Map.Entry<Integer, ItemStack>> it = availableItems.entrySet().iterator();
+        SavableInventory defaultInventory = null;
+        SavableInventory layout = null;
 
-                while(it.hasNext()) {
-                    Map.Entry<Integer, ItemStack> entry = it.next();
-                    if (entry.getValue().getItem() == item) {
-                        ItemStack itemStack = entry.getValue().copy();
-                        newInv.setItem(i, itemStack);
-                        it.remove();
-                        break;
-                    }
-                }
+        try {
+            String file = dataDirectory + "/inventory";
+            String defaultJson = Files.readString(Path.of(file + "/default.json"));
+            Gson gson = new Gson();
+            defaultInventory = gson.fromJson(defaultJson, SavableInventory.class);
+
+            String layoutPath = String.format(file + "/savedInventories/%s.json", player.getStringUUID());
+            if(new File(layoutPath).exists()) {
+                String layoutJson = Files.readString(Path.of(layoutPath));
+                layout = gson.fromJson(layoutJson, SavableInventory.class);
             }
+        } catch (Exception var4) {
+            var4.printStackTrace();
         }
 
-
-        for (Map.Entry<Integer, ItemStack> integerItemStackEntry : availableItems.entrySet()) {
-            ItemStack itemStack = integerItemStackEntry.getValue().copy();
-            if (newInv.getItem(integerItemStackEntry.getKey()).isEmpty()) {
-                newInv.setItem(integerItemStackEntry.getKey(), itemStack);
-            } else {
-                newInv.add(itemStack);
-            }
+        if(defaultInventory == null) {
+            ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
+            player.sendMessage(LegacyChatFormat.format("{f}Failed to set UHC FFA inventory. Please try again or contact a developer."), Util.NIL_UUID);
+            return;
         }
 
-        for(i = 0; i < newInv.getContainerSize(); ++i) {
-            ItemStack itemStack = newInv.getItem(i);
-            if (itemStack == null) {
-                itemStack = ItemStack.EMPTY;
-            }
-
-            player.inventory.setItem(i, itemStack);
+        if(layout != null) {
+            InventoryMerger.mergeSafe(player, layout.asPlayerInventory(), defaultInventory.asPlayerInventory());
+        } else {
+            player.inventory.replaceWith(defaultInventory.asPlayerInventory());
         }
 
         ItemStackUtil.sendInventoryRefreshPacket(player);

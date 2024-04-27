@@ -15,22 +15,12 @@ import net.minecraft.server.level.ServerPlayer;
 
 public class DeclineDuelCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
-        dispatcher.register(Commands.literal("declineduel")
-                .requires(commandSourceStack -> {
-                    try {
-                        com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException());
-                        PlayerData playerData1 = PlayerDataManager.get(commandSourceStack.getPlayerOrException());
-                        return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
-                    } catch (Exception ignored) {
-                    }
-                    return false;
-                })
-                .then(Commands.argument("player", EntityArgument.player())
-                        .executes(context -> DeclineDuelCommand.decline(context, EntityArgument.getPlayer(context, "player")))
-                )
-        );
+       register(dispatcher, "declineduel");
+       register(dispatcher, "declinechallenge");
+    }
 
-        dispatcher.register(Commands.literal("declinechallenge")
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, String string) {
+        dispatcher.register(Commands.literal(string)
                 .requires(commandSourceStack -> {
                     try {
                         com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException());

@@ -72,6 +72,11 @@ public class ServerGamePacketListenerMixin {
         return playerEntity.getCurrentAttackReach(f) + 0.75F;
     }
 
+    @Inject(at = @At("HEAD"), method = "onDisconnect")
+    private void getLeavePlayer(Component component, CallbackInfo ci) {
+        ServerTime.leavePlayer = player;
+    }
+
     @Inject(method = "handleUseItemOn", at = @At("HEAD"), cancellable = true)
     private void handleUseItemOn(ServerboundUseItemOnPacket packet, CallbackInfo ci) {
 
@@ -123,15 +128,10 @@ public class ServerGamePacketListenerMixin {
             if (containerId == 0 && slot >= 1 && slot <= 4) {
                 ci.cancel();
                 ItemStackUtil.sendInventoryRefreshPacket(player);
+                return;
             }
         }
 
-    }
-
-
-    @Inject(at = @At("HEAD"), method = "onDisconnect")
-    private void getLeavePlayer(Component component, CallbackInfo ci) {
-        ServerTime.leavePlayer = player;
     }
 
     @Inject(method = "handlePlayerAction", cancellable = true, at = @At("HEAD"))

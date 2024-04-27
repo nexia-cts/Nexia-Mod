@@ -12,7 +12,20 @@ import net.minecraft.server.level.ServerPlayer;
 public class PlayCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
-        dispatcher.register(Commands.literal("play").executes(PlayCommand::openGUI)
+
+        register(dispatcher, "play");
+        register(dispatcher, "join");
+
+        dispatcher.register(Commands.literal("ffa").executes(PlayCommand::openFFAGui)
+                .then(Commands.literal("kits").executes(PlayCommand::playKitFFA))
+                .then(Commands.literal("sky").executes(PlayCommand::playSkyFFA))
+                .then(Commands.literal("uhc").executes(PlayCommand::playUhcFFA))
+                .then(Commands.literal("classic").executes(PlayCommand::playNormalFFA))
+        );
+    }
+
+    private static void register(CommandDispatcher<CommandSourceStack> dispatcher, String string) {
+        dispatcher.register(Commands.literal(string).executes(PlayCommand::openGUI)
                 .then(Commands.literal("ffa").executes(PlayCommand::openFFAGui)
                         .then(Commands.literal("kits").executes(PlayCommand::playKitFFA))
                         .then(Commands.literal("sky").executes(PlayCommand::playSkyFFA))
@@ -25,26 +38,8 @@ public class PlayCommand {
                 .then(Commands.literal("football").executes(PlayCommand::playFootball))
                 .then(Commands.literal("oitc").executes(PlayCommand::playOITC))
                 .then(Commands.literal("bw").executes(PlayCommand::playBedWars)));
-        dispatcher.register(Commands.literal("join").executes(PlayCommand::openGUI)
-                .then(Commands.literal("ffa").executes(PlayCommand::openFFAGui)
-                        .then(Commands.literal("kits").executes(PlayCommand::playKitFFA))
-                        .then(Commands.literal("sky").executes(PlayCommand::playSkyFFA))
-                        .then(Commands.literal("uhc").executes(PlayCommand::playUhcFFA))
-                        .then(Commands.literal("classic").executes(PlayCommand::playNormalFFA)))
-                .then(Commands.literal("bedwars").executes(PlayCommand::playBedWars))
-                .then(Commands.literal("duels").executes(PlayCommand::playDuels))
-                .then(Commands.literal("skywars").executes(PlayCommand::playSkywars))
-                .then(Commands.literal("football").executes(PlayCommand::playFootball))
-                .then(Commands.literal("sw").executes(PlayCommand::playSkywars))
-                .then(Commands.literal("bw").executes(PlayCommand::playBedWars))
-                .then(Commands.literal("oitc").executes(PlayCommand::playOITC))
-        );
-        dispatcher.register(Commands.literal("ffa").executes(PlayCommand::openFFAGui)
-                .then(Commands.literal("kits").executes(PlayCommand::playKitFFA))
-                .then(Commands.literal("sky").executes(PlayCommand::playSkyFFA))
-                .then(Commands.literal("uhc").executes(PlayCommand::playUhcFFA))
-                .then(Commands.literal("classic").executes(PlayCommand::playNormalFFA)));
     }
+
 
     private static int openGUI(CommandContext<CommandSourceStack> context) throws CommandSyntaxException{
         PlayGUI.openMainGUI(context.getSource().getPlayerOrException());

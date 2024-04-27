@@ -1,16 +1,17 @@
 package com.nexia.minigames.games.duels.team;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelGameMode;
-import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
+import com.nexia.minigames.games.duels.map.DuelsMap;
+import com.nexia.minigames.games.duels.util.DuelOptions;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
@@ -112,7 +113,7 @@ public class TeamDuelsGame { // implements Runnable{
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
         if (gameMode == null) {
             gameMode = DuelGameMode.CLASSIC;
-            System.out.printf("[ERROR] Nexia: Invalid duel gamemode (%s) selected! Using fallback one.%n", stringGameMode);
+            Main.logger.error(String.format("[Nexia]: Invalid duel gamemode (%s) selected! Using fallback one.", stringGameMode));
             stringGameMode = "CLASSIC";
         }
 
@@ -142,7 +143,8 @@ public class TeamDuelsGame { // implements Runnable{
             DuelGameHandler.leave(serverPlayer, false);
 
             data.gameMode = gameMode;
-            data.teamDuelsGame = game;
+            data.gameOptions = new DuelOptions.GameOptions(game, team2);
+            data.inviteOptions.reset();
             data.inDuel = true;
 
             serverPlayer.setGameMode(GameType.ADVENTURE);
@@ -154,13 +156,13 @@ public class TeamDuelsGame { // implements Runnable{
                             .append(Component.text(team2.getLeader().get().getScoreboardName() + "'s Team")
                                     .color(ChatFormat.brandColor2))));
 
-            InventoryUtil.loadInventory(player.get(), "duels-" + stringGameMode.toLowerCase());
+            DuelGameHandler.loadInventory(serverPlayer, stringGameMode);
 
             if (!gameMode.hasSaturation) {
                 factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
             }
 
-            factoryPlayer.addTag(LobbyUtil.NO_DAMAGE_TAG);
+            factoryPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
             factoryPlayer.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
             PlayerUtil.resetHealthStatus(factoryPlayer);
@@ -174,7 +176,8 @@ public class TeamDuelsGame { // implements Runnable{
             DuelGameHandler.leave(serverPlayer, false);
 
             data.gameMode = gameMode;
-            data.teamDuelsGame = game;
+            data.gameOptions = new DuelOptions.GameOptions(game, team1);
+            data.inviteOptions.reset();
             data.inDuel = true;
 
             serverPlayer.setGameMode(GameType.ADVENTURE);
@@ -186,7 +189,7 @@ public class TeamDuelsGame { // implements Runnable{
                             .append(Component.text(team1.getLeader().get().getScoreboardName() + "'s Team")
                                     .color(ChatFormat.brandColor2))));
 
-            InventoryUtil.loadInventory(serverPlayer, "duels-" + stringGameMode.toLowerCase());
+            DuelGameHandler.loadInventory(serverPlayer, stringGameMode);
 
             if (!gameMode.hasSaturation) {
                 factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
@@ -208,7 +211,7 @@ public class TeamDuelsGame { // implements Runnable{
         if (isBroken != null) {
             Component error = ChatFormat.nexiaMessage
                     .append(Component.text(
-                                    "The game you were in was identified as broken, please contact NotCoded or any other dev.")
+                                    "The game you were in was identified as broken, please contact a developer with a video of the last 30 seconds.")
                             .color(ChatFormat.normalColor)
                             .decoration(ChatFormat.bold, false));
 
@@ -252,11 +255,11 @@ public class TeamDuelsGame { // implements Runnable{
                 this.isEnding = false;
 
                 for (AccuratePlayer player : loserTeam.all) {
-                    PlayerDataManager.get(player.get()).teamDuelsGame = null;
+                    PlayerDataManager.get(player.get()).gameOptions = null;
                     PlayerUtil.getFactoryPlayer(player.get()).runCommand("/hub", 0, false);
                 }
                 for (AccuratePlayer player : winnerTeam.all) {
-                    PlayerDataManager.get(player.get()).teamDuelsGame = null;
+                    PlayerDataManager.get(player.get()).gameOptions = null;
                     PlayerUtil.getFactoryPlayer(player.get()).runCommand("/hub", 0, false);
                 }
 
@@ -397,13 +400,13 @@ public class TeamDuelsGame { // implements Runnable{
 
     public void death(@NotNull ServerPlayer victim, @Nullable DamageSource source) {
         PlayerData victimData = PlayerDataManager.get(victim);
-        DuelsTeam victimTeam = victimData.duelsTeam;
+        DuelsTeam victimTeam = victimData.duelOptions.duelsTeam;
 
         if (victimTeam == null || this.isEnding) return;
 
         victim.destroyVanishingCursedItems();
         victim.inventory.dropAll();
-        victimTeam.alive.remove(victim);
+        victimTeam.alive.remove(AccuratePlayer.create(victim));
 
         boolean isVictimTeamDead = victimTeam.alive.isEmpty();
 
@@ -411,8 +414,8 @@ public class TeamDuelsGame { // implements Runnable{
 
         if (attacker != null) {
             PlayerData attackerData = PlayerDataManager.get(attacker);
-            if (attackerData.teamDuelsGame != null && attackerData.teamDuelsGame.equals(this) && isVictimTeamDead) {
-                this.endGame(victimTeam, attackerData.duelsTeam, true);
+            if (attackerData.gameOptions.teamDuelsGame != null && attackerData.gameOptions.teamDuelsGame.equals(this) && isVictimTeamDead) {
+                this.endGame(victimTeam, attackerData.duelOptions.duelsTeam, true);
             }
             return;
         }

@@ -1,52 +1,58 @@
 package com.nexia.ffa.classic.utilities;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.google.gson.Gson;
+import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.classic.utilities.player.PlayerData;
 import com.nexia.ffa.classic.utilities.player.PlayerDataManager;
 import com.nexia.ffa.classic.utilities.player.SavedPlayerData;
+import io.github.blumbo.inventorymerger.InventoryMerger;
+import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.blumbo.blfscheduler.BlfRunnable;
 import net.blumbo.blfscheduler.BlfScheduler;
 import net.kyori.adventure.text.Component;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.projectile.ThrownTrident;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 import static com.nexia.ffa.classic.utilities.FfaAreas.*;
+import static com.nexia.ffa.classic.utilities.player.PlayerDataManager.dataDirectory;
 
 public class FfaClassicUtil {
     public static ArrayList<UUID> wasInSpawn = new ArrayList<>();
-    public static HashMap<Integer, ItemStack> invItems;
 
     public static void ffaSecond() {
         if (ffaWorld == null) return;
+        if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer player : ffaWorld.players()) {
             if (!isFfaPlayer(player)) continue;
 
             if (FfaAreas.isInFfaSpawn(player)) {
-                player.addTag("no_damage");
+                player.addTag(LobbyUtil.NO_DAMAGE_TAG);
             } else {
-                player.removeTag("no_damage");
+                player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
             }
         }
     }
@@ -65,6 +71,8 @@ public class FfaClassicUtil {
     }
 
     public static void fiveTick() {
+        if(ffaWorld == null) return;
+        if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
             if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !FfaAreas.isInFfaSpawn(minecraftPlayer)){
                 wasInSpawn.remove(minecraftPlayer.getUUID());
@@ -74,31 +82,40 @@ public class FfaClassicUtil {
             }
         }
     }
-    public static void saveInventory(ServerPlayer minecraftPlayer){
-        PlayerData playerData = PlayerDataManager.get(minecraftPlayer);
-        Inventory newInv = playerData.FfaInventory = new Inventory(minecraftPlayer);
+    public static void saveInventory(ServerPlayer player){
+        // /config/nexia/ffa/classic/inventory/savedInventories/uuid.json
 
-        for(int i = 0; i < newInv.getContainerSize(); ++i) {
-            newInv.setItem(i, minecraftPlayer.inventory.getItem(i).copy());
+        SavableInventory savableInventory = new SavableInventory(player.inventory);
+        String stringInventory = savableInventory.toSave();
+
+        try {
+            String file = dataDirectory + "/inventory/savedInventories/" + player.getStringUUID() + ".json";
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write(stringInventory);
+            fileWriter.close();
+        } catch (Exception var6) {
+            ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
+            player.sendMessage(LegacyChatFormat.format("{f}Failed to save Classic FFA inventory. Please try again or contact a developer."), Util.NIL_UUID);
+            return;
         }
     }
 
-    public static void calculateKill(ServerPlayer player){
-        SavedPlayerData data = PlayerDataManager.get(player).savedData;
+    public static void calculateKill(ServerPlayer attacker, ServerPlayer player){
+        BlfScheduler.delay(5, new BlfRunnable() {
+            @Override
+            public void run() {
+                attacker.heal(attacker.getMaxHealth());
+            }
+        });
+
+        if(player.getTags().contains("bot") || attacker.getTags().contains("bot")) return;
+
+        SavedPlayerData data = PlayerDataManager.get(attacker).savedData;
         data.killstreak++;
         if(data.killstreak > data.bestKillstreak){
             data.bestKillstreak = data.killstreak;
         }
         data.kills++;
-
-        BlfScheduler.delay(5, new BlfRunnable() {
-            @Override
-            public void run() {
-                player.heal(player.getMaxHealth());
-            }
-        });
-
-
 
         if(data.killstreak % 5 == 0){
             for(ServerPlayer serverPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()){
@@ -107,7 +124,7 @@ public class FfaClassicUtil {
                             Component.text("[").color(ChatFormat.lineColor)
                                     .append(Component.text("☠").color(ChatFormat.failColor))
                                     .append(Component.text("] ").color(ChatFormat.lineColor))
-                                    .append(Component.text(player.getScoreboardName()).color(ChatFormat.normalColor))
+                                    .append(Component.text(attacker.getScoreboardName()).color(ChatFormat.normalColor))
                                     .append(Component.text(" now has a killstreak of ").color(ChatFormat.chatColor2))
                                     .append(Component.text(data.killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
                                     .append(Component.text("!").color(ChatFormat.chatColor2))
@@ -118,6 +135,9 @@ public class FfaClassicUtil {
     }
 
     public static void calculateDeath(ServerPlayer player){
+
+        if(player.getTags().contains("bot")) return;
+
         SavedPlayerData data = PlayerDataManager.get(player).savedData;
         data.deaths++;
         if(data.killstreak > data.bestKillstreak){
@@ -154,7 +174,7 @@ public class FfaClassicUtil {
             Component component = FfaUtil.returnClassicDeathMessage(minecraftPlayer, attacker);
             if(component != null) msg = component;
 
-            calculateKill(attacker);
+            calculateKill(attacker, minecraftPlayer);
         }
 
         for (Player player : ServerTime.factoryServer.getPlayers()) {
@@ -163,45 +183,38 @@ public class FfaClassicUtil {
     }
 
     public static void setInventory(ServerPlayer player){
-        HashMap<Integer, ItemStack> availableItems = (HashMap<Integer, ItemStack>) invItems.clone();
-        Inventory newInv = new Inventory(player);
-        Inventory oldInv = PlayerDataManager.get(player).FfaInventory;
-        int i;
 
-        if (oldInv != null) {
-            for(i = 0; i < 41; ++i) {
-                Item item = oldInv.getItem(i).getItem();
+        // /config/nexia/ffa/classic/inventory/savedInventories/uuid.json
+        // /config/nexia/ffa/classic/inventory/default.json
 
-                Iterator<Map.Entry<Integer, ItemStack>> it = availableItems.entrySet().iterator();
+        SavableInventory defaultInventory = null;
+        SavableInventory layout = null;
 
-                while(it.hasNext()) {
-                    Map.Entry<Integer, ItemStack> entry = it.next();
-                    if (entry.getValue().getItem() == item) {
-                        ItemStack itemStack = entry.getValue().copy();
-                        newInv.setItem(i, itemStack);
-                        it.remove();
-                        break;
-                    }
-                }
+        try {
+            String file = dataDirectory + "/inventory";
+            String defaultJson = Files.readString(Path.of(file + "/default.json"));
+            Gson gson = new Gson();
+            defaultInventory = gson.fromJson(defaultJson, SavableInventory.class);
+
+            String layoutPath = String.format(file + "/savedInventories/%s.json", player.getStringUUID());
+            if(new File(layoutPath).exists()) {
+                String layoutJson = Files.readString(Path.of(layoutPath));
+                layout = gson.fromJson(layoutJson, SavableInventory.class);
             }
+        } catch (Exception var4) {
+            var4.printStackTrace();
         }
 
-        for (Map.Entry<Integer, ItemStack> integerItemStackEntry : availableItems.entrySet()) {
-            ItemStack itemStack = integerItemStackEntry.getValue().copy();
-            if (newInv.getItem(integerItemStackEntry.getKey()).isEmpty()) {
-                newInv.setItem(integerItemStackEntry.getKey(), itemStack);
-            } else {
-                newInv.add(itemStack);
-            }
+        if(defaultInventory == null) {
+            ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
+            player.sendMessage(LegacyChatFormat.format("{f}Failed to set Classic FFA inventory. Please try again or contact a developer."), Util.NIL_UUID);
+            return;
         }
 
-        for(i = 0; i < 41; ++i) {
-            ItemStack itemStack = newInv.getItem(i);
-            if (itemStack == null) {
-                itemStack = ItemStack.EMPTY;
-            }
-
-            player.inventory.setItem(i, itemStack);
+        if(layout != null) {
+            InventoryMerger.mergeSafe(player, layout.asPlayerInventory(), defaultInventory.asPlayerInventory());
+        } else {
+            player.inventory.replaceWith(defaultInventory.asPlayerInventory());
         }
 
         ItemStackUtil.sendInventoryRefreshPacket(player);
@@ -227,49 +240,12 @@ public class FfaClassicUtil {
             FfaClassicUtil.setInventory(attacker);
         }
 
-        if(!leaving){
-            FfaClassicUtil.setDeathMessage(player, source);
-        }
-
-        FfaClassicUtil.setInventory(player);
         FfaClassicUtil.clearThrownTridents(player);
+
+        if(leaving) return;
+
+        FfaClassicUtil.setDeathMessage(player, source);
+        FfaClassicUtil.setInventory(player);
         FfaClassicUtil.wasInSpawn.add(player.getUUID());
-    }
-
-    static {
-        invItems = new HashMap<>();
-        ItemStack sword = new ItemStack(Items.DIAMOND_SWORD);
-        sword.enchant(Enchantments.SHARPNESS, 1);
-        sword.getOrCreateTag().putBoolean("Unbreakable", true);
-        invItems.put(0, sword);
-
-        ItemStack trident = new ItemStack(Items.TRIDENT);
-        trident.getOrCreateTag().putBoolean("Unbreakable", true);
-        invItems.put(1, trident);
-
-        ItemStack axe = new ItemStack(Items.DIAMOND_AXE);
-        axe.enchant(Enchantments.SHARPNESS, 2);
-        axe.getOrCreateTag().putBoolean("Unbreakable", true);
-        invItems.put(2, axe);
-
-        ItemStack helmet = new ItemStack(Items.DIAMOND_HELMET);
-        helmet.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 2);
-        helmet.getOrCreateTag().putBoolean("Unbreakable", true);
-        invItems.put(39, helmet);
-
-        ItemStack chestplate = new ItemStack(Items.DIAMOND_CHESTPLATE);
-        chestplate.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 2);
-        chestplate.getOrCreateTag().putBoolean("Unbreakable", true);
-        invItems.put(38, chestplate);
-
-        ItemStack leggings = new ItemStack(Items.DIAMOND_LEGGINGS);
-        leggings.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 2);
-        leggings.getOrCreateTag().putBoolean("Unbreakable", true);
-        invItems.put(37, leggings);
-
-        ItemStack boots = new ItemStack(Items.DIAMOND_BOOTS);
-        boots.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 2);
-        boots.getOrCreateTag().putBoolean("Unbreakable", true);
-        invItems.put(36, boots);
     }
 }

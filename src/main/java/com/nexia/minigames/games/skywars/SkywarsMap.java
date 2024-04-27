@@ -1,22 +1,17 @@
 package com.nexia.minigames.games.skywars;
 
-import com.nexia.core.Main;
+import com.combatreforged.factory.api.util.Identifier;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.core.utilities.WorldUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.notcoded.codelib.util.world.structure.Rotation;
 import net.notcoded.codelib.util.world.structure.StructureMap;
-import org.apache.commons.io.FileUtils;
-import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -93,12 +88,12 @@ public class SkywarsMap {
             new EntityPos(-24.5, 77.0, -24.5))
     ), new StructureMap(new ResourceLocation("skywars", "null"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-33, -42, -33), true));
 
-    public static SkywarsMap SHROOMS = new SkywarsMap("shrooms", 4, new ArrayList<>(Arrays.asList(
-            new EntityPos(40.5, 75, 40.5),
-            new EntityPos(40.5, 75, -39.5),
-            new EntityPos(-39.5, 75, -39.5),
-            new EntityPos(-39.5, 75, 40.5))
-    ), new StructureMap(new ResourceLocation("skywars", "shrooms"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-44, -11, -45), true));
+    // public static SkywarsMap SHROOMS = new SkywarsMap("shrooms", 4, new ArrayList<>(Arrays.asList(
+            // new EntityPos(40.5, 75, 40.5),
+            // new EntityPos(40.5, 75, -39.5),
+            // new EntityPos(-39.5, 75, -39.5),
+            // new EntityPos(-39.5, 75, 40.5))
+    // ), new StructureMap(new ResourceLocation("skywars", "shrooms"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-44, -11, -45), true));
 
 
     public static SkywarsMap identifyMap(String name) {
@@ -106,6 +101,18 @@ public class SkywarsMap {
             if(map.id.equalsIgnoreCase(name)) return map;
         }
         return null;
+    }
+
+    public static SkywarsMap validateMap(SkywarsMap currentMap, int currentPlayers) {
+        if(currentPlayers > currentMap.maxPlayers) {
+            SkywarsMap fixedMap = calculateMap(currentPlayers, false);
+            if(currentPlayers > fixedMap.maxPlayers) {
+                fixedMap = SkywarsMap.twelvePlayerMaps.get(RandomUtil.randomInt(SkywarsMap.twelvePlayerMaps.size()));
+            }
+            return fixedMap;
+        }
+
+        return currentMap;
     }
 
     public static void spawnQueueBuild(ServerLevel level, boolean setAir) {
@@ -135,24 +142,7 @@ public class SkywarsMap {
     }
 
     public static void deleteWorld(String id) {
-        RuntimeWorldHandle worldHandle;
-        try {
-            worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(
-                    ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("skywars", id)).location(),
-                    null);
-            FileUtils.forceDeleteOnExit(new File("/world/dimensions/skywars", id));
-            ServerTime.factoryServer.unloadWorld("skywars:" + id, false);
-        } catch (Exception e) {
-            Main.logger.error("Error occurred while deleting world: skywars:" + id);
-            if(Main.config.debugMode) e.printStackTrace();
-            try {
-                ServerTime.factoryServer.unloadWorld("skywars:" + id, false);
-            } catch (Exception e2) {
-                if(Main.config.debugMode) e2.printStackTrace();
-            }
-            return;
-        }
-        worldHandle.delete();
+        WorldUtil.deleteWorld(new Identifier("skywars", id));
     }
 
     public SkywarsMap(String id, int maxPlayers, ArrayList<EntityPos> positions, StructureMap structureMap) {
@@ -172,14 +162,14 @@ public class SkywarsMap {
         SkywarsMap.fourPlayerMaps.add(this);
     }
     
-    public static SkywarsMap calculateMap(int oldPlayers, int newPlayers) {
-        if(newPlayers <= 4 && !SkywarsMap.fourPlayerMaps.contains(SkywarsGame.map)) {
+    public static SkywarsMap calculateMap(int players, boolean rerollPrevention) {
+        if(players <= 4 && (rerollPrevention && !SkywarsMap.fourPlayerMaps.contains(SkywarsGame.map))) {
             return SkywarsMap.fourPlayerMaps.get(RandomUtil.randomInt(SkywarsMap.fourPlayerMaps.size()));
         }
-        else if(oldPlayers >= 5 && newPlayers <= 8 && !SkywarsMap.eightPlayerMaps.contains(SkywarsGame.map)) {
+        else if(players >= 5 && players <= 8 && (rerollPrevention && !SkywarsMap.eightPlayerMaps.contains(SkywarsGame.map))) {
             return SkywarsMap.eightPlayerMaps.get(RandomUtil.randomInt(SkywarsMap.eightPlayerMaps.size()));
         }
-        else if(newPlayers >= 9 && !SkywarsMap.twelvePlayerMaps.contains(SkywarsGame.map)) {
+        else if(players >= 9 && (rerollPrevention && !SkywarsMap.twelvePlayerMaps.contains(SkywarsGame.map))) {
             return SkywarsMap.twelvePlayerMaps.get(RandomUtil.randomInt(SkywarsMap.twelvePlayerMaps.size()));
         }
         return SkywarsGame.map;

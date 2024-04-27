@@ -1,7 +1,9 @@
 package com.nexia.core.mixin.player;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.StringReader;
 import com.nexia.core.games.util.LobbyUtil;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.player.BanHandler;
@@ -10,12 +12,11 @@ import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
+import com.nexia.minigames.games.skywars.SkywarsGame;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.network.Connection;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
@@ -33,14 +34,18 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.net.SocketAddress;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static com.nexia.core.utilities.player.BanHandler.banTimeToText;
 import static com.nexia.core.utilities.player.BanHandler.getBanTime;
-import static com.nexia.core.utilities.time.ServerTime.joinPlayer;
 import static com.nexia.core.utilities.time.ServerTime.leavePlayer;
 
 @Mixin(PlayerList.class)
 public abstract class PlayerListMixin {
+
+    @Unique
+    private ServerPlayer joinPlayer = null;
+
     @ModifyArgs(method = "broadcastMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ClientboundChatPacket;<init>(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
     private void handleChat(Args args) {
         try {
@@ -56,6 +61,15 @@ public abstract class PlayerListMixin {
             }
 
         } catch (Exception ignored) {}
+    }
+
+    @Inject(method = "broadcastMessage", at = @At("HEAD"), cancellable = true)
+    private void handleBotMessages(Component component, ChatType chatType, UUID uUID, CallbackInfo ci) {
+        String key = ((TranslatableComponent) component).getKey();
+
+        if ((key.contains("multiplayer.player.left") && leavePlayer.getTags().contains("bot"))
+                || (key.contains("multiplayer.player.join") && joinPlayer.getTags().contains("bot"))
+        ) ci.cancel();
     }
 
     @Inject(at = @At("RETURN"), method = "respawn")
@@ -79,15 +93,41 @@ public abstract class PlayerListMixin {
         }
 
         if (BwUtil.isInBedWars(player)) { BwPlayerEvents.respawned(player); }
+        if (SkywarsGame.world.equals(respawn) || SkywarsGame.isSkywarsPlayer(player)) { player.setGameMode(GameType.SPECTATOR); }
     }
 
     @Unique
     private static Component joinFormat(Component original, ServerPlayer joinPlayer) {
         try {
-            String name = String.valueOf(joinPlayer.getScoreboardName());
+            String name = joinPlayer.getScoreboardName();
             if(name.isEmpty()) { return original; }
-            if(joinPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) < 1) { return LegacyChatFormat.format("§8[§6!§8] §6{}", name); }
-            return LegacyChatFormat.format("§8[§a+§8] §a{}", name);
+
+            Component component;
+            boolean firstJoiner = joinPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) < 1;
+
+            try {
+                // this is so hacky lmfao
+
+                component = ComponentArgument.textComponent().parse(new StringReader(
+                        "[{\"text\":\"[\",\"color\":\"#4A4A4A\"},{\"text\":\"+\",\"color\":\"" + ChatFormat.greenColor.asHexString().toUpperCase() + "\"},{\"text\":\"]\",\"color\":\"#4A4A4A\"},{\"text\":\" " + name + "\",\"color\":\"" + ChatFormat.greenColor.asHexString().toUpperCase() + "\"}]"
+                ));
+
+                if(firstJoiner) {
+                    component = ComponentArgument.textComponent().parse(new StringReader(
+                            "[{\"text\":\"[\",\"color\":\"#4A4A4A\"},{\"text\":\"!\",\"color\":\"" + ChatFormat.goldColor.asHexString().toUpperCase() + "\"},{\"text\":\"]\",\"color\":\"#4A4A4A\"},{\"text\":\" " + name + "\",\"color\":\"" + ChatFormat.goldColor.asHexString().toUpperCase() + "\"}]"
+                    ));
+                }
+
+            } catch (Throwable ignored) {
+                component = LegacyChatFormat.format("§8[§a+§8] §a{}", name);
+
+                if(firstJoiner) {
+                    component = LegacyChatFormat.format("§8[§6!§8] §6{}", name);
+                }
+            }
+
+
+            return component;
         } catch (Exception var8) {
             return original;
         }
@@ -96,9 +136,20 @@ public abstract class PlayerListMixin {
     @Unique
     private static Component leaveFormat(Component original, ServerPlayer leavePlayer) {
         try {
-            String name = String.valueOf(leavePlayer.getScoreboardName());
+            String name = leavePlayer.getScoreboardName();
             if(name.isEmpty()) { return original; }
-            return LegacyChatFormat.format("§8[§c-§8] §c{}", name);
+
+            Component component;
+            try {
+                // this is so hacky lmfao
+                component = ComponentArgument.textComponent().parse(new StringReader(
+                        "[{\"text\":\"[\",\"color\":\"#4A4A4A\"},{\"text\":\"-\",\"color\":\"" + ChatFormat.failColor.asHexString().toUpperCase() + "\"},{\"text\":\"]\",\"color\":\"#4A4A4A\"},{\"text\":\" " + name + "\",\"color\":\"" + ChatFormat.failColor.asHexString().toUpperCase() + "\"}]"
+                ));
+            } catch (Throwable ignored) {
+                component = LegacyChatFormat.format("§8[§c-§8] §c{}", name);
+            }
+
+            return component;
         } catch (Exception var8) {
             return original;
         }

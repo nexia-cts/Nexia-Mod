@@ -10,12 +10,14 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.DuelsGame;
+import com.nexia.minigames.games.duels.custom.CustomDuelsGame;
+import com.nexia.minigames.games.duels.custom.team.CustomTeamDuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.minigames.games.skywars.SkywarsGameMode;
-import com.nexia.world.WorldUtil;
+import com.nexia.core.utilities.WorldUtil;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Random;
@@ -35,8 +37,15 @@ public class PlayerRespawnListener {
             if(player == null) return;
             PlayerData duelsData = PlayerDataManager.get(player);
             com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
-            DuelsGame duelsGame = duelsData.duelsGame;
-            TeamDuelsGame teamDuelsGame = duelsData.teamDuelsGame;
+
+            if(duelsData.gameOptions == null) return;
+
+            DuelsGame duelsGame = duelsData.gameOptions.duelsGame;
+            TeamDuelsGame teamDuelsGame = duelsData.gameOptions.teamDuelsGame;
+
+            CustomDuelsGame customDuelsGame = duelsData.gameOptions.customDuelsGame;
+            CustomTeamDuelsGame customTeamDuelsGame = duelsData.gameOptions.customTeamDuelsGame;
+
 
             if(data.gameMode == PlayerGameMode.SKYWARS) {
                 Location respawn = new Location(0,100, 0, WorldUtil.getWorld(SkywarsGame.world));
@@ -59,27 +68,55 @@ public class PlayerRespawnListener {
                 LobbyUtil.giveItems(player);
 
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
-                respawnEvent.setSpawnpoint(new Location(duelsGame.winner.get().getX(), duelsGame.winner.get().getY(), duelsGame.winner.get().getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getWorldName(duelsGame.level).split(":")[1]))));
-            } else if(teamDuelsGame != null && duelsData.duelsTeam != null) {
+                respawnEvent.setSpawnpoint(new Location(duelsGame.winner.get().getX(), duelsGame.winner.get().getY(), duelsGame.winner.get().getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getIdentifierWorldName(duelsGame.level).getId()))));
+            } else if(teamDuelsGame != null && duelsData.duelOptions.duelsTeam != null) {
                 factoryPlayer.getInventory().clear();
                 LobbyUtil.giveItems(player);
 
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
 
                 ServerPlayer player1;
-                if(duelsData.duelsTeam.alive.isEmpty()) {
-                    if(teamDuelsGame.team1 == duelsData.duelsTeam) {
+                if(duelsData.duelOptions.duelsTeam.alive.isEmpty()) {
+                    if(teamDuelsGame.team1 == duelsData.duelOptions.duelsTeam) {
                         player1 = teamDuelsGame.team2.alive.get(new Random().nextInt(teamDuelsGame.team2.alive.size())).get();
                     } else {
                         player1 = teamDuelsGame.team1.alive.get(new Random().nextInt(teamDuelsGame.team1.alive.size())).get();
                     }
                 } else {
-                    player1 = duelsData.duelsTeam.alive.get(new Random().nextInt(duelsData.duelsTeam.alive.size())).get();
+                    player1 = duelsData.duelOptions.duelsTeam.alive.get(new Random().nextInt(duelsData.duelOptions.duelsTeam.alive.size())).get();
                 }
 
 
-                respawnEvent.setSpawnpoint(new Location(player1.getX(), player1.getY(), player1.getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getWorldName(teamDuelsGame.level).split(":")[1]))));
+                respawnEvent.setSpawnpoint(new Location(player1.getX(), player1.getY(), player1.getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getIdentifierWorldName(teamDuelsGame.level).getId()))));
+                //player.teleportTo(duelsGame.level, duelsGame.winner.getX(), duelsGame.winner.getY(), duelsGame.winner.getZ(), 0, 0);
+            } if(customDuelsGame != null && customDuelsGame.isEnding && customDuelsGame.winner != null) {
+                factoryPlayer.getInventory().clear();
+                LobbyUtil.giveItems(player);
+
+                respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
+                respawnEvent.setSpawnpoint(new Location(customDuelsGame.winner.get().getX(), customDuelsGame.winner.get().getY(), customDuelsGame.winner.get().getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getIdentifierWorldName(customDuelsGame.level).getId()))));
+                //player.teleportTo(duelsGame.level, duelsGame.winner.getX(), duelsGame.winner.getY(), duelsGame.winner.getZ(), 0, 0);
+            } else if(customTeamDuelsGame != null && duelsData.duelOptions.duelsTeam != null) {
+                factoryPlayer.getInventory().clear();
+                LobbyUtil.giveItems(player);
+
+                respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
+
+                ServerPlayer player1;
+                if(duelsData.duelOptions.duelsTeam.alive.isEmpty()) {
+                    if(customTeamDuelsGame.team1 == duelsData.duelOptions.duelsTeam) {
+                        player1 = customTeamDuelsGame.team2.alive.get(new Random().nextInt(customTeamDuelsGame.team2.alive.size())).get();
+                    } else {
+                        player1 = customTeamDuelsGame.team1.alive.get(new Random().nextInt(customTeamDuelsGame.team1.alive.size())).get();
+                    }
+                } else {
+                    player1 = duelsData.duelOptions.duelsTeam.alive.get(new Random().nextInt(duelsData.duelOptions.duelsTeam.alive.size())).get();
+                }
+
+
+                respawnEvent.setSpawnpoint(new Location(player1.getX(), player1.getY(), player1.getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getIdentifierWorldName(customTeamDuelsGame.level).getId()))));
             }
+
         });
     }
 }

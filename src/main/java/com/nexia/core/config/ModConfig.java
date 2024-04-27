@@ -9,6 +9,9 @@ public class ModConfig implements ConfigData {
 
     @Comment("List of ranks.")
     public String[] ranks = {""};
+
+    public String[] rules = {""};
+
     public double[] lobbyPos = {
             0.5,
             65.0,
@@ -28,10 +31,13 @@ public class ModConfig implements ConfigData {
         @Comment("Modifies the pearl cooldown in ticks (20 ticks = 1 second).")
         public int enderpearlCooldown = 20;
 
-        @Comment("Remove Projectiles going through players [EXPERIMENTAL]")
+        @Comment("Remove Projectiles going through players [EXPERIMENTAL].")
         public boolean projectilePatch = false;
 
-        @Comment("Fix Tridents doing 8 damage when thrown, instead of 6")
+        @Comment("Fix Tridents doing 8 damage when thrown, instead of 6.")
         public boolean tridentDamagePatch = false;
+
+        @Comment("Enables armor swapping which was introduced in 23w05a (1.19.4).")
+        public boolean armorSwapping = false;
     }
 }

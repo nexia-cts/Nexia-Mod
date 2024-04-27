@@ -53,7 +53,7 @@ public class FootballGame {
 
     public static FootballMap map = FootballMap.STADIUM;
 
-    public static FootballTeam team1 = new FootballTeam(new ArrayList<>(), FootballGame.map.team1Pos);
+    public static FootballTeam team1 = new FootballTeam(new ArrayList<>(), map.team1Pos);
     public static FootballTeam team2 = new FootballTeam(new ArrayList<>(), map.team2Pos);
 
 

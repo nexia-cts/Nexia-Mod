@@ -20,9 +20,10 @@ public class FfaKit {
 
     public static final FfaKit KNIGHT = new FfaKit("knight", new ItemStack(Items.DIAMOND_SWORD));
     public static final FfaKit POSEIDON = new FfaKit("poseidon", new ItemStack(Items.TRIDENT));
-    public static final FfaKit BRUTE = new FfaKit("brute", new ItemStack(Items.NETHERITE_CHESTPLATE));
+    public static final FfaKit BRUTE = new FfaKit("brute", new ItemStack(Items.NETHERITE_AXE));
     public static final FfaKit HUNTER = new FfaKit("hunter", new ItemStack(Items.CROSSBOW));
     public static final FfaKit NINJA = new FfaKit("ninja", new ItemStack(Items.SUGAR));
+    public static final FfaKit REAPER = new FfaKit("reaper", new ItemStack(Items.NETHERITE_HOE));
 
     public FfaKit(String id, ItemStack item) {
         this.id = id;
@@ -33,16 +34,6 @@ public class FfaKit {
     }
 
     public static FfaKit identifyKit(String name) {
-        /*
-        return switch (name.toLowerCase()) {
-            case "knight" -> FfaKit.KNIGHT;
-            case "poseidon" -> FfaKit.POSEIDON;
-            case "brute" -> FfaKit.BRUTE;
-            case "hunter" -> FfaKit.HUNTER;
-            case "ninja" -> FfaKit.NINJA;
-            default -> null;
-        };
-         */
         for(FfaKit kit : FfaKit.ffaKits) {
             if(kit.id.equalsIgnoreCase(name)) return kit;
         }
@@ -53,6 +44,6 @@ public class FfaKit {
         PlayerDataManager.get(player).kit = this;
 
         if(clearEffect) fPlayer.clearEffects();
-        InventoryUtil.loadInventory(player, "ffa_kits-" + this.id);
+        InventoryUtil.loadInventory(player, "ffa_kits", this.id);
     }
 }

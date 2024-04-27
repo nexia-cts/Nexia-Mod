@@ -9,6 +9,7 @@ import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
+import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import net.minecraft.server.level.ServerPlayer;
@@ -47,6 +48,8 @@ public class PlayerLeaveListener {
         else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(minecraftPlayer, true);
         else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.SKYWARS) SkywarsGame.leave(minecraftPlayer);
         else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.OITC) OitcGame.leave(minecraftPlayer);
+        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.FOOTBALL) FootballGame.leave(minecraftPlayer);
+
 
         PlayerDataManager.removePlayerData(minecraftPlayer);
 

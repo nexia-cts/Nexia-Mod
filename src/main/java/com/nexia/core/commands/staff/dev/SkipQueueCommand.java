@@ -6,11 +6,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.player.PlayerDataManager;
-import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -21,7 +21,7 @@ public class SkipQueueCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
         dispatcher.register((Commands.literal("skipqueue")
-                .requires(commandSourceStack -> PlayerUtil.hasPermission(commandSourceStack, "nexia.staff.skipqueue", 1)))
+                .requires(commandSourceStack -> Permissions.check(commandSourceStack, "nexia.staff.skipqueue", 1)))
                 .executes(SkipQueueCommand::currentGamemode)
                 .then(Commands.literal("oitc").executes(SkipQueueCommand::oitc))
                 .then(Commands.literal("sw").executes(SkipQueueCommand::skywars))

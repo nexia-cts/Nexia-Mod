@@ -12,11 +12,11 @@ import net.minecraft.world.level.Level;
 public class FfaAreas {
     public static ServerLevel ffaWorld = null;
     public static EntityPos spawn = new EntityPos(Main.classic.spawnCoordinates[0], Main.classic.spawnCoordinates[1], Main.classic.spawnCoordinates[2], 0, 0);
-    public static BlockPos spawnCorner1 = spawn.toBlockPos().offset(-9, -12, -9);
-    public static BlockPos spawnCorner2 = spawn.toBlockPos().offset(9, 12, 9);
+    public static BlockPos spawnCorner1 = spawn.toBlockPos().offset(-14, -6, -14);
+    public static BlockPos spawnCorner2 = spawn.toBlockPos().offset(14, 9, 14);
 
-    public static BlockPos ffaCorner1 = spawn.toBlockPos().offset(-500, -spawn.y, -500);
-    public static BlockPos ffaCorner2 = spawn.toBlockPos().offset(500, -spawn.y + 255, 500);
+    public static BlockPos ffaCorner1 = spawn.toBlockPos().offset(-150, -spawn.y, -159);
+    public static BlockPos ffaCorner2 = spawn.toBlockPos().offset(150, -spawn.y + 255, 150);
 
     public FfaAreas() {
     }

@@ -11,7 +11,6 @@ import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.classic.utilities.FfaAreas;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.skywars.util.player.PlayerData;
 import com.nexia.minigames.games.skywars.util.player.PlayerDataManager;
@@ -34,6 +33,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.notcoded.codelib.players.AccuratePlayer;
 import net.notcoded.codelib.util.TickUtil;
 import org.jetbrains.annotations.NotNull;
@@ -43,6 +43,8 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import static com.nexia.core.utilities.WorldUtil.getChunkGenerator;
+
 public class SkywarsGame {
     public static ArrayList<AccuratePlayer> alive = new ArrayList<>();
 
@@ -50,11 +52,11 @@ public class SkywarsGame {
 
     public static ServerLevel world = null;
 
-    public static SkywarsMap map = SkywarsMap.SKYHENGE;
+    public static SkywarsMap map = SkywarsMap.PLACEHOLDER;
 
     public static RuntimeWorldConfig config = new RuntimeWorldConfig()
-            .setDimensionType(FfaAreas.ffaWorld.dimensionType())
-            .setGenerator(FfaAreas.ffaWorld.getChunkSource().getGenerator())
+            .setDimensionType(DimensionType.OVERWORLD_LOCATION)
+            .setGenerator(getChunkGenerator())
             .setDifficulty(Difficulty.EASY)
             .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
             .setGameRule(GameRules.RULE_MOBGRIEFING, true)
@@ -100,7 +102,7 @@ public class SkywarsGame {
         SkywarsGame.spectator.remove(accuratePlayer);
 
         if(!SkywarsGame.isStarted && SkywarsGame.queue.contains(accuratePlayer)) {
-            SkywarsGame.map = SkywarsMap.calculateMap(SkywarsGame.queue.size(), SkywarsGame.queue.size() - 1);
+            SkywarsGame.map = SkywarsMap.calculateMap(SkywarsGame.queue.size(), true);
         }
         SkywarsGame.queue.remove(accuratePlayer);
 
@@ -190,6 +192,7 @@ public class SkywarsGame {
             } else {
                 SkywarsGame.queueTime = 15;
             }
+
             if(SkywarsGame.queueTime <= 0) startGame();
         }
     }
@@ -223,7 +226,8 @@ public class SkywarsGame {
             player.setGameMode(GameType.ADVENTURE);
             player.addTag(LobbyUtil.NO_DAMAGE_TAG);
 
-            SkywarsGame.map = SkywarsMap.calculateMap(SkywarsGame.queue.size() - 1, SkywarsGame.queue.size());
+            SkywarsGame.map = SkywarsMap.calculateMap(SkywarsGame.queue.size(), true);
+
         }
 
         player.teleportTo(world, 0, 128.1, 0, 0, 0);
@@ -251,6 +255,18 @@ public class SkywarsGame {
     }
 
     public static void startGame() {
+
+        SkywarsGame.map = SkywarsMap.validateMap(SkywarsGame.map, SkywarsGame.queue.size());
+
+        if(SkywarsGame.queue.size() > SkywarsGame.map.maxPlayers) {
+            while(SkywarsGame.queue.size() > SkywarsGame.map.maxPlayers) {
+                AccuratePlayer accuratePlayer = SkywarsGame.queue.get(RandomUtil.randomInt(SkywarsGame.queue.size()));
+                SkywarsGame.queue.remove(accuratePlayer);
+                //LobbyUtil.returnToLobby(accuratePlayer.get(), true);
+                ServerTime.minecraftServer.getCommands().performCommand(accuratePlayer.get().createCommandSourceStack(), "/hub");
+            }
+        }
+
         SkywarsGame.isStarted = true;
         SkywarsGame.isGlowingActive = false;
         SkywarsGame.isEnding = false;
@@ -399,7 +415,7 @@ public class SkywarsGame {
 
     public static void winNearestCenter() {
         if(SkywarsGame.isEnding) return;
-        ServerPlayer closestPlayer = (ServerPlayer) SkywarsGame.world.getNearestPlayer(0, 80, 0, 20, e -> e instanceof ServerPlayer se && !se.isCreative() && !se.isSpectator() && SkywarsGame.isSkywarsPlayer(se));
+        ServerPlayer closestPlayer = (ServerPlayer) SkywarsGame.world.getNearestPlayer(0, 80, 0, 1000, e -> e instanceof ServerPlayer se && !se.isCreative() && !se.isSpectator() && SkywarsGame.isSkywarsPlayer(se));
 
         endGame(AccuratePlayer.create(closestPlayer));
     }

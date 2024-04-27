@@ -9,6 +9,7 @@ import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.player.BanHandler;
 import com.nexia.core.utilities.player.GamemodeBanHandler;
 import com.nexia.core.utilities.player.PlayerUtil;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -19,7 +20,7 @@ import net.minecraft.server.level.ServerPlayer;
 public class GamemodeBanCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
         dispatcher.register(Commands.literal("gamemodeban")
-                .requires(commandSourceStack -> PlayerUtil.hasPermission(commandSourceStack, "nexia.staff.ban", 3))
+                .requires(commandSourceStack -> Permissions.check(commandSourceStack, "nexia.staff.ban", 3))
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.argument("gamemode", StringArgumentType.string())
                                 .suggests(((context, builder) -> SharedSuggestionProvider.suggest((PlayerGameMode.stringPlayerGameModes), builder)))

@@ -17,6 +17,7 @@ public class PlayerDropItemListener {
             if (!EventUtil.dropItem(minecraftPlayer, playerDropItemEvent.getItemStack())) {
                 playerDropItemEvent.setCancelled(true);
                 ItemStackUtil.sendInventoryRefreshPacket(minecraftPlayer);
+                return;
             }
         });
     }

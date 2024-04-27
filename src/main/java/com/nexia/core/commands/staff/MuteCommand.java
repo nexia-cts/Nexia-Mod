@@ -9,6 +9,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.player.PlayerUtil;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -21,7 +22,7 @@ public class MuteCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
         dispatcher.register(Commands.literal("mute")
-                .requires(commandSourceStack -> PlayerUtil.hasPermission(commandSourceStack, "nexia.staff.mute", 1))
+                .requires(commandSourceStack -> Permissions.check(commandSourceStack, "nexia.staff.mute", 1))
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.argument("duration", StringArgumentType.word())
                                 .executes(context -> MuteCommand.mute(context, StringArgumentType.getString(context, "duration"), "No reason specified."))

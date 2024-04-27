@@ -3,13 +3,14 @@ package com.nexia.core.mixin.player;
 import com.mojang.authlib.GameProfile;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.core.gui.duels.CustomDuelGUI;
 import com.nexia.core.gui.duels.DuelGUI;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
+import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
@@ -33,12 +34,16 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Mixin(ServerPlayer.class)
 public abstract class ServerPlayerMixin extends Player {
@@ -58,7 +63,7 @@ public abstract class ServerPlayerMixin extends Player {
     @Inject(method = "<init>", at = @At("TAIL"))
     private void init(MinecraftServer minecraftServer, ServerLevel serverLevel, GameProfile gameProfile, ServerPlayerGameMode serverPlayerGameMode, CallbackInfo ci) {
         ServerPlayer player = (ServerPlayer)(Object)this;
-        if (FfaSkyUtil.isFfaPlayer(player)) {
+        if (FfaUtil.isFfaPlayer(player) || BwUtil.isBedWarsPlayer(player) || OitcGame.isOITCPlayer(player)) {
             spawnInvulnerableTime = 0;
         }
     }
@@ -66,7 +71,8 @@ public abstract class ServerPlayerMixin extends Player {
     public void onAttack(Entity entity, CallbackInfo ci) {
         ServerPlayer attacker = (ServerPlayer) (Object) this;
         if(level == LobbyUtil.lobbyWorld && entity instanceof ServerPlayer player && player != attacker) {
-            if(this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("queue sword")) DuelGUI.openDuelGui(attacker, player);
+            if(this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("duel sword")) DuelGUI.openDuelGui(attacker, player);
+            if(this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("custom duel sword")) CustomDuelGUI.openDuelGui(attacker, player);
             if(this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("team axe")) PlayerUtil.getFactoryPlayer(attacker).runCommand("/party invite " + player.getScoreboardName());
             return;
         }
@@ -98,10 +104,10 @@ public abstract class ServerPlayerMixin extends Player {
         PlayerGameMode gameMode = PlayerDataManager.get(player).gameMode;
         PlayerData duelsData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
 
-
         if (FfaUtil.isFfaPlayer(player)) {
             FfaUtil.leaveOrDie(player, damageSource, false);
-        } else if (BwAreas.isBedWarsWorld(getLevel())) {
+        }
+        else if (BwAreas.isBedWarsWorld(getLevel())) {
             BwPlayerEvents.death(player);
         }
         else if(gameMode == PlayerGameMode.OITC){
@@ -110,11 +116,13 @@ public abstract class ServerPlayerMixin extends Player {
         else if(gameMode == PlayerGameMode.SKYWARS) {
             SkywarsGame.death(player, damageSource);
         }
-        else if(gameMode == PlayerGameMode.LOBBY && duelsData.duelsGame != null){
-            duelsData.duelsGame.death(player, damageSource);
-        } else if(gameMode == PlayerGameMode.LOBBY && duelsData.teamDuelsGame != null) {
-            duelsData.teamDuelsGame.death(player, damageSource);
+        else if(gameMode == PlayerGameMode.LOBBY && duelsData.gameOptions != null) {
+            if(duelsData.gameOptions.duelsGame != null) duelsData.gameOptions.duelsGame.death(player, damageSource);
+            if(duelsData.gameOptions.teamDuelsGame != null) duelsData.gameOptions.teamDuelsGame.death(player, damageSource);
+            if(duelsData.gameOptions.customDuelsGame != null) duelsData.gameOptions.customDuelsGame.death(player, damageSource);
+            if(duelsData.gameOptions.customTeamDuelsGame != null) duelsData.gameOptions.customTeamDuelsGame.death(player, damageSource);
         }
+
     }
 
     @Redirect(method = "doCloseContainer", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/AbstractContainerMenu;removed(Lnet/minecraft/world/entity/player/Player;)V"))
@@ -127,5 +135,20 @@ public abstract class ServerPlayerMixin extends Player {
         }
 
         player.containerMenu.removed(player);
+    }
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void detect(CallbackInfo ci){
+        List<Player> playersNearby = level.getEntitiesOfClass(ServerPlayer.class,getBoundingBox().inflate(12, 0.25, 12));
+        Vec3 eyePos = getEyePosition(1);
+        AtomicReference<Vec3> nearestPosition = new AtomicReference<>();
+        playersNearby.forEach(player -> {
+            Vec3 currentPos = player.getBoundingBox().getNearestPointTo(eyePos);
+            if(nearestPosition.get() == null || nearestPosition.get().distanceToSqr(eyePos) > currentPos.distanceToSqr(eyePos))
+                nearestPosition.set(currentPos);
+        });
+        if(nearestPosition.get() != null) {
+            Vec3 nearestPos = nearestPosition.get();
+            // ServerTime.factoryServer.runCommand("/player .bot look at " + nearestPos.x + " " + nearestPos.y + " " + nearestPos.z, 4, false);
+        }
     }
 }

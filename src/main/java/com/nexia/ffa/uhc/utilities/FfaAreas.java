@@ -5,7 +5,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.ffa.Main;
-import com.nexia.world.WorldUtil;
+import com.nexia.core.utilities.WorldUtil;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;

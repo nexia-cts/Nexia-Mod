@@ -11,6 +11,7 @@
   "contributors": [
     "Shinkume",
     "betterclient",
+    "infinityy",
     "r6653116",
     "SurgeFlame"
   ],
@@ -44,7 +45,7 @@
     "minecraft": ["1.16.3-combat.8.c", "1.16.2-1.16.combat-6"],
     "fabric": "*",
     "factory-api": "*",
-    "collective-fabric": ">=1.16.5-5.50",
-    "saveandloadinventories-fabric": "*"
+    "fantasy": ">=0.4.2",
+    "collective-fabric": ">=1.16.5-5.50"
   }
 }

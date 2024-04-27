@@ -10,6 +10,7 @@ import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
+import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.team.DuelsTeam;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,9 +27,11 @@ import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -71,8 +74,9 @@ public abstract class PlayerMixin extends LivingEntity {
     @Inject(method = "canEat", cancellable = true, at = @At("HEAD"))
     private void preventFFAUsers(boolean bl, CallbackInfoReturnable<Boolean> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
-        if(com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.sky.utilities.FfaAreas.isInFfaSpawn(player) ||
-                com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(player)) {
+        if((com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.sky.utilities.FfaAreas.isInFfaSpawn(player))
+                || (com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(player))
+                || (com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode.equals(PlayerGameMode.LOBBY) && PlayerDataManager.get(player).gameMode.equals(DuelGameMode.LOBBY))) {
             cir.setReturnValue(false);
             ItemStackUtil.sendInventoryRefreshPacket(player);
         }
@@ -87,19 +91,29 @@ public abstract class PlayerMixin extends LivingEntity {
             return;
         }
 
-        if(player.getLevel().equals(LobbyUtil.lobbyWorld) && damageSource == DamageSource.OUT_OF_WORLD) LobbyUtil.lobbySpawn.teleportPlayer(LobbyUtil.lobbyWorld, player);
+        if(player.getLevel().equals(LobbyUtil.lobbyWorld) && damageSource == DamageSource.OUT_OF_WORLD) {
+            LobbyUtil.lobbySpawn.teleportPlayer(LobbyUtil.lobbyWorld, player);
+            cir.setReturnValue(false);
+            return;
+        }
+
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
 
         if (player.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
             cir.setReturnValue(false);
             return;
         }
 
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
         if(attacker != null) {
-            if(attacker.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) cir.setReturnValue(false);
+            if(attacker.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
+                cir.setReturnValue(false);
+                return;
+            }
 
-            DuelsTeam team = PlayerDataManager.get(player).duelsTeam;
-            if(team != null && team.all.contains(attacker) && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) cir.setReturnValue(false);
+            DuelsTeam team = PlayerDataManager.get(player).duelOptions.duelsTeam;
+            if(team != null && team.all.contains(AccuratePlayer.create(attacker)) && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) {
+                cir.setReturnValue(false);
+            }
         }
     }
 
@@ -156,5 +170,19 @@ public abstract class PlayerMixin extends LivingEntity {
             BwUtil.setAttackSpeed(player);
         }
 
+    }
+
+
+    @ModifyArg(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;setSprinting(Z)V"))
+    public boolean setSprintFix(boolean par1) {
+        return com.nexia.core.utilities.player.PlayerDataManager.get((Player) (Object) this).savedData.isSprintFix();
+    }
+
+    @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)
+    public void shieldBlockExplosion(DamageSource damageSource, float f, CallbackInfoReturnable<Boolean> cir) {
+        if (damageSource.isExplosion() && this.useItem.getItem() == Items.SHIELD) {
+            this.hurtCurrentlyUsedShield(f);
+            cir.setReturnValue(false);
+        }
     }
 }

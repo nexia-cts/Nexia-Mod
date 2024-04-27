@@ -3,7 +3,7 @@
   "generator": {
     "type": "minecraft:flat",
     "settings": {
-      "biome": "minecraft:forest",
+      "biome": "minecraft:plains",
       "layers": [],
       "structures": {
         "structures": {}

@@ -7,6 +7,7 @@ import com.nexia.core.utilities.player.PlayerUtil;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -51,14 +52,14 @@ public class PrefixGUI extends SimpleGui {
                 slot = 19;
             }
 
-            if(PlayerUtil.hasPermission(player.createCommandSourceStack(), "nexia.prefix." + rank) && player.getTags().contains(rank)){
+            if(Permissions.check(player, "nexia.prefix." + rank) && player.getTags().contains(rank)){
                 ItemStack enchantedItem = new ItemStack(Items.NAME_TAG, 1);
                 enchantedItem.enchant(Enchantments.SHARPNESS, 1);
                 enchantedItem.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
                 enchantedItem.setHoverName(new TextComponent("§d§l" + rank));
                 this.setSlot(slot, enchantedItem);
                 slot++;
-            } else if(PlayerUtil.hasPermission(player.createCommandSourceStack(), "nexia.prefix." + rank)){
+            } else if(Permissions.check(player, "nexia.prefix." + rank)){
                 ItemStack changedItem = new ItemStack(Items.NAME_TAG, 1);
                 changedItem.setHoverName(new TextComponent("§f" + rank));
                 this.setSlot(slot, changedItem);

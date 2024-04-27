@@ -17,25 +17,24 @@ import com.nexia.minigames.games.bedwars.areas.BwDimension;
 import com.nexia.minigames.games.bedwars.shop.BwLoadShop;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelsGame;
+import com.nexia.minigames.games.duels.custom.CustomDuelsGame;
+import com.nexia.minigames.games.duels.custom.team.CustomTeamDuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
-import com.nexia.world.WorldUtil;
+import com.nexia.core.utilities.WorldUtil;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import xyz.nucleoid.fantasy.Fantasy;
 
 public class ServerTime {
+    public static ServerPlayer leavePlayer = null;
 
     public static int totalTickCount = -1;
     public static int totalSecondCount = -1;
 
     public static MinecraftServer minecraftServer = null;
-
-    public static ServerPlayer joinPlayer = null;
-
-    public static ServerPlayer leavePlayer = null;
 
     public static FactoryServer factoryServer = null;
 
@@ -54,6 +53,7 @@ public class ServerTime {
         fantasy = Fantasy.get(minecraftServer);
 
         LobbyUtil.setLobbyWorld(minecraftServer);
+        WorldUtil.setVoidWorld(minecraftServer);
 
         FfaAreas.setFfaWorld(minecraftServer);
         com.nexia.ffa.kits.utilities.FfaAreas.setFfaWorld(minecraftServer);
@@ -129,6 +129,20 @@ public class ServerTime {
 
         try {
             for (TeamDuelsGame game : DuelGameHandler.teamDuelsGames) {
+                if (game == null) return;
+                game.duelSecond();
+            }
+        } catch (Exception ignored) { }
+
+        try {
+            for (CustomDuelsGame game : DuelGameHandler.customDuelsGames) {
+                if (game == null) return;
+                game.duelSecond();
+            }
+        } catch (Exception ignored) { }
+
+        try {
+            for (CustomTeamDuelsGame game : DuelGameHandler.customTeamDuelsGames) {
                 if (game == null) return;
                 game.duelSecond();
             }

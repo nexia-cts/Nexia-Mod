@@ -3,6 +3,7 @@ package com.nexia.core.utilities.chat;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.player.SavedPlayerData;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 public class PlayerMutes {
 
     public static void mute(CommandSourceStack sender, ServerPlayer muted, long duration, String reason) {
-        if (PlayerUtil.hasPermission(muted.createCommandSourceStack(), "nexia.staff.mute", 1)) {
+        if (Permissions.check(muted, "nexia.staff.mute", 1)) {
             sender.sendSuccess(LegacyChatFormat.format("{f}You can't mute staff."), false);
             return;
         }

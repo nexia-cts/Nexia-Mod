@@ -20,7 +20,9 @@ public class ChatFormat {
 
     public static TextColor failColor = TextColor.fromHexString("#ff2b1c");
 
-    public static TextColor greenColor = TextColor.fromHexString("#5bf574");
+    public static TextColor greenColor = TextColor.fromHexString("#38e312");
+
+    public static TextColor goldColor = TextColor.fromHexString("#f5bc42");
 
     public static TextColor lineColor = systemColor;
 

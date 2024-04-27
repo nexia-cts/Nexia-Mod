@@ -105,10 +105,8 @@ public class GamemodeBanHandler {
             }
         }
 
+        LocalDateTime banTime = LocalDateTime.now().plusSeconds(duration);
         addBanToList(player, gameMode, reason, LocalDateTime.now().plusSeconds(duration));
-
-        banJSON = getBanList(player.getStringUUID(), gameMode);
-        LocalDateTime banTime = getBanTime((String) banJSON.get("duration"));
 
         sender.sendSuccess(LegacyChatFormat.format("{s}Gamemode ({}) banned {b2}{} {s}for {b2}{}{s}." +
                 "\n{s}Reason: {b2}{}", gameMode.name, player.getScoreboardName(), BanHandler.banTimeToText(banTime), reason), false);

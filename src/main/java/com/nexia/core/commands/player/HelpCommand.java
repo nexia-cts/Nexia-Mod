@@ -28,10 +28,14 @@ public class HelpCommand {
             "msg" + commandSeparator + "allows you to message other players",
             "stats" + commandSeparator + "shows you your stats",
             "duel" + commandSeparator + "duel a player that is in the hub (duels)",
+            "customduel" + commandSeparator + "duel a player that is in the hub, in a custom kit that you made (custom duels)",
+            "kitlayout" + commandSeparator + "edit your gamemode layout in duels",
+            "kiteditor" + commandSeparator + "create kits for custom duels",
             "queue" + commandSeparator + "queue for a gamemode in duels",
             "spectate" + commandSeparator + "spectate a player which is in duels (or ffa if you have supporter rank)",
             "buy" + commandSeparator + "buy our ranks to support the server",
-            "shout" + commandSeparator + "shout a message to the whole server (supporter)"
+            "shout" + commandSeparator + "shout a message to the whole server (supporter)",
+            "sprintfix" + commandSeparator + "toggle the sprint fix"
     };
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

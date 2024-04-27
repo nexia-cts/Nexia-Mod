@@ -7,6 +7,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -22,7 +23,7 @@ import java.util.Collection;
 public class BanCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
         dispatcher.register(Commands.literal("ban")
-                .requires(commandSourceStack -> PlayerUtil.hasPermission(commandSourceStack, "nexia.staff.ban", 3))
+                .requires(commandSourceStack -> Permissions.check(commandSourceStack, "nexia.staff.ban", 3))
                 .then(Commands.argument("player", GameProfileArgument.gameProfile())
                         .executes(context -> BanCommand.ban(context.getSource(), GameProfileArgument.getGameProfiles(context, "player"), "No reason specified."))
                         .then(Commands.argument("reason", StringArgumentType.greedyString())

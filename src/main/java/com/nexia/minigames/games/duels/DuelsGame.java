@@ -1,15 +1,16 @@
 package com.nexia.minigames.games.duels;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.map.DuelsMap;
+import com.nexia.minigames.games.duels.util.DuelOptions;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
@@ -32,7 +33,7 @@ import java.util.UUID;
 
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 
-public class DuelsGame { //implements Runnable{
+public class DuelsGame {
     public AccuratePlayer p1;
 
     public UUID uuid;
@@ -58,7 +59,6 @@ public class DuelsGame { //implements Runnable{
 
     public ArrayList<AccuratePlayer> spectators = new ArrayList<>();
 
-
     // Winner thingie
     public AccuratePlayer winner = null;
 
@@ -80,18 +80,18 @@ public class DuelsGame { //implements Runnable{
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
         if(gameMode == null){
             gameMode = DuelGameMode.CLASSIC;
-            System.out.printf("[ERROR] Nexia: Invalid duel gamemode ({0}) selected! Using fallback one.%n", stringGameMode);
+            Main.logger.error(String.format("[Nexia]: Invalid duel gamemode (%s) selected! Using fallback one.", stringGameMode));
             stringGameMode = "CLASSIC";
         }
 
         PlayerData invitorData = PlayerDataManager.get(mcP1);
         PlayerData playerData = PlayerDataManager.get(mcP2);
 
-        if(invitorData.spectatingPlayer != null) {
-            GamemodeHandler.unspectatePlayer(mcP1, invitorData.spectatingPlayer, false);
+        if(invitorData.duelOptions.spectatingPlayer != null) {
+            GamemodeHandler.unspectatePlayer(AccuratePlayer.create(mcP1), invitorData.duelOptions.spectatingPlayer, false);
         }
-        if(playerData.spectatingPlayer != null) {
-            GamemodeHandler.unspectatePlayer(mcP2, playerData.spectatingPlayer, false);
+        if(playerData.duelOptions.spectatingPlayer != null) {
+            GamemodeHandler.unspectatePlayer(AccuratePlayer.create(mcP2), playerData.duelOptions.spectatingPlayer, false);
         }
 
 
@@ -102,10 +102,9 @@ public class DuelsGame { //implements Runnable{
 
         ServerLevel duelLevel = DuelGameHandler.createWorld(gameUUID.toString(), gameMode.hasRegen);
         if(selectedMap == null){
-            selectedMap = DuelsMap.duelsMaps.get(RandomUtil.randomInt(0, DuelsMap.duelsMaps.size()));
-            while(!selectedMap.isAdventureSupported && gameMode.gameMode.equals(GameType.ADVENTURE)) {
+            do {
                 selectedMap = DuelsMap.duelsMaps.get(RandomUtil.randomInt(0, DuelsMap.duelsMaps.size()));
-            }
+            } while (!selectedMap.isAdventureSupported && gameMode.gameMode.equals(GameType.ADVENTURE));
         }
 
         selectedMap.structureMap.pasteMap(duelLevel);
@@ -119,30 +118,22 @@ public class DuelsGame { //implements Runnable{
         PlayerUtil.resetHealthStatus(p2);
 
         selectedMap.p2Pos.teleportPlayer(duelLevel, mcP2);
-        playerData.inviting = false;
-        playerData.invitingPlayer = null;
+        playerData.inviteOptions.reset();
         playerData.inDuel = true;
         removeQueue(mcP2, null, true);
-        playerData.spectatingPlayer = null;
-        playerData.duelPlayer = mcP1;
+        playerData.duelOptions.spectatingPlayer = null;
 
         selectedMap.p1Pos.teleportPlayer(duelLevel, mcP1);
-        invitorData.inviting = false;
-        invitorData.invitingPlayer = null;
+        invitorData.inviteOptions.reset();
         invitorData.inDuel = true;
         removeQueue(mcP2, null, true);
-        invitorData.spectatingPlayer = null;
-        invitorData.duelPlayer = mcP2;
+        invitorData.duelOptions.spectatingPlayer = null;
+
         mcP1.setGameMode(GameType.ADVENTURE);
         mcP2.setGameMode(GameType.ADVENTURE);
 
         removeQueue(mcP1, null, true);
         removeQueue(mcP2, null, true);
-
-        /*
-        InventoryUtil.setInventory(player, stringGameMode.toLowerCase(), "/duels", true);
-        InventoryUtil.setInventory(invitor, stringGameMode.toLowerCase(), "/duels", true);
-         */
 
 
         p2.sendMessage(ChatFormat.nexiaMessage
@@ -153,16 +144,16 @@ public class DuelsGame { //implements Runnable{
                 .append(Component.text("Your opponent: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                 .append(Component.text(p2.getRawName()).color(ChatFormat.brandColor2))));
 
-        InventoryUtil.loadInventory(mcP1, "duels-" + stringGameMode.toLowerCase());
-        InventoryUtil.loadInventory(mcP2, "duels-" + stringGameMode.toLowerCase());
-
+        DuelGameHandler.loadInventory(mcP1, stringGameMode);
+        DuelGameHandler.loadInventory(mcP2, stringGameMode);
 
         playerData.gameMode = gameMode;
         invitorData.gameMode = gameMode;
 
         DuelsGame game = new DuelsGame(mcP1, mcP2, gameMode, selectedMap, duelLevel, 5, 5);
-        invitorData.duelsGame = game;
-        playerData.duelsGame = game;
+
+        playerData.gameOptions = new DuelOptions.GameOptions(game, AccuratePlayer.create(mcP1));
+        invitorData.gameOptions = new DuelOptions.GameOptions(game, AccuratePlayer.create(mcP2));
 
         DuelGameHandler.duelsGames.add(game);
 
@@ -191,21 +182,19 @@ public class DuelsGame { //implements Runnable{
                     PlayerUtil.getFactoryPlayer(spectator.get()).runCommand("/hub", 0, false);
                 }
 
-                victimData.duelsGame = null;
-                victimData.inviting = false;
+                victimData.gameOptions = null;
                 victimData.inDuel = false;
-                victimData.inviteMap = DuelsMap.CITY;
-                victimData.inviteKit = "";
                 removeQueue(minecraftVictim.get(), null, true);
                 victimData.gameMode = DuelGameMode.LOBBY;
+                victimData.inviteOptions.reset();
+                victimData.duelOptions.spectatingPlayer = null;
 
-                attackerData.duelsGame = null;
-                attackerData.inviting = false;
+                attackerData.gameOptions = null;
                 attackerData.inDuel = false;
-                attackerData.inviteMap = DuelsMap.CITY;
-                attackerData.inviteKit = "";
                 removeQueue(minecraftAttacker.get(), null, true);
                 attackerData.gameMode = DuelGameMode.LOBBY;
+                attackerData.inviteOptions.reset();
+                attackerData.duelOptions.spectatingPlayer = null;
 
                 attackerData.savedData.wins++;
                 victimData.savedData.loss++;
@@ -216,14 +205,12 @@ public class DuelsGame { //implements Runnable{
                     PlayerUtil.getFactoryPlayer(minecraftVictim.get()).runCommand("/hub", 0, false);
                 }
 
-
                 if(minecraftAttacker.get() != null) {
                     PlayerUtil.getFactoryPlayer(minecraftAttacker.get()).runCommand("/hub", 0, false);
                 }
 
                 for(ServerPlayer spectator : this.level.players()) {
                     PlayerUtil.getFactoryPlayer(spectator).runCommand("/hub", 0, false);
-
                     spectator.kill();
                 }
 
@@ -245,11 +232,11 @@ public class DuelsGame { //implements Runnable{
             if (this.startTime - this.currentStartTime >= this.startTime) {
                 PlayerUtil.sendSound(p1, new EntityPos(p1), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
                 PlayerUtil.sendSound(p2, new EntityPos(p2), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
-                p1.setGameMode(this.gameMode.gameMode);
+                p1.setGameMode((this.gameMode != null) ? this.gameMode.gameMode : GameType.SURVIVAL);
                 p1.removeTag(LobbyUtil.NO_DAMAGE_TAG);
                 p1.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
-                p2.setGameMode(this.gameMode.gameMode);
+                p2.setGameMode((this.gameMode != null) ? this.gameMode.gameMode : GameType.SURVIVAL);
                 p2.removeTag(LobbyUtil.NO_DAMAGE_TAG);
                 p2.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
                 this.hasStarted = true;
@@ -343,8 +330,7 @@ public class DuelsGame { //implements Runnable{
 
     public void death(@NotNull ServerPlayer victim, @Nullable DamageSource source){
         PlayerData victimData = PlayerDataManager.get(victim);
-        if(victimData.duelsGame == null) return;
-        if(victimData.duelsGame.isEnding) return;
+        if(victimData.gameOptions == null || victimData.gameOptions.duelsGame == null || victimData.gameOptions.duelsGame.isEnding) return;
 
         victim.destroyVanishingCursedItems();
         victim.inventory.dropAll();
@@ -353,20 +339,20 @@ public class DuelsGame { //implements Runnable{
 
         if(attacker != null){
             PlayerData attackerData = PlayerDataManager.get(attacker);
-
-            if((victimData.inDuel && attackerData.inDuel) && victimData.duelsGame == attackerData.duelsGame){
+            if((victimData.inDuel && attackerData.inDuel) && victimData.gameOptions.duelsGame == attackerData.gameOptions.duelsGame){
                 this.endGame(victim, attacker, true);
+                return;
             }
-            return;
         }
-        if(PlayerDataManager.get(victim).duelPlayer != null) {
-            attacker = victimData.duelPlayer;
+        if(victimData.gameOptions.duelPlayer != null) {
+            AccuratePlayer accurateAttacker = victimData.gameOptions.duelPlayer;
+            attacker = accurateAttacker.get();
             PlayerData attackerData = PlayerDataManager.get(attacker);
 
-            if ((victimData.inDuel && attackerData.inDuel) && (victimData.duelPlayer.getUUID().equals(attacker.getUUID())) && attackerData.duelPlayer.getUUID().equals(victim.getUUID())) {
+            if ((victimData.inDuel && attackerData.inDuel) && accurateAttacker.equals(victimData.gameOptions.duelPlayer)) {
                 this.endGame(victim, attacker, true);
+                return;
             }
-            return;
         }
 
         if(victimData.inDuel) {

@@ -7,7 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.ffa.classic.utilities.FfaAreas;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -19,17 +19,20 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.dimension.DimensionType;
 import org.apache.commons.io.FileUtils;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.io.File;
+
+import static com.nexia.core.utilities.WorldUtil.getChunkGenerator;
 
 public class MapCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
         dispatcher.register((Commands.literal("map")
                 .requires(commandSourceStack -> {
                     try {
-                        return PlayerUtil.hasPermission(commandSourceStack, "nexia.staff.map", 2);
+                        return Permissions.check(commandSourceStack, "nexia.staff.map", 2);
                     } catch (Exception ignored) {
                         return false;
                     }
@@ -74,8 +77,8 @@ public class MapCommand {
 
             ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), (
                     new RuntimeWorldConfig()
-                            .setDimensionType(FfaAreas.ffaWorld.dimensionType())
-                            .setGenerator(FfaAreas.ffaWorld.getChunkSource().getGenerator())
+                            .setDimensionType(DimensionType.OVERWORLD_LOCATION)
+                            .setGenerator(getChunkGenerator())
                             .setDifficulty(Difficulty.HARD)
                             .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
                             .setGameRule(GameRules.RULE_MOBGRIEFING, false)

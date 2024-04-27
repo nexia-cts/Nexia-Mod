@@ -227,7 +227,7 @@ public class OitcGame {
     private static Title getTitle(int queueTime) {
         TextColor color = NamedTextColor.GREEN;
 
-        if (queueTime <= 3 && queueTime > 1) {
+        if (queueTime == 2) {
             color = NamedTextColor.YELLOW;
         } else if (queueTime <= 1) {
             color = NamedTextColor.RED;
@@ -366,7 +366,7 @@ public class OitcGame {
 
             PlayerDataManager.get(victim).hasDied = true;
             OitcGame.deathPlayers.remove(accurateVictim);
-            OitcGame.deathPlayers.put(accurateVictim, 6);
+            OitcGame.deathPlayers.put(accurateVictim, 4); // 3 seconds
         }
     }
 

@@ -5,7 +5,6 @@ import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
 import net.minecraft.world.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -33,8 +32,7 @@ public abstract class LivingEntityMixin {
     // Make void death instant
     @ModifyArg(method = "hurt", index = 1, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;actuallyHurt(Lnet/minecraft/world/damagesource/DamageSource;F)V"))
     protected float hurt(DamageSource damageSource, float value) {
-        if((Object) this instanceof ServerPlayer player){
-
+        if((Object) this instanceof ServerPlayer player) {
             if(PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) {
                 return value;
             }
