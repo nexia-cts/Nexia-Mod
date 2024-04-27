@@ -139,13 +139,11 @@ public class CustomTeamDuelsGame { // implements Runnable{
             kitID = "";
         }
 
-        PlayerData team2LeaderData = PlayerDataManager.get(team2.getLeader().get());
-        if(team2LeaderData.inviteOptions.perCustomDuel && !DuelGameHandler.validCustomKit(team2.getLeader().get(), team2LeaderData.inviteOptions.inviteKit2)) {
-            Main.logger.error(String.format("[Nexia]: Invalid per-custom (team 2) duel kit (%s) selected!", team2LeaderData.inviteOptions.inviteKit2));
+        PlayerData team1LeaderData = PlayerDataManager.get(team1.getLeader().get());
+        if(team1LeaderData.inviteOptions.perCustomDuel && !DuelGameHandler.validCustomKit(team2.getLeader().get(), team1LeaderData.inviteOptions.inviteKit2)) {
+            Main.logger.error(String.format("[Nexia]: Invalid per-custom (team 2) duel kit (%s) selected!", team1LeaderData.inviteOptions.inviteKit2));
         } else {
-            System.out.println("a: " + perCustomKitID);
-            perCustomKitID = team2LeaderData.inviteOptions.inviteKit2;
-            System.out.println(perCustomKitID);
+            perCustomKitID = team1LeaderData.inviteOptions.inviteKit2;
         }
 
         team1.alive.clear();
@@ -202,7 +200,7 @@ public class CustomTeamDuelsGame { // implements Runnable{
             if(kitFile.exists()) InventoryUtil.loadInventory(serverPlayer, "duels/custom/" + team1.getLeader().get().getStringUUID(), kitID.toLowerCase());
             else InventoryUtil.loadInventory(serverPlayer, "duels", "classic");
 
-            factoryPlayer.addTag(LobbyUtil.NO_DAMAGE_TAG);
+            factoryPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
             factoryPlayer.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
             PlayerUtil.resetHealthStatus(factoryPlayer);

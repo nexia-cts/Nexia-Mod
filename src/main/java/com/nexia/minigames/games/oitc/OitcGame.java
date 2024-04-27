@@ -366,7 +366,7 @@ public class OitcGame {
 
             PlayerDataManager.get(victim).hasDied = true;
             OitcGame.deathPlayers.remove(accurateVictim);
-            OitcGame.deathPlayers.put(accurateVictim, 6);
+            OitcGame.deathPlayers.put(accurateVictim, 4); // 3 seconds
         }
     }
 

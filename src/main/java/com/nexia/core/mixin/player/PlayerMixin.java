@@ -91,19 +91,29 @@ public abstract class PlayerMixin extends LivingEntity {
             return;
         }
 
-        if(player.getLevel().equals(LobbyUtil.lobbyWorld) && damageSource == DamageSource.OUT_OF_WORLD) LobbyUtil.lobbySpawn.teleportPlayer(LobbyUtil.lobbyWorld, player);
+        if(player.getLevel().equals(LobbyUtil.lobbyWorld) && damageSource == DamageSource.OUT_OF_WORLD) {
+            LobbyUtil.lobbySpawn.teleportPlayer(LobbyUtil.lobbyWorld, player);
+            cir.setReturnValue(false);
+            return;
+        }
+
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
 
         if (player.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
             cir.setReturnValue(false);
             return;
         }
 
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
         if(attacker != null) {
-            if(attacker.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) cir.setReturnValue(false);
+            if(attacker.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
+                cir.setReturnValue(false);
+                return;
+            }
 
             DuelsTeam team = PlayerDataManager.get(player).duelOptions.duelsTeam;
-            if(team != null && team.all.contains(AccuratePlayer.create(attacker)) && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) cir.setReturnValue(false);
+            if(team != null && team.all.contains(AccuratePlayer.create(attacker)) && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) {
+                cir.setReturnValue(false);
+            }
         }
     }
 

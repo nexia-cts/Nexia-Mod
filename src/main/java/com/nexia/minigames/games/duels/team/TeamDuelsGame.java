@@ -162,7 +162,7 @@ public class TeamDuelsGame { // implements Runnable{
                 factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
             }
 
-            factoryPlayer.addTag(LobbyUtil.NO_DAMAGE_TAG);
+            factoryPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
             factoryPlayer.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
             PlayerUtil.resetHealthStatus(factoryPlayer);

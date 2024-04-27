@@ -104,10 +104,10 @@ public abstract class ServerPlayerMixin extends Player {
         PlayerGameMode gameMode = PlayerDataManager.get(player).gameMode;
         PlayerData duelsData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
 
-
         if (FfaUtil.isFfaPlayer(player)) {
             FfaUtil.leaveOrDie(player, damageSource, false);
-        } else if (BwAreas.isBedWarsWorld(getLevel())) {
+        }
+        else if (BwAreas.isBedWarsWorld(getLevel())) {
             BwPlayerEvents.death(player);
         }
         else if(gameMode == PlayerGameMode.OITC){
@@ -116,17 +116,11 @@ public abstract class ServerPlayerMixin extends Player {
         else if(gameMode == PlayerGameMode.SKYWARS) {
             SkywarsGame.death(player, damageSource);
         }
-        else if(gameMode == PlayerGameMode.LOBBY && duelsData.gameOptions != null && duelsData.gameOptions.duelsGame != null){
-            duelsData.gameOptions.duelsGame.death(player, damageSource);
-        }
-        else if(gameMode == PlayerGameMode.LOBBY && duelsData.gameOptions != null && duelsData.gameOptions.teamDuelsGame != null) {
-            duelsData.gameOptions.teamDuelsGame.death(player, damageSource);
-        }
-        else if(gameMode == PlayerGameMode.LOBBY && duelsData.gameOptions != null && duelsData.gameOptions.customDuelsGame != null){
-            duelsData.gameOptions.customDuelsGame.death(player, damageSource);
-        }
-        else if(gameMode == PlayerGameMode.LOBBY && duelsData.gameOptions != null && duelsData.gameOptions.customTeamDuelsGame != null) {
-            duelsData.gameOptions.customTeamDuelsGame.death(player, damageSource);
+        else if(gameMode == PlayerGameMode.LOBBY && duelsData.gameOptions != null) {
+            if(duelsData.gameOptions.duelsGame != null) duelsData.gameOptions.duelsGame.death(player, damageSource);
+            if(duelsData.gameOptions.teamDuelsGame != null) duelsData.gameOptions.teamDuelsGame.death(player, damageSource);
+            if(duelsData.gameOptions.customDuelsGame != null) duelsData.gameOptions.customDuelsGame.death(player, damageSource);
+            if(duelsData.gameOptions.customTeamDuelsGame != null) duelsData.gameOptions.customTeamDuelsGame.death(player, damageSource);
         }
 
     }

@@ -105,7 +105,7 @@ public class KitEditorCommand {
                 ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
                 return 0;
             } else {
-                context.getSource().sendFailure(LegacyChatFormat.format("Successfully saved your inventory as '{}'.", inventory));
+                context.getSource().sendSuccess(LegacyChatFormat.format("{b1}Successfully saved your inventory as '{}'.", inventory),false);
 
                 kitRoom.leave();
                 ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");

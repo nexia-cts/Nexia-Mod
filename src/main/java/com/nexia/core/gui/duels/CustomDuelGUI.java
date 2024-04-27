@@ -145,7 +145,7 @@ public class CustomDuelGUI extends SimpleGui {
             ItemStack itemStack = element.getItemStack();
             Component name = itemStack.getHoverName();
 
-            if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR && itemStack.getItem() != Items.PLAYER_HEAD){
+            if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR && itemStack.getItem() != Items.PLAYER_HEAD && itemStack.getItem() != Items.COMMAND_BLOCK){
                 if(InventoryUtil.getListOfInventories("duels/custom/" + this.player.getStringUUID()).contains(name.getString().toLowerCase().substring(2).replaceAll(" ", "_"))){
                     this.kit = name.getString().toLowerCase().substring(2).replaceAll(" ", "_");
                     setMapLayout();

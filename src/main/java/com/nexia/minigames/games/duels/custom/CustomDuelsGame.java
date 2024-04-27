@@ -398,7 +398,7 @@ public class CustomDuelsGame { //implements Runnable{
             attacker = accurateAttacker.get();
             PlayerData attackerData = PlayerDataManager.get(attacker);
 
-            if ((victimData.inDuel && attackerData.inDuel) && accurateAttacker.equals(attackerData.gameOptions.duelPlayer)) {
+            if ((victimData.inDuel && attackerData.inDuel) && accurateAttacker.equals(victimData.gameOptions.duelPlayer)) {
                 this.endGame(victim, attacker, true);
             }
             return;

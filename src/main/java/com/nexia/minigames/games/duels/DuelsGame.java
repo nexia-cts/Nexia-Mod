@@ -339,7 +339,6 @@ public class DuelsGame {
 
         if(attacker != null){
             PlayerData attackerData = PlayerDataManager.get(attacker);
-
             if((victimData.inDuel && attackerData.inDuel) && victimData.gameOptions.duelsGame == attackerData.gameOptions.duelsGame){
                 this.endGame(victim, attacker, true);
                 return;
@@ -350,7 +349,7 @@ public class DuelsGame {
             attacker = accurateAttacker.get();
             PlayerData attackerData = PlayerDataManager.get(attacker);
 
-            if ((victimData.inDuel && attackerData.inDuel) && accurateAttacker.equals(attackerData.gameOptions.duelPlayer)) {
+            if ((victimData.inDuel && attackerData.inDuel) && accurateAttacker.equals(victimData.gameOptions.duelPlayer)) {
                 this.endGame(victim, attacker, true);
                 return;
             }
