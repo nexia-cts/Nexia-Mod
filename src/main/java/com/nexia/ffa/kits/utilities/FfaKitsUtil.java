@@ -50,7 +50,7 @@ public class FfaKitsUtil {
 
     public static void ffaSecond() {
         if(ffaWorld == null) return;
-        if(ffaWorld.players().isEmpty())
+        if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer player : ffaWorld.players()) {
             if (!isFfaPlayer(player)) continue;
 
