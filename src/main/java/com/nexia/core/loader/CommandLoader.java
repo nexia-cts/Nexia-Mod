@@ -22,7 +22,6 @@ public class CommandLoader {
         callbackEvent.register(LeaveCommand::register);
         callbackEvent.register(ProtectionMapCommand::register);
         callbackEvent.register(PrefixCommand::register);
-        callbackEvent.register(DetectCommand::register);
         callbackEvent.register(RankCommand::register);
         callbackEvent.register(LinkCommand::register);
         callbackEvent.register(PingCommand::register);
