@@ -52,7 +52,6 @@
     "misc.ItemCombinerMenuMixin",
     "misc.MinecraftServerMixin",
     "misc.ServerLevelMixin",
-    "misc.ServerUtilsMixin",
     "misc.commands.BanCommandMixin",
     "misc.commands.EmoteCommandMixin",
     "misc.commands.MsgCommandMixin",

@@ -2,9 +2,10 @@ package com.nexia.minigames.games.duels.custom.kitroom.kitrooms;
 
 import com.combatreforged.factory.api.util.Identifier;
 import com.nexia.core.Main;
-import com.nexia.core.utilities.WorldUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.core.utilities.world.StructureMap;
+import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -14,13 +15,12 @@ import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.notcoded.codelib.players.AccuratePlayer;
-import net.notcoded.codelib.util.world.structure.StructureMap;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
 import java.util.UUID;
 
-import static com.nexia.core.utilities.WorldUtil.getChunkGenerator;
+import static com.nexia.core.utilities.world.WorldUtil.getChunkGenerator;
 
 public class KitRoom {
 

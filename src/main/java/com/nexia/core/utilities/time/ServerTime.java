@@ -23,7 +23,7 @@ import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
-import com.nexia.core.utilities.WorldUtil;
+import com.nexia.core.utilities.world.WorldUtil;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import xyz.nucleoid.fantasy.Fantasy;

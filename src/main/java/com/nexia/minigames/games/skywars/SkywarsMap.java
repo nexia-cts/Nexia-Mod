@@ -4,7 +4,7 @@ import com.combatreforged.factory.api.util.Identifier;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.core.utilities.WorldUtil;
+import com.nexia.core.utilities.world.WorldUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
