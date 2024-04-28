@@ -1,10 +1,10 @@
 package com.nexia.minigames.games.duels.custom.kitroom.kitrooms;
 
+import com.combatreforged.factory.api.util.Identifier;
+import com.nexia.core.utilities.world.StructureMap;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.notcoded.codelib.players.AccuratePlayer;
 import net.notcoded.codelib.util.world.structure.Rotation;
-import net.notcoded.codelib.util.world.structure.StructureMap;
 
 public class CustomKitRoom extends KitRoom {
     public CustomKitRoom(AccuratePlayer player) {
@@ -12,7 +12,7 @@ public class CustomKitRoom extends KitRoom {
 
         this.setKitRoom(
                 new StructureMap(
-                        new ResourceLocation("duels", "kitroom_custom"),
+                        new Identifier("duels", "kitroom_custom"),
                         Rotation.NO_ROTATION,
                         true,
                         new BlockPos(0, 78, 0),

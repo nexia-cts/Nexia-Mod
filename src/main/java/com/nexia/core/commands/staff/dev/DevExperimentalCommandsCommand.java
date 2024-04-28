@@ -30,7 +30,7 @@ import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.io.FileWriter;
 
-import static com.nexia.core.utilities.WorldUtil.getChunkGenerator;
+import static com.nexia.core.utilities.world.WorldUtil.getChunkGenerator;
 
 public class DevExperimentalCommandsCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {

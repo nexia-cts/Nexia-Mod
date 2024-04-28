@@ -13,7 +13,7 @@ import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
-import com.nexia.core.utilities.WorldUtil;
+import com.nexia.core.utilities.world.WorldUtil;
 import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.minecraft.nbt.TagParser;
@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Random;
 
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
-import static com.nexia.core.utilities.WorldUtil.getChunkGenerator;
+import static com.nexia.core.utilities.world.WorldUtil.getChunkGenerator;
 
 public class DuelGameHandler {
 
