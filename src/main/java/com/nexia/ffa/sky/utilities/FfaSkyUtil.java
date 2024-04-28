@@ -141,7 +141,7 @@ public class FfaSkyUtil {
             Item item = player.inventory.getItem(i).getItem();
             if (item.toString().endsWith("_wool")) {
                 ItemStack coloredWool = setWoolColor(new ItemStack(Items.WHITE_WOOL, 64));
-                if(i > 36) { /* offhand */
+                if(i >= 36) { /* offhand */
                     player.setItemSlot(EquipmentSlot.OFFHAND, coloredWool);
                 } else {
                     player.inventory.setItem(i, coloredWool);
@@ -340,5 +340,12 @@ public class FfaSkyUtil {
         ItemStack shears = new ItemStack(Items.SHEARS);
         shears.enchant(Enchantments.DIGGING_EFFICIENCY, 4);
         return shears;
+    }
+
+    static {
+        killRewards.put(3, gApplePotion());
+        killRewards.put(4, new ItemStack(Items.ENDER_PEARL, 1));
+        killRewards.put(5, new ItemStack(Items.COBWEB, 2));
+        killRewards.put(9, new ItemStack(Items.ARROW, 4));
     }
 }
