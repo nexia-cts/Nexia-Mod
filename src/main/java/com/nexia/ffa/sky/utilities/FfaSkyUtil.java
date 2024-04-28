@@ -29,7 +29,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.item.Item;
@@ -87,7 +87,16 @@ public class FfaSkyUtil {
     public static void saveInventory(ServerPlayer player){
         // /config/nexia/ffa/sky/inventory/savedInventories/uuid.json
 
-        SavableInventory savableInventory = new SavableInventory(player.inventory);
+        Inventory inventory = player.inventory;
+
+        for (int i = 0; i < 41; i++) {
+            Item item = inventory.getItem(i).getItem();
+            if (item.toString().endsWith("_wool")) {
+                inventory.setItem(i, new ItemStack(Items.WHITE_WOOL, 64));
+            }
+        }
+
+        SavableInventory savableInventory = new SavableInventory(inventory);
         String stringInventory = savableInventory.toSave();
 
         try {
@@ -141,11 +150,7 @@ public class FfaSkyUtil {
             Item item = player.inventory.getItem(i).getItem();
             if (item.toString().endsWith("_wool")) {
                 ItemStack coloredWool = setWoolColor(new ItemStack(Items.WHITE_WOOL, 64));
-                if(i >= 36) { /* offhand */
-                    player.setItemSlot(EquipmentSlot.OFFHAND, coloredWool);
-                } else {
-                    player.inventory.setItem(i, coloredWool);
-                }
+                player.inventory.setItem(i, coloredWool);
             }
         }
 
