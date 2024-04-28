@@ -72,8 +72,8 @@ public class BwGen {
 
     public static final int[] upgradeCosts = {2, 4, 6, 8};
 
-    public static final int[] ironDelays = {30, 20, 15, 15, 12};
-    public static final int[] goldDelays = {120, 80, 60, 60, 48};
+    public static final int[] ironDelays = {15, 10, 8, 8, 6};
+    public static final int[] goldDelays = {60, 40, 30, 30, 24};
     public static final int[] emeraldDelays = {0, 0, 0, 1200, 800};
 
     public static void genTick() {
