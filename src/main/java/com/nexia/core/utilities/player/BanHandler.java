@@ -128,7 +128,12 @@ public class BanHandler {
         LocalDateTime now = LocalDateTime.now();
 
         Duration duration = Duration.between(now, localDateTime);
-        return DurationFormatUtils.formatDuration(duration.toMillis(), "d'd', HH'h', mm'm', ss's'", true);
+        try {
+            return DurationFormatUtils.formatDuration(duration.toMillis(), "d'd', HH'h', mm'm', ss's'", true);
+        } catch (Exception ignored) {
+            return "Invalid time!";
+        }
+
     }
 
     public static void tryUnBan(CommandSourceStack sender, Collection<GameProfile> collection) {
