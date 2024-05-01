@@ -34,12 +34,16 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Mixin(ServerPlayer.class)
 public abstract class ServerPlayerMixin extends Player {
@@ -67,9 +71,19 @@ public abstract class ServerPlayerMixin extends Player {
     public void onAttack(Entity entity, CallbackInfo ci) {
         ServerPlayer attacker = (ServerPlayer) (Object) this;
         if(level == LobbyUtil.lobbyWorld && entity instanceof ServerPlayer player && player != attacker) {
-            if(this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("duel sword")) DuelGUI.openDuelGui(attacker, player);
-            if(this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("custom duel sword")) CustomDuelGUI.openDuelGui(attacker, player);
-            if(this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("team axe")) PlayerUtil.getFactoryPlayer(attacker).runCommand("/party invite " + player.getScoreboardName());
+            String name = this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase();
+            if(name.contains("duel sword")) {
+                DuelGUI.openDuelGui(attacker, player);
+                return;
+            }
+            if(name.contains("custom duel sword")) {
+                CustomDuelGUI.openDuelGui(attacker, player);
+                return;
+            }
+            if(name.contains("team axe")) {
+                PlayerUtil.getFactoryPlayer(attacker).runCommand("/party invite " + player.getScoreboardName());
+                return;
+            }
             return;
         }
 
@@ -85,10 +99,7 @@ public abstract class ServerPlayerMixin extends Player {
                 ci.cancel();
                 return;
             }
-            attacker.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 1, false, false, false));
-
             attacker.getCooldowns().addCooldown(Items.NETHERITE_SWORD, 200);
-
             attacker.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 0, false, false, false));
             return;
         }
@@ -131,5 +142,20 @@ public abstract class ServerPlayerMixin extends Player {
         }
 
         player.containerMenu.removed(player);
+    }
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void detect(CallbackInfo ci){
+        List<Player> playersNearby = level.getEntitiesOfClass(ServerPlayer.class,getBoundingBox().inflate(12, 0.25, 12));
+        Vec3 eyePos = getEyePosition(1);
+        AtomicReference<Vec3> nearestPosition = new AtomicReference<>();
+        playersNearby.forEach(player -> {
+            Vec3 currentPos = player.getBoundingBox().getNearestPointTo(eyePos);
+            if(nearestPosition.get() == null || nearestPosition.get().distanceToSqr(eyePos) > currentPos.distanceToSqr(eyePos))
+                nearestPosition.set(currentPos);
+        });
+        if(nearestPosition.get() != null) {
+            Vec3 nearestPos = nearestPosition.get();
+            // ServerTime.factoryServer.runCommand("/player .bot look at " + nearestPos.x + " " + nearestPos.y + " " + nearestPos.z, 4, false);
+        }
     }
 }

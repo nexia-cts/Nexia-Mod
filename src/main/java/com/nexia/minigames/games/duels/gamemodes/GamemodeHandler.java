@@ -207,14 +207,12 @@ public class GamemodeHandler {
         TeamDuelsGame teamDuelsGame = null;
         CustomTeamDuelsGame customTeamDuelsGame = null;
 
-        if (player != null && playerData.inDuel && (playerData.gameOptions != null && playerData.gameOptions.duelsGame != null)) {
-            duelsGame = playerData.gameOptions.duelsGame;
-        } else if (player != null && playerData.inDuel && (playerData.gameOptions != null && playerData.gameOptions.teamDuelsGame != null)) {
-            teamDuelsGame = playerData.gameOptions.teamDuelsGame;
-        } else if (player != null && playerData.inDuel && (playerData.gameOptions != null && playerData.gameOptions.customDuelsGame != null)) {
-            customDuelsGame = playerData.gameOptions.customDuelsGame;
-        } else if (player != null && playerData.inDuel && (playerData.gameOptions != null && playerData.gameOptions.customTeamDuelsGame != null)) {
-            customTeamDuelsGame = playerData.gameOptions.customTeamDuelsGame;
+
+        if(player != null && playerData.inDuel && playerData.gameOptions != null) {
+            if(playerData.gameOptions.duelsGame != null) duelsGame = playerData.gameOptions.duelsGame;
+            if(playerData.gameOptions.teamDuelsGame != null) teamDuelsGame = playerData.gameOptions.teamDuelsGame;
+            if(playerData.gameOptions.customDuelsGame != null) customDuelsGame = playerData.gameOptions.customDuelsGame;
+            if(playerData.gameOptions.customTeamDuelsGame != null) customTeamDuelsGame = playerData.gameOptions.customTeamDuelsGame;
         }
 
         PlayerData executorData = PlayerDataManager.get(executor.get());
