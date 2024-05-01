@@ -138,7 +138,7 @@ public abstract class ServerPlayerMixin extends Player {
     }
     @Inject(method = "tick", at = @At("HEAD"))
     private void detect(CallbackInfo ci){
-        List<Player> playersNearby = level.getEntitiesOfClass(ServerPlayer.class,getBoundingBox().inflate(12, 0.25, 12));
+        List<Player> playersNearby = level.getEntitiesOfClass(ServerPlayer.class,getBoundingBox().inflate(12, 12, 12));
         Vec3 eyePos = getEyePosition(1);
         AtomicReference<Vec3> nearestPosition = new AtomicReference<>();
         playersNearby.forEach(player -> {
