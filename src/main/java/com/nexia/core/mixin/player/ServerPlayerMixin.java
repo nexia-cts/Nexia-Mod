@@ -71,9 +71,19 @@ public abstract class ServerPlayerMixin extends Player {
     public void onAttack(Entity entity, CallbackInfo ci) {
         ServerPlayer attacker = (ServerPlayer) (Object) this;
         if(level == LobbyUtil.lobbyWorld && entity instanceof ServerPlayer player && player != attacker) {
-            if(this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("duel sword")) DuelGUI.openDuelGui(attacker, player);
-            if(this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("custom duel sword")) CustomDuelGUI.openDuelGui(attacker, player);
-            if(this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase().contains("team axe")) PlayerUtil.getFactoryPlayer(attacker).runCommand("/party invite " + player.getScoreboardName());
+            String name = this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase();
+            if(name.contains("duel sword")) {
+                DuelGUI.openDuelGui(attacker, player);
+                return;
+            }
+            if(name.contains("custom duel sword")) {
+                CustomDuelGUI.openDuelGui(attacker, player);
+                return;
+            }
+            if(name.contains("team axe")) {
+                PlayerUtil.getFactoryPlayer(attacker).runCommand("/party invite " + player.getScoreboardName());
+                return;
+            }
             return;
         }
 
@@ -89,10 +99,7 @@ public abstract class ServerPlayerMixin extends Player {
                 ci.cancel();
                 return;
             }
-            attacker.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 1, false, false, false));
-
             attacker.getCooldowns().addCooldown(Items.NETHERITE_SWORD, 200);
-
             attacker.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 0, false, false, false));
             return;
         }

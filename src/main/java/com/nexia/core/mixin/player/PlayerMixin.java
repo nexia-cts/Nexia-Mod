@@ -97,7 +97,7 @@ public abstract class PlayerMixin extends LivingEntity {
             return;
         }
 
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player, damageSource.getEntity());
 
         if (player.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
             cir.setReturnValue(false);
