@@ -7,6 +7,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
+import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
@@ -66,7 +67,7 @@ public class FfaSkyUtil {
     public static final HashMap<Integer, ItemStack> killRewards = new HashMap<>();
 
     public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
-        com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
+        PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
         return player.getTags().contains("ffa_sky") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.SKY;
     }
 
@@ -74,7 +75,7 @@ public class FfaSkyUtil {
         if(ffaWorld == null) return;
         if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
-            if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !FfaAreas.isInFfaSpawn(minecraftPlayer)){
+            if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !isInFfaSpawn(minecraftPlayer)){
                 Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
                 wasInSpawn.remove(minecraftPlayer.getUUID());
                 minecraftPlayer.getCooldowns().addCooldown(Items.ENDER_PEARL, 10);
@@ -89,14 +90,19 @@ public class FfaSkyUtil {
 
         Inventory inventory = player.inventory;
 
+        ItemStack ogWoolItem = null;
+        int ogWoolItemSlot = 36;
+
         for (int i = 0; i < 41; i++) {
-            Item item = inventory.getItem(i).getItem();
-            if (item.toString().endsWith("_wool")) {
-                inventory.setItem(i, new ItemStack(Items.WHITE_WOOL, 64));
+            ItemStack item = inventory.getItem(i);
+            if (item.getItem().toString().endsWith("_wool")) {
+                ogWoolItemSlot = i;
+                ogWoolItem = item;
+                player.inventory.setItem(i, new ItemStack(Items.WHITE_WOOL, 64));
             }
         }
 
-        SavableInventory savableInventory = new SavableInventory(inventory);
+        SavableInventory savableInventory = new SavableInventory(player.inventory);
         String stringInventory = savableInventory.toSave();
 
         try {
@@ -108,6 +114,12 @@ public class FfaSkyUtil {
             ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
             player.sendMessage(LegacyChatFormat.format("{f}Failed to save Sky FFA inventory. Please try again or contact a developer."), Util.NIL_UUID);
             return;
+        }
+
+        if(ogWoolItem != null) {
+            player.inventory.setItem(ogWoolItemSlot, ogWoolItem);
+            ItemStackUtil.sendInventoryRefreshPacket(player);
+            // problem solved
         }
     }
 
@@ -299,7 +311,7 @@ public class FfaSkyUtil {
         FfaSkyUtil.wasInSpawn.add(player.getUUID());
 
         player.setGameMode(GameType.ADVENTURE);
-        FfaAreas.spawn.teleportPlayer(FfaAreas.ffaWorld, player);
+        spawn.teleportPlayer(ffaWorld, player);
         FfaSkyUtil.setInventory(player);
     }
 
@@ -322,13 +334,13 @@ public class FfaSkyUtil {
             InventoryUtil.sendHandItemPacket(player, player.getUsedItemHand());
             return false;
         }
-        return FfaAreas.canBuild(player, blockPos);
+        return canBuild(player, blockPos);
     }
 
     public static boolean beforeDamage(ServerPlayer player, DamageSource damageSource) {
         if (damageSource == DamageSource.OUT_OF_WORLD) return true;
 
-        return !FfaAreas.isInFfaSpawn(player);
+        return !isInFfaSpawn(player);
     }
 
     public static void afterPlace(ServerPlayer player, BlockPos blockPos, InteractionHand hand) {
