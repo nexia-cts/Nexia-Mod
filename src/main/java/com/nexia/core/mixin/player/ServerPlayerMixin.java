@@ -72,12 +72,12 @@ public abstract class ServerPlayerMixin extends Player {
         ServerPlayer attacker = (ServerPlayer) (Object) this;
         if(level == LobbyUtil.lobbyWorld && entity instanceof ServerPlayer player && player != attacker) {
             String name = this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase();
-            if(name.contains("duel sword")) {
-                DuelGUI.openDuelGui(attacker, player);
-                return;
-            }
             if(name.contains("custom duel sword")) {
                 CustomDuelGUI.openDuelGui(attacker, player);
+                return;
+            }
+            if(name.contains("duel sword")) {
+                DuelGUI.openDuelGui(attacker, player);
                 return;
             }
             if(name.contains("team axe")) {
