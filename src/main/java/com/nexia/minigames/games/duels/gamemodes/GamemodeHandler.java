@@ -294,7 +294,9 @@ public class GamemodeHandler {
         }
 
         if (data.duelOptions.duelsTeam == null && playerData.duelOptions.duelsTeam != null) {
-            DuelsTeam.createTeam(invitor, false);
+            DuelsTeam.createTeam(invitor, true);
+        } else if(data.duelOptions.duelsTeam != null && playerData.duelOptions.duelsTeam == null) {
+            DuelsTeam.createTeam(player, true);
         }
 
         if (data.duelOptions.duelsTeam != null && playerData.duelOptions.duelsTeam != null) {
@@ -376,15 +378,15 @@ public class GamemodeHandler {
             return;
         }
 
-        DuelOptions.InviteOptions inviteOptions = playerData.inviteOptions;
+        DuelOptions.InviteOptions inviteOptions = executorData.inviteOptions;
 
         if (!inviteOptions.inviting || !inviteOptions.invitingPlayer.equals(AccuratePlayer.create(minecraftExecutor))) {
             executor.sendMessage(Component.text("That player has not challenged you to a duel!").color(ChatFormat.failColor));
             return;
         }
 
-        if(inviteOptions.customDuel) GamemodeHandler.joinCustomGamemode(minecraftPlayer, minecraftExecutor, inviteOptions.inviteKit, inviteOptions.inviteMap, false);
-        else GamemodeHandler.joinGamemode(minecraftPlayer, minecraftExecutor, inviteOptions.inviteKit, inviteOptions.inviteMap, false);
+        if(inviteOptions.customDuel) GamemodeHandler.joinCustomGamemode(minecraftExecutor, minecraftPlayer, inviteOptions.inviteKit, inviteOptions.inviteMap, false);
+        else GamemodeHandler.joinGamemode(minecraftExecutor, minecraftPlayer, inviteOptions.inviteKit, inviteOptions.inviteMap, false);
     }
 
     public static void declineDuel(@NotNull ServerPlayer minecraftExecutor, @NotNull ServerPlayer minecraftPlayer) {

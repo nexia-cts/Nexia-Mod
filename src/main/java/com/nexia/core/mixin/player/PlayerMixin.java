@@ -11,7 +11,6 @@ import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
-import com.nexia.minigames.games.duels.team.DuelsTeam;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -27,7 +26,6 @@ import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -110,10 +108,12 @@ public abstract class PlayerMixin extends LivingEntity {
                 return;
             }
 
+            /*
             DuelsTeam team = PlayerDataManager.get(player).duelOptions.duelsTeam;
             if(team != null && team.all.contains(AccuratePlayer.create(attacker)) && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) {
                 cir.setReturnValue(false);
             }
+            */
         }
     }
 
