@@ -333,7 +333,7 @@ public class FfaUhcUtil {
         arrows.setCount(6);
 
         ItemStack helmet = new ItemStack(Items.DIAMOND_HELMET);
-        helmet.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 2);
+        helmet.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 3);
 
         ItemStack chestplate = new ItemStack(Items.DIAMOND_CHESTPLATE);
         chestplate.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 3);
@@ -342,7 +342,7 @@ public class FfaUhcUtil {
         leggings.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 3);
 
         ItemStack boots = new ItemStack(Items.DIAMOND_BOOTS);
-        boots.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 2);
+        boots.enchant(Enchantments.ALL_DAMAGE_PROTECTION, 3);
 
         invItems.put(0, sword);
         invItems.put(1, trident);
