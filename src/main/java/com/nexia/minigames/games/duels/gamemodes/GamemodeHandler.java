@@ -378,7 +378,7 @@ public class GamemodeHandler {
             return;
         }
 
-        DuelOptions.InviteOptions inviteOptions = executorData.inviteOptions;
+        DuelOptions.InviteOptions inviteOptions = playerData.inviteOptions;
 
         if (!inviteOptions.inviting || !inviteOptions.invitingPlayer.equals(AccuratePlayer.create(minecraftExecutor))) {
             executor.sendMessage(Component.text("That player has not challenged you to a duel!").color(ChatFormat.failColor));
