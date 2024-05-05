@@ -385,8 +385,8 @@ public class GamemodeHandler {
             return;
         }
 
-        if(inviteOptions.customDuel) GamemodeHandler.joinCustomGamemode(minecraftExecutor, minecraftPlayer, inviteOptions.inviteKit, inviteOptions.inviteMap, false);
-        else GamemodeHandler.joinGamemode(minecraftExecutor, minecraftPlayer, inviteOptions.inviteKit, inviteOptions.inviteMap, false);
+        if(inviteOptions.customDuel) GamemodeHandler.joinCustomGamemode(minecraftPlayer, minecraftExecutor, inviteOptions.inviteKit, inviteOptions.inviteMap, false);
+        else GamemodeHandler.joinGamemode(minecraftPlayer, minecraftExecutor, inviteOptions.inviteKit, inviteOptions.inviteMap, false);
     }
 
     public static void declineDuel(@NotNull ServerPlayer minecraftExecutor, @NotNull ServerPlayer minecraftPlayer) {
