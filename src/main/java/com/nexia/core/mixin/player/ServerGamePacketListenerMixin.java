@@ -1,5 +1,6 @@
 package com.nexia.core.mixin.player;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
@@ -19,6 +20,7 @@ import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.*;
@@ -56,6 +58,17 @@ public class ServerGamePacketListenerMixin {
             ci.cancel();
 
         }
+    }
+
+    @ModifyExpressionValue(
+            method = "handleSetCommandBlock",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/server/level/ServerPlayer;canUseGameMasterBlocks()Z"
+            )
+    )
+    public boolean canUseCommandBlock(boolean original) {
+        return Permissions.check(this.player, "nexia.dev.commandblock");
     }
 
     // Thank you, our lord and saviour

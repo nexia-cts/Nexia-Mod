@@ -1,5 +1,6 @@
 package com.nexia.core.mixin.misc;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.nexia.core.utilities.time.ServerTime;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,6 +31,11 @@ public class MinecraftServerMixin {
     @Inject(method = "stopServer", at = @At("HEAD"))
     protected void stopServer(CallbackInfo ci) {
         ServerTime.stopServer();
+    }
+
+    @ModifyReturnValue(method = "isUnderSpawnProtection", at = @At("HEAD"))
+    private boolean noSpawnProtection() {
+        return false;
     }
 
 }
