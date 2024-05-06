@@ -360,9 +360,16 @@ public class FfaSkyUtil {
     }
 
     static {
+        ItemStack pearl = new ItemStack(Items.ENDER_PEARL, 1);
+        ItemStack cobweb = new ItemStack(Items.COBWEB, 2);
+        ItemStack arrow = new ItemStack(Items.ARROW, 4);
+        pearl.getOrCreateTag();
+        cobweb.getOrCreateTag();
+        arrow.getOrCreateTag();
+
         killRewards.put(3, gApplePotion());
-        killRewards.put(4, new ItemStack(Items.ENDER_PEARL, 1));
-        killRewards.put(5, new ItemStack(Items.COBWEB, 2));
-        killRewards.put(9, new ItemStack(Items.ARROW, 4));
+        killRewards.put(4, pearl);
+        killRewards.put(5, cobweb);
+        killRewards.put(9, arrow);
     }
 }
