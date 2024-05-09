@@ -1,5 +1,7 @@
 # Nexia
 
 ### Requirements
-- Java 17
-- Gradle 7.3
+- Java 21
+- Gradle 8.7
+
+Build via: `gradlew build`
