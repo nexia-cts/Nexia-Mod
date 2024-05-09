@@ -22,7 +22,6 @@ public class ModConfig implements ConfigData {
 
     public boolean debugMode = false;
 
-
     public Enhancements enhancements = new Enhancements();
     public static class Enhancements {
         @Comment("Toggles if the better shields are enabled.")

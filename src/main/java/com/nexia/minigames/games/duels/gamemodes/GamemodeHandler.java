@@ -294,7 +294,9 @@ public class GamemodeHandler {
         }
 
         if (data.duelOptions.duelsTeam == null && playerData.duelOptions.duelsTeam != null) {
-            DuelsTeam.createTeam(invitor, false);
+            DuelsTeam.createTeam(invitor, true);
+        } else if(data.duelOptions.duelsTeam != null && playerData.duelOptions.duelsTeam == null) {
+            DuelsTeam.createTeam(player, true);
         }
 
         if (data.duelOptions.duelsTeam != null && playerData.duelOptions.duelsTeam != null) {

@@ -35,6 +35,7 @@
     "item.CompassItemMixin",
     "item.CraftingMixin",
     "item.CrossbowItemMixin",
+    "item.DebugStickItemMixin",
     "item.EggItemMixin",
     "item.ElytraItemMixin",
     "item.EnderPearlItemMixin",

@@ -89,7 +89,7 @@ public class PlayerRespawnListener {
 
                 respawnEvent.setSpawnpoint(new Location(player1.getX(), player1.getY(), player1.getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getIdentifierWorldName(teamDuelsGame.level).getId()))));
                 //player.teleportTo(duelsGame.level, duelsGame.winner.getX(), duelsGame.winner.getY(), duelsGame.winner.getZ(), 0, 0);
-            } if(customDuelsGame != null && customDuelsGame.isEnding && customDuelsGame.winner != null) {
+            } else if(customDuelsGame != null && customDuelsGame.isEnding && customDuelsGame.winner != null) {
                 factoryPlayer.getInventory().clear();
                 LobbyUtil.giveItems(player);
 

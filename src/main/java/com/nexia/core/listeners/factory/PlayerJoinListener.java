@@ -8,6 +8,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.discord.Main;
 import com.nexia.discord.utilities.player.PlayerData;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.dv8tion.jda.api.entities.Member;
@@ -17,6 +18,8 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.level.ServerPlayer;
+
+import java.util.Objects;
 
 import static com.nexia.discord.Main.jda;
 
@@ -94,7 +97,7 @@ public class PlayerJoinListener {
         Member discordUser = null;
 
         try {
-            discordUser = jda.getGuildById(com.nexia.discord.Main.config.guildID).retrieveMemberById(playerData.savedData.discordID).complete(true);
+            discordUser = Objects.requireNonNull(jda.getGuildById(Main.config.guildID)).retrieveMemberById(playerData.savedData.discordID).complete(true);
         } catch (Exception ignored) { }
 
         if(discordUser == null) {
