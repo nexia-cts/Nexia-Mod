@@ -46,6 +46,7 @@
     "fabric": "*",
     "factory-api": "*",
     "fantasy": ">=0.4.2",
-    "collective-fabric": ">=1.16.5-5.50"
+    "collective-fabric": ">=1.16.5-5.50",
+    "java": ">=21"
   }
 }
