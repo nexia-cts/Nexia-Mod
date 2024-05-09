@@ -1,6 +1,7 @@
 package com.nexia.core.mixin.player;
 
 import com.mojang.authlib.GameProfile;
+import com.nexia.core.commands.staff.DetectCommand;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.duels.CustomDuelGUI;
@@ -34,16 +35,12 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Mixin(ServerPlayer.class)
 public abstract class ServerPlayerMixin extends Player {
@@ -145,17 +142,7 @@ public abstract class ServerPlayerMixin extends Player {
     }
     @Inject(method = "tick", at = @At("HEAD"))
     private void detect(CallbackInfo ci){
-        List<Player> playersNearby = level.getEntitiesOfClass(ServerPlayer.class,getBoundingBox().inflate(12, 12, 12));
-        Vec3 eyePos = getEyePosition(1);
-        AtomicReference<Vec3> nearestPosition = new AtomicReference<>();
-        playersNearby.forEach(player -> {
-            Vec3 currentPos = player.getBoundingBox().getNearestPointTo(eyePos);
-            if(nearestPosition.get() == null || nearestPosition.get().distanceToSqr(eyePos) > currentPos.distanceToSqr(eyePos))
-                nearestPosition.set(currentPos);
-        });
-        if(nearestPosition.get() != null) {
-            Vec3 nearestPos = nearestPosition.get();
-            // ServerTime.factoryServer.runCommand("/player .bot look at " + nearestPos.x + " " + nearestPos.y + " " + nearestPos.z, 4, false);
-        }
+        if(!DetectCommand.enabled) return;
+        DetectCommand.detect((ServerPlayer) (Object) this);
     }
 }
