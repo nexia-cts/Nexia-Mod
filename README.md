@@ -19,5 +19,6 @@ The mod for the Nexia CTS server.
 
 ### Build
 - Clone the repository
-  - `git clone https://nexia-cts/Nexia-Mod`
+  - `git clone https://github.com/nexia-cts/Nexia-Mod`
+    - `git checkout 'main/dev'`
 - Run `./gradlew build`
