@@ -210,9 +210,9 @@ public class GamemodeHandler {
 
         if(playerData != null && playerData.inDuel && playerData.gameOptions != null) {
             if(playerData.gameOptions.duelsGame != null) duelsGame = playerData.gameOptions.duelsGame;
-            if(playerData.gameOptions.teamDuelsGame != null) teamDuelsGame = playerData.gameOptions.teamDuelsGame;
-            if(playerData.gameOptions.customDuelsGame != null) customDuelsGame = playerData.gameOptions.customDuelsGame;
-            if(playerData.gameOptions.customTeamDuelsGame != null) customTeamDuelsGame = playerData.gameOptions.customTeamDuelsGame;
+            else if(playerData.gameOptions.teamDuelsGame != null) teamDuelsGame = playerData.gameOptions.teamDuelsGame;
+            else if(playerData.gameOptions.customDuelsGame != null) customDuelsGame = playerData.gameOptions.customDuelsGame;
+            else if(playerData.gameOptions.customTeamDuelsGame != null) customTeamDuelsGame = playerData.gameOptions.customTeamDuelsGame;
         }
 
         PlayerData executorData = PlayerDataManager.get(executor.get());
@@ -225,7 +225,7 @@ public class GamemodeHandler {
                             .append(Component.text("You have stopped spectating ")
                                     .color(ChatFormat.normalColor)
                                     .decoration(ChatFormat.bold, false)
-                                    .append(Component.text(player.get().getScoreboardName())
+                                    .append(Component.text(player.name)
                                             .color(ChatFormat.brandColor1)
                                             .decoration(ChatFormat.bold, true)
                                     )

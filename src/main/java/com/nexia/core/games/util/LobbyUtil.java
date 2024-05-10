@@ -45,6 +45,7 @@ import org.json.simple.JSONObject;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static com.nexia.core.utilities.player.BanHandler.getBanTime;
 
@@ -139,7 +140,7 @@ public class LobbyUtil {
 
         minecraftPlayer.abilities.mayfly = false;
         minecraftPlayer.abilities.flying = false;
-        minecraftPlayer.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(0.0);
+        Objects.requireNonNull(minecraftPlayer.getAttribute(Attributes.KNOCKBACK_RESISTANCE)).setBaseValue(0.0);
         minecraftPlayer.onUpdateAbilities();
         minecraftPlayer.setGlowing(false);
 
