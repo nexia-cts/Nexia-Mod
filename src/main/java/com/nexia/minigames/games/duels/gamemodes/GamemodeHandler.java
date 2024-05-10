@@ -84,7 +84,7 @@ public class GamemodeHandler {
 
         gameMode.queue.add(minecraftPlayer);
         if (gameMode.queue.size() >= 2) {
-            GamemodeHandler.joinGamemode(minecraftPlayer, gameMode.queue.get(0), stringGameMode, null, false);
+            GamemodeHandler.joinGamemode(minecraftPlayer, gameMode.queue.getFirst(), stringGameMode, null, false);
         }
     }
 
@@ -124,7 +124,7 @@ public class GamemodeHandler {
 
         PlayerData playerData = PlayerDataManager.get(player.get());
 
-        if ((!playerData.inDuel && playerData.gameOptions.teamDuelsGame == null && playerData.gameOptions.duelsGame == null) || playerData.gameOptions == null) {
+        if (playerData.gameOptions == null || (!playerData.inDuel || playerData.gameOptions.teamDuelsGame == null || playerData.gameOptions.duelsGame == null || playerData.gameOptions.customTeamDuelsGame == null || playerData.gameOptions.customDuelsGame == null)) {
             factoryExecutor.sendMessage(Component.text("That player is not in a duel!").color(ChatFormat.failColor));
             return;
         }

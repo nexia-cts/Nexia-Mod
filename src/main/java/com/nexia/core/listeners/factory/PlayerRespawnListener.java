@@ -109,7 +109,7 @@ public class PlayerRespawnListener {
                 LobbyUtil.giveItems(player);
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
 
-                Location respawn = new Location(0,80, 0, ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getIdentifierWorldName(customTeamDuelsGame.level).getId()))));
+                Location respawn = new Location(0,80, 0, ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getIdentifierWorldName(customTeamDuelsGame.level).getId())));
 
                 ServerPlayer player1 = null;
                 if(duelsData.duelOptions.duelsTeam.alive.isEmpty()) {
