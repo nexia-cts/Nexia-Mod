@@ -33,8 +33,8 @@ public class PlayerRespawnListener {
             if(factoryPlayer == null) return;
 
             ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayer(factoryPlayer.getUUID());
-
             if(player == null) return;
+
             PlayerData duelsData = PlayerDataManager.get(player);
             com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
 
@@ -72,22 +72,30 @@ public class PlayerRespawnListener {
             } else if(teamDuelsGame != null && duelsData.duelOptions.duelsTeam != null) {
                 factoryPlayer.getInventory().clear();
                 LobbyUtil.giveItems(player);
-
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
 
-                ServerPlayer player1;
+                Location respawn = new Location(0,80, 0, ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getIdentifierWorldName(teamDuelsGame.level).getId())));
+
+                ServerPlayer player1 = null;
                 if(duelsData.duelOptions.duelsTeam.alive.isEmpty()) {
-                    if(teamDuelsGame.team1 == duelsData.duelOptions.duelsTeam) {
+                    if(teamDuelsGame.team1 == duelsData.duelOptions.duelsTeam && !teamDuelsGame.team2.alive.isEmpty()) {
                         player1 = teamDuelsGame.team2.alive.get(new Random().nextInt(teamDuelsGame.team2.alive.size())).get();
-                    } else {
+                    } else if(teamDuelsGame.team2 == duelsData.duelOptions.duelsTeam && !teamDuelsGame.team1.alive.isEmpty()){
                         player1 = teamDuelsGame.team1.alive.get(new Random().nextInt(teamDuelsGame.team1.alive.size())).get();
                     }
+
+                    if(player1 != null) {
+                        respawn.setX(player1.getX());
+                        respawn.setY(player1.getY());
+                        respawn.setZ(player1.getZ());
+                    }
+
                 } else {
                     player1 = duelsData.duelOptions.duelsTeam.alive.get(new Random().nextInt(duelsData.duelOptions.duelsTeam.alive.size())).get();
                 }
 
 
-                respawnEvent.setSpawnpoint(new Location(player1.getX(), player1.getY(), player1.getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getIdentifierWorldName(teamDuelsGame.level).getId()))));
+                respawnEvent.setSpawnpoint(respawn);
                 //player.teleportTo(duelsGame.level, duelsGame.winner.getX(), duelsGame.winner.getY(), duelsGame.winner.getZ(), 0, 0);
             } else if(customDuelsGame != null && customDuelsGame.isEnding && customDuelsGame.winner != null) {
                 factoryPlayer.getInventory().clear();
@@ -99,22 +107,32 @@ public class PlayerRespawnListener {
             } else if(customTeamDuelsGame != null && duelsData.duelOptions.duelsTeam != null) {
                 factoryPlayer.getInventory().clear();
                 LobbyUtil.giveItems(player);
-
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
 
-                ServerPlayer player1;
+                Location respawn = new Location(0,80, 0, ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getIdentifierWorldName(customTeamDuelsGame.level).getId()))));
+
+                ServerPlayer player1 = null;
                 if(duelsData.duelOptions.duelsTeam.alive.isEmpty()) {
-                    if(customTeamDuelsGame.team1 == duelsData.duelOptions.duelsTeam) {
+                    if(customTeamDuelsGame.team1 == duelsData.duelOptions.duelsTeam && !customTeamDuelsGame.team2.alive.isEmpty()) {
                         player1 = customTeamDuelsGame.team2.alive.get(new Random().nextInt(customTeamDuelsGame.team2.alive.size())).get();
-                    } else {
+                    } else if (customTeamDuelsGame.team2 == duelsData.duelOptions.duelsTeam && !customTeamDuelsGame.team1.alive.isEmpty()) {
                         player1 = customTeamDuelsGame.team1.alive.get(new Random().nextInt(customTeamDuelsGame.team1.alive.size())).get();
                     }
+
+                    if(player1 != null) {
+                        respawn.setX(player1.getX());
+                        respawn.setY(player1.getY());
+                        respawn.setZ(player1.getZ());
+                    }
+
+
                 } else {
                     player1 = duelsData.duelOptions.duelsTeam.alive.get(new Random().nextInt(duelsData.duelOptions.duelsTeam.alive.size())).get();
                 }
 
 
-                respawnEvent.setSpawnpoint(new Location(player1.getX(), player1.getY(), player1.getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getIdentifierWorldName(customTeamDuelsGame.level).getId()))));
+
+                respawnEvent.setSpawnpoint(respawn);
             }
 
         });

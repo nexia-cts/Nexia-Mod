@@ -9,6 +9,8 @@ import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.Util;
 import net.minecraft.network.chat.TextComponent;
@@ -49,7 +51,8 @@ public class DuelsTeam {
 
     public AccuratePlayer getLeader() {
         if(this.leader == null || this.leader.get() == null) {
-            this.disbandTeam(this.getPeople().get(RandomUtil.randomInt(this.getPeople().size())), false);
+            if(this.getPeople().isEmpty()) this.disbandTeam(null, false);
+            else this.disbandTeam(this.getPeople().get(RandomUtil.randomInt(this.getPeople().size())), false);
         }
         return this.leader;
     }
@@ -78,8 +81,8 @@ public class DuelsTeam {
         }
 
         this.leader = player;
-        this.people.remove(player);
-        this.people.add(executor);
+        this.getPeople().remove(player);
+        this.getPeople().add(executor);
 
         if(message) factoryExecutor.sendMessage(Component.text("You have promoted " + player.get().getScoreboardName() + " to the leader."));
         for(AccuratePlayer tPlayer : this.all) {
@@ -95,21 +98,24 @@ public class DuelsTeam {
         this.alive.clear();
         this.all.clear();
         this.all.add(this.leader);
-        this.all.addAll(this.people);
+        this.all.addAll(this.getPeople());
     }
 
 
     public void disbandTeam(AccuratePlayer executor, boolean message) {
-        Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor.get());
+        Player factoryExecutor = null;
+        if(executor != null && executor.get() != null) factoryExecutor = PlayerUtil.getFactoryPlayer(executor.get());
 
-        if(!this.isLeader(AccuratePlayer.create(executor.get()))){
+        if(factoryExecutor != null && !this.isLeader(AccuratePlayer.create(executor.get()))){
             factoryExecutor.sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
             return;
         }
 
-        if(!this.people.isEmpty()) {
-            this.leader = this.people.get(RandomUtil.randomInt(this.people.size()));
-            this.leaveTeam(executor, true);
+
+
+        if(!this.getPeople().isEmpty()) {
+            this.leader = this.getPeople().get(RandomUtil.randomInt(this.getPeople().size()));
+            if(factoryExecutor != null) this.leaveTeam(executor, true);
             return;
         }
 
@@ -118,27 +124,27 @@ public class DuelsTeam {
             PlayerDataManager.get(player.get()).duelOptions.duelsTeam = null;
             if(message) player.get().sendMessage(msg, Util.NIL_UUID);
         }
-        this.people.clear();
+        this.getPeople().clear();
         this.all.clear();
         this.alive.clear();
         this.leader = null;
         this.invited.clear();
-        if(message) factoryExecutor.sendMessage(Component.text("You have disbanded your own team.").color(ChatFormat.normalColor));
+        if(message && factoryExecutor != null) factoryExecutor.sendMessage(Component.text("You have disbanded your own team.").color(ChatFormat.normalColor));
     }
 
     public void leaveTeam(AccuratePlayer player, boolean message) {
         Player factoryPlayer = PlayerUtil.getFactoryPlayer(player.get());
         PlayerData data = PlayerDataManager.get(player.get());
 
-        if(this.isLeader(player) && this.people.isEmpty()) {
+        if(this.isLeader(player) && this.getPeople().isEmpty()) {
             this.disbandTeam(player, message);
             return;
         }
-        if(this.isLeader(player) && !this.people.isEmpty()) this.leader = this.people.get(RandomUtil.randomInt(this.people.size()));
+        if(this.isLeader(player) && !this.getPeople().isEmpty()) this.leader = this.getPeople().get(RandomUtil.randomInt(this.getPeople().size()));
 
 
         data.duelOptions.duelsTeam = null;
-        this.people.remove(player);
+        this.getPeople().remove(player);
         this.all.remove(player);
         this.alive.remove(player);
 
@@ -178,7 +184,7 @@ public class DuelsTeam {
             return;
         }
 
-        if(this.people.contains(accuratePlayer)) {
+        if(this.getPeople().contains(accuratePlayer)) {
             factoryInvitor.sendMessage(Component.text("That player is already in your team!").color(ChatFormat.failColor));
             return;
         }
@@ -194,8 +200,8 @@ public class DuelsTeam {
                 .append(Component.text("ACCEPT")
                         .color(ChatFormat.greenColor)
                         .decorate(ChatFormat.bold)
-                        .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor2)))
-                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/party join " + factoryInvitor.getRawName())))
+                        .hoverEvent(HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor2)))
+                        .clickEvent(ClickEvent.runCommand("/party join " + factoryInvitor.getRawName())))
                 .append(Component.text("]  ").color(NamedTextColor.DARK_GRAY)
                 );
 
@@ -203,9 +209,9 @@ public class DuelsTeam {
                 .append(Component.text("DECLINE")
                         .color(ChatFormat.failColor)
                         .decoration(ChatFormat.bold, true)
-                        .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("Click me")
+                        .hoverEvent(HoverEvent.showText(Component.text("Click me")
                                 .color(ChatFormat.brandColor2)))
-                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/party decline " + factoryInvitor.getRawName())))
+                        .clickEvent(ClickEvent.runCommand("/party decline " + factoryInvitor.getRawName())))
                 .append(Component.text("]").color(NamedTextColor.DARK_GRAY)
                 );
 
@@ -243,7 +249,7 @@ public class DuelsTeam {
             return;
         }
 
-        if(!this.people.contains(accuratePlayer)) {
+        if(!this.getPeople().contains(accuratePlayer)) {
             factoryInviter.sendMessage(Component.text("That player is not in your team!").color(ChatFormat.failColor));
             return;
         }
@@ -254,7 +260,7 @@ public class DuelsTeam {
         }
 
         data.duelOptions.duelsTeam = null;
-        this.people.remove(accuratePlayer);
+        this.getPeople().remove(accuratePlayer);
         this.alive.remove(accuratePlayer);
         this.all.remove(accuratePlayer);
 
@@ -279,7 +285,7 @@ public class DuelsTeam {
 
         this.invited.remove(accuratePlayer);
         this.all.add(accuratePlayer);
-        this.people.add(accuratePlayer);
+        this.getPeople().add(accuratePlayer);
 
         data.duelOptions.duelsTeam = this;
         factoryPlayer.sendMessage(Component.text("You have joined " + factoryInviter.getRawName() + "'s team").color(ChatFormat.normalColor));

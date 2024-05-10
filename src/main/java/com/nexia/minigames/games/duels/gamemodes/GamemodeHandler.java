@@ -198,7 +198,7 @@ public class GamemodeHandler {
     public static void unspectatePlayer(@NotNull AccuratePlayer executor, @Nullable AccuratePlayer player, boolean teleport) {
         PlayerData playerData = null;
 
-        if (player != null) {
+        if (player != null && player.get() != null) {
             playerData = PlayerDataManager.get(player.get());
         }
 
@@ -208,7 +208,7 @@ public class GamemodeHandler {
         CustomTeamDuelsGame customTeamDuelsGame = null;
 
 
-        if(player != null && playerData.inDuel && playerData.gameOptions != null) {
+        if(playerData != null && playerData.inDuel && playerData.gameOptions != null) {
             if(playerData.gameOptions.duelsGame != null) duelsGame = playerData.gameOptions.duelsGame;
             if(playerData.gameOptions.teamDuelsGame != null) teamDuelsGame = playerData.gameOptions.teamDuelsGame;
             if(playerData.gameOptions.customDuelsGame != null) customDuelsGame = playerData.gameOptions.customDuelsGame;
