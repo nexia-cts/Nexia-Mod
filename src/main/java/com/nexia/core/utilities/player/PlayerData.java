@@ -26,6 +26,8 @@ public class PlayerData {
 
     public ServerPlayer lastMessageSender;
 
+    public ClientType clientType;
+
     public PlayerData(SavedPlayerData savedData) {
         this.savedData = savedData;
 
@@ -37,6 +39,14 @@ public class PlayerData {
         this.spawnPoint = LobbyUtil.lobbySpawn;
 
         this.lastMessageSender = null;
+
+        this.clientType = null;
+    }
+
+    public enum ClientType {
+        COMBAT_TEST,
+        VIAFABRICPLUS,
+        COMBATIFY
     }
 
 }

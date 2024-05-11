@@ -6,6 +6,7 @@ import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
 import com.nexia.core.config.ModConfig;
 import com.nexia.core.listeners.ListenerHelper;
 import com.nexia.core.loader.CommandLoader;
+import com.nexia.core.networking.NetworkingHandler;
 import com.nexia.core.utilities.misc.NxFileUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
@@ -22,16 +23,20 @@ public class Main implements ModInitializer, FactoryPlugin {
 	public static Logger logger = LogManager.getLogger(MOD_NAME);
 	public static final String modConfigDir = NxFileUtil.makeDir(FabricLoader.getInstance().getConfigDir().toString() + "/nexia");
 
+	public NetworkingHandler networkingHandler;
 
 	@Override
 	public void onInitialize() {
 		AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
 		config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
 
+
 		logger.info("Loading mod...");
 		logger.info("Registering commands....");
 		CommandLoader.registerCommands();
 		logger.info("Registered commands.");
+
+		networkingHandler = new NetworkingHandler();
 	}
 
 	@Override

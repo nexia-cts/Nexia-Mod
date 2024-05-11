@@ -1,7 +1,6 @@
 package com.nexia.core.listeners.factory;
 
 import com.combatreforged.factory.api.event.player.PlayerJoinEvent;
-
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -133,7 +132,8 @@ public class PlayerJoinListener {
     }
 
     private static void processJoin(Player player, ServerPlayer minecraftPlayer) {
-        PlayerDataManager.addPlayerData(minecraftPlayer);
+        if(PlayerDataManager.get(player).clientType.equals(com.nexia.core.utilities.player.PlayerData.ClientType.VIAFABRICPLUS)) return;
+
 
         com.nexia.ffa.classic.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.ffa.kits.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);

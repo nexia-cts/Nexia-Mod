@@ -235,7 +235,7 @@ public class SkywarsGame {
     }
 
     public static void resetMap() {
-        SkywarsMap.deleteWorld(SkywarsGame.id);
+        //SkywarsMap.deleteWorld(SkywarsGame.id);
 
         SkywarsGame.id = UUID.randomUUID().toString();
 
@@ -417,6 +417,7 @@ public class SkywarsGame {
         if(SkywarsGame.isEnding) return;
         ServerPlayer closestPlayer = (ServerPlayer) SkywarsGame.world.getNearestPlayer(0, 80, 0, 1000, e -> e instanceof ServerPlayer se && !se.isCreative() && !se.isSpectator() && SkywarsGame.isSkywarsPlayer(se));
 
+        assert closestPlayer != null;
         endGame(AccuratePlayer.create(closestPlayer));
     }
 
@@ -450,7 +451,7 @@ public class SkywarsGame {
             PlayerUtil.broadcast(SkywarsGame.getViewers(), message);
 
             if(SkywarsGame.alive.size() == 1 && !SkywarsGame.isEnding) {
-                SkywarsGame.endGame(SkywarsGame.alive.get(0));
+                SkywarsGame.endGame(SkywarsGame.alive.getFirst());
             }
         }
     }

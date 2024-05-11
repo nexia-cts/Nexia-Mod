@@ -7,6 +7,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.player.BanHandler;
+import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
@@ -67,9 +68,23 @@ public abstract class PlayerListMixin {
     private void handleBotMessages(Component component, ChatType chatType, UUID uUID, CallbackInfo ci) {
         String key = ((TranslatableComponent) component).getKey();
 
-        if ((key.contains("multiplayer.player.left") && leavePlayer.getTags().contains("bot"))
-                || (key.contains("multiplayer.player.join") && joinPlayer.getTags().contains("bot"))
-        ) ci.cancel();
+        if (key.contains("multiplayer.player.left")) {
+            if(leavePlayer.getTags().contains("bot")) ci.cancel();
+            if(leavePlayer.getTags().contains("viafabricplus")) {
+                leavePlayer.removeTag("viafabricplus");
+                ci.cancel();
+            }
+            return;
+        }
+
+        if(key.contains("multiplayer.player.join")) {
+            if(joinPlayer.getTags().contains("bot")) ci.cancel();
+            if(PlayerDataManager.get(joinPlayer).clientType.equals(com.nexia.core.utilities.player.PlayerData.ClientType.VIAFABRICPLUS)) {
+                joinPlayer.addTag("viafabricplus");
+                ci.cancel();
+            }
+            return;
+        }
     }
 
     @Inject(at = @At("RETURN"), method = "respawn")
