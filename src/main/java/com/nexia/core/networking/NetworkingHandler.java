@@ -8,12 +8,12 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 
 public class NetworkingHandler {
-    public static ResourceLocation combatifyDetectionNetworkChannel = new ResourceLocation("nexia", "networking");
+    public static ResourceLocation detectionNetworkChannel = new ResourceLocation("nexia", "networking");
 
     public static ResourceLocation detectCombatify = new ResourceLocation("combatify", "atlas_config");
 
     public NetworkingHandler() {
-        ServerPlayConnectionEvents.JOIN.register(combatifyDetectionNetworkChannel,(handler, sender, server) -> {
+        ServerPlayConnectionEvents.JOIN.register(detectionNetworkChannel,(handler, sender, server) -> {
             PlayerDataManager.addPlayerData(handler.player);
 
             if(!ServerPlayNetworking.canSend(handler.player, detectCombatify)) {
