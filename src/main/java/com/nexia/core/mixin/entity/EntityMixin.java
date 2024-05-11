@@ -126,13 +126,13 @@ public abstract class EntityMixin implements Nameable, CommandSource {
                     d *= (double)(1.0F - this.pushthrough);
                     e *= (double)(1.0F - this.pushthrough);
 
-                    if (!this.isVehicle()) {
+                    /* if (!this.isVehicle()) {
                         this.push(-d, 0.0, -e);
                     }
 
                     if (!entity.isVehicle()) {
                         entity.push(d, 0.0, e);
-                    }
+                    } */
                 }
 
             }
