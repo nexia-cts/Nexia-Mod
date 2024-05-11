@@ -68,8 +68,7 @@ public abstract class ArmorStandMixin extends LivingEntity {
      */
     @Overwrite
     public boolean isPushable() {
-        // return FootballGame.world.equals(this.level);
-        return false;
+        return FootballGame.world.equals(this.level);
     }
 
 
@@ -79,9 +78,8 @@ public abstract class ArmorStandMixin extends LivingEntity {
      */
     @Overwrite
     protected void doPush(Entity entity) {
-        // if(!FootballGame.world.equals(this.level)) return;
-        // entity.push(this);
-        return;
+        if(!FootballGame.world.equals(this.level)) return;
+        entity.push(this);
     }
 
 
