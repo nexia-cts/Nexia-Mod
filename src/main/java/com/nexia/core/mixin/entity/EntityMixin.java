@@ -116,7 +116,7 @@ public abstract class EntityMixin implements Nameable, CommandSource {
                         Vec3 vec3 = entity1.getDeltaMovement();
                         Vec3 vec32 = (new Vec3(d, 0.0, e)).normalize().scale((double)0.4);
 
-                        entity.setDeltaMovement(vec3.x + vec32.x * 4, vec3.y + 0.0784000015258789d, vec3.z + vec32.z * 4);
+                        entity.setDeltaMovement(4 * vec3.x + vec32.x, vec3.y + 0.0784000015258789d, 4 * vec3.z + vec32.z);
 
                         return;
                     }
