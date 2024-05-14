@@ -60,6 +60,14 @@ public class ServerGamePacketListenerMixin {
         }
     }
 
+    /*
+    @Inject(method = "handleCustomPayload", cancellable = true, at = @At("HEAD"))
+    private void onCustomPayload(ServerboundCustomPayloadPacket serverboundCustomPayloadPacket, CallbackInfo ci) {
+        String brand = serverboundCustomPayloadPacket.data.readUtf(32767);
+        player.sendMessage(LegacyChatFormat.format("Your brand: {}", brand), Util.NIL_UUID);
+    }
+     */
+
     @ModifyExpressionValue(
             method = "handleSetCommandBlock",
             at = @At(
