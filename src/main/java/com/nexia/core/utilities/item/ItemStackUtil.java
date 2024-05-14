@@ -82,7 +82,7 @@ public class ItemStackUtil {
         }
     }
 
-    public static String ItemStackToString(ItemStack itemStack, boolean reversible) {
+    public static String itemStackToString(ItemStack itemStack, boolean reversible) {
         if(reversible){
             return itemStack.getCount() + " " + itemStack.getDescriptionId().split("\\.")[2];
         }
@@ -111,11 +111,12 @@ public class ItemStackUtil {
         return Registry.ITEM.get(new ResourceLocation(name));
     }
 
-    public static void enchant(ItemStack itemStack, Enchantment enchantment, int level) {
+    public static ItemStack enchant(ItemStack itemStack, Enchantment enchantment, int level) {
         Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(itemStack);
         if (level > 0) enchantments.put(enchantment, level);
         else enchantments.remove(enchantment);
         EnchantmentHelper.setEnchantments(enchantments, itemStack);
+        return itemStack;
     }
 
     public static ItemStack getContainerClickItem(ServerPlayer player, ServerboundContainerClickPacket packet) {
