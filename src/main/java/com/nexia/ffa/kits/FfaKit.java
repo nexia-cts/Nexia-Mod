@@ -49,7 +49,12 @@ public class FfaKit {
 
         if(clearEffect) fPlayer.clearEffects();
 
-        if(this.equals(FfaKit.RANDOM)) InventoryUtil.loadInventory(player, "ffa_kits", stringFfaKits.get(RandomUtil.randomInt(0, stringFfaKits.size())));
-        else InventoryUtil.loadInventory(player, "ffa_kits", this.id);
+        if(this.equals(FfaKit.RANDOM)) {
+            String inv = stringFfaKits.get(RandomUtil.randomInt(stringFfaKits.size()));
+            while(inv.equalsIgnoreCase(RANDOM.id)) {
+                inv = stringFfaKits.get(RandomUtil.randomInt(stringFfaKits.size()));
+            }
+            InventoryUtil.loadInventory(player, "ffa_kits", inv);
+        } else InventoryUtil.loadInventory(player, "ffa_kits", this.id);
     }
 }
