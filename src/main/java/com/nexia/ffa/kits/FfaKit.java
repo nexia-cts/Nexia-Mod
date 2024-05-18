@@ -42,19 +42,20 @@ public class FfaKit {
         }
         return null;
     }
-
+// im in vc with Shitfood and I wanted to show how goofy chatgpt code is
     public void giveKit(ServerPlayer player, boolean clearEffect) {
         Player fPlayer = PlayerUtil.getFactoryPlayer(player);
         PlayerDataManager.get(player).kit = this;
 
-        if(clearEffect) fPlayer.clearEffects();
+        if (clearEffect) fPlayer.clearEffects();
 
-        if(this.equals(FfaKit.RANDOM)) {
-            String inv = stringFfaKits.get(RandomUtil.randomInt(stringFfaKits.size()));
-            while(inv.equalsIgnoreCase(RANDOM.id)) {
-                inv = stringFfaKits.get(RandomUtil.randomInt(stringFfaKits.size()));
-            }
-            InventoryUtil.loadInventory(player, "ffa_kits", inv);
-        } else InventoryUtil.loadInventory(player, "ffa_kits", this.id);
+        if (this.equals(FfaKit.RANDOM)) {
+            ArrayList<String> availableKits = new ArrayList<>(stringFfaKits);
+            availableKits.remove(RANDOM.id); // Remove "RANDOM" from the list of available kits
+            String selectedKit = availableKits.get(RandomUtil.randomInt(availableKits.size()));
+            InventoryUtil.loadInventory(player, "ffa_kits", selectedKit);
+        } else {
+            InventoryUtil.loadInventory(player, "ffa_kits", this.id);
+        }
     }
 }
