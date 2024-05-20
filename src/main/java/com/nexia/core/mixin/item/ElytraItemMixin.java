@@ -1,6 +1,5 @@
 package com.nexia.core.mixin.item;
 
-import com.nexia.core.Main;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -30,8 +29,6 @@ public class ElytraItemMixin {
 
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     public void use(Level level, Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
-        if(!Main.config.enhancements.armorSwapping) return;
-
         ItemStack itemStack = player.getItemInHand(interactionHand);
         EquipmentSlot equipmentSlot = Mob.getEquipmentSlotForItem(itemStack);
         ItemStack itemStack2 = player.getItemBySlot(equipmentSlot);

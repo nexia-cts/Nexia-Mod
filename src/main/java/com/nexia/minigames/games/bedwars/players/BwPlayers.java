@@ -30,10 +30,6 @@ public class BwPlayers {
     private static void setInBedWars(ServerPlayer player) {
         PlayerData playerData = PlayerDataManager.get(player);
 
-        if (!LobbyUtil.isLobbyWorld(player.level) || playerData.gameMode != PlayerGameMode.LOBBY) {
-            LobbyUtil.leaveAllGames(player, false);
-        }
-
         playerData.gameMode = PlayerGameMode.BEDWARS;
         player.addTag(BwPlayers.BED_WARS_IN_GAME_TAG);
     }

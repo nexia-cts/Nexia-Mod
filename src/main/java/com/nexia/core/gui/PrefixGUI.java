@@ -1,9 +1,9 @@
 package com.nexia.core.gui;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
-import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.ranks.NexiaRank;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
@@ -47,28 +47,30 @@ public class PrefixGUI extends SimpleGui {
             this.setSlot(airSlots, new ItemStack(Items.AIR));
             airSlots++;
         }
-        for(String rank : Main.config.ranks){
+        for(NexiaRank rank : NexiaRank.ranks){
             if(slot == 17) {
                 slot = 19;
             }
 
-            if(Permissions.check(player, "nexia.prefix." + rank) && player.getTags().contains(rank)){
+            boolean hasPermission = Permissions.check(player, rank.groupID);
+
+            if(hasPermission && player.getTags().contains(rank.id)){
                 ItemStack enchantedItem = new ItemStack(Items.NAME_TAG, 1);
                 enchantedItem.enchant(Enchantments.SHARPNESS, 1);
                 enchantedItem.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
-                enchantedItem.setHoverName(new TextComponent("§d§l" + rank));
+                enchantedItem.setHoverName(new TextComponent("§d§l" + rank.name));
                 this.setSlot(slot, enchantedItem);
                 slot++;
-            } else if(Permissions.check(player, "nexia.prefix." + rank)){
+            } else if(hasPermission){
                 ItemStack changedItem = new ItemStack(Items.NAME_TAG, 1);
-                changedItem.setHoverName(new TextComponent("§f" + rank));
+                changedItem.setHoverName(new TextComponent("§f" + rank.name));
                 this.setSlot(slot, changedItem);
                 slot++;
-            } else if(player.getTags().contains(rank)) {
+            } else if(player.getTags().contains(rank.id)) {
                 ItemStack enchantedItem = new ItemStack(Items.NAME_TAG, 1);
                 enchantedItem.enchant(Enchantments.SHARPNESS, 1);
                 enchantedItem.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
-                enchantedItem.setHoverName(new TextComponent(rank).withStyle(ChatFormatting.BOLD, ChatFormatting.LIGHT_PURPLE));
+                enchantedItem.setHoverName(new TextComponent(rank.name).withStyle(ChatFormatting.BOLD, ChatFormatting.LIGHT_PURPLE));
                 this.setSlot(slot, enchantedItem);
                 slot++;
             }
@@ -92,8 +94,8 @@ public class PrefixGUI extends SimpleGui {
                                                         .append(net.kyori.adventure.text.Component.text(".").decoration(ChatFormat.bold, false))
                 );
 
-                for(String rank : Main.config.ranks){
-                    player.removeTag(rank);
+                for(NexiaRank rank : NexiaRank.ranks){
+                    player.removeTag(rank.id);
                 }
 
                 player.addTag(name.toLowerCase());

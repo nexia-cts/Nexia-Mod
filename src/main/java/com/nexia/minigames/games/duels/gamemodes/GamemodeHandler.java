@@ -6,6 +6,7 @@ import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelGameMode;
@@ -49,8 +50,8 @@ public class GamemodeHandler {
     }
 
     public static void joinQueue(ServerPlayer minecraftPlayer, String stringGameMode, boolean silent) {
-        if (stringGameMode.equalsIgnoreCase("lobby") || stringGameMode.equalsIgnoreCase("leave")) {
-            LobbyUtil.leaveAllGames(minecraftPlayer, true);
+        if (stringGameMode.equalsIgnoreCase("leave")) {
+            removeQueue(minecraftPlayer, null, silent);
             return;
         }
 
@@ -90,28 +91,31 @@ public class GamemodeHandler {
 
     public static void removeQueue(ServerPlayer minecraftPlayer, @Nullable String stringGameMode, boolean silent) {
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
-        if (stringGameMode != null) {
-            DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
-            if (gameMode == null) {
-                if (!silent) player.sendMessage(Component.text("Invalid gamemode!").color(ChatFormat.failColor));
-                return;
-            }
 
-            gameMode.queue.remove(minecraftPlayer);
-
-            if (!silent) {
-                player.sendMessage(
-                        ChatFormat.nexiaMessage
-                                .append(Component.text("You have left the queue for ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                                        .append(Component.text(stringGameMode.toUpperCase()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                                        .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                ));
-            }
-        } else {
+        if(stringGameMode == null || stringGameMode.trim().isEmpty()) {
             for(DuelGameMode gameMode : DuelGameMode.duelGameModes) {
                 gameMode.queue.remove(minecraftPlayer);
             }
+            return;
         }
+
+        DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
+        if (gameMode == null) {
+            if (!silent) player.sendMessage(Component.text("Invalid gamemode!").color(ChatFormat.failColor));
+            return;
+        }
+
+        gameMode.queue.remove(minecraftPlayer);
+
+        if (!silent) {
+            player.sendMessage(
+                    ChatFormat.nexiaMessage
+                            .append(Component.text("You have left the queue for ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
+                                    .append(Component.text(stringGameMode.toUpperCase()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                    .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                            ));
+        }
+
     }
 
 
@@ -266,7 +270,10 @@ public class GamemodeHandler {
 
         executorData.gameMode = DuelGameMode.LOBBY;
         executorData.duelOptions.spectatingPlayer = null;
-        LobbyUtil.leaveAllGames(executor.get(), teleport);
+
+        new NexiaPlayer(executor).leaveAllGames();
+        LobbyUtil.returnToLobby(executor.get(), teleport);
+
     }
     public static void joinGamemode(ServerPlayer invitor, ServerPlayer player, String stringGameMode, @Nullable DuelsMap selectedmap, boolean silent) {
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);

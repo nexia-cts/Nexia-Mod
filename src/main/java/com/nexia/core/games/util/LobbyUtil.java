@@ -1,14 +1,10 @@
 package com.nexia.core.games.util;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
-import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
-import com.nexia.core.utilities.player.BanHandler;
-import com.nexia.core.utilities.player.GamemodeBanHandler;
-import com.nexia.core.utilities.player.PlayerDataManager;
-import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.player.*;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
@@ -19,8 +15,6 @@ import com.nexia.ffa.kits.utilities.FfaKitsUtil;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
-import com.nexia.minigames.games.bedwars.util.BwScoreboard;
-import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.football.FootballGameMode;
@@ -36,16 +30,14 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
+import net.notcoded.codelib.players.AccuratePlayer;
 import org.json.simple.JSONObject;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Objects;
 
 import static com.nexia.core.utilities.player.BanHandler.getBanTime;
 
@@ -54,7 +46,7 @@ public class LobbyUtil {
     public static String[] statsGameModes = {"FFA CLASSIC", "SKY FFA", "UHC FFA", "KIT FFA", "BEDWARS", "OITC", "DUELS", "SKYWARS", "FOOTBALL"};
 
     public static ServerLevel lobbyWorld = null;
-    public static EntityPos lobbySpawn = new EntityPos(Main.config.lobbyPos[0], Main.config.lobbyPos[1], Main.config.lobbyPos[2], 0, 0);
+    public static EntityPos lobbySpawn = new EntityPos(0, 65, 0, 0, 0);
 
     public static boolean isLobbyWorld(Level level) {
         return level.dimension() == Level.OVERWORLD;
@@ -94,67 +86,15 @@ public class LobbyUtil {
             "in_kitroom",
             NO_RANK_DISPLAY_TAG,
             NO_SATURATION_TAG,
-            NO_FALL_DAMAGE_TAG
+            NO_FALL_DAMAGE_TAG,
+            NO_DAMAGE_TAG
     };
 
-    public static void leaveAllGames(ServerPlayer minecraftPlayer, boolean tp) {
-        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
-        if (BwUtil.isInBedWars(minecraftPlayer)) {
-            BwPlayerEvents.leaveInBedWars(minecraftPlayer);
-        }
-        else if (FfaUtil.isFfaPlayer(minecraftPlayer)) {
-            FfaUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
-        }
-        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) {
-            DuelGameHandler.leave(minecraftPlayer, false);
-        }
-        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.OITC) {
-            OitcGame.leave(minecraftPlayer);
-        }
-        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.SKYWARS) {
-            SkywarsGame.leave(minecraftPlayer);
-        }
-        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.FOOTBALL) {
-            FootballGame.leave(minecraftPlayer);
-        }
-
-        PlayerUtil.sendBossbar(SkywarsGame.BOSSBAR, minecraftPlayer, true);
-        BwScoreboard.removeScoreboardFor(minecraftPlayer);
-        minecraftPlayer.setGlowing(false);
-        minecraftPlayer.setGameMode(GameType.ADVENTURE);
-
-        for(String tag : LobbyUtil.removedTags) {
-            if(player.hasTag(tag)) player.removeTag(tag);
-        }
-
-        returnToLobby(minecraftPlayer, tp);
-    }
-
     public static void returnToLobby(ServerPlayer minecraftPlayer, boolean tp) {
-        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
-        for(String tag : LobbyUtil.removedTags) {
-            if(player.hasTag(tag)) player.removeTag(tag);
-        }
-
-        minecraftPlayer.setInvulnerable(false);
-
-        minecraftPlayer.abilities.mayfly = false;
-        minecraftPlayer.abilities.flying = false;
-        Objects.requireNonNull(minecraftPlayer.getAttribute(Attributes.KNOCKBACK_RESISTANCE)).setBaseValue(0.0);
-        minecraftPlayer.onUpdateAbilities();
-        minecraftPlayer.setGlowing(false);
-
-        PlayerUtil.resetHealthStatus(player);
-        minecraftPlayer.setGameMode(GameType.ADVENTURE);
-
-        player.getInventory().clear();
-        minecraftPlayer.inventory.setCarried(ItemStack.EMPTY);
-        minecraftPlayer.getEnderChestInventory().clearContent();
-        minecraftPlayer.setExperiencePoints(0);
-        minecraftPlayer.setExperienceLevels(0);
+        NexiaPlayer player = new NexiaPlayer(AccuratePlayer.create(minecraftPlayer));
 
         // Duels shit
-        player.addTag("duels");
+        player.player().get().addTag("duels");
         DuelGameHandler.leave(minecraftPlayer, false);
 
         if (tp) {
@@ -172,9 +112,6 @@ public class LobbyUtil {
         minecraftPlayer.connection.send(new ClientboundStopSoundPacket());
 
         PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.LOBBY;
-        player.removeTag(LobbyUtil.NO_RANK_DISPLAY_TAG);
-        player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
-        player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
         ServerTime.minecraftServer.getPlayerList().sendPlayerPermissionLevel(minecraftPlayer);
     }
 
@@ -269,15 +206,11 @@ public class LobbyUtil {
 
     public static void sendGame(ServerPlayer minecraftPlayer, String game, boolean message, boolean tp){
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(AccuratePlayer.create(minecraftPlayer));
 
         if(checkGameModeBan(player, minecraftPlayer, game)) {
             return;
         }
-
-        minecraftPlayer.setInvulnerable(false);
-
-        minecraftPlayer.abilities.mayfly = false;
-        minecraftPlayer.onUpdateAbilities();
 
         if((game.equalsIgnoreCase("classic ffa") && !FfaClassicUtil.canGoToSpawn(minecraftPlayer)) ||
                 (game.equalsIgnoreCase("kits ffa") && !FfaKitsUtil.canGoToSpawn(minecraftPlayer) ||
@@ -293,23 +226,8 @@ public class LobbyUtil {
             DuelGameHandler.leave(minecraftPlayer, true);
         }
 
-        if (!LobbyUtil.isLobbyWorld(minecraftPlayer.getLevel())) {
-            LobbyUtil.leaveAllGames(minecraftPlayer, false);
-        } else{
-            PlayerUtil.resetHealthStatus(player);
-            minecraftPlayer.setGameMode(GameType.ADVENTURE);
-
-            player.getInventory().clear();
-            minecraftPlayer.inventory.setCarried(ItemStack.EMPTY);
-            minecraftPlayer.getEnderChestInventory().clearContent();
-
-            minecraftPlayer.connection.send(new ClientboundStopSoundPacket());
-
-            player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
-            player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-            player.removeTag("duels");
-            player.removeTag(LobbyUtil.NO_SATURATION_TAG);
-        }
+        nexiaPlayer.reset(true);
+        nexiaPlayer.leaveAllGames();
 
         if(game.equalsIgnoreCase("classic ffa") ||
                 game.equalsIgnoreCase("kits ffa") ||
@@ -378,7 +296,8 @@ public class LobbyUtil {
         }
 
         if(game.equalsIgnoreCase("duels")){
-            LobbyUtil.leaveAllGames(minecraftPlayer, tp);
+            LobbyUtil.returnToLobby(minecraftPlayer, tp);
+
             if(message){
                 player.sendActionBarMessage(Component.text("You have joined §f☯ §c§lDuels §7\uD83E\uDE93"));
                 player.sendMessage(

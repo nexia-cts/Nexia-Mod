@@ -1,6 +1,5 @@
 package com.nexia.core.mixin.player;
 
-import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.item.ItemStackUtil;
@@ -57,7 +56,7 @@ public abstract class PlayerMixin extends LivingEntity {
         Player player = (Player) (Object) this;
         this.level.broadcastEntityEvent(this, (byte)30);
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
-        if(attacker != null && Main.config.enhancements.betterShields){
+        if(attacker != null){
             //this.level.broadcastEntityEvent(attacker, (byte)30);
 
             SoundSource soundSource = null;
