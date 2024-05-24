@@ -70,7 +70,7 @@ public class FfaKitsUtil {
 
     public static void calculateKill(ServerPlayer attacker, ServerPlayer player){
 
-        BlfScheduler.delay(5, new BlfRunnable() {
+        BlfScheduler.delay(3, new BlfRunnable() {
             @Override
             public void run() {
                 attacker.heal(attacker.getMaxHealth());
@@ -241,7 +241,7 @@ public class FfaKitsUtil {
         FfaAreas.spawn.teleportPlayer(FfaAreas.ffaWorld, player);
         if(data.kit != null) data.kit.giveKit(player, true);
         else {
-            BlfScheduler.delay(20, new BlfRunnable() {
+            BlfScheduler.delay(3, new BlfRunnable() {
                 @Override
                 public void run() {
                     KitGUI.openKitGUI(player);
