@@ -55,9 +55,15 @@ public class FfaKitsUtil {
             if (!isFfaPlayer(player)) continue;
 
             if (FfaAreas.isInFfaSpawn(player)) {
-                player.addTag(LobbyUtil.NO_DAMAGE_TAG);
+                if (!player.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
+                    player.addTag(LobbyUtil.NO_DAMAGE_TAG);
+                    System.out.println("Added NO_DAMAGE_TAG to " + player.getName().getString());
+                }
             } else {
-                player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                if (player.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
+                    player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                    System.out.println("Removed NO_DAMAGE_TAG from " + player.getName().getString());
+                }
             }
         }
     }
