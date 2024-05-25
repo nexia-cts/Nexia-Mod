@@ -1,6 +1,5 @@
 package com.nexia.ffa;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;
@@ -20,18 +19,20 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
+import java.util.Set;
 
 public class FfaUtil {
 
     public static final String FFA_TAG = "ffa";
 
     public static boolean isFfaPlayer(NexiaPlayer player) {
-        Player factoryPlayer = player.getFactoryPlayer();
-        return (factoryPlayer.hasTag(FFA_TAG)
-                || factoryPlayer.hasTag("ffa_classic")
-                || factoryPlayer.hasTag("ffa_kits")
-                || factoryPlayer.hasTag("ffa_sky")
-                || factoryPlayer.hasTag("ffa_uhc"))
+        Set<String> tags = player.player().get().getTags();
+
+        return (tags.contains(FFA_TAG)
+                || tags.contains("ffa_classic")
+                || tags.contains("ffa_kits")
+                || tags.contains("ffa_sky")
+                || tags.contains("ffa_uhc"))
                 && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.FFA;
     }
 

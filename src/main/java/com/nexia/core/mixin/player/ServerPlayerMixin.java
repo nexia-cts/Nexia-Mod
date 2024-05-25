@@ -17,6 +17,8 @@ import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
+import net.blumbo.blfscheduler.BlfRunnable;
+import net.blumbo.blfscheduler.BlfScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -55,6 +57,8 @@ public abstract class ServerPlayerMixin extends Player {
 
     @Shadow public abstract void attack(Entity entity);
 
+    private boolean firstJoin = true;
+
     public ServerPlayerMixin(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
         super(level, blockPos, f, gameProfile);
     }
@@ -62,7 +66,21 @@ public abstract class ServerPlayerMixin extends Player {
     @Inject(method = "<init>", at = @At("TAIL"))
     private void init(MinecraftServer minecraftServer, ServerLevel serverLevel, GameProfile gameProfile, ServerPlayerGameMode serverPlayerGameMode, CallbackInfo ci) {
         ServerPlayer player = (ServerPlayer)(Object)this;
+
         NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        if(this.firstJoin) {
+            BlfScheduler.delay(40, new BlfRunnable() {
+                @Override
+                public void run() {
+                    if (FfaUtil.isFfaPlayer(nexiaPlayer) || BwUtil.isBedWarsPlayer(nexiaPlayer) || OitcGame.isOITCPlayer(nexiaPlayer)) {
+                        spawnInvulnerableTime = 0;
+                    }
+                }
+            });
+            this.firstJoin = false;
+            return;
+        }
+
         if (FfaUtil.isFfaPlayer(nexiaPlayer) || BwUtil.isBedWarsPlayer(nexiaPlayer) || OitcGame.isOITCPlayer(nexiaPlayer)) {
             spawnInvulnerableTime = 0;
         }
