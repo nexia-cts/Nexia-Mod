@@ -1,6 +1,7 @@
 package com.nexia.core.gui.duels;
 
 import com.nexia.core.utilities.item.ItemDisplayUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
@@ -16,6 +17,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
+import net.notcoded.codelib.players.AccuratePlayer;
 
 public class DuelGUI extends SimpleGui {
     static final TextComponent title = new TextComponent("Duel Menu");
@@ -116,7 +118,7 @@ public class DuelGUI extends SimpleGui {
                     this.kit = name.getString().substring(2).replaceAll(" ", "_");
                     setMapLayout(GamemodeHandler.identifyGamemode(this.kit));
                 } else {
-                    GamemodeHandler.challengePlayer(this.player, this.other, this.kit, DuelsMap.identifyMap(name.getString().substring(2)));
+                    GamemodeHandler.challengePlayer(new NexiaPlayer(new AccuratePlayer(this.player)), new NexiaPlayer(new AccuratePlayer(this.other)), this.kit, DuelsMap.identifyMap(name.getString().substring(2)));
                     this.close();
                 }
 

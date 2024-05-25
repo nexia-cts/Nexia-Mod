@@ -1,20 +1,23 @@
 package com.nexia.minigames.games.bedwars.upgrades;
 
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
-import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.minigames.games.bedwars.players.BwTeam;
 import com.nexia.minigames.games.bedwars.shop.BwShop;
 import com.nexia.minigames.games.bedwars.util.BwGen;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import net.kyori.adventure.text.Component;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.notcoded.codelib.players.AccuratePlayer;
 import net.notcoded.codelib.util.numbers.RomanNumbers;
 
 import java.util.HashMap;
@@ -28,7 +31,7 @@ public class BwUpgradeShop extends SimpleGui {
     }
 
     public static void openShopGui(ServerPlayer player) {
-        BwTeam team = BwTeam.getPlayerTeam(player);
+        BwTeam team = BwTeam.getPlayerTeam(new NexiaPlayer(new AccuratePlayer(player)));
         if (team == null) return;
 
         BwUpgradeShop shop = new BwUpgradeShop(MenuType.GENERIC_9x5, player, false);
@@ -78,7 +81,10 @@ public class BwUpgradeShop extends SimpleGui {
     }
 
     private void purchaseUpgrade(ServerPlayer minecraftPlayer, ItemStack upgradeItem) {
-        BwTeam team = BwTeam.getPlayerTeam(minecraftPlayer);
+
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(minecraftPlayer));
+
+        BwTeam team = BwTeam.getPlayerTeam(nexiaPlayer);
         if (team == null) return;
 
         CompoundTag tag = upgradeItem.getOrCreateTag();
@@ -95,18 +101,23 @@ public class BwUpgradeShop extends SimpleGui {
             return;
         }
 
-        PlayerUtil.removeItem(minecraftPlayer, Items.DIAMOND, upgrade.costs[upgrade.level]);
+        nexiaPlayer.removeItem(Items.DIAMOND, upgrade.costs[upgrade.level]);
         upgrade.level++;
         this.resetLayout(team);
         BwShop.playPurchaseSound(minecraftPlayer, false);
-        PlayerUtil.broadcast(team.players, LegacyChatFormat.brandColor1 + minecraftPlayer.getScoreboardName() +
-                LegacyChatFormat.brandColor2 + " has purchased " +
-                LegacyChatFormat.brandColor1 + LegacyChatFormat.removeColors(upgradeItem.getHoverName().getString()) +
-                " " + RomanNumbers.intToRoman(upgrade.level));
+        for(NexiaPlayer teamPlayer : team.players) {
+            teamPlayer.sendMessage(
+                    Component.text(minecraftPlayer.getScoreboardName(), ChatFormat.brandColor1)
+                            .append(Component.text(" has purchased ", ChatFormat.brandColor2))
+                            .append(Component.text(LegacyChatFormat.removeColors(upgradeItem.getHoverName().getString()) +
+                                    " " + RomanNumbers.intToRoman(upgrade.level), ChatFormat.brandColor1))
+            );
+        }
     }
 
     private void purchaseTrap(ServerPlayer player, ItemStack trapItem) {
-        BwTeam team = BwTeam.getPlayerTeam(player);
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        BwTeam team = BwTeam.getPlayerTeam(nexiaPlayer);
         if (team == null) return;
 
         CompoundTag tag = trapItem.getOrCreateTag();
@@ -124,13 +135,17 @@ public class BwUpgradeShop extends SimpleGui {
             return;
         }
 
-        PlayerUtil.removeItem(player, Items.DIAMOND, cost);
+        nexiaPlayer.removeItem(Items.DIAMOND, cost);
         trap.bought = true;
         this.resetLayout(team);
         BwShop.playPurchaseSound(player, false);
-        PlayerUtil.broadcast(team.players, LegacyChatFormat.brandColor1 + player.getScoreboardName() +
-                LegacyChatFormat.brandColor2 + " has purchased " +
-                LegacyChatFormat.brandColor1 + LegacyChatFormat.removeColors(trapItem.getHoverName().getString()));
+        for(NexiaPlayer teamPlayer : team.players) {
+            teamPlayer.sendMessage(
+                    Component.text(player.getScoreboardName(), ChatFormat.brandColor1)
+                            .append(Component.text(" has purchased ", ChatFormat.brandColor2))
+                            .append(Component.text(LegacyChatFormat.removeColors(trapItem.getHoverName().getString())))
+            );
+        }
     }
 
     static int rowColumnToGuiSlot(int row, int column) {

@@ -1,7 +1,9 @@
 package com.nexia.core.mixin.block;
 
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.KitRoom;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.ChestBlock;
@@ -9,6 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -33,7 +36,7 @@ public abstract class ChestBlockEntityMixin extends BlockEntity {
 
     @Inject(method = "startOpen", at = @At("HEAD"))
     public void onOpen(Player player, CallbackInfo ci) {
-        if (KitRoom.isInKitRoom(player)) {
+        if (KitRoom.isInKitRoom(new NexiaPlayer(new AccuratePlayer((ServerPlayer) player)))) {
             nbtList.put(player.getUUID(), new CompoundTag());
             this.save(nbtList.get(player.getUUID()));
         }
@@ -41,7 +44,7 @@ public abstract class ChestBlockEntityMixin extends BlockEntity {
 
     @Inject(method = "stopOpen", at = @At("HEAD"))
     public void onClose(Player player, CallbackInfo ci) {
-        if (KitRoom.isInKitRoom(player)) {
+        if (KitRoom.isInKitRoom(new NexiaPlayer(new AccuratePlayer((ServerPlayer) player)))) {
             BlockState blockState = this.getBlockState();
             if(blockState.getBlock() instanceof ChestBlock) {
                 this.load(blockState, nbtList.get(player.getUUID()));

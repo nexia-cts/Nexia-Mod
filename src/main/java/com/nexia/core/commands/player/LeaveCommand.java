@@ -26,9 +26,7 @@ public class LeaveCommand {
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
 
-        new NexiaPlayer(new AccuratePlayer(player)).leaveAllGames();
-        LobbyUtil.returnToLobby(player, true);
-
+        LobbyUtil.returnToLobby(new NexiaPlayer(new AccuratePlayer(player)), true);
         return 1;
     }
 

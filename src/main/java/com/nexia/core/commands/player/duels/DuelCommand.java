@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.duels.DuelGUI;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.minigames.games.duels.DuelGameMode;
@@ -16,6 +17,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
+import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.Nullable;
 
 public class DuelCommand {
@@ -29,8 +31,8 @@ public class DuelCommand {
         dispatcher.register(Commands.literal(string)
                 .requires(commandSourceStack -> {
                     try {
-                        com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException());
-                        PlayerData playerData1 = PlayerDataManager.get(commandSourceStack.getPlayerOrException());
+                        com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException().getUUID());
+                        PlayerData playerData1 = PlayerDataManager.get(commandSourceStack.getPlayerOrException().getUUID());
                         return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
                     } catch (Exception ignored) {
                     }
@@ -48,8 +50,8 @@ public class DuelCommand {
     }
 
     public static int challenge(CommandContext<CommandSourceStack> context, ServerPlayer player, String gameMode, @Nullable String map) throws CommandSyntaxException {
-        ServerPlayer executer = context.getSource().getPlayerOrException();
-        GamemodeHandler.challengePlayer(executer, player, gameMode, DuelsMap.identifyMap(map));
+        ServerPlayer executor = context.getSource().getPlayerOrException();
+        GamemodeHandler.challengePlayer(new NexiaPlayer(new AccuratePlayer(executor)), new NexiaPlayer(new AccuratePlayer(player)), gameMode, DuelsMap.identifyMap(map));
         return 1;
     }
 }

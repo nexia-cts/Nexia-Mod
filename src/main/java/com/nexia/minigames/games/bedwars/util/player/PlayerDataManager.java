@@ -1,8 +1,8 @@
 package com.nexia.minigames.games.bedwars.util.player;
 
 import com.google.gson.Gson;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.world.entity.player.Player;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -13,38 +13,53 @@ import java.util.UUID;
 
 public class PlayerDataManager {
 
-    static String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/bedwars";
+    static String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/core";
     static String playerDataDirectory = dataDirectory + "/playerdata";
 
     static HashMap<UUID, PlayerData> allPlayerData = new HashMap<>();
 
-    public static PlayerData get(Player player) {
-        if (!allPlayerData.containsKey(player.getUUID())) {
-            addPlayerData(player);
+
+    public static PlayerData get(NexiaPlayer player) {
+        return get(player.player().uuid);
+    }
+
+    public static void addPlayerData(NexiaPlayer player) {
+        addPlayerData(player.player().uuid);
+    }
+
+
+    public static void removePlayerData(NexiaPlayer player) {
+        removePlayerData(player.player().uuid);
+    }
+
+
+    public static PlayerData get(UUID uuid) {
+        if (!allPlayerData.containsKey(uuid)) {
+            addPlayerData(uuid);
         }
-        return allPlayerData.get(player.getUUID());
+        return allPlayerData.get(uuid);
     }
 
-    public static void addPlayerData(Player player) {
-        PlayerData playerData = new PlayerData(loadPlayerData(player));
-        allPlayerData.put(player.getUUID(), playerData);
+    public static void addPlayerData(UUID uuid) {
+        PlayerData playerData = new PlayerData(loadPlayerData(uuid));
+        allPlayerData.put(uuid, playerData);
     }
 
-    public static void removePlayerData(Player player) {
-        if (!allPlayerData.containsKey(player.getUUID())) return;
-        savePlayerData(player);
-        allPlayerData.remove(player.getUUID());
+    public static void removePlayerData(UUID uuid) {
+        if (!allPlayerData.containsKey(uuid)) return;
+        savePlayerData(uuid);
+        allPlayerData.remove(uuid);
     }
 
-    private static void savePlayerData(Player player) {
+    private static void savePlayerData(UUID uuid) {
         try {
 
-            PlayerData playerData = get(player);
+            PlayerData playerData = get(uuid);
             Gson gson = new Gson();
             String json = gson.toJson(playerData.savedData);
 
             String directory = getDataDir();
-            FileWriter fileWriter = new FileWriter(directory + "/" +  player.getUUID() + ".json");
+            FileWriter fileWriter = new FileWriter(directory + "/" +  uuid + ".json");
             fileWriter.write(json);
             fileWriter.close();
 
@@ -53,11 +68,11 @@ public class PlayerDataManager {
         }
     }
 
-    private static SavedPlayerData loadPlayerData(Player player) {
+    private static SavedPlayerData loadPlayerData(UUID uuid) {
         try {
 
             String directory = getDataDir();
-            String json = Files.readString(Path.of(directory + "/" + player.getUUID() + ".json"));
+            String json = Files.readString(Path.of(directory + "/" + uuid + ".json"));
 
             Gson gson = new Gson();
             return gson.fromJson(json, SavedPlayerData.class);

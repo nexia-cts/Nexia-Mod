@@ -1,6 +1,6 @@
 package com.nexia.core.mixin.item;
 
-import com.nexia.core.utilities.item.ItemStackUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.server.level.ServerPlayer;
@@ -10,6 +10,7 @@ import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,9 +33,10 @@ public class CraftingMixin {
     @ModifyArg(method = "slotChangedCraftingGrid", index = 1, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/ResultContainer;setItem(ILnet/minecraft/world/item/ItemStack;)V"))
     private static ItemStack setCraftResult(ItemStack itemStack) {
         if (crafter == null) return itemStack;
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(crafter));
 
-        if (BwUtil.isInBedWars(crafter) || FfaUtil.isFfaPlayer(crafter)) {
-            ItemStackUtil.sendInventoryRefreshPacket(crafter);
+        if (BwUtil.isInBedWars(nexiaPlayer) || FfaUtil.isFfaPlayer(nexiaPlayer)) {
+            nexiaPlayer.refreshInventory();
             return ItemStack.EMPTY;
         }
 
@@ -44,8 +46,9 @@ public class CraftingMixin {
     @ModifyArg(method = "slotChangedCraftingGrid", index = 2, at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ClientboundContainerSetSlotPacket;<init>(IILnet/minecraft/world/item/ItemStack;)V"))
     private static ItemStack setCraftResultPacketItem(ItemStack itemStack) {
         if (crafter == null) return itemStack;
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(crafter));
 
-        if (BwUtil.isInBedWars(crafter) || FfaUtil.isFfaPlayer(crafter)) return ItemStack.EMPTY;
+        if (BwUtil.isInBedWars(nexiaPlayer) || FfaUtil.isFfaPlayer(nexiaPlayer)) return ItemStack.EMPTY;
 
         return itemStack;
     }

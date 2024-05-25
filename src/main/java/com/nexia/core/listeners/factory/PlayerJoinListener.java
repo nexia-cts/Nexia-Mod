@@ -134,23 +134,23 @@ public class PlayerJoinListener {
     }
 
     private static void processJoin(Player player, ServerPlayer minecraftPlayer) {
-        if(PlayerDataManager.get(player).clientType.equals(com.nexia.core.utilities.player.PlayerData.ClientType.VIAFABRICPLUS)) return;
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(minecraftPlayer));
+        if(PlayerDataManager.get(nexiaPlayer).clientType.equals(com.nexia.core.utilities.player.PlayerData.ClientType.VIAFABRICPLUS)) return;
 
 
-        com.nexia.ffa.classic.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
-        com.nexia.ffa.kits.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
-        com.nexia.ffa.uhc.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
-        com.nexia.ffa.sky.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer);
+        com.nexia.ffa.classic.utilities.player.PlayerDataManager.addPlayerData(nexiaPlayer);
+        com.nexia.ffa.kits.utilities.player.PlayerDataManager.addPlayerData(nexiaPlayer);
+        com.nexia.ffa.uhc.utilities.player.PlayerDataManager.addPlayerData(nexiaPlayer);
+        com.nexia.ffa.sky.utilities.player.PlayerDataManager.addPlayerData(nexiaPlayer);
 
-        com.nexia.discord.utilities.player.PlayerDataManager.addPlayerData(minecraftPlayer.getUUID());
-        com.nexia.minigames.games.duels.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
-        com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
-        com.nexia.minigames.games.oitc.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
-        com.nexia.minigames.games.football.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
-        com.nexia.minigames.games.skywars.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
+        com.nexia.discord.utilities.player.PlayerDataManager.addPlayerData(nexiaPlayer.player().uuid);
+        com.nexia.minigames.games.duels.util.player.PlayerDataManager.addPlayerData(nexiaPlayer);
+        com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.addPlayerData(nexiaPlayer);
+        com.nexia.minigames.games.oitc.util.player.PlayerDataManager.addPlayerData(nexiaPlayer);
+        com.nexia.minigames.games.football.util.player.PlayerDataManager.addPlayerData(nexiaPlayer);
+        com.nexia.minigames.games.skywars.util.player.PlayerDataManager.addPlayerData(nexiaPlayer);
 
-        new NexiaPlayer(new AccuratePlayer(minecraftPlayer)).leaveAllGames();
-        LobbyUtil.returnToLobby(minecraftPlayer, true);
+        LobbyUtil.returnToLobby(nexiaPlayer, true);
 
         checkBooster(minecraftPlayer);
         sendJoinMessage(player);

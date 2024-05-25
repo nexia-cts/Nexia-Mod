@@ -1,12 +1,9 @@
 package com.nexia.core.games.util;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
-import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.*;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.classic.utilities.FfaAreas;
@@ -25,15 +22,13 @@ import com.nexia.minigames.games.skywars.SkywarsGameMode;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.json.simple.JSONObject;
 
 import java.time.LocalDateTime;
@@ -90,32 +85,32 @@ public class LobbyUtil {
             NO_DAMAGE_TAG
     };
 
-    public static void returnToLobby(ServerPlayer minecraftPlayer, boolean tp) {
-        NexiaPlayer player = new NexiaPlayer(AccuratePlayer.create(minecraftPlayer));
+    public static void returnToLobby(NexiaPlayer player, boolean tp) {
+        player.leaveAllGames();
+        player.reset(true, GameType.ADVENTURE);
 
         // Duels shit
         player.player().get().addTag("duels");
-        DuelGameHandler.leave(minecraftPlayer, false);
+        DuelGameHandler.leave(player, false);
 
         if (tp) {
-            minecraftPlayer.setRespawnPosition(lobbyWorld.dimension(), lobbySpawn.toBlockPos(), lobbySpawn.yaw, true, false);
-            minecraftPlayer.teleportTo(lobbyWorld, lobbySpawn.x, lobbySpawn.y, lobbySpawn.z, lobbySpawn.pitch, lobbySpawn.yaw);
+            player.player().get().setRespawnPosition(lobbyWorld.dimension(), lobbySpawn.toBlockPos(), lobbySpawn.yaw, true, false);
+            player.player().get().teleportTo(lobbyWorld, lobbySpawn.x, lobbySpawn.y, lobbySpawn.z, lobbySpawn.pitch, lobbySpawn.yaw);
 
-            if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter")) {
-                minecraftPlayer.abilities.mayfly = true;
-                minecraftPlayer.onUpdateAbilities();
+            if(Permissions.check(player.player().get(), "nexia.prefix.supporter")) {
+                player.player().get().abilities.mayfly = true;
+                player.player().get().onUpdateAbilities();
             }
 
-            LobbyUtil.giveItems(minecraftPlayer);
+            LobbyUtil.giveItems(player);
         }
 
-        minecraftPlayer.connection.send(new ClientboundStopSoundPacket());
 
-        PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.LOBBY;
-        ServerTime.minecraftServer.getPlayerList().sendPlayerPermissionLevel(minecraftPlayer);
+
+        PlayerDataManager.get(player).gameMode = PlayerGameMode.LOBBY;
     }
 
-    public static void giveItems(ServerPlayer minecraftPlayer) {
+    public static void giveItems(NexiaPlayer player) {
         ItemStack compass = new ItemStack(Items.COMPASS);
         compass.setHoverName(new TextComponent("§eGamemode Selector"));
         ItemDisplayUtil.addGlint(compass);
@@ -143,26 +138,27 @@ public class LobbyUtil {
         ItemDisplayUtil.addGlint(customDuelSword);
         ItemDisplayUtil.addLore(customDuelSword, "§eHit a player §7to duel them in your custom kit.", 0);
 
-        if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter")) {
+        if(Permissions.check(player.player().get(), "nexia.prefix.supporter")) {
             ItemStack elytra = new ItemStack(Items.ELYTRA);
             elytra.setHoverName(new TextComponent("§5§lSupporter Elytra"));
             ItemDisplayUtil.addGlint(elytra);
             elytra.getOrCreateTag().putBoolean("Unbreakable", true);
             ItemDisplayUtil.addLore(elytra, "§7Thanks for supporting the server!", 0);
             elytra.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
-            minecraftPlayer.setItemSlot(EquipmentSlot.CHEST, elytra);
+            player.player().get().setItemSlot(EquipmentSlot.CHEST, elytra);
         }
 
 
-        minecraftPlayer.setSlot(0, customDuelSword); // 1st slot
-        minecraftPlayer.setSlot(4, compass); //middle slot
-        minecraftPlayer.setSlot(3, nameTag); //left
-        minecraftPlayer.setSlot(5, queueSword); //right
-        minecraftPlayer.setSlot(8, teamSword); // like right right not right
-        ItemStackUtil.sendInventoryRefreshPacket(minecraftPlayer);
+        player.player().get().setSlot(0, customDuelSword); // 1st slot
+        player.player().get().setSlot(4, compass); //middle slot
+        player.player().get().setSlot(3, nameTag); //left
+        player.player().get().setSlot(5, queueSword); //right
+        player.player().get().setSlot(8, teamSword); // like right right not right
+
+        player.refreshInventory();
     }
 
-    public static boolean checkGameModeBan(Player factoryPlayer, ServerPlayer player, String game) {
+    public static boolean checkGameModeBan(NexiaPlayer player, String game) {
         ArrayList<PlayerGameMode> bannedGameModes = GamemodeBanHandler.getBannedGameModes(player);
         if(bannedGameModes.isEmpty()) {
             return false;
@@ -171,15 +167,15 @@ public class LobbyUtil {
         for(PlayerGameMode gameMode : bannedGameModes) {
             if(game.toLowerCase().contains(gameMode.id.toLowerCase())) {
 
-                JSONObject banJSON = GamemodeBanHandler.getBanList(player.getStringUUID(), gameMode);
+                JSONObject banJSON = GamemodeBanHandler.getBanList(player.player().uuid, gameMode);
 
                 if (banJSON != null) {
                     LocalDateTime banTime = getBanTime((String) banJSON.get("duration"));
                     if(LocalDateTime.now().isAfter(banTime)) {
-                        GamemodeBanHandler.removeBanFromList(player.getStringUUID(), gameMode);
+                        GamemodeBanHandler.removeBanFromList(player.player().uuid, gameMode);
                         return false;
                     } else {
-                        factoryPlayer.sendMessage(
+                        player.sendMessage(
                                 ChatFormat.nexiaMessage
                                         .append(Component.text("You are gamemode (" + gameMode.name + ") banned for ").decoration(ChatFormat.bold, false))
                                         .append(Component.text(BanHandler.banTimeToText(banTime)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
@@ -189,13 +185,13 @@ public class LobbyUtil {
                         return true;
                     }
                 } else {
-                    factoryPlayer.sendMessage(
+                    player.sendMessage(
                             ChatFormat.nexiaMessage
                                     .append(Component.text("You are gamemode (" + gameMode.name + ") banned!"))
                     );
                 }
 
-                factoryPlayer.runCommand("/hub");
+                LobbyUtil.returnToLobby(player, true);
 
                 return true;
             }
@@ -204,99 +200,97 @@ public class LobbyUtil {
         return false;
     }
 
-    public static void sendGame(ServerPlayer minecraftPlayer, String game, boolean message, boolean tp){
-        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(AccuratePlayer.create(minecraftPlayer));
+    public static void sendGame(NexiaPlayer player, String game, boolean message, boolean tp) {
 
-        if(checkGameModeBan(player, minecraftPlayer, game)) {
+        if(checkGameModeBan(player, game)) {
             return;
         }
 
-        if((game.equalsIgnoreCase("classic ffa") && !FfaClassicUtil.canGoToSpawn(minecraftPlayer)) ||
-                (game.equalsIgnoreCase("kits ffa") && !FfaKitsUtil.canGoToSpawn(minecraftPlayer) ||
-                        (game.equalsIgnoreCase("sky ffa") && !FfaSkyUtil.canGoToSpawn(minecraftPlayer) ||
-                                (game.equalsIgnoreCase("uhc ffa") && !FfaUhcUtil.canGoToSpawn(minecraftPlayer))))) {
+        if((game.equalsIgnoreCase("classic ffa") && !FfaClassicUtil.canGoToSpawn(player)) ||
+                (game.equalsIgnoreCase("kits ffa") && !FfaKitsUtil.canGoToSpawn(player) ||
+                        (game.equalsIgnoreCase("sky ffa") && !FfaSkyUtil.canGoToSpawn(player) ||
+                                (game.equalsIgnoreCase("uhc ffa") && !FfaUhcUtil.canGoToSpawn(player))))) {
 
             player.sendMessage(Component.text("You must be fully healed to go to spawn!").color(ChatFormat.failColor));
             return;
         }
 
-        if(player.hasTag("duels")) {
-            player.removeTag("duels");
-            DuelGameHandler.leave(minecraftPlayer, true);
+        if(player.getFactoryPlayer().hasTag("duels")) {
+            player.getFactoryPlayer().removeTag("duels");
+            DuelGameHandler.leave(player, true);
         }
 
-        nexiaPlayer.reset(true);
-        nexiaPlayer.leaveAllGames();
+        player.reset(true, GameType.ADVENTURE);
+        player.leaveAllGames();
 
         if(game.equalsIgnoreCase("classic ffa") ||
                 game.equalsIgnoreCase("kits ffa") ||
                 game.equalsIgnoreCase("sky ffa") ||
                 game.equalsIgnoreCase("uhc ffa")) {
-            player.addTag(FfaUtil.FFA_TAG);
-            PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.FFA;
+            player.getFactoryPlayer().addTag(FfaUtil.FFA_TAG);
+            PlayerDataManager.get(player).gameMode = PlayerGameMode.FFA;
             if(message){ player.sendActionBarMessage(Component.text("You have joined §8🗡 §7§lFFA §b🔱")); }
         }
 
         if(game.equalsIgnoreCase("classic ffa")){
-            player.addTag("ffa_classic");
-            FfaClassicUtil.wasInSpawn.add(player.getUUID());
-            PlayerDataManager.get(minecraftPlayer).ffaGameMode = FfaGameMode.CLASSIC;
+            player.getFactoryPlayer().addTag("ffa_classic");
+            FfaClassicUtil.wasInSpawn.add(player.player().uuid);
+            PlayerDataManager.get(player).ffaGameMode = FfaGameMode.CLASSIC;
             if(tp){
-                minecraftPlayer.teleportTo(FfaAreas.ffaWorld, FfaAreas.spawn.x, FfaAreas.spawn.y, FfaAreas.spawn.z, FfaAreas.spawn.yaw, FfaAreas.spawn.pitch);
-                minecraftPlayer.setRespawnPosition(FfaAreas.ffaWorld.dimension(), FfaAreas.spawn.toBlockPos(), FfaAreas.spawn.yaw, true, false);
+                player.player().get().teleportTo(FfaAreas.ffaWorld, FfaAreas.spawn.x, FfaAreas.spawn.y, FfaAreas.spawn.z, FfaAreas.spawn.yaw, FfaAreas.spawn.pitch);
+                player.player().get().setRespawnPosition(FfaAreas.ffaWorld.dimension(), FfaAreas.spawn.toBlockPos(), FfaAreas.spawn.yaw, true, false);
             }
 
-            FfaClassicUtil.clearThrownTridents(minecraftPlayer);
-            FfaClassicUtil.setInventory(minecraftPlayer);
+            FfaClassicUtil.clearThrownTridents(player);
+            FfaClassicUtil.setInventory(player);
         }
 
         if(game.equalsIgnoreCase("sky ffa")){
-            player.addTag("ffa_sky");
-            FfaSkyUtil.wasInSpawn.add(player.getUUID());
-            PlayerDataManager.get(minecraftPlayer).ffaGameMode = FfaGameMode.SKY;
+            player.player().get().addTag("ffa_sky");
+            FfaSkyUtil.wasInSpawn.add(player.player().uuid);
+            PlayerDataManager.get(player).ffaGameMode = FfaGameMode.SKY;
             if(tp){
-                FfaSkyUtil.sendToSpawn(minecraftPlayer);
-                minecraftPlayer.setRespawnPosition(com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld.dimension(), com.nexia.ffa.sky.utilities.FfaAreas.spawn.toBlockPos(), com.nexia.ffa.sky.utilities.FfaAreas.spawn.yaw, true, false);
+                FfaSkyUtil.sendToSpawn(player);
+                player.player().get().setRespawnPosition(com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld.dimension(), com.nexia.ffa.sky.utilities.FfaAreas.spawn.toBlockPos(), com.nexia.ffa.sky.utilities.FfaAreas.spawn.yaw, true, false);
             }
 
-            FfaSkyUtil.joinOrRespawn(minecraftPlayer);
+            FfaSkyUtil.joinOrRespawn(player);
         }
 
         if(game.equalsIgnoreCase("uhc ffa")){
-            player.addTag("ffa_uhc");
-            FfaUhcUtil.wasInSpawn.add(player.getUUID());
-            PlayerDataManager.get(minecraftPlayer).ffaGameMode = FfaGameMode.UHC;
+            player.getFactoryPlayer().addTag("ffa_uhc");
+            FfaUhcUtil.wasInSpawn.add(player.player().uuid);
+            PlayerDataManager.get(player).ffaGameMode = FfaGameMode.UHC;
             if(tp){
-                FfaUhcUtil.sendToSpawn(minecraftPlayer);
-                minecraftPlayer.setRespawnPosition(com.nexia.ffa.uhc.utilities.FfaAreas.ffaWorld.dimension(), com.nexia.ffa.uhc.utilities.FfaAreas.spawn.toBlockPos(), com.nexia.ffa.uhc.utilities.FfaAreas.spawn.yaw, true, false);
+                FfaUhcUtil.sendToSpawn(player);
+                player.player().get().setRespawnPosition(com.nexia.ffa.uhc.utilities.FfaAreas.ffaWorld.dimension(), com.nexia.ffa.uhc.utilities.FfaAreas.spawn.toBlockPos(), com.nexia.ffa.uhc.utilities.FfaAreas.spawn.yaw, true, false);
             }
 
-            FfaUhcUtil.clearArrows(minecraftPlayer);
-            FfaUhcUtil.clearTrident(minecraftPlayer);
+            FfaUhcUtil.clearArrows(player);
+            FfaUhcUtil.clearTrident(player);
         }
 
         if(game.equalsIgnoreCase("kits ffa")){
-            player.addTag("ffa_kits");
-            FfaKitsUtil.wasInSpawn.add(player.getUUID());
-            PlayerDataManager.get(minecraftPlayer).ffaGameMode = FfaGameMode.KITS;
+            player.getFactoryPlayer().addTag("ffa_kits");
+            FfaKitsUtil.wasInSpawn.add(player.player().uuid);
+            PlayerDataManager.get(player).ffaGameMode = FfaGameMode.KITS;
             if(tp){
-                FfaKitsUtil.sendToSpawn(minecraftPlayer);
-                minecraftPlayer.setRespawnPosition(com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld.dimension(), com.nexia.ffa.kits.utilities.FfaAreas.spawn.toBlockPos(), com.nexia.ffa.kits.utilities.FfaAreas.spawn.yaw, true, false);
+                FfaKitsUtil.sendToSpawn(player);
+                player.player().get().setRespawnPosition(com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld.dimension(), com.nexia.ffa.kits.utilities.FfaAreas.spawn.toBlockPos(), com.nexia.ffa.kits.utilities.FfaAreas.spawn.yaw, true, false);
             }
 
-            FfaKitsUtil.clearThrownTridents(minecraftPlayer);
-            FfaKitsUtil.clearArrows(minecraftPlayer);
-            FfaKitsUtil.clearSpectralArrows(minecraftPlayer);
+            FfaKitsUtil.clearThrownTridents(player);
+            FfaKitsUtil.clearArrows(player);
+            FfaKitsUtil.clearSpectralArrows(player);
         }
 
         if(game.equalsIgnoreCase("bedwars")){
             if(message){ player.sendActionBarMessage(Component.text("You have joined §b\uD83E\uDE93 §c§lBedwars §e⚡"));}
-            BwPlayerEvents.tryToJoin(minecraftPlayer, false);
+            BwPlayerEvents.tryToJoin(player, false);
         }
 
         if(game.equalsIgnoreCase("duels")){
-            LobbyUtil.returnToLobby(minecraftPlayer, tp);
+            LobbyUtil.returnToLobby(player, tp);
 
             if(message){
                 player.sendActionBarMessage(Component.text("You have joined §f☯ §c§lDuels §7\uD83E\uDE93"));
@@ -309,36 +303,36 @@ public class LobbyUtil {
         }
 
         if(game.equalsIgnoreCase("oitc")){
-            player.addTag(OitcGame.OITC_TAG);
-            PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.OITC;
-            OitcGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
+            player.getFactoryPlayer().addTag(OitcGame.OITC_TAG);
+            PlayerDataManager.get(player).gameMode = PlayerGameMode.OITC;
+            OitcGame.death(player, player.player().get().getLastDamageSource());
 
-            com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(minecraftPlayer).gameMode = OitcGameMode.LOBBY;
+            com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(player).gameMode = OitcGameMode.LOBBY;
 
-            OitcGame.joinQueue(minecraftPlayer);
+            OitcGame.joinQueue(player);
 
             if(message){player.sendActionBarMessage(Component.text("You have joined §7\uD83D\uDDE1 §f§lOITC §7\uD83C\uDFF9"));}
         }
 
         if(game.equalsIgnoreCase("football")){
-            player.addTag(FootballGame.FOOTBALL_TAG);
-            PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.FOOTBALL;
-            com.nexia.minigames.games.football.util.player.PlayerDataManager.get(minecraftPlayer).gameMode = FootballGameMode.LOBBY;
+            player.player().get().addTag(FootballGame.FOOTBALL_TAG);
+            PlayerDataManager.get(player).gameMode = PlayerGameMode.FOOTBALL;
+            com.nexia.minigames.games.football.util.player.PlayerDataManager.get(player).gameMode = FootballGameMode.LOBBY;
 
-            FootballGame.joinQueue(minecraftPlayer);
+            FootballGame.joinQueue(player);
 
             if(message){player.sendActionBarMessage(Component.text("You have joined §7○ §7§lFootball §7\uD83D\uDDE1"));}
         }
 
 
         if(game.equalsIgnoreCase("skywars")){
-            player.addTag(PlayerGameMode.SKYWARS.tag);
-            PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.SKYWARS;
-            SkywarsGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
+            player.player().get().addTag(PlayerGameMode.SKYWARS.tag);
+            PlayerDataManager.get(player).gameMode = PlayerGameMode.SKYWARS;
+            SkywarsGame.death(player, player.player().get().getLastDamageSource());
 
-            com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(minecraftPlayer).gameMode = SkywarsGameMode.LOBBY;
+            com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(player).gameMode = SkywarsGameMode.LOBBY;
 
-            SkywarsGame.joinQueue(minecraftPlayer);
+            SkywarsGame.joinQueue(player);
 
             if(message){player.sendActionBarMessage(Component.text("You have joined §7☐ §aSkywars §7\uD83D\uDDE1"));}
         }

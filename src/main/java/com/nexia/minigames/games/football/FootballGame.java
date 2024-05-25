@@ -1,11 +1,11 @@
 package com.nexia.minigames.games.football;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
-import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.DuelGameHandler;
@@ -45,9 +45,9 @@ import java.util.ArrayList;
 import java.util.function.Predicate;
 
 public class FootballGame {
-    public static ArrayList<AccuratePlayer> players = new ArrayList<>();
+    public static ArrayList<NexiaPlayer> players = new ArrayList<>();
 
-    public static ArrayList<AccuratePlayer> spectator = new ArrayList<>();
+    public static ArrayList<NexiaPlayer> spectator = new ArrayList<>();
 
     public static ServerLevel world = null;
 
@@ -62,7 +62,7 @@ public class FootballGame {
 
     public static int queueTime = 15;
 
-    public static ArrayList<AccuratePlayer> queue = new ArrayList<>();
+    public static ArrayList<NexiaPlayer> queue = new ArrayList<>();
 
     public static boolean isStarted = false;
 
@@ -75,31 +75,23 @@ public class FootballGame {
     private static int endTime = 5;
 
 
-    public static void leave(ServerPlayer minecraftPlayer) {
-        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
-        AccuratePlayer accuratePlayer = AccuratePlayer.create(minecraftPlayer);
+    public static void leave(NexiaPlayer player) {
+        PlayerData data = PlayerDataManager.get(player);
+        FootballGame.spectator.remove(player);
+        FootballGame.queue.remove(player);
+        FootballGame.players.remove(player);
 
-        PlayerData data = PlayerDataManager.get(minecraftPlayer);
-        FootballGame.spectator.remove(accuratePlayer);
-        FootballGame.queue.remove(accuratePlayer);
-        FootballGame.players.remove(accuratePlayer);
-
-        if(data.gameMode.equals(FootballGameMode.PLAYING) && (winnerTeam == null || !winnerTeam.players.contains(accuratePlayer))) data.savedData.loss++;
+        if(data.gameMode.equals(FootballGameMode.PLAYING) && (winnerTeam == null || !winnerTeam.players.contains(player))) data.savedData.loss++;
         data.team = null;
 
-        player.removeTag("in_football_game");
+        player.getFactoryPlayer().removeTag("in_football_game");
 
-        PlayerUtil.resetHealthStatus(player);
-        minecraftPlayer.setGameMode(GameType.ADVENTURE);
+        player.reset(true, GameType.ADVENTURE);
 
         if(!FootballGame.team1.refreshTeam()) FootballGame.endGame(FootballGame.team2);
         if(!FootballGame.team2.refreshTeam()) FootballGame.endGame(FootballGame.team1);
 
-        player.getInventory().clear();
-        minecraftPlayer.inventory.setCarried(ItemStack.EMPTY);
-        minecraftPlayer.getEnderChestInventory().clearContent();
-
-        player.removeTag("football");
+        player.getFactoryPlayer().removeTag("football");
 
         data.gameMode = FootballGameMode.LOBBY;
     }
@@ -111,13 +103,13 @@ public class FootballGame {
                 // r * 65536 + g * 256 + b;
 
                 if(winnerTeam != null) {
-                    ServerPlayer randomPlayer = winnerTeam.players.get(RandomUtil.randomInt(winnerTeam.players.size())).get();
+                    NexiaPlayer randomPlayer = winnerTeam.players.get(RandomUtil.randomInt(winnerTeam.players.size()));
                     if(randomPlayer != null) DuelGameHandler.winnerRockets(randomPlayer, FootballGame.world, color);
                 }
 
                 if(FootballGame.endTime <= 0) {
-                    for(ServerPlayer player : FootballGame.getViewers()){
-                        PlayerUtil.getFactoryPlayer(player).runCommand("/hub", 0, false);
+                    for(NexiaPlayer player : FootballGame.getViewers()){
+                        player.getFactoryPlayer().runCommand("/hub", 0, false);
                     }
 
                     FootballGame.resetAll();
@@ -144,18 +136,17 @@ public class FootballGame {
 
         } else {
             if(FootballGame.queue.size() >= 2) {
-                for(AccuratePlayer player : FootballGame.queue){
-                    if(player.get() == null) return;
-                    Player fPlayer = PlayerUtil.getFactoryPlayer(player.get());
+                for(NexiaPlayer player : FootballGame.queue){
+                    if(player.player().get() == null) return;
 
                     if(FootballGame.queueTime <= 5) {
                         Title title = getTitle(FootballGame.queueTime);
 
-                        PlayerUtil.getFactoryPlayer(player.get()).sendTitle(title);
-                        PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+                        player.sendTitle(title);
+                        player.sendSound(new EntityPos(player.player().get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
                     }
 
-                    fPlayer.sendActionBarMessage(
+                    player.sendActionBarMessage(
                             Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
                                     .append(Component.text(FootballGame.map.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                                     .append(Component.text(" (" + FootballGame.queue.size() + ")").color(TextColor.fromHexString("#b3b3b3")))
@@ -165,7 +156,7 @@ public class FootballGame {
                     );
 
                     if(FootballGame.queueTime <= 5 || FootballGame.queueTime == 10 || FootballGame.queueTime == 15) {
-                        fPlayer.sendMessage(Component.text("The game will start in ").color(TextColor.fromHexString("#b3b3b3"))
+                        player.sendMessage(Component.text("The game will start in ").color(TextColor.fromHexString("#b3b3b3"))
                                 .append(Component.text(FootballGame.queueTime).color(ChatFormat.brandColor1))
                                 .append(Component.text(" seconds.").color(TextColor.fromHexString("#b3b3b3")))
                         );
@@ -185,8 +176,8 @@ public class FootballGame {
         if(!team1.refreshTeam() || !team2.refreshTeam()) endGame(null);
 
         if(!FootballGame.isEnding) {
-            ServerPlayer closestPlayer = (ServerPlayer) FootballGame.world.getNearestPlayer(entity.getX(), entity.getY(), entity.getZ(), 20, e -> e instanceof ServerPlayer se && !se.isSpectator() && !se.isCreative() && team.players.contains(AccuratePlayer.create(se)));
-            if(closestPlayer != null) PlayerDataManager.get(closestPlayer).savedData.goals++;
+            ServerPlayer closestPlayer = (ServerPlayer) FootballGame.world.getNearestPlayer(entity.getX(), entity.getY(), entity.getZ(), 20, e -> e instanceof ServerPlayer se && !se.isSpectator() && !se.isCreative() && team.players.contains(new NexiaPlayer(new AccuratePlayer(se))));
+            if(closestPlayer != null) PlayerDataManager.get(closestPlayer.getUUID()).savedData.goals++;
             team.goals++;
             if(team.goals >= FootballGame.map.maxGoals) FootballGame.endGame(team);
         }
@@ -202,16 +193,16 @@ public class FootballGame {
             entity.setDeltaMovement(0, 0, 0);
             entity.moveTo(0, 80, 0, 0, 0);
 
-            for(ServerPlayer player : FootballGame.getViewers()) {
-                PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(Component.text("Team " + teamID).color(ChatFormat.brandColor2), Component.text("has scored a goal!").color(ChatFormat.normalColor)));
+            for(NexiaPlayer player : FootballGame.getViewers()) {
+                player.sendTitle(Title.title(Component.text("Team " + teamID).color(ChatFormat.brandColor2), Component.text("has scored a goal!").color(ChatFormat.normalColor)));
             }
 
-            for(AccuratePlayer player : FootballGame.team1.players) {
-                FootballGame.team1.spawnPosition.teleportPlayer(FootballGame.world, player.get());
+            for(NexiaPlayer player : FootballGame.team1.players) {
+                FootballGame.team1.spawnPosition.teleportPlayer(FootballGame.world, player.player().get());
             }
 
-            for(AccuratePlayer player : FootballGame.team2.players) {
-                FootballGame.team2.spawnPosition.teleportPlayer(FootballGame.world, player.get());
+            for(NexiaPlayer player : FootballGame.team2.players) {
+                FootballGame.team2.spawnPosition.teleportPlayer(FootballGame.world, player.player().get());
             }
         }
 
@@ -232,22 +223,21 @@ public class FootballGame {
         return Title.title(Component.text(queueTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
     }
 
-    public static void joinQueue(ServerPlayer player) {
+    public static void joinQueue(NexiaPlayer player) {
         com.nexia.minigames.games.football.util.player.PlayerData data = PlayerDataManager.get(player);
         data.team = null;
-        AccuratePlayer accuratePlayer = AccuratePlayer.create(player);
-        accuratePlayer.get().setHealth(accuratePlayer.get().getMaxHealth());
+
         if(FootballGame.isStarted){
-            FootballGame.spectator.add(accuratePlayer);
+            FootballGame.spectator.add(player);
             PlayerDataManager.get(player).gameMode = FootballGameMode.SPECTATOR;
-            accuratePlayer.get().setGameMode(GameType.SPECTATOR);
+            player.getFactoryPlayer().setGameMode(Minecraft.GameMode.SPECTATOR);
         } else {
-            FootballGame.queue.add(accuratePlayer);
-            player.addTag(LobbyUtil.NO_DAMAGE_TAG);
+            FootballGame.queue.add(player);
+            player.getFactoryPlayer().addTag(LobbyUtil.NO_DAMAGE_TAG);
         }
 
-        player.teleportTo(world, 0, 101, 0, 0, 0);
-        player.setRespawnPosition(world.dimension(), new BlockPos(0, 100, 0), 0, true, false);
+        player.player().get().teleportTo(world, 0, 101, 0, 0, 0);
+        player.player().get().setRespawnPosition(world.dimension(), new BlockPos(0, 100, 0), 0, true, false);
     }
 
     public static void endGame(FootballTeam winnerTeam) {
@@ -259,8 +249,8 @@ public class FootballGame {
                     .append(Component.text("draw").color(ChatFormat.brandColor2))
                     .append(Component.text("!").color(ChatFormat.normalColor)
                     );
-            for(ServerPlayer player : FootballGame.getViewers()){
-                if(player != null && PlayerUtil.getFactoryPlayer(player) != null) PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(msg, Component.text("")));
+            for(NexiaPlayer player : FootballGame.getViewers()){
+                if(player != null && player.player().get() != null) player.sendTitle(Title.title(msg, Component.text("")));
             }
 
             return;
@@ -271,27 +261,27 @@ public class FootballGame {
         int teamID = 1;
         if(winnerTeam == FootballGame.team2) teamID = 2;
 
-        for(AccuratePlayer accuratePlayer : winnerTeam.players) {
-            PlayerUtil.getFactoryPlayer(accuratePlayer.get()).sendTitle(Title.title(Component.text("You won!").color(ChatFormat.greenColor), Component.text("")));
-            PlayerDataManager.get(accuratePlayer.get()).savedData.wins++;
+        for(NexiaPlayer player : winnerTeam.players) {
+            player.sendTitle(Title.title(Component.text("You won!").color(ChatFormat.greenColor), Component.text("")));
+            PlayerDataManager.get(player).savedData.wins++;
         }
 
-        for(ServerPlayer player : FootballGame.getViewers()){
-            PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(Component.text("Team " + teamID).color(ChatFormat.brandColor2), Component.text("has won the game! (" + winnerTeam.goals + " goals)").color(ChatFormat.normalColor)));
+        for(NexiaPlayer player : FootballGame.getViewers()){
+            player.sendTitle(Title.title(Component.text("Team " + teamID).color(ChatFormat.brandColor2), Component.text("has won the game! (" + winnerTeam.goals + " goals)").color(ChatFormat.normalColor)));
         }
     }
 
     public static void updateInfo() {
 
         String[] timer = TickUtil.minuteTimeStamp(FootballGame.gameTime * 20);
-        for(ServerPlayer player : FootballGame.getViewers()) {
+        for(NexiaPlayer player : FootballGame.getViewers()) {
             if(player == null) return;
             FootballTeam playerTeam = PlayerDataManager.get(player).team;
             if(playerTeam == null) playerTeam = FootballGame.team1; // maybe cuz spectator
             FootballTeam otherTeam = FootballGame.team1;
             if(playerTeam.equals(FootballGame.team1)) otherTeam = FootballGame.team2;
 
-            PlayerUtil.getFactoryPlayer(player).sendActionBarMessage(
+            player.sendActionBarMessage(
                     Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
                             .append(Component.text(FootballGame.map.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
@@ -348,7 +338,7 @@ public class FootballGame {
         return armorStand;
     }
 
-    private static FootballTeam assignPlayer(AccuratePlayer player) {
+    private static FootballTeam assignPlayer(NexiaPlayer player) {
         int players = FootballGame.players.size();
         int random = RandomUtil.randomInt(1, 2);
 
@@ -399,25 +389,24 @@ public class FootballGame {
              */
             FootballGame.createArmorStand();
 
-            for(AccuratePlayer player : FootballGame.players) {
-                ServerPlayer serverPlayer = player.get();
-                //serverPlayer.inventory.setItem(0, normal);
-                //serverPlayer.inventory.setItem(1, kicking);
-                serverPlayer.inventory.setItem(0, kicking);
+            for(NexiaPlayer player : FootballGame.players) {
+                //NexiaPlayer.inventory.setItem(0, normal);
+                //NexiaPlayer.inventory.setItem(1, kicking);
+                player.player().get().inventory.setItem(0, kicking);
 
-                PlayerData data = PlayerDataManager.get(serverPlayer);
+                PlayerData data = PlayerDataManager.get(player);
                 data.gameMode = FootballGameMode.PLAYING;
 
-                serverPlayer.addTag("in_football_game");
-                serverPlayer.addTag(LobbyUtil.NO_DAMAGE_TAG);
-                serverPlayer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 99999, 255, false, false, false));
+                player.getFactoryPlayer().addTag("in_football_game");
+                player.getFactoryPlayer().addTag(LobbyUtil.NO_DAMAGE_TAG);
+                player.player().get().addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 99999, 255, false, false, false));
 
                 data.team = FootballGame.assignPlayer(player);
                 while(data.team == null) {
                     data.team = FootballGame.assignPlayer(player);
                     // if you're still null then im going to beat the shit out of you
                 }
-                data.team.spawnPosition.teleportPlayer(FootballGame.world, serverPlayer);
+                data.team.spawnPosition.teleportPlayer(FootballGame.world, player.player().get());
 
                 ItemStack helmet = Items.LEATHER_HELMET.getDefaultInstance();
                 helmet.getOrCreateTag().putInt("Unbreakable", 1);
@@ -447,15 +436,15 @@ public class FootballGame {
                 leatherItem.setColor(leggings, colour);
                 leatherItem.setColor(boots, colour);
 
-                player.get().setItemSlot(EquipmentSlot.HEAD, helmet);
-                player.get().setItemSlot(EquipmentSlot.CHEST, chestplate);
-                player.get().setItemSlot(EquipmentSlot.LEGS, leggings);
-                player.get().setItemSlot(EquipmentSlot.FEET, boots);
+                player.player().get().setItemSlot(EquipmentSlot.HEAD, helmet);
+                player.player().get().setItemSlot(EquipmentSlot.CHEST, chestplate);
+                player.player().get().setItemSlot(EquipmentSlot.LEGS, leggings);
+                player.player().get().setItemSlot(EquipmentSlot.FEET, boots);
 
 
-                player.get().setGameMode(GameType.SURVIVAL);
+                player.getFactoryPlayer().setGameMode(Minecraft.GameMode.SURVIVAL);
                 //player.setRespawnPosition(world.dimension(), pos, 0, true, false);
-                player.get().getCooldowns().addCooldown(Items.NETHERITE_SWORD, 200);
+                player.player().get().getCooldowns().addCooldown(Items.NETHERITE_SWORD, 200);
             }
 
             FootballGame.spectator.clear();
@@ -463,8 +452,8 @@ public class FootballGame {
         }
     }
 
-    public static boolean isFootballPlayer(net.minecraft.world.entity.player.Player player){
-        return com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.FOOTBALL || player.getTags().contains("football") || player.getTags().contains("in_football_game");
+    public static boolean isFootballPlayer(NexiaPlayer player){
+        return com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.FOOTBALL || player.getFactoryPlayer().hasTag("football") || player.getFactoryPlayer().hasTag("in_football_game");
     }
 
     public static void resetAll() {
@@ -519,10 +508,10 @@ public class FootballGame {
         resetAll();
     }
 
-    public static ArrayList<ServerPlayer> getViewers() {
-        ArrayList<ServerPlayer> viewers = new ArrayList<>();
-        FootballGame.players.forEach(player -> viewers.add(player.get()));
-        FootballGame.spectator.forEach(player -> viewers.add(player.get()));
+    public static ArrayList<NexiaPlayer> getViewers() {
+        ArrayList<NexiaPlayer> viewers = new ArrayList<>();
+        viewers.addAll(FootballGame.players);
+        viewers.addAll(FootballGame.spectator);
         return viewers;
     }
 }

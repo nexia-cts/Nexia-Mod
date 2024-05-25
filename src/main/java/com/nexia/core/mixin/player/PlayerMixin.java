@@ -2,11 +2,14 @@ package com.nexia.core.mixin.player;
 
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.misc.EventUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
+import com.nexia.ffa.classic.utilities.FfaClassicUtil;
+import com.nexia.ffa.kits.utilities.FfaKitsUtil;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
+import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
@@ -25,6 +28,7 @@ import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -63,7 +67,7 @@ public abstract class PlayerMixin extends LivingEntity {
             for (SoundSource source : SoundSource.values()) {
                 soundSource = source;
             }
-            PlayerUtil.sendSound(attacker, new EntityPos(attacker.position()), SoundEvents.SHIELD_BREAK, soundSource, 2, 1);
+            new NexiaPlayer(new AccuratePlayer(attacker)).sendSound(new EntityPos(attacker.position()), SoundEvents.SHIELD_BREAK, soundSource, 2, 1);
         }
         return true;
     }
@@ -71,19 +75,37 @@ public abstract class PlayerMixin extends LivingEntity {
     @Inject(method = "canEat", cancellable = true, at = @At("HEAD"))
     private void preventFFAUsers(boolean bl, CallbackInfoReturnable<Boolean> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
-        if((com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.sky.utilities.FfaAreas.isInFfaSpawn(player))
-                || (com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(player))
-                || (com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode.equals(PlayerGameMode.LOBBY) && PlayerDataManager.get(player).gameMode.equals(DuelGameMode.LOBBY))) {
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+
+        if((com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.sky.utilities.FfaAreas.isInFfaSpawn(nexiaPlayer))
+                || (com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(nexiaPlayer))
+                || (com.nexia.core.utilities.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(PlayerGameMode.LOBBY) && PlayerDataManager.get(nexiaPlayer).gameMode.equals(DuelGameMode.LOBBY))) {
             cir.setReturnValue(false);
-            ItemStackUtil.sendInventoryRefreshPacket(player);
+            nexiaPlayer.refreshInventory();
         }
     }
 
     @Inject(method = "hurt", cancellable = true, at = @At("HEAD"))
     private void beforeHurt(DamageSource damageSource, float damage, CallbackInfoReturnable<Boolean> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
 
-        if (FfaSkyUtil.isFfaPlayer(player) && !FfaSkyUtil.beforeDamage(player, damageSource)) {
+        if (FfaSkyUtil.isFfaPlayer(nexiaPlayer) && !FfaSkyUtil.beforeDamage(nexiaPlayer, damageSource)) {
+            cir.setReturnValue(false);
+            return;
+        }
+
+        if (FfaClassicUtil.isFfaPlayer(nexiaPlayer) && !FfaClassicUtil.beforeDamage(nexiaPlayer, damageSource)) {
+            cir.setReturnValue(false);
+            return;
+        }
+
+        if (FfaKitsUtil.isFfaPlayer(nexiaPlayer) && !FfaKitsUtil.beforeDamage(nexiaPlayer, damageSource)) {
+            cir.setReturnValue(false);
+            return;
+        }
+
+        if (FfaUhcUtil.isFfaPlayer(nexiaPlayer) && !FfaUhcUtil.beforeDamage(nexiaPlayer, damageSource)) {
             cir.setReturnValue(false);
             return;
         }
@@ -120,8 +142,9 @@ public abstract class PlayerMixin extends LivingEntity {
     private void afterHurt(DamageSource damageSource, float damage, CallbackInfo ci) {
         if (!((Object) this instanceof ServerPlayer player)) return;
 
-        if (BwUtil.isBedWarsPlayer(player)) {
-            BwPlayerEvents.afterHurt(player, damageSource);
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        if (BwUtil.isBedWarsPlayer(nexiaPlayer)) {
+            BwPlayerEvents.afterHurt(nexiaPlayer, damageSource);
         }
     }
 
@@ -131,7 +154,9 @@ public abstract class PlayerMixin extends LivingEntity {
         hurtArmor(damageSource, damage);
         if (!((Object) this instanceof ServerPlayer player)) return vanillaArmorCalculation(damageSource, damage);
 
-        if (BwUtil.isBedWarsPlayer(player)) {
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+
+        if (BwUtil.isBedWarsPlayer(nexiaPlayer)) {
             return BwUtil.playerArmorCalculation(player, damageSource, damage);
         }
 
@@ -150,12 +175,13 @@ public abstract class PlayerMixin extends LivingEntity {
     @Inject(method = "drop(Z)Z", cancellable = true, at = @At("HEAD"))
     private void drop1(boolean dropAll, CallbackInfoReturnable<Boolean> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
 
         ItemStack dropped = inventory.getItem(inventory.selected);
 
-        if (!EventUtil.dropItem(player, dropped)) {
+        if (!EventUtil.dropItem(nexiaPlayer, dropped)) {
             cir.setReturnValue(false);
-            ItemStackUtil.sendInventoryRefreshPacket(player);
+            nexiaPlayer.refreshInventory();
             return;
         }
 
@@ -165,16 +191,17 @@ public abstract class PlayerMixin extends LivingEntity {
     private void getAttackDelay(CallbackInfoReturnable<Integer> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
 
-        if (BwUtil.isBedWarsPlayer(player)) {
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+
+        if (BwUtil.isBedWarsPlayer(nexiaPlayer)) {
             BwUtil.setAttackSpeed(player);
         }
-
     }
 
 
     @ModifyArg(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;setSprinting(Z)V"))
     public boolean setSprintFix(boolean par1) {
-        return com.nexia.core.utilities.player.PlayerDataManager.get((Player) (Object) this).savedData.isSprintFix();
+        return com.nexia.core.utilities.player.PlayerDataManager.get(new NexiaPlayer(new AccuratePlayer((ServerPlayer) (Object) this))).savedData.isSprintFix();
     }
 
     @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)

@@ -105,11 +105,7 @@ public class ServerTime {
         // Most second methods are also handled here to avoid too many methods from being executed at the same time
         switch (totalTickCount % 20) {
             case 0 -> everySecond();
-            case 2 -> {
-                FfaClassicUtil.ffaSecond();
-                FfaKitsUtil.ffaSecond();
-                FfaUhcUtil.ffaSecond();
-            }
+            case 2 -> {}
             case 4 -> {}
             case 6 -> BwGame.bedWarsSecond();
         }

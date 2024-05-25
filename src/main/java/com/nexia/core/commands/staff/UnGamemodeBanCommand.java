@@ -9,6 +9,7 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.player.GamemodeBanHandler;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
@@ -17,6 +18,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
+import net.notcoded.codelib.players.AccuratePlayer;
 
 public class UnGamemodeBanCommand {
 
@@ -60,7 +62,7 @@ public class UnGamemodeBanCommand {
             return 1;
         }
 
-        GamemodeBanHandler.tryUnGamemodeBan(sender, EntityArgument.getPlayer(context, "player"), gameMode);
+        GamemodeBanHandler.tryUnGamemodeBan(sender, new NexiaPlayer(new AccuratePlayer(EntityArgument.getPlayer(context, "player"))), gameMode);
 
         return 1;
     }

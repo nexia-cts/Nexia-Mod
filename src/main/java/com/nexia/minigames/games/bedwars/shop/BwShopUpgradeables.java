@@ -1,6 +1,7 @@
 package com.nexia.minigames.games.bedwars.shop;
 
 import com.nexia.core.utilities.item.ItemStackUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -119,12 +120,12 @@ public class BwShopUpgradeables {
         return activeUpgradeItems;
     }
 
-    public static void downgradePlayerTools(ServerPlayer player) {
+    public static void downgradePlayerTools(NexiaPlayer player) {
         ArrayList<ItemStack[]> allUpgradeables = getActiveUpgradeables();
-        int invSize = player.inventory.items.size();
+        int invSize = player.player().get().inventory.items.size();
 
         inv: for (int i = 0; i < invSize; i++) {
-            ItemStack invItem = player.inventory.getItem(i);
+            ItemStack invItem = player.player().get().inventory.getItem(i);
 
             Optional<Integer> invItemLevel = getItemUpgradeLevel(invItem);
             if (invItemLevel.isEmpty() || invItemLevel.get() < 1) continue;
@@ -134,7 +135,7 @@ public class BwShopUpgradeables {
 
                 ItemStack newItem = upgradeables[invItemLevel.get() - 1].copy();
                 BwShopUtil.removeShopNbt(newItem);
-                player.inventory.setItem(i, newItem);
+                player.player().get().inventory.setItem(i, newItem);
                 continue inv;
             }
         }

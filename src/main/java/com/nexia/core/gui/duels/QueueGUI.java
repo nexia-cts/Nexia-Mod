@@ -1,6 +1,7 @@
 package com.nexia.core.gui.duels;
 
 import com.nexia.core.utilities.item.ItemDisplayUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import eu.pb4.sgui.api.ClickType;
@@ -12,6 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.notcoded.codelib.players.AccuratePlayer;
 
 public class QueueGUI extends SimpleGui {
     static final TextComponent title = new TextComponent("Queue Menu");
@@ -56,9 +58,10 @@ public class QueueGUI extends SimpleGui {
             DuelGameMode gameMode = GamemodeHandler.identifyGamemode(duel);
 
             ItemDisplayUtil.removeLore(item, 0);
+            assert gameMode != null;
             ItemDisplayUtil.addLore(item, "§7There are §7§l" + gameMode.queue.size() + " §7people queued up.", 0);
 
-            if(GamemodeHandler.isInQueue(player, gameMode)) {
+            if(GamemodeHandler.isInQueue(new NexiaPlayer(new AccuratePlayer(player)), gameMode)) {
                 ItemDisplayUtil.removeLore(item, 1);
                 ItemDisplayUtil.addLore(item, "§7Click to leave the queue.", 1);
             } else {
@@ -78,10 +81,12 @@ public class QueueGUI extends SimpleGui {
             ItemStack itemStack = element.getItemStack();
             Component name = itemStack.getHoverName();
 
+            NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(this.player));
+
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
                 if(name.getString().substring(4).equalsIgnoreCase("Leave ALL Queues")) {
                     //PlayerUtil.getFactoryPlayer(player).runCommand("/queue LEAVE", 0, false);
-                    GamemodeHandler.removeQueue(this.player, null, false);
+                    GamemodeHandler.removeQueue(nexiaPlayer, null, false);
 
                     this.close();
                     return super.click(index, clickType, action);
@@ -90,11 +95,11 @@ public class QueueGUI extends SimpleGui {
                 String modifiedName = name.getString().substring(2).replaceAll(" ", "_");
                 DuelGameMode gameMode = GamemodeHandler.identifyGamemode(modifiedName);
 
-                if(gameMode != null && GamemodeHandler.isInQueue(player, gameMode)) {
-                    GamemodeHandler.removeQueue(this.player, modifiedName, false);
+                if(gameMode != null && GamemodeHandler.isInQueue(nexiaPlayer, gameMode)) {
+                    GamemodeHandler.removeQueue(nexiaPlayer, modifiedName, false);
                     this.close();
                 } else {
-                    GamemodeHandler.joinQueue(this.player, modifiedName, false);
+                    GamemodeHandler.joinQueue(nexiaPlayer, modifiedName, false);
                     this.close();
                 }
             }

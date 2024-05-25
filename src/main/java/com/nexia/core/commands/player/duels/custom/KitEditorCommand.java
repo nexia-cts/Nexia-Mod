@@ -7,8 +7,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.natamus.collective_fabric.functions.PlayerFunctions;
 import com.natamus.collective_fabric.functions.StringFunctions;
 import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.time.ServerTime;
@@ -17,7 +19,7 @@ import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.CustomKitRoom;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.KitRoom;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.SmpKitRoom;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.VanillaKitRoom;
-import net.minecraft.Util;
+import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -41,8 +43,8 @@ public class KitEditorCommand {
         dispatcher.register((Commands.literal("kiteditor")
                 .requires(commandSourceStack -> {
                     try {
-                        com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException());
-                        PlayerData playerData1 = PlayerDataManager.get(commandSourceStack.getPlayerOrException());
+                        com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException().getUUID());
+                        PlayerData playerData1 = PlayerDataManager.get(commandSourceStack.getPlayerOrException().getUUID());
                         return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
                     } catch (Exception ignored) {}
                     return false;
@@ -61,6 +63,7 @@ public class KitEditorCommand {
 
     private static int run(CommandContext<CommandSourceStack> context, @NotNull String argument, String slot) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
 
         if (!slots.contains(slot) && !argument.equalsIgnoreCase("save")) {
             context.getSource().sendFailure(LegacyChatFormat.format("Invalid slot!"));
@@ -73,14 +76,14 @@ public class KitEditorCommand {
 
         if(argument.equalsIgnoreCase("save")) {
 
-            com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
+            com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player.getUUID());
 
             if(playerData.editingKit.isEmpty() || playerData.kitRoom == null) {
                 context.getSource().sendFailure(LegacyChatFormat.format("You aren't editing a kit!"));
                 return 0;
             }
 
-            inventory = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).editingKit;
+            inventory = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer).editingKit;
 
             String gearstring = PlayerFunctions.getPlayerGearString(player);
 
@@ -115,23 +118,22 @@ public class KitEditorCommand {
 
         if (argument.equalsIgnoreCase("edit")) {
 
-            if(!com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).editingKit.isEmpty()) {
+            if(!com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer).editingKit.isEmpty()) {
                 context.getSource().sendFailure(LegacyChatFormat.format("You are still editing a kit! Save it or run /hub!"));
                 return 0;
             }
 
             KitRoom kitRoom;
-            com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
-            AccuratePlayer accuratePlayer = AccuratePlayer.create(player);
+            com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer);
 
 
             switch (slot) {
-                case "1", "2", "3" -> kitRoom = new CustomKitRoom(accuratePlayer);
-                case "vanilla" -> kitRoom = new VanillaKitRoom(accuratePlayer);
-                case "smp" -> kitRoom = new SmpKitRoom(accuratePlayer);
+                case "1", "2", "3" -> kitRoom = new CustomKitRoom(nexiaPlayer);
+                case "vanilla" -> kitRoom = new VanillaKitRoom(nexiaPlayer);
+                case "smp" -> kitRoom = new SmpKitRoom(nexiaPlayer);
                 default -> {
-                    player.sendMessage(LegacyChatFormat.formatFail("Something went wrong whilst creating your kit room."), Util.NIL_UUID);
-                    ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
+                    nexiaPlayer.sendMessage(Component.text("Something went wrong whilst creating your kit room.", ChatFormat.failColor));
+                    nexiaPlayer.getFactoryPlayer().runCommand("/hub", 0, false);
                     return 0;
                 }
             }
@@ -143,7 +145,7 @@ public class KitEditorCommand {
 
             File playerFile = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID(), inventory + ".txt");
             if(playerFile.exists()) {
-                InventoryUtil.loadInventory(player, "duels/custom/" + player.getStringUUID(), inventory.toLowerCase());
+                InventoryUtil.loadInventory(nexiaPlayer, "duels/custom/" + player.getStringUUID(), inventory.toLowerCase());
             }
 
             return 1;
@@ -153,8 +155,9 @@ public class KitEditorCommand {
 
             File playerFile = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID(), inventory + ".txt");
             if(playerFile.exists() && playerFile.delete()) {
-                context.getSource().sendSuccess(LegacyChatFormat.format("{b1}Successfully deleted slot '{}'!", slot), false);
+                nexiaPlayer.sendMessage(Component.text(String.format("Successfully deleted slot '%s’!", slot), ChatFormat.brandColor1));
             } else {
+                nexiaPlayer.sendMessage(Component.text(String.format("The saved kit for that slot (%s) does not exist!", slot), ChatFormat.failColor));
                 context.getSource().sendFailure(LegacyChatFormat.format("The saved kit for that slot ({}) does not exist!", slot));
             }
 

@@ -3,6 +3,7 @@ package com.nexia.ffa.kits;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.misc.RandomUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.kits.utilities.player.PlayerDataManager;
 import net.minecraft.server.level.ServerPlayer;
@@ -42,16 +43,15 @@ public class FfaKit {
         }
         return null;
     }
-// im in vc with Shitfood and I wanted to show how goofy chatgpt code is
-    public void giveKit(ServerPlayer player, boolean clearEffect) {
-        Player fPlayer = PlayerUtil.getFactoryPlayer(player);
+
+    public void giveKit(NexiaPlayer player, boolean clearEffect) {
         PlayerDataManager.get(player).kit = this;
 
-        if (clearEffect) fPlayer.clearEffects();
+        if (clearEffect) player.getFactoryPlayer().clearEffects();
 
         if (this.equals(FfaKit.RANDOM)) {
             ArrayList<String> availableKits = new ArrayList<>(stringFfaKits);
-            availableKits.remove(RANDOM.id); // Remove "RANDOM" from the list of available kits
+            availableKits.remove(FfaKit.RANDOM.id);
             String selectedKit = availableKits.get(RandomUtil.randomInt(availableKits.size()));
             InventoryUtil.loadInventory(player, "ffa_kits", selectedKit);
         } else {

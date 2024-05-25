@@ -1,10 +1,10 @@
 package com.nexia.ffa.kits.utilities;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
-import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.ffa.KitGUI;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
@@ -30,6 +30,7 @@ import net.minecraft.world.entity.projectile.SpectralArrow;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.AABB;
+import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,37 +44,17 @@ public class FfaKitsUtil {
 
     public static ArrayList<UUID> wasInSpawn = new ArrayList<>();
 
-    public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
+    public static boolean isFfaPlayer(NexiaPlayer player) {
         com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
-        return player.getTags().contains("ffa_kits") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.KITS;
+        return player.getFactoryPlayer().hasTag("ffa_kits") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.KITS;
     }
 
-    public static void ffaSecond() {
-        if(ffaWorld == null) return;
-        if(ffaWorld.players().isEmpty()) return;
-        for (ServerPlayer player : ffaWorld.players()) {
-            if (!isFfaPlayer(player)) continue;
-
-            if (FfaAreas.isInFfaSpawn(player)) {
-                if (!player.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
-                    player.addTag(LobbyUtil.NO_DAMAGE_TAG);
-                    System.out.println("Added NO_DAMAGE_TAG to " + player.getName().getString());
-                }
-            } else {
-                if (player.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
-                    player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-                    System.out.println("Removed NO_DAMAGE_TAG from " + player.getName().getString());
-                }
-            }
-        }
-    }
-
-    public static void calculateKill(ServerPlayer attacker, ServerPlayer player){
+    public static void calculateKill(NexiaPlayer attacker, NexiaPlayer player){
 
         BlfScheduler.delay(20, new BlfRunnable() {
             @Override
             public void run() {
-                attacker.heal(attacker.getMaxHealth());
+                attacker.getFactoryPlayer().setHealth(attacker.player().get().getMaxHealth());
             }
         });
 
@@ -81,7 +62,7 @@ public class FfaKitsUtil {
         FfaKitsUtil.clearSpectralArrows(attacker);
         FfaKitsUtil.clearThrownTridents(attacker);
 
-        if(player.getTags().contains("bot") || attacker.getTags().contains("bot")) return;
+        if(player.getFactoryPlayer().hasTag("bot") || attacker.getFactoryPlayer().hasTag("bot")) return;
 
         SavedPlayerData data = PlayerDataManager.get(attacker).savedData;
         data.killstreak++;
@@ -96,7 +77,7 @@ public class FfaKitsUtil {
                         Component.text("[").color(ChatFormat.lineColor)
                                 .append(Component.text("☠").color(ChatFormat.failColor))
                                 .append(Component.text("] ").color(ChatFormat.lineColor))
-                                .append(Component.text(attacker.getScoreboardName()).color(ChatFormat.normalColor))
+                                .append(Component.text(attacker.player().name).color(ChatFormat.normalColor))
                                 .append(Component.text(" now has a killstreak of ").color(ChatFormat.chatColor2))
                                 .append(Component.text(data.killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
                                 .append(Component.text("!").color(ChatFormat.chatColor2))
@@ -105,28 +86,35 @@ public class FfaKitsUtil {
         }
     }
 
+    public static boolean beforeDamage(NexiaPlayer player, DamageSource damageSource) {
+        if (damageSource == DamageSource.OUT_OF_WORLD) return true;
+
+        return !isInFfaSpawn(player);
+    }
+
     public static void fiveTick() {
         if (ffaWorld == null) return;
         if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
 
-            if(!com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(minecraftPlayer) && PlayerDataManager.get(minecraftPlayer).kit == null) {
-                PlayerUtil.getFactoryPlayer(minecraftPlayer).sendTitle(Title.title(Component.text("No kit selected!").color(ChatFormat.failColor), Component.text("You need to select a kit!").color(ChatFormat.failColor)));
-                PlayerUtil.sendSound(minecraftPlayer, new EntityPos(minecraftPlayer), SoundEvents.NOTE_BLOCK_DIDGERIDOO, SoundSource.BLOCKS, 10, 1);
-                FfaKitsUtil.sendToSpawn(minecraftPlayer);
+            NexiaPlayer player = new NexiaPlayer(new AccuratePlayer(minecraftPlayer));
+
+            if(!com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(player) && PlayerDataManager.get(player).kit == null) {
+                player.sendTitle(Title.title(Component.text("No kit selected!").color(ChatFormat.failColor), Component.text("You need to select a kit!").color(ChatFormat.failColor)));
+                player.sendSound(new EntityPos(minecraftPlayer), SoundEvents.NOTE_BLOCK_DIDGERIDOO, SoundSource.BLOCKS, 10, 1);
+                FfaKitsUtil.sendToSpawn(player);
                 return;
             }
 
-            if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(minecraftPlayer)){
-                Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+            if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(player)){
                 wasInSpawn.remove(minecraftPlayer.getUUID());
                 player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your kit was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
             }
         }
     }
 
-    public static void calculateDeath(ServerPlayer player){
-        if(player.getTags().contains("bot")) return;
+    public static void calculateDeath(NexiaPlayer player){
+        if(player.getFactoryPlayer().hasTag("bot")) return;
 
         SavedPlayerData data = PlayerDataManager.get(player).savedData;
         data.deaths++;
@@ -140,7 +128,7 @@ public class FfaKitsUtil {
                         Component.text("[").color(ChatFormat.lineColor)
                                 .append(Component.text("☠").color(ChatFormat.failColor))
                                 .append(Component.text("] ").color(ChatFormat.lineColor))
-                                .append(Component.text(player.getScoreboardName()).color(ChatFormat.normalColor))
+                                .append(Component.text(player.player().name).color(ChatFormat.normalColor))
                                 .append(Component.text(" has lost their killstreak of ").color(ChatFormat.chatColor2))
                                 .append(Component.text(data.killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
                                 .append(Component.text(".").color(ChatFormat.chatColor2))
@@ -150,101 +138,107 @@ public class FfaKitsUtil {
         data.killstreak = 0;
     }
 
-    public static void clearThrownTridents(ServerPlayer player) {
+    public static void clearThrownTridents(NexiaPlayer player) {
         BlockPos c1 = ffaCorner1.offset(-10, -ffaCorner1.getY(), -10);
         BlockPos c2 = ffaCorner2.offset(10, 319 - ffaCorner2.getY(), 10);
         AABB aabb = new AABB(c1, c2);
         Predicate<Entity> predicate = o -> true;
         for (ThrownTrident trident : ffaWorld.getEntities(EntityType.TRIDENT, aabb, predicate)) {
-            if (trident.getOwner() != null && trident.getOwner().getUUID().equals(player.getUUID())) {
+            if (trident.getOwner() != null && trident.getOwner().getUUID().equals(player.player().uuid)) {
                 trident.remove();
             }
         }
     }
 
-    public static void clearArrows(ServerPlayer player) {
+    public static void clearArrows(NexiaPlayer player) {
         BlockPos c1 = ffaCorner1.offset(-10, -ffaCorner1.getY(), -10);
         BlockPos c2 = ffaCorner2.offset(10, 319 - ffaCorner2.getY(), 10);
         AABB aabb = new AABB(c1, c2);
         Predicate<Entity> predicate = o -> true;
         for (Arrow arrow : ffaWorld.getEntities(EntityType.ARROW, aabb, predicate)) {
-            if (arrow.getOwner() != null && arrow.getOwner().getUUID().equals(player.getUUID())) {
+            if (arrow.getOwner() != null && arrow.getOwner().getUUID().equals(player.player().uuid)) {
                 arrow.remove();
             }
         }
     }
 
-    public static void clearSpectralArrows(ServerPlayer player) {
+    public static void clearSpectralArrows(NexiaPlayer player) {
         BlockPos c1 = ffaCorner1.offset(-10, -ffaCorner1.getY(), -10);
         BlockPos c2 = ffaCorner2.offset(10, 319 - ffaCorner2.getY(), 10);
         AABB aabb = new AABB(c1, c2);
         Predicate<Entity> predicate = o -> true;
         for (SpectralArrow arrow : ffaWorld.getEntities(EntityType.SPECTRAL_ARROW, aabb, predicate)) {
-            if (arrow.getOwner() != null && arrow.getOwner().getUUID().equals(player.getUUID())) {
+            if (arrow.getOwner() != null && arrow.getOwner().getUUID().equals(player.player().uuid)) {
                 arrow.remove();
             }
         }
     }
 
 
-    public static void leaveOrDie(@NotNull ServerPlayer player, @Nullable DamageSource source, boolean leaving) {
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
+    public static void leaveOrDie(@NotNull NexiaPlayer player, @Nullable DamageSource source, boolean leaving) {
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player.player().get());
 
         if(!leaving) FfaKitsUtil.setDeathMessage(player, source);
 
         if (attacker != null) {
-            FfaKitsUtil.clearThrownTridents(attacker);
-            FfaKitsUtil.clearArrows(attacker);
-            FfaKitsUtil.clearSpectralArrows(attacker);
-            FfaKit ffaKit = PlayerDataManager.get(attacker).kit;
-            if(ffaKit != null) ffaKit.giveKit(attacker, false);
+            NexiaPlayer nexiaAttacker = new NexiaPlayer(new AccuratePlayer(attacker));
+
+            FfaKitsUtil.clearThrownTridents(nexiaAttacker);
+            FfaKitsUtil.clearArrows(nexiaAttacker);
+            FfaKitsUtil.clearSpectralArrows(nexiaAttacker);
+            FfaKit ffaKit = PlayerDataManager.get(nexiaAttacker).kit;
+            if(ffaKit != null) ffaKit.giveKit(nexiaAttacker, false);
         }
 
         if(!leaving) FfaKitsUtil.sendToSpawn(player);
     }
 
-    public static boolean canGoToSpawn(ServerPlayer player) {
-        if(!FfaKitsUtil.isFfaPlayer(player) || FfaKitsUtil.wasInSpawn.contains(player.getUUID())) return true;
-        return !(Math.round(player.getHealth()) < 20);
+    public static boolean canGoToSpawn(NexiaPlayer player) {
+        if(!FfaKitsUtil.isFfaPlayer(player) || FfaKitsUtil.wasInSpawn.contains(player.player().uuid)) return true;
+        return !(Math.round(player.getFactoryPlayer().getHealth()) < 20);
     }
 
-    public static void setDeathMessage(@NotNull ServerPlayer minecraftPlayer, @Nullable DamageSource source) {
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(minecraftPlayer);
+    public static void setDeathMessage(@NotNull NexiaPlayer player, @Nullable DamageSource source) {
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player.player().get());
 
-        calculateDeath(minecraftPlayer);
 
-        Component msg = FfaUtil.returnDeathMessage(minecraftPlayer, source);
+        calculateDeath(player);
 
-        if(attacker != null && msg.toString().contains("somehow killed themselves")  && attacker != minecraftPlayer) {
+        Component msg = FfaUtil.returnDeathMessage(player, source);
 
-            Component component = FfaUtil.returnClassicDeathMessage(minecraftPlayer, attacker);
-            if(component != null) msg = component;
+        if(attacker != null) {
+            NexiaPlayer nexiaAttacker = new NexiaPlayer(new AccuratePlayer(attacker));
 
-            calculateKill(attacker, minecraftPlayer);
+            if(msg.toString().contains("somehow killed themselves") && !nexiaAttacker.equals(player)) {
+                Component component = FfaUtil.returnClassicDeathMessage(player, nexiaAttacker);
+                if(component != null) msg = component;
+
+                calculateKill(nexiaAttacker, player);
+            }
         }
 
-        for (Player player : ServerTime.factoryServer.getPlayers()) {
-            if (player.hasTag("ffa_kits")) player.sendMessage(msg);
+        for (Player factoryPlayer : ServerTime.factoryServer.getPlayers()) {
+            if (factoryPlayer.hasTag("ffa_kits")) player.sendMessage(msg);
         }
     }
 
-    public static void sendToSpawn(ServerPlayer player) {
+    public static void sendToSpawn(NexiaPlayer player) {
         PlayerData data = PlayerDataManager.get(player);
 
-        player.inventory.clearContent();
+        player.getFactoryPlayer().getInventory().clear();
         FfaKitsUtil.clearThrownTridents(player);
         FfaKitsUtil.clearArrows(player);
         FfaKitsUtil.clearSpectralArrows(player);
-        FfaKitsUtil.wasInSpawn.add(player.getUUID());
+        FfaKitsUtil.wasInSpawn.add(player.player().uuid);
 
-        player.setGameMode(GameType.ADVENTURE);
-        FfaAreas.spawn.teleportPlayer(FfaAreas.ffaWorld, player);
+        player.safeReset(true, GameType.ADVENTURE);
+        FfaAreas.spawn.teleportPlayer(FfaAreas.ffaWorld, player.player().get());
         if(data.kit != null) data.kit.giveKit(player, true);
         else {
             BlfScheduler.delay(20, new BlfRunnable() {
                 @Override
                 public void run() {
-                    KitGUI.openKitGUI(player);
+                    KitGUI.openKitGUI(player.player().get());
                 }
             });
         }

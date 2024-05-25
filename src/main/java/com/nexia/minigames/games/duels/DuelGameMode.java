@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.duels;
 
-import net.minecraft.server.level.ServerPlayer;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
@@ -21,7 +21,7 @@ public class DuelGameMode {
 
     public ItemStack item;
 
-    public ArrayList<ServerPlayer> queue;
+    public ArrayList<NexiaPlayer> queue;
 
     public static ArrayList<ItemStack> duelsItems = new ArrayList<>();
 

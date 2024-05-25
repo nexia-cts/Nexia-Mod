@@ -4,10 +4,9 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
-import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.misc.EventUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
-import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
@@ -31,6 +30,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.ItemStack;
+import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -100,8 +100,9 @@ public class ServerGamePacketListenerMixin {
 
     @Inject(method = "handleUseItemOn", at = @At("HEAD"), cancellable = true)
     private void handleUseItemOn(ServerboundUseItemOnPacket packet, CallbackInfo ci) {
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
 
-        if (BwUtil.isInBedWars(player)) {
+        if (BwUtil.isInBedWars(nexiaPlayer)) {
             if (!BwPlayerEvents.useItem(player, packet.getHand())) {
                 ci.cancel();
                 BlockPos blockPos = packet.getHitResult().getBlockPos().relative(packet.getHitResult().getDirection());
@@ -114,8 +115,9 @@ public class ServerGamePacketListenerMixin {
 
     @Inject(method = "handleUseItem", at = @At("HEAD"), cancellable = true)
     private void handleUseItem(ServerboundUseItemPacket serverboundUseItemPacket, CallbackInfo ci) {
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
 
-        if (BwUtil.isInBedWars(player)) {
+        if (BwUtil.isInBedWars(nexiaPlayer)) {
             if (!BwPlayerEvents.useItem(player, serverboundUseItemPacket.getHand())) {
                 ci.cancel();
             }
@@ -128,27 +130,29 @@ public class ServerGamePacketListenerMixin {
         int slot = clickPacket.getSlotNum();
         ItemStack itemStack = clickPacket.getItem();
 
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+
         if ((clickPacket.getClickType() == ClickType.THROW || slot == -999)) {
-            if (!EventUtil.dropItem(player, itemStack)) {
+            if (!EventUtil.dropItem(nexiaPlayer, itemStack)) {
                 ci.cancel();
-                ItemStackUtil.sendInventoryRefreshPacket(player);
+                nexiaPlayer.refreshInventory();
                 return;
             }
         }
 
-        if (BwUtil.isBedWarsPlayer(player)) {
-            if (!BwPlayerEvents.containerClick(player, clickPacket)) {
+        if (BwUtil.isBedWarsPlayer(nexiaPlayer)) {
+            if (!BwPlayerEvents.containerClick(nexiaPlayer, clickPacket)) {
                 ci.cancel();
-                ItemStackUtil.sendInventoryRefreshPacket(player);
+                nexiaPlayer.refreshInventory();
                 return;
             }
         }
 
-        if (FfaUtil.isFfaPlayer(player)) {
+        if (FfaUtil.isFfaPlayer(nexiaPlayer)) {
             // If clicks on crafting slot
             if (containerId == 0 && slot >= 1 && slot <= 4) {
                 ci.cancel();
-                ItemStackUtil.sendInventoryRefreshPacket(player);
+                nexiaPlayer.refreshInventory();
                 return;
             }
         }
@@ -160,9 +164,11 @@ public class ServerGamePacketListenerMixin {
         ServerboundPlayerActionPacket.Action action = actionPacket.getAction();
         Inventory inv = player.inventory;
 
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+
         if ((action == ServerboundPlayerActionPacket.Action.DROP_ITEM ||
                 action == ServerboundPlayerActionPacket.Action.DROP_ALL_ITEMS) &&
-                    !EventUtil.dropItem(player, inv.getItem(player.inventory.selected))) {
+                    !EventUtil.dropItem(nexiaPlayer, inv.getItem(player.inventory.selected))) {
             player.connection.send(new ClientboundContainerSetSlotPacket(0, 36 + inv.selected, inv.getSelected()));
             ci.cancel();
             return;
@@ -172,99 +178,51 @@ public class ServerGamePacketListenerMixin {
     @Inject(method = "handleTeleportToEntityPacket", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;teleportTo(Lnet/minecraft/server/level/ServerLevel;DDDFF)V"))
     private void handleSpectatorTeleport(ServerboundTeleportToEntityPacket packet, CallbackInfo ci) {
 
-        if (BwUtil.isInBedWars(player)) {
-            if (!BwPlayerEvents.spectatorTeleport(player, packet)) {
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        net.kyori.adventure.text.Component noSpectateMSG = net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor);
+
+        if (BwUtil.isInBedWars(nexiaPlayer)) {
+            if (!BwPlayerEvents.spectatorTeleport(nexiaPlayer, packet)) {
                 ci.cancel();
                 return;
             }
         }
 
-        if(FfaClassicUtil.isFfaPlayer(player)) {
-            for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
-                Entity entity = packet.getEntity(serverLevel);
-                if (!(entity instanceof ServerPlayer target)) continue;
-
-                if (!FfaClassicUtil.isFfaPlayer(target)) {
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
-                    ci.cancel();
-                    return;
-                }
-            }
-        }
-
-        if(FfaKitsUtil.isFfaPlayer(player)) {
-            for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
-                Entity entity = packet.getEntity(serverLevel);
-                if (!(entity instanceof ServerPlayer target)) continue;
-
-                if (!FfaKitsUtil.isFfaPlayer(target)) {
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
-                    ci.cancel();
-                    return;
-                }
-            }
-        }
-
-        if(FfaSkyUtil.isFfaPlayer(player)) {
-            for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
-                Entity entity = packet.getEntity(serverLevel);
-                if (!(entity instanceof ServerPlayer target)) continue;
-
-                if (!FfaSkyUtil.isFfaPlayer(target)) {
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
-                    ci.cancel();
-                    return;
-                }
-            }
-        }
-
-        if(FfaUhcUtil.isFfaPlayer(player)) {
-            for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
-                Entity entity = packet.getEntity(serverLevel);
-                if (!(entity instanceof ServerPlayer target)) continue;
-
-                if (!FfaUhcUtil.isFfaPlayer(target)) {
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
-                    ci.cancel();
-                    return;
-                }
-            }
-        }
-
-        if(SkywarsGame.isSkywarsPlayer(player)) {
-            for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
-                Entity entity = packet.getEntity(serverLevel);
-                if (!(entity instanceof ServerPlayer target)) continue;
-
-                if (!SkywarsGame.isSkywarsPlayer(target)) {
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
-                    ci.cancel();
-                    return;
-                }
-            }
-        }
-
-        if(FootballGame.isFootballPlayer(player)) {
-            for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
-                Entity entity = packet.getEntity(serverLevel);
-                if (!(entity instanceof ServerPlayer target)) continue;
-
-                if (!FootballGame.isFootballPlayer(target)) {
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
-                    ci.cancel();
-                    return;
-                }
-            }
-        }
-
-        if(PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY){
+        if(PlayerDataManager.get(nexiaPlayer).gameMode == PlayerGameMode.LOBBY){
             ci.cancel();
             return;
         }
 
-        if(OitcGame.isOITCPlayer(player)){
+        if(OitcGame.isOITCPlayer(nexiaPlayer)){
             ci.cancel();
             return;
+        }
+
+        for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
+            Entity entity = packet.getEntity(serverLevel);
+            if (!(entity instanceof ServerPlayer target)) continue;
+            NexiaPlayer nexiaTarget = new NexiaPlayer(new AccuratePlayer(target));
+
+            boolean cancel = (
+                    FfaClassicUtil.isFfaPlayer(nexiaPlayer) && !FfaClassicUtil.isFfaPlayer(nexiaTarget)
+            ) || (
+                    FfaKitsUtil.isFfaPlayer(nexiaPlayer) && !FfaKitsUtil.isFfaPlayer(nexiaTarget)
+            ) || (
+                    FfaSkyUtil.isFfaPlayer(nexiaPlayer) && !FfaSkyUtil.isFfaPlayer(nexiaTarget)
+            ) || (
+                    FfaUhcUtil.isFfaPlayer(nexiaPlayer) && !FfaUhcUtil.isFfaPlayer(nexiaTarget)
+            ) || (
+                    SkywarsGame.isSkywarsPlayer(nexiaPlayer) && !SkywarsGame.isSkywarsPlayer(nexiaTarget)
+            ) || (
+                    FootballGame.isFootballPlayer(nexiaTarget) && !FootballGame.isFootballPlayer(nexiaTarget)
+            );
+
+
+            if (cancel) {
+                nexiaPlayer.sendMessage(noSpectateMSG);
+                ci.cancel();
+                return;
+            }
         }
     }
 }

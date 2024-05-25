@@ -5,19 +5,21 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
-import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
-import net.minecraft.Util;
+import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.server.level.ServerPlayer;
+import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -31,8 +33,8 @@ public class KitLayoutCommand {
         dispatcher.register((Commands.literal("kitlayout")
                 .requires(commandSourceStack -> {
                     try {
-                        com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException());
-                        PlayerData playerData1 = PlayerDataManager.get(commandSourceStack.getPlayerOrException());
+                        com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException().getUUID());
+                        PlayerData playerData1 = PlayerDataManager.get(commandSourceStack.getPlayerOrException().getUUID());
                         return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
                     } catch (Exception ignored) {}
                     return false;
@@ -52,6 +54,7 @@ public class KitLayoutCommand {
     private static int run(CommandContext<CommandSourceStack> context, @NotNull String argument, @NotNull String inventory) throws CommandSyntaxException {
 
         ServerPlayer player = context.getSource().getPlayerOrException();
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
 
         if((inventory.trim().isEmpty() || !InventoryUtil.getListOfInventories("duels").contains(inventory.toLowerCase())) && !argument.equalsIgnoreCase("save")) {
             context.getSource().sendFailure(LegacyChatFormat.format("Invalid gamemode!"));
@@ -60,12 +63,12 @@ public class KitLayoutCommand {
 
         if(argument.equalsIgnoreCase("save")) {
 
-            if(com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).editingLayout.isEmpty()) {
-                context.getSource().sendFailure(LegacyChatFormat.format("You aren't editing a layout!"));
+            if(com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer).editingLayout.isEmpty()) {
+                nexiaPlayer.sendMessage(Component.text("You aren't editing a layout!", ChatFormat.failColor));
                 return 0;
             }
 
-            inventory = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).editingLayout;
+            inventory = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer).editingLayout;
 
             String path = InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID() + File.separator + "layout";
             Path playerPath = Path.of(path);
@@ -84,26 +87,26 @@ public class KitLayoutCommand {
                 fileWriter.write(stringInventory);
                 fileWriter.close();
             } catch (Exception var6) {
-                ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
-                player.sendMessage(LegacyChatFormat.format("{f}Failed to save your inventory as '{}'. Please try again or contact a developer.", inventory), Util.NIL_UUID);
+                nexiaPlayer.getFactoryPlayer().runCommand("/hub", 0, false);
+                nexiaPlayer.sendMessage(Component.text(String.format("Failed to save your inventory as '%s'. Please try again or contact a developer.", inventory), ChatFormat.failColor));
                 return 0;
             }
 
-            context.getSource().sendSuccess(LegacyChatFormat.format("{b1}Successfully saved your inventory as '{}'.", inventory), false);
-            ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
+            nexiaPlayer.sendMessage(Component.text(String.format("Successfully saved your inventory as '%s'.", inventory), ChatFormat.brandColor1));
+            nexiaPlayer.getFactoryPlayer().runCommand("/hub", 0, false);
             return 1;
         }
 
         if (argument.equalsIgnoreCase("edit")) {
 
-            if(!com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).editingLayout.isEmpty()) {
+            if(!com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer).editingLayout.isEmpty()) {
                 context.getSource().sendFailure(LegacyChatFormat.format("You are still editing a layout! Save it or run /hub!"));
                 return 0;
             }
 
-            DuelGameHandler.loadInventory(player, inventory);
+            DuelGameHandler.loadInventory(nexiaPlayer, inventory);
 
-            com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).editingLayout = inventory;
+            com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer).editingLayout = inventory;
 
             return 1;
         }
@@ -112,15 +115,15 @@ public class KitLayoutCommand {
 
             File playerFile = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID() + File.separator + "layout" + File.separator + inventory + ".json");
             if(playerFile.exists() && playerFile.delete()) {
-                context.getSource().sendSuccess(LegacyChatFormat.format("{b1}Successfully reset saved layout '{}'!", inventory), false);
+                nexiaPlayer.sendMessage(Component.text(String.format("Successfully reset saved layout '%s'!", inventory), ChatFormat.brandColor1));
             } else {
-                context.getSource().sendFailure(LegacyChatFormat.format("Saved Layout does not exist!"));
+                nexiaPlayer.sendMessage(Component.text("Saved Layout does not exist!", ChatFormat.failColor));
             }
 
             return 1;
         }
 
-        context.getSource().sendFailure(LegacyChatFormat.format("Invalid argument!"));
+        nexiaPlayer.sendMessage(Component.text("Invalid argument!", ChatFormat.failColor));
         return 1;
     }
 }

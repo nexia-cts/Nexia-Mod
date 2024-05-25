@@ -2,6 +2,7 @@ package com.nexia.core.gui;
 
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.classic.utilities.FfaAreas;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
@@ -19,6 +20,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.notcoded.codelib.players.AccuratePlayer;
 
 public class PlayGUI extends SimpleGui {
 
@@ -85,7 +87,7 @@ public class PlayGUI extends SimpleGui {
 
         int duelsPlayers = 0;
         for(ServerPlayer serverPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()) {
-            DuelGameMode gameMode = PlayerDataManager.get(serverPlayer).gameMode;
+            DuelGameMode gameMode = PlayerDataManager.get(serverPlayer.getUUID()).gameMode;
             if(gameMode != null && (gameMode != DuelGameMode.LOBBY && gameMode != DuelGameMode.SPECTATING)) duelsPlayers++;
         }
 
@@ -223,23 +225,26 @@ public class PlayGUI extends SimpleGui {
         if(element != null && clickType != ClickType.MOUSE_DOUBLE_CLICK) {
             ItemStack itemStack = element.getItemStack();
             Component name = itemStack.getHoverName();
+
+            NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(this.player));
+
             if(name.getString().equalsIgnoreCase("§bClassic FFA")){
-                LobbyUtil.sendGame(this.player, "classic ffa", true, true);
+                LobbyUtil.sendGame(nexiaPlayer, "classic ffa", true, true);
                 this.close();
             }
 
             if(name.getString().equalsIgnoreCase("§fKit FFA")){
-                LobbyUtil.sendGame(this.player, "kits ffa", true, true);
+                LobbyUtil.sendGame(nexiaPlayer, "kits ffa", true, true);
                 this.close();
             }
 
             if(name.getString().equalsIgnoreCase("§eSky FFA")){
-                LobbyUtil.sendGame(this.player, "sky ffa", true, true);
+                LobbyUtil.sendGame(nexiaPlayer, "sky ffa", true, true);
                 this.close();
             }
 
             if(name.getString().equalsIgnoreCase("§6UHC FFA")){
-                LobbyUtil.sendGame(this.player, "uhc ffa", true, true);
+                LobbyUtil.sendGame(nexiaPlayer, "uhc ffa", true, true);
                 this.close();
             }
 
@@ -248,27 +253,27 @@ public class PlayGUI extends SimpleGui {
             }
 
             if(name.getString().equalsIgnoreCase("§cBedwars")){
-                LobbyUtil.sendGame(this.player, "bedwars", true, true);
+                LobbyUtil.sendGame(nexiaPlayer, "bedwars", true, true);
                 this.close();
             }
 
             if(name.getString().equalsIgnoreCase("§aSkywars")){
-                LobbyUtil.sendGame(this.player, "skywars", true, true);
+                LobbyUtil.sendGame(nexiaPlayer, "skywars", true, true);
                 this.close();
             }
 
             if(name.getString().equalsIgnoreCase("§eOITC")){
-                LobbyUtil.sendGame(this.player, "oitc", true, true);
+                LobbyUtil.sendGame(nexiaPlayer, "oitc", true, true);
                 this.close();
             }
 
             if(name.getString().equalsIgnoreCase("§fFootball")){
-                LobbyUtil.sendGame(this.player, "football", true, true);
+                LobbyUtil.sendGame(nexiaPlayer, "football", true, true);
                 this.close();
             }
 
             if(name.getString().equalsIgnoreCase("§9Duels")){
-                LobbyUtil.sendGame(this.player, "duels", true, true);
+                LobbyUtil.sendGame(nexiaPlayer, "duels", true, true);
                 this.close();
             }
 
