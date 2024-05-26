@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class PlayerDataManager {
-    static String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/ffa/kits";
+    static String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/core";
     static String playerDataDirectory = dataDirectory + "/playerdata";
 
     static HashMap<UUID, PlayerData> allPlayerData = new HashMap<>();
