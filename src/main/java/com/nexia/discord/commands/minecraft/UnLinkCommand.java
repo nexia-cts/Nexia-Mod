@@ -1,21 +1,18 @@
 package com.nexia.discord.commands.minecraft;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
-import com.mojang.brigadier.Command;
+import com.combatreforged.metis.api.command.CommandSourceInfo;
+import com.combatreforged.metis.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.misc.CommandUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.discord.Main;
 import com.nexia.discord.utilities.player.PlayerData;
 import com.nexia.discord.utilities.player.PlayerDataManager;
-import net.dv8tion.jda.api.entities.Member;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.server.level.ServerPlayer;
 
 import java.io.File;
 
@@ -23,11 +20,12 @@ import static com.nexia.discord.Main.jda;
 
 public class UnLinkCommand {
 
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
-        dispatcher.register(Commands.literal("unlink")
-                .requires(commandSourceStack -> {
+    public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
+        dispatcher.register(CommandUtils.literal("unlink")
+                .requires(commandSourceInfo -> {
                     try {
-                        return PlayerDataManager.get(commandSourceStack.getPlayerOrException().getUUID()).savedData.isLinked;
+                        if(!CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
+                        return PlayerDataManager.get(CommandUtil.getPlayer(commandSourceInfo).getUUID()).savedData.isLinked;
                     } catch (Exception ignored) { }
                     return false;
                 })
@@ -35,15 +33,14 @@ public class UnLinkCommand {
         );
     }
 
-    public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ServerPlayer player = context.getSource().getPlayerOrException();
-        Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
+    public static int run(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
+        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
+        NexiaPlayer player = CommandUtil.getPlayer(context);
 
         PlayerData data = PlayerDataManager.get(player.getUUID());
 
         data.savedData.isLinked = false;
 
-        Member user = null;
         try {
             jda.getGuildById(Main.config.guildID).retrieveMemberById(data.savedData.discordID).complete();
         } catch (NullPointerException exception) {
@@ -56,11 +53,11 @@ public class UnLinkCommand {
 
         data.savedData.discordID = 0;
 
-        factoryPlayer.sendMessage(
+        player.sendMessage(
                 ChatFormat.nexiaMessage
                         .append(Component.text("You have successfully unlinked your discord account.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
 
-        return Command.SINGLE_SUCCESS;
+        return 1;
     }
 
 }

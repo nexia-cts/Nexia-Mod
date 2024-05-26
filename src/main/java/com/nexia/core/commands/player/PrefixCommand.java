@@ -1,21 +1,20 @@
 package com.nexia.core.commands.player;
 
+import com.combatreforged.metis.api.command.CommandSourceInfo;
+import com.combatreforged.metis.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.gui.PrefixGUI;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.server.level.ServerPlayer;
+import com.nexia.core.utilities.misc.CommandUtil;
 
 public class PrefixCommand {
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
-        dispatcher.register(Commands.literal("prefix").executes(PrefixCommand::run));
+    public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
+        dispatcher.register(CommandUtils.literal("prefix").executes(PrefixCommand::run));
     }
 
-    public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ServerPlayer executer = context.getSource().getPlayerOrException();
-        PrefixGUI.openRankGUI(executer);
+    public static int run(CommandContext<CommandSourceInfo> context) {
+        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
+        PrefixGUI.openRankGUI(CommandUtil.getPlayer(context).unwrap());
         return 1;
     }
 }

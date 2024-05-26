@@ -54,8 +54,8 @@ dependencies {
 	mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	modImplementation("com.combatreforged.factory:factory-api:${project.factory_version}-full")
-	modImplementation("com.combatreforged.factory:factory-builder:${project.factory_version}-1.16_combat-6")
+	modImplementation("com.combatreforged.metis:metis-api:${project.metis_version}-full")
+	modImplementation("com.combatreforged.metis:metis-builder:${project.metis_version}-${project.minecraft_version}-full")
 
 	include(implementation("com.google.code.gson:gson:${project.gson_version}"))
 
