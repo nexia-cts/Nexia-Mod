@@ -51,7 +51,7 @@ public class PlayerUtil {
         } catch(Exception ignored) { return null; }
 
         if(response != null && !response.trim().isEmpty()) {
-            String textureID = JsonParser.parseString(response).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
+            String textureID = new JsonParser().parse(response).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
             if(textureID == null || textureID.trim().isEmpty()) return null;
             return textureID;
         }

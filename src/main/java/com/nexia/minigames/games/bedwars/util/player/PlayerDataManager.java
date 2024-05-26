@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class PlayerDataManager {
 
-    static String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/core";
+    static String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/bedwars";
     static String playerDataDirectory = dataDirectory + "/playerdata";
 
     static HashMap<UUID, PlayerData> allPlayerData = new HashMap<>();
