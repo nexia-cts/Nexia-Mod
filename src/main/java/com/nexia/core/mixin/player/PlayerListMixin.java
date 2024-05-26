@@ -59,7 +59,6 @@ public abstract class PlayerListMixin {
             if (key.contains("multiplayer.player.left")) args.set(0, leaveFormat(component, leavePlayer));
             if (key.contains("multiplayer.player.join")) args.set(0, joinFormat(component, joinPlayer));
 
-            assert player != null;
             if(!PlayerMutes.muted(player)){
                 args.set(0, chatFormat(component));
             }
