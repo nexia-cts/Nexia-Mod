@@ -1,7 +1,6 @@
 package com.nexia.ffa.kits.utilities;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
-import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.ffa.KitGUI;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -38,7 +37,6 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 import static com.nexia.ffa.kits.utilities.FfaAreas.*;
-
 public class FfaKitsUtil {
 
     public static ArrayList<UUID> wasInSpawn = new ArrayList<>();
@@ -46,26 +44,6 @@ public class FfaKitsUtil {
     public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
         com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
         return player.getTags().contains("ffa_kits") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.KITS;
-    }
-
-    public static void ffaSecond() {
-        if(ffaWorld == null) return;
-        if(ffaWorld.players().isEmpty()) return;
-        for (ServerPlayer player : ffaWorld.players()) {
-            if (!isFfaPlayer(player)) continue;
-
-            if (FfaAreas.isInFfaSpawn(player)) {
-                if (!player.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
-                    player.addTag(LobbyUtil.NO_DAMAGE_TAG);
-                    System.out.println("Added NO_DAMAGE_TAG to " + player.getName().getString());
-                }
-            } else {
-                if (player.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
-                    player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-                    System.out.println("Removed NO_DAMAGE_TAG from " + player.getName().getString());
-                }
-            }
-        }
     }
 
     public static void calculateKill(ServerPlayer attacker, ServerPlayer player){
@@ -184,6 +162,12 @@ public class FfaKitsUtil {
                 arrow.remove();
             }
         }
+    }
+
+    public static boolean beforeDamage(ServerPlayer player, DamageSource damageSource) {
+        if (damageSource == DamageSource.OUT_OF_WORLD) return true;
+
+        return !isInFfaSpawn(player);
     }
 
 

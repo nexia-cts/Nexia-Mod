@@ -2,7 +2,6 @@ package com.nexia.ffa.classic.utilities;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.google.gson.Gson;
-import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
@@ -43,22 +42,11 @@ import static com.nexia.ffa.classic.utilities.player.PlayerDataManager.dataDirec
 public class FfaClassicUtil {
     public static ArrayList<UUID> wasInSpawn = new ArrayList<>();
 
-    public static void ffaSecond() {
-        if (ffaWorld == null) return;
-        if(ffaWorld.players().isEmpty()) return;
-        for (ServerPlayer player : ffaWorld.players()) {
-            if (!isFfaPlayer(player)) continue;
+    public static boolean beforeDamage(ServerPlayer player, DamageSource damageSource) {
+        if (damageSource == DamageSource.OUT_OF_WORLD) return true;
 
-            if (FfaAreas.isInFfaSpawn(player)) {
-                player.addTag(LobbyUtil.NO_DAMAGE_TAG);
-            } else {
-                player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-            }
-        }
+        return !isInFfaSpawn(player);
     }
-
-
-
 
     public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
         com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);

@@ -6,7 +6,10 @@ import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.misc.EventUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
+import com.nexia.ffa.classic.utilities.FfaClassicUtil;
+import com.nexia.ffa.kits.utilities.FfaKitsUtil;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
+import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
@@ -84,6 +87,21 @@ public abstract class PlayerMixin extends LivingEntity {
         if (!((Object) this instanceof ServerPlayer player)) return;
 
         if (FfaSkyUtil.isFfaPlayer(player) && !FfaSkyUtil.beforeDamage(player, damageSource)) {
+            cir.setReturnValue(false);
+            return;
+        }
+
+        if (FfaUhcUtil.isFfaPlayer(player) && !FfaUhcUtil.beforeDamage(player, damageSource)) {
+            cir.setReturnValue(false);
+            return;
+        }
+
+        if (FfaKitsUtil.isFfaPlayer(player) && !FfaKitsUtil.beforeDamage(player, damageSource)) {
+            cir.setReturnValue(false);
+            return;
+        }
+
+        if (FfaClassicUtil.isFfaPlayer(player) && !FfaClassicUtil.beforeDamage(player, damageSource)) {
             cir.setReturnValue(false);
             return;
         }

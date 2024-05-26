@@ -2,7 +2,6 @@ package com.nexia.ffa.uhc.utilities;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.google.gson.Gson;
-import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
@@ -49,20 +48,6 @@ public class FfaUhcUtil {
     public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
         com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
         return player.getTags().contains("ffa_uhc") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.UHC;
-    }
-
-    public static void ffaSecond() {
-        if (ffaWorld == null) return;
-        if(ffaWorld.players().isEmpty()) return;
-        for (ServerPlayer player : ffaWorld.players()) {
-            if (!isFfaPlayer(player)) continue;
-
-            if (FfaAreas.isInFfaSpawn(player)) {
-                player.addTag(LobbyUtil.NO_DAMAGE_TAG);
-            } else {
-                player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-            }
-        }
     }
 
     public static void calculateKill(ServerPlayer player){
@@ -171,6 +156,12 @@ public class FfaUhcUtil {
         if (player.isCreative()) return true;
         if (wasInSpawn.contains(player.getUUID())) return false;
         return blockPos.getY() < FfaAreas.buildLimitY;
+    }
+
+    public static boolean beforeDamage(ServerPlayer player, DamageSource damageSource) {
+        if (damageSource == DamageSource.OUT_OF_WORLD) return true;
+
+        return !isInFfaSpawn(player);
     }
 
 
