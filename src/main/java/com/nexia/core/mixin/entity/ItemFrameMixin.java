@@ -11,7 +11,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,7 +26,7 @@ public abstract class ItemFrameMixin extends Entity {
     @Inject(method = "interact", cancellable = true, at = @At("HEAD"))
     private void canTakeItem(Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResult> cir) {
         if(!(player instanceof ServerPlayer serverPlayer)) return;
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(serverPlayer));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
 
         // Disable interacting with item frames
         if ((FfaUtil.isFfaPlayer(nexiaPlayer) || KitRoom.isInKitRoom(nexiaPlayer)) && !player.isCreative()) {

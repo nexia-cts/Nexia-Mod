@@ -80,7 +80,7 @@ public class InventoryUtil {
     public static boolean loadInventory(@NotNull NexiaPlayer player, @NotNull String type, @NotNull String inventoryName) {
         if(type.trim().isEmpty() || inventoryName.trim().isEmpty()) return false;
 
-        PlayerFunctions.setPlayerGearFromString(player.player().get(), getGearStringFromFile(type, inventoryName));
+        PlayerFunctions.setPlayerGearFromString(player.unwrap(), getGearStringFromFile(type, inventoryName));
         return true;
     }
 

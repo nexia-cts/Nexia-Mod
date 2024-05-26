@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.oitc;
 
-import com.combatreforged.factory.api.world.types.Minecraft;
+import com.combatreforged.metis.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -33,9 +33,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.AABB;
-import net.notcoded.codelib.players.AccuratePlayer;
 import net.notcoded.codelib.util.TickUtil;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
@@ -78,7 +76,7 @@ public class OitcGame {
 
 
     public static void leave(NexiaPlayer player) {
-        OitcGame.death(player, player.player().get().getLastDamageSource());
+        OitcGame.death(player, player.unwrap().getLastDamageSource());
 
         PlayerData data = PlayerDataManager.get(player);
         OitcGame.spectator.remove(player);
@@ -93,15 +91,15 @@ public class OitcGame {
             else OitcGame.endGame(null);
         }
 
-        player.getFactoryPlayer().removeTag("in_oitc_game");
+        player.removeTag("in_oitc_game");
 
-        player.reset(true, GameType.ADVENTURE);
+        player.reset(true, Minecraft.GameMode.ADVENTURE);
 
         if(data.gameMode.equals(OitcGameMode.PLAYING) && winner != player) {
             data.savedData.loss++;
         }
 
-        player.getFactoryPlayer().removeTag("oitc");
+        player.removeTag("oitc");
 
         data.gameMode = OitcGameMode.LOBBY;
     }
@@ -111,11 +109,11 @@ public class OitcGame {
             if(OitcGame.isEnding) {
                 int color = 244 * 65536 + 166 * 256 + 71;
                 // r * 65536 + g * 256 + b;
-                if(OitcGame.winner != null && OitcGame.winner.player().get() != null) DuelGameHandler.winnerRockets(OitcGame.winner, OitcGame.world, color);
+                if(OitcGame.winner != null && OitcGame.winner.unwrap() != null) DuelGameHandler.winnerRockets(OitcGame.winner, OitcGame.world, color);
 
                 if(OitcGame.endTime <= 0) {
                     for(NexiaPlayer player : OitcGame.getViewers()){
-                        player.getFactoryPlayer().runCommand("/hub", 0, false);
+                        player.runCommand("/hub", 0, false);
                     }
 
                     OitcGame.resetAll();
@@ -127,7 +125,7 @@ public class OitcGame {
                     OitcGame.deathPlayers.forEach(((player, integer) -> {
                         int newInt = integer - 1;
 
-                        if(!player.player().get().isSpectator()) player.getFactoryPlayer().setGameMode(Minecraft.GameMode.SPECTATOR);
+                        if(!player.unwrap().isSpectator()) player.setGameMode(Minecraft.GameMode.SPECTATOR);
 
                         /*
                         OitcGame.deathPlayers.remove(player);
@@ -139,19 +137,19 @@ public class OitcGame {
                         Title title = getTitle(newInt);
 
                         player.sendTitle(title);
-                        player.sendSound(new EntityPos(player.player().get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+                        player.sendSound(new EntityPos(player.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
 
 
                         if(newInt <= 1){
                             spawnInRandomPos(player);
                             OitcGame.deathPlayers.remove(player);
                             //ServerTime.factoryServer.runCommand("/gamemode adventure " + player.get().getScoreboardName(), 4, false);
-                            player.getFactoryPlayer().setGameMode(Minecraft.GameMode.ADVENTURE);
+                            player.setGameMode(Minecraft.GameMode.ADVENTURE);
                             BlfScheduler.delay(5, new BlfRunnable() {
                                 @Override
                                 public void run() {
                                     giveKit(player);
-                                    player.getFactoryPlayer().setGameMode(Minecraft.GameMode.ADVENTURE);
+                                    player.setGameMode(Minecraft.GameMode.ADVENTURE);
                                 }
                             });
 
@@ -185,7 +183,7 @@ public class OitcGame {
                         Title title = getTitle(OitcGame.queueTime);
 
                         player.sendTitle(title);
-                        player.sendSound(new EntityPos(player.player().get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+                        player.sendSound(new EntityPos(player.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
                     }
 
                     player.sendActionBarMessage(
@@ -231,23 +229,23 @@ public class OitcGame {
     public static void joinQueue(NexiaPlayer player) {
         PlayerData data = PlayerDataManager.get(player);
         data.kills = 0;
-        player.getFactoryPlayer().setHealth(player.player().get().getMaxHealth());
+        player.setHealth(player.unwrap().getMaxHealth());
         if(OitcGame.isStarted || OitcGame.queue.size() >= OitcGame.map.maxPlayers){
             OitcGame.spectator.add(player);
             PlayerDataManager.get(player).gameMode = OitcGameMode.SPECTATOR;
-            player.getFactoryPlayer().setGameMode(Minecraft.GameMode.SPECTATOR);
+            player.setGameMode(Minecraft.GameMode.SPECTATOR);
         } else {
             OitcGame.queue.add(player);
-            player.getFactoryPlayer().addTag(LobbyUtil.NO_DAMAGE_TAG);
+            player.addTag(LobbyUtil.NO_DAMAGE_TAG);
         }
 
-        player.player().get().teleportTo(world, 0, 101, 0, 0, 0);
-        player.player().get().setRespawnPosition(world.dimension(), new BlockPos(0, 100, 0), 0, true, false);
+        player.unwrap().teleportTo(world, 0, 101, 0, 0, 0);
+        player.unwrap().setRespawnPosition(world.dimension(), new BlockPos(0, 100, 0), 0, true, false);
     }
 
     public static void endGame(NexiaPlayer player) {
         OitcGame.isEnding = true;
-        if(player == null || player.player().get() == null) return;
+        if(player == null || player.unwrap() == null) return;
         PlayerData data = PlayerDataManager.get(player);
         OitcGame.winner = player;
 
@@ -256,7 +254,7 @@ public class OitcGame {
         data.savedData.wins++;
 
         for(NexiaPlayer viewer : OitcGame.getViewers()){
-            viewer.sendTitle(Title.title(Component.text(player.player().name).color(ChatFormat.brandColor2), Component.text("has won the game! (" + data.kills + " kills)").color(ChatFormat.normalColor)));
+            viewer.sendTitle(Title.title(Component.text(player.getRawName()).color(ChatFormat.brandColor2), Component.text("has won the game! (" + data.kills + " kills)").color(ChatFormat.normalColor)));
         }
     }
 
@@ -277,7 +275,7 @@ public class OitcGame {
     }
 
     public static void giveKit(NexiaPlayer player) {
-        player.getFactoryPlayer().getInventory().clear();
+        player.getInventory().clear();
 
         ItemStack sword = new ItemStack(Items.STONE_SWORD);
         sword.getOrCreateTag().putBoolean("Unbreakable", true);
@@ -290,9 +288,9 @@ public class OitcGame {
 
         ItemStack arrow = new ItemStack(Items.ARROW);
 
-        player.player().get().setSlot(0, sword);
-        player.player().get().setSlot(1, bow);
-        player.player().get().setSlot(2, arrow);
+        player.unwrap().setSlot(0, sword);
+        player.unwrap().setSlot(1, bow);
+        player.unwrap().setSlot(2, arrow);
     }
 
     public static void startGame() {
@@ -311,14 +309,14 @@ public class OitcGame {
             bow.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
 
             for(NexiaPlayer player : OitcGame.players) {
-                player.player().get().inventory.setItem(0, sword);
-                player.player().get().inventory.setItem(1, bow);
-                player.player().get().inventory.setItem(2, new ItemStack(Items.ARROW));
+                player.unwrap().inventory.setItem(0, sword);
+                player.unwrap().inventory.setItem(1, bow);
+                player.unwrap().inventory.setItem(2, new ItemStack(Items.ARROW));
 
                 PlayerDataManager.get(player).gameMode = OitcGameMode.PLAYING;
 
-                player.getFactoryPlayer().addTag("in_oitc_game");
-                player.getFactoryPlayer().removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                player.addTag("in_oitc_game");
+                player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
 
                 spawnInRandomPos(player);
 
@@ -334,19 +332,19 @@ public class OitcGame {
         OitcMap map = OitcGame.map;
         EntityPos spawnPosition = map.spawnPositions.get(RandomUtil.randomInt(map.spawnPositions.size()));
 
-        spawnPosition.teleportPlayer(OitcGame.world, player.player().get());
+        spawnPosition.teleportPlayer(OitcGame.world, player.unwrap());
     }
 
     public static boolean isOITCPlayer(NexiaPlayer player){
-        return com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.OITC || player.getFactoryPlayer().hasTag("oitc") || player.getFactoryPlayer().hasTag("in_oitc_game");
+        return com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.OITC || player.hasTag("oitc") || player.hasTag("in_oitc_game");
     }
 
     public static void death(NexiaPlayer victim, DamageSource source){
         PlayerData victimData = PlayerDataManager.get(victim);
         if(OitcGame.isStarted && !OitcGame.deathPlayers.containsKey(victim) && victimData.gameMode == OitcGameMode.PLAYING) {
-            ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim.player().get());
+            ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim.unwrap());
             if(attacker != null) {
-                NexiaPlayer nexiaAttacker = new NexiaPlayer(new AccuratePlayer(attacker));
+                NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
                 if(!nexiaAttacker.equals(victim)) {
                     PlayerData attackerData = PlayerDataManager.get(nexiaAttacker);
                     attackerData.kills++;

@@ -19,16 +19,16 @@ public class PlayerDataManager {
 
 
     public static PlayerData get(NexiaPlayer player) {
-        return get(player.player().uuid);
+        return get(player.getUUID());
     }
 
     public static void addPlayerData(NexiaPlayer player) {
-        addPlayerData(player.player().uuid);
+        addPlayerData(player.getUUID());
     }
 
 
     public static void removePlayerData(NexiaPlayer player) {
-        removePlayerData(player.player().uuid);
+        removePlayerData(player.getUUID());
     }
 
 

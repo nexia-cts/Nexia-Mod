@@ -1,6 +1,6 @@
 package com.nexia.ffa.classic.utilities;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.metis.api.world.entity.player.Player;
 import com.google.gson.Gson;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
@@ -24,7 +24,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.phys.AABB;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,19 +43,19 @@ public class FfaClassicUtil {
 
     public static boolean isFfaPlayer(NexiaPlayer player) {
         com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
-        return player.player().get().getTags().contains("ffa_classic") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.CLASSIC;
+        return player.hasTag("ffa_classic") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.CLASSIC;
     }
 
     public static boolean canGoToSpawn(NexiaPlayer player) {
-        if(!FfaClassicUtil.isFfaPlayer(player) || FfaClassicUtil.wasInSpawn.contains(player.player().uuid)) return true;
-        return !(Math.round(player.player().get().getHealth()) < 20);
+        if(!FfaClassicUtil.isFfaPlayer(player) || FfaClassicUtil.wasInSpawn.contains(player.getUUID())) return true;
+        return !(Math.round(player.unwrap().getHealth()) < 20);
     }
 
     public static void fiveTick() {
         if(ffaWorld == null) return;
         if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer player : ffaWorld.players()) {
-            NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+            NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
             if(wasInSpawn.contains(player.getUUID()) && !FfaAreas.isInFfaSpawn(nexiaPlayer)){
                 wasInSpawn.remove(player.getUUID());
                 saveInventory(nexiaPlayer);
@@ -67,11 +66,11 @@ public class FfaClassicUtil {
     public static void saveInventory(NexiaPlayer player){
         // /config/nexia/ffa/classic/inventory/savedInventories/uuid.json
 
-        SavableInventory savableInventory = new SavableInventory(player.player().get().inventory);
+        SavableInventory savableInventory = new SavableInventory(player.unwrap().inventory);
         String stringInventory = savableInventory.toSave();
 
         try {
-            String file = dataDirectory + "/inventory/savedInventories/" + player.player().uuid + ".json";
+            String file = dataDirectory + "/inventory/savedInventories/" + player.getUUID() + ".json";
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(stringInventory);
             fileWriter.close();
@@ -86,11 +85,11 @@ public class FfaClassicUtil {
         BlfScheduler.delay(5, new BlfRunnable() {
             @Override
             public void run() {
-                attacker.player().get().setHealth(attacker.player().get().getHealth());
+                attacker.setHealth(attacker.unwrap().getMaxHealth());
             }
         });
 
-        if(player.getFactoryPlayer().hasTag("bot") || attacker.getFactoryPlayer().hasTag("bot")) return;
+        if(player.hasTag("bot") || attacker.hasTag("bot")) return;
 
         SavedPlayerData data = PlayerDataManager.get(attacker).savedData;
         data.killstreak++;
@@ -101,13 +100,13 @@ public class FfaClassicUtil {
 
         if(data.killstreak % 5 == 0){
             for(ServerPlayer serverPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()){
-                NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(serverPlayer));
+                NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
                 if(FfaClassicUtil.isFfaPlayer(nexiaPlayer)) {
                     nexiaPlayer.sendMessage(
                             Component.text("[").color(ChatFormat.lineColor)
                                     .append(Component.text("☠").color(ChatFormat.failColor))
                                     .append(Component.text("] ").color(ChatFormat.lineColor))
-                                    .append(Component.text(attacker.player().name).color(ChatFormat.normalColor))
+                                    .append(Component.text(attacker.getRawName()).color(ChatFormat.normalColor))
                                     .append(Component.text(" now has a killstreak of ").color(ChatFormat.chatColor2))
                                     .append(Component.text(data.killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
                                     .append(Component.text("!").color(ChatFormat.chatColor2))
@@ -119,7 +118,7 @@ public class FfaClassicUtil {
 
     public static void calculateDeath(NexiaPlayer player){
 
-        if(player.getFactoryPlayer().hasTag("bot")) return;
+        if(player.hasTag("bot")) return;
 
         SavedPlayerData data = PlayerDataManager.get(player).savedData;
         data.deaths++;
@@ -129,13 +128,13 @@ public class FfaClassicUtil {
 
         if(data.killstreak >= 5) {
             for (ServerPlayer serverPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()) {
-                NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(serverPlayer));
+                NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
                 if (FfaClassicUtil.isFfaPlayer(nexiaPlayer)) {
                     nexiaPlayer.sendMessage(
                             Component.text("[").color(ChatFormat.lineColor)
                                     .append(Component.text("☠").color(ChatFormat.failColor))
                                     .append(Component.text("] ").color(ChatFormat.lineColor))
-                                    .append(Component.text(player.player().name).color(ChatFormat.normalColor))
+                                    .append(Component.text(player.getRawName()).color(ChatFormat.normalColor))
                                     .append(Component.text(" has lost their killstreak of ").color(ChatFormat.chatColor2))
                                     .append(Component.text(data.killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
                                     .append(Component.text(".").color(ChatFormat.chatColor2))
@@ -154,14 +153,14 @@ public class FfaClassicUtil {
 
 
     public static void setDeathMessage(@NotNull NexiaPlayer player, @Nullable DamageSource source){
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player.player().get());
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player.unwrap());
 
         calculateDeath(player);
 
         Component msg = FfaUtil.returnDeathMessage(player, source);
 
         if(attacker != null) {
-            NexiaPlayer nexiaAttacker = new NexiaPlayer(new AccuratePlayer(attacker));
+            NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
             if(msg.toString().contains("somehow killed themselves") && !nexiaAttacker.equals(player)) {
                 Component component = FfaUtil.returnClassicDeathMessage(player, nexiaAttacker);
                 if(component != null) msg = component;
@@ -170,7 +169,7 @@ public class FfaClassicUtil {
             }
         }
 
-        for (Player fPlayer : ServerTime.factoryServer.getPlayers()) {
+        for (Player fPlayer : ServerTime.metisServer.getPlayers()) {
             if (fPlayer.hasTag("ffa_classic")) player.sendMessage(msg);
         }
     }
@@ -189,7 +188,7 @@ public class FfaClassicUtil {
             Gson gson = new Gson();
             defaultInventory = gson.fromJson(defaultJson, SavableInventory.class);
 
-            String layoutPath = String.format(file + "/savedInventories/%s.json", player.player().uuid);
+            String layoutPath = String.format(file + "/savedInventories/%s.json", player.getUUID());
             if(new File(layoutPath).exists()) {
                 String layoutJson = Files.readString(Path.of(layoutPath));
                 layout = gson.fromJson(layoutJson, SavableInventory.class);
@@ -205,9 +204,9 @@ public class FfaClassicUtil {
         }
 
         if(layout != null) {
-            InventoryMerger.mergeSafe(player.player().get(), layout.asPlayerInventory(), defaultInventory.asPlayerInventory());
+            InventoryMerger.mergeSafe(player.unwrap(), layout.asPlayerInventory(), defaultInventory.asPlayerInventory());
         } else {
-            player.player().get().inventory.replaceWith(defaultInventory.asPlayerInventory());
+            player.unwrap().inventory.replaceWith(defaultInventory.asPlayerInventory());
         }
 
         player.refreshInventory();
@@ -219,17 +218,18 @@ public class FfaClassicUtil {
         AABB aabb = new AABB(c1, c2);
         Predicate<Entity> predicate = o -> true;
         for (ThrownTrident trident : ffaWorld.getEntities(EntityType.TRIDENT, aabb, predicate)) {
-            if (trident.getOwner() != null && trident.getOwner().getUUID().equals(player.player().uuid)) {
+            if (trident.getOwner() != null && trident.getOwner().getUUID().equals(player.getUUID())) {
                 trident.remove();
             }
         }
     }
 
     public static void leaveOrDie(@NotNull NexiaPlayer player, @Nullable DamageSource source, boolean leaving) {
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player.player().get());
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player.unwrap());
 
         if (attacker != null) {
-            NexiaPlayer nexiaAttacker = new NexiaPlayer(new AccuratePlayer(attacker));
+            NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker
+            );
             clearThrownTridents(nexiaAttacker);
             setInventory(nexiaAttacker);
         }
@@ -240,6 +240,6 @@ public class FfaClassicUtil {
 
         FfaClassicUtil.setDeathMessage(player, source);
         FfaClassicUtil.setInventory(player);
-        FfaClassicUtil.wasInSpawn.add(player.player().uuid);
+        FfaClassicUtil.wasInSpawn.add(player.getUUID());
     }
 }

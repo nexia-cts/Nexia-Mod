@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class LingeringPotionItemMixin {
     @Inject(method = "use", at = @At(value = "HEAD"), cancellable = true)
     public void preventKitFFAplayers(Level level, Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer((ServerPlayer) player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer((ServerPlayer) player);
 
         if((com.nexia.ffa.kits.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(nexiaPlayer)) || (com.nexia.core.utilities.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(PlayerGameMode.LOBBY) && com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(DuelGameMode.LOBBY))) {
             cir.setReturnValue(new InteractionResultHolder<>(InteractionResult.FAIL, player.getItemInHand(interactionHand)));

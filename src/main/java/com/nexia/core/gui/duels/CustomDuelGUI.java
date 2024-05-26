@@ -16,7 +16,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.notcoded.codelib.players.AccuratePlayer;
 
 import java.util.ArrayList;
 
@@ -152,7 +151,7 @@ public class CustomDuelGUI extends SimpleGui {
                     this.kit = name.getString().toLowerCase().substring(2).replaceAll(" ", "_");
                     setMapLayout();
                 } else {
-                    GamemodeHandler.customChallengePlayer(new NexiaPlayer(new AccuratePlayer(this.player)), new NexiaPlayer(new AccuratePlayer(this.other)), this.kit, DuelsMap.identifyMap(name.getString().substring(2)));
+                    GamemodeHandler.customChallengePlayer(new NexiaPlayer(this.player), new NexiaPlayer(this.other), this.kit, DuelsMap.identifyMap(name.getString().substring(2)));
                     this.close();
                 }
 

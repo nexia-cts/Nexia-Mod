@@ -12,7 +12,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.logging.log4j.LogManager;
 
@@ -20,7 +19,7 @@ public class BwPlayerTracker {
 
     public static void trackerSecond() {
         for (ServerPlayer player : ServerTime.minecraftServer.getPlayerList().getPlayers()) {
-            NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+            NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
             if (BwUtil.isBedWarsPlayer(nexiaPlayer)) {
                 trackCompass(nexiaPlayer);
             }
@@ -31,11 +30,11 @@ public class BwPlayerTracker {
     public static void trackCompass(NexiaPlayer player) {
         if (!BwUtil.isBedWarsPlayer(player)) return;
 
-        Inventory inventory = player.player().get().inventory;
+        Inventory inventory = player.unwrap().inventory;
         for (int i = 0; i < 36; i++) {
             ItemStack itemStack = inventory.getItem(i);
             if (!isTrackerCompass(itemStack)) continue;
-            trackClosestPlayer(player.player().get(), itemStack);
+            trackClosestPlayer(player.unwrap(), itemStack);
         }
 
     }
@@ -78,7 +77,7 @@ public class BwPlayerTracker {
         double closestPos = Double.MAX_VALUE;
 
         for (ServerPlayer trackable : ServerTime.minecraftServer.getPlayerList().getPlayers()) {
-            if (BwUtil.isBedWarsPlayer(new NexiaPlayer(new AccuratePlayer(trackable))) && !trackable.getUUID().equals(player.getUUID())) {
+            if (BwUtil.isBedWarsPlayer(new NexiaPlayer(trackable)) && !trackable.getUUID().equals(player.getUUID())) {
 
                 double distance = (trackable.getX() - player.getX()) * (trackable.getX() - player.getX()) +
                         (trackable.getZ() - player.getZ()) * (trackable.getZ() - player.getZ());

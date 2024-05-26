@@ -1,18 +1,17 @@
 package com.nexia.core.commands.player;
 
+import com.combatreforged.metis.api.command.CommandSourceInfo;
+import com.combatreforged.metis.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.player.PlayerUtil;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 
 public class HelpCommand {
 
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
-        dispatcher.register(Commands.literal("help").executes(HelpCommand::run));
+    public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
+        dispatcher.register(CommandUtils.literal("help").executes(HelpCommand::run));
     }
 
     static String commandSeparator = ": ";
@@ -38,7 +37,7 @@ public class HelpCommand {
             "sprintfix" + commandSeparator + "toggle the sprint fix"
     };
 
-    public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    public static int run(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
 
         Component message = ChatFormat.separatorLine("Commands");
 
@@ -58,7 +57,7 @@ public class HelpCommand {
 
         message = message.append(Component.text("\n").append(ChatFormat.separatorLine(null)));
 
-        PlayerUtil.getFactoryPlayer(context.getSource().getPlayerOrException()).sendMessage(message);
+        context.getSource().sendMessage(message);
 
         return 1;
     }

@@ -14,7 +14,6 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -67,7 +66,7 @@ public class LoadInventoryCommand {
             context.getSource().sendFailure(LegacyChatFormat.format("Unable to load the content of the inventory with the name '{}' in '{}'.", inventory, type));
             return 0;
         } else {
-            InventoryUtil.loadInventory(new NexiaPlayer(new AccuratePlayer(player)), type, inventory);
+            InventoryUtil.loadInventory(new NexiaPlayer(player), type, inventory);
 
             context.getSource().sendSuccess(LegacyChatFormat.format("{b1}Successfully loaded '{}' in '{}' to " + ((isContextPlayer) ? "your inventory" : "the inventory of " + player.getScoreboardName()) + ".", inventory, type), false);
 

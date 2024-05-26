@@ -32,7 +32,7 @@ public class BwApplyUpgrades {
         int level = team.upgrades.get(BwUpgrade.UPGRADE_KEY_SHARPNESS).level;
 
         for (NexiaPlayer player : team.players) {
-            for (ItemStack itemStack : player.player().get().inventory.items) {
+            for (ItemStack itemStack : player.unwrap().inventory.items) {
                 if (itemStack.getItem() instanceof SwordItem || itemStack.getItem() instanceof TridentItem) {
                     ItemStackUtil.enchant(itemStack, Enchantments.SHARPNESS, level);
                 }
@@ -45,7 +45,7 @@ public class BwApplyUpgrades {
         if (level < 1) return;
 
         for (NexiaPlayer player : team.players) {
-            NonNullList<ItemStack> armor = player.player().get().inventory.armor;
+            NonNullList<ItemStack> armor = player.unwrap().inventory.armor;
             ItemStackUtil.enchant(armor.get(0), Enchantments.ALL_DAMAGE_PROTECTION, level);
             ItemStackUtil.enchant(armor.get(1), Enchantments.ALL_DAMAGE_PROTECTION, level);
             ItemStackUtil.enchant(armor.get(2), Enchantments.ALL_DAMAGE_PROTECTION, level);
@@ -59,9 +59,9 @@ public class BwApplyUpgrades {
 
         int effectLevel = level - 1;
         for (NexiaPlayer player : team.players) {
-            if (!player.player().get().hasEffect(MobEffects.DIG_SPEED) || Objects.requireNonNull(player.player().get().getEffect(MobEffects.DIG_SPEED)).getAmplifier() != effectLevel) {
-                player.player().get().addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 1000000, effectLevel, false, false));
-                BwUtil.setAttackSpeed(player.player().get());
+            if (!player.unwrap().hasEffect(MobEffects.DIG_SPEED) || Objects.requireNonNull(player.unwrap().getEffect(MobEffects.DIG_SPEED)).getAmplifier() != effectLevel) {
+                player.unwrap().addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 1000000, effectLevel, false, false));
+                BwUtil.setAttackSpeed(player.unwrap());
             }
         }
     }
@@ -71,14 +71,14 @@ public class BwApplyUpgrades {
         if (level < 1) return;
 
         for (NexiaPlayer player : team.players) {
-            if (team.spawn.isInRadius(new EntityPos(player.player().get()), 24)) {
-                if (!player.player().get().hasEffect(MobEffects.REGENERATION)) {
-                    player.player().get().addEffect(new MobEffectInstance(MobEffects.REGENERATION, Integer.MAX_VALUE, level - 1, false, false));
+            if (team.spawn.isInRadius(new EntityPos(player.unwrap()), 24)) {
+                if (!player.unwrap().hasEffect(MobEffects.REGENERATION)) {
+                    player.unwrap().addEffect(new MobEffectInstance(MobEffects.REGENERATION, Integer.MAX_VALUE, level - 1, false, false));
                 }
 
-            } else if (player.player().get().hasEffect(MobEffects.REGENERATION) &&
-                    Objects.requireNonNull(player.player().get().getEffect(MobEffects.REGENERATION)).getAmplifier() == 0) {
-                player.player().get().removeEffect(MobEffects.REGENERATION);
+            } else if (player.unwrap().hasEffect(MobEffects.REGENERATION) &&
+                    Objects.requireNonNull(player.unwrap().getEffect(MobEffects.REGENERATION)).getAmplifier() == 0) {
+                player.unwrap().removeEffect(MobEffects.REGENERATION);
             }
         }
     }

@@ -20,7 +20,6 @@ import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
-import net.notcoded.codelib.players.AccuratePlayer;
 
 import java.util.ArrayList;
 
@@ -44,8 +43,8 @@ public class BwScoreboard {
     }
 
     public static void sendBedWarsScoreboard(NexiaPlayer player) {
-        player.player().get().connection.send(new ClientboundSetObjectivePacket(objective, 0));
-        player.player().get().connection.send(new ClientboundSetDisplayObjectivePacket(1, objective));
+        player.unwrap().connection.send(new ClientboundSetObjectivePacket(objective, 0));
+        player.unwrap().connection.send(new ClientboundSetDisplayObjectivePacket(1, objective));
     }
 
     public static void updateScoreboard() {
@@ -74,7 +73,7 @@ public class BwScoreboard {
         updateTimer();
 
         for (ServerPlayer player : ServerTime.minecraftServer.getPlayerList().getPlayers()) {
-            sendLines(new NexiaPlayer(new AccuratePlayer(player)));
+            sendLines(new NexiaPlayer(player));
         }
     }
 
@@ -114,7 +113,7 @@ public class BwScoreboard {
 
     public static void sendLines(NexiaPlayer player) {
         for (Score score : scoreboard.getPlayerScores(objective)) {
-            player.player().get().connection.send(new ClientboundSetScorePacket(
+            player.unwrap().connection.send(new ClientboundSetScorePacket(
                     ServerScoreboard.Method.CHANGE, objectiveName, score.getOwner(), score.getScore()));
         }
     }
@@ -130,7 +129,7 @@ public class BwScoreboard {
     }
 
     public static void removeScoreboardFor(NexiaPlayer player) {
-        player.player().get().connection.send(new ClientboundSetDisplayObjectivePacket(1, null));
+        player.unwrap().connection.send(new ClientboundSetDisplayObjectivePacket(1, null));
     }
 
 }

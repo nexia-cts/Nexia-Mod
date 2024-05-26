@@ -9,7 +9,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.notcoded.codelib.players.AccuratePlayer;
 
 import java.util.ArrayList;
 
@@ -30,7 +29,7 @@ public class BwTrident extends ThrownTrident {
         this.willBeReturned = !player.abilities.instabuild;
         this.age = 0;
 
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(this.owner));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(this.owner);
         if (BwUtil.isBedWarsPlayer(nexiaPlayer)) {
             if (!BwGame.gameTridents.containsKey(nexiaPlayer)) {
                 BwGame.gameTridents.put(nexiaPlayer, new ArrayList<>());
@@ -45,8 +44,8 @@ public class BwTrident extends ThrownTrident {
         if (age >= returnTime) {
             this.remove();
             if (willBeReturned) {
-                owner.inventory.add(this.itemStack);
-                NexiaPlayer nexiaOwner = new NexiaPlayer(new AccuratePlayer(owner));
+                this.owner.inventory.add(this.itemStack);
+                NexiaPlayer nexiaOwner = new NexiaPlayer(this.owner);
                 nexiaOwner.sendSound(SoundEvents.TRIDENT_RETURN, SoundSource.NEUTRAL, 2f, 1f);
                 nexiaOwner.sendSound(SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.05f, 2f);
 

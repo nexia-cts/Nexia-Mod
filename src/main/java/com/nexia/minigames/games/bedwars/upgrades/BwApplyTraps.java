@@ -27,7 +27,7 @@ public class BwApplyTraps {
                 // Loop all bedwars bases
                 for (EntityPos trapPos : BwTrap.trapLocations.keySet()) {
                     BwTeam defenderTeam = BwTrap.trapLocations.get(trapPos);
-                    if (defenderTeam == attackerTeam || !trapPos.isInRadius(new EntityPos(attacker.player().get()), 19)) continue;
+                    if (defenderTeam == attackerTeam || !trapPos.isInRadius(new EntityPos(attacker.unwrap()), 19)) continue;
 
                     // Loop all traps in a bedwars base
                     boolean trapActivated = false;
@@ -35,7 +35,7 @@ public class BwApplyTraps {
                     for (String trapKey : teamTrapSet.keySet()) {
                         BwTrap trap = teamTrapSet.get(trapKey);
                         if (trap == null || !trap.bought) continue;
-                        trapSetOff(attacker.player().get(), trapKey);
+                        trapSetOff(attacker.unwrap(), trapKey);
                         trapActivated = true;
                         trap.bought = false;
                     }

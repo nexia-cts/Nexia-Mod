@@ -94,7 +94,7 @@ public class BwAreas {
             return false;
         }
 
-        if ((player != null && !isBedWarsWorld(player.player().get().getLevel())) || !isInsideBorder(mapPos, protectionMap.map)) {
+        if ((player != null && !isBedWarsWorld(player.unwrap().getLevel())) || !isInsideBorder(mapPos, protectionMap.map)) {
             if (sendMessage) {
                 player.sendMessage(Component.text("You have reached the built limit.").color(ChatFormat.failColor));
             }
@@ -103,7 +103,7 @@ public class BwAreas {
 
         ServerPlayer serverPlayer = null;
         if(player != null) {
-            serverPlayer = player.player().get();
+            serverPlayer = player.unwrap();
         }
 
         return protectionMap.canBuiltAt(bedWarsCorner1, blockPos, serverPlayer, sendMessage);

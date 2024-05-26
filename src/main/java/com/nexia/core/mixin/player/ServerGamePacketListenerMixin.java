@@ -30,7 +30,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.ItemStack;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -45,7 +44,7 @@ public class ServerGamePacketListenerMixin {
 
     @Inject(method = "handleChat", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
     private void handleChat(ServerboundChatPacket serverboundChatPacket, CallbackInfo ci) {
-        if (PlayerMutes.muted(player)) {
+        if (PlayerMutes.muted(new NexiaPlayer(player))) {
             ci.cancel();
         }
     }
@@ -100,7 +99,7 @@ public class ServerGamePacketListenerMixin {
 
     @Inject(method = "handleUseItemOn", at = @At("HEAD"), cancellable = true)
     private void handleUseItemOn(ServerboundUseItemOnPacket packet, CallbackInfo ci) {
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
         if (BwUtil.isInBedWars(nexiaPlayer)) {
             if (!BwPlayerEvents.useItem(player, packet.getHand())) {
@@ -115,7 +114,7 @@ public class ServerGamePacketListenerMixin {
 
     @Inject(method = "handleUseItem", at = @At("HEAD"), cancellable = true)
     private void handleUseItem(ServerboundUseItemPacket serverboundUseItemPacket, CallbackInfo ci) {
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
         if (BwUtil.isInBedWars(nexiaPlayer)) {
             if (!BwPlayerEvents.useItem(player, serverboundUseItemPacket.getHand())) {
@@ -130,7 +129,7 @@ public class ServerGamePacketListenerMixin {
         int slot = clickPacket.getSlotNum();
         ItemStack itemStack = clickPacket.getItem();
 
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
         if ((clickPacket.getClickType() == ClickType.THROW || slot == -999)) {
             if (!EventUtil.dropItem(nexiaPlayer, itemStack)) {
@@ -164,7 +163,7 @@ public class ServerGamePacketListenerMixin {
         ServerboundPlayerActionPacket.Action action = actionPacket.getAction();
         Inventory inv = player.inventory;
 
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
         if ((action == ServerboundPlayerActionPacket.Action.DROP_ITEM ||
                 action == ServerboundPlayerActionPacket.Action.DROP_ALL_ITEMS) &&
@@ -178,7 +177,7 @@ public class ServerGamePacketListenerMixin {
     @Inject(method = "handleTeleportToEntityPacket", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;teleportTo(Lnet/minecraft/server/level/ServerLevel;DDDFF)V"))
     private void handleSpectatorTeleport(ServerboundTeleportToEntityPacket packet, CallbackInfo ci) {
 
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
         net.kyori.adventure.text.Component noSpectateMSG = net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor);
 
         if (BwUtil.isInBedWars(nexiaPlayer)) {
@@ -201,7 +200,7 @@ public class ServerGamePacketListenerMixin {
         for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
             Entity entity = packet.getEntity(serverLevel);
             if (!(entity instanceof ServerPlayer target)) continue;
-            NexiaPlayer nexiaTarget = new NexiaPlayer(new AccuratePlayer(target));
+            NexiaPlayer nexiaTarget = new NexiaPlayer(target);
 
             boolean cancel = (
                     FfaClassicUtil.isFfaPlayer(nexiaPlayer) && !FfaClassicUtil.isFfaPlayer(nexiaTarget)

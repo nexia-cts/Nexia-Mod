@@ -17,7 +17,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.notcoded.codelib.players.AccuratePlayer;
 import net.notcoded.codelib.util.numbers.RomanNumbers;
 
 import java.util.HashMap;
@@ -31,7 +30,7 @@ public class BwUpgradeShop extends SimpleGui {
     }
 
     public static void openShopGui(ServerPlayer player) {
-        BwTeam team = BwTeam.getPlayerTeam(new NexiaPlayer(new AccuratePlayer(player)));
+        BwTeam team = BwTeam.getPlayerTeam(new NexiaPlayer(player));
         if (team == null) return;
 
         BwUpgradeShop shop = new BwUpgradeShop(MenuType.GENERIC_9x5, player, false);
@@ -82,7 +81,7 @@ public class BwUpgradeShop extends SimpleGui {
 
     private void purchaseUpgrade(ServerPlayer minecraftPlayer, ItemStack upgradeItem) {
 
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(minecraftPlayer));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(minecraftPlayer);
 
         BwTeam team = BwTeam.getPlayerTeam(nexiaPlayer);
         if (team == null) return;
@@ -116,7 +115,7 @@ public class BwUpgradeShop extends SimpleGui {
     }
 
     private void purchaseTrap(ServerPlayer player, ItemStack trapItem) {
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
         BwTeam team = BwTeam.getPlayerTeam(nexiaPlayer);
         if (team == null) return;
 

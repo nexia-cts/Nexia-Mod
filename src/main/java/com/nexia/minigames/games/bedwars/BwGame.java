@@ -2,7 +2,6 @@ package com.nexia.minigames.games.bedwars;
 
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.misc.NxFileUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
@@ -22,9 +21,6 @@ import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.bedwars.util.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
-import net.minecraft.Util;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -32,7 +28,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.scores.PlayerTeam;
-import net.notcoded.codelib.players.AccuratePlayer;
 
 import java.time.Duration;
 import java.util.*;
@@ -124,7 +119,7 @@ public class BwGame {
             invulnerabilityList.replace(player, invulnerabilityList.get(player) - 1);
             if (invulnerabilityList.get(player) <= 0) {
                 it.remove();
-                if (BwUtil.isBedWarsPlayer(player)) player.player().get().setInvulnerable(false);
+                if (BwUtil.isBedWarsPlayer(player)) player.unwrap().setInvulnerable(false);
             }
         }
     }
@@ -238,8 +233,8 @@ public class BwGame {
             if (team.players == null) continue;
 
             for (NexiaPlayer player : team.players) {
-                player.player().get().getEnderChestInventory().clearContent();
-                player.getFactoryPlayer().getInventory().clear();
+                player.unwrap().getEnderChestInventory().clearContent();
+                player.getInventory().clear();
                 BwPlayers.sendToSpawn(player);
 
                 player.sendMessage(Component.text("The game has started. ", ChatFormat.systemColor)
@@ -256,7 +251,7 @@ public class BwGame {
                         Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofSeconds(1))
                 ));
 
-                player.getFactoryPlayer().removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
             }
         }
     }
@@ -300,7 +295,7 @@ public class BwGame {
             String whoWon;
             if (winnerTeam.players.size() == 1) {
                 PlayerDataManager.get(winnerTeam.players.stream().findFirst().get()).savedData.wins++;
-                whoWon = winnerTeam.textColor + winnerTeam.players.getFirst().player().name;
+                whoWon = winnerTeam.textColor + winnerTeam.players.getFirst().getRawName();
             } else {
                 whoWon = winnerTeam.textColor + winnerTeam.displayName + " team";
                 for(NexiaPlayer player : winnerTeam.players) {
@@ -368,7 +363,7 @@ public class BwGame {
         BwAreas.spawnQueueBuild();
 
         for (NexiaPlayer player : spectatorList) {
-            if (player == null || player.player().get() == null) continue;
+            if (player == null || player.unwrap() == null) continue;
             LobbyUtil.returnToLobby(player, true);
             BwScoreboard.removeScoreboardFor(player);
         }

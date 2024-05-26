@@ -5,7 +5,6 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.ffa.FfaGameMode;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 
 import java.time.LocalDateTime;
@@ -24,7 +23,7 @@ public class PlayerData {
 
     public LocalDateTime combatTagEnd;
 
-    public ServerPlayer lastMessageSender;
+    public NexiaPlayer lastMessageSender;
 
     public ClientType clientType;
 

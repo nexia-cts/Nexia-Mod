@@ -17,7 +17,6 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -55,7 +54,7 @@ public abstract class ArmorStandMixin extends LivingEntity {
     @Inject(method = "interactAt", cancellable = true, at = @At("HEAD"))
     private void canTakeItem(Player player, Vec3 vec3, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResult> cir) {
 
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer((ServerPlayer) player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer((ServerPlayer) player);
 
         // Disable interacting with armor stands
         if ((FfaUtil.isFfaPlayer(nexiaPlayer) || FootballGame.isFootballPlayer(nexiaPlayer) || KitRoom.isInKitRoom(nexiaPlayer)) && !player.isCreative()) {

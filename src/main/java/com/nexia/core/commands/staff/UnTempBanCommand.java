@@ -1,30 +1,35 @@
 package com.nexia.core.commands.staff;
 
+import com.combatreforged.metis.api.command.CommandSourceInfo;
+import com.combatreforged.metis.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.nexia.core.utilities.misc.CommandUtil;
 import com.nexia.core.utilities.player.BanHandler;
 import me.lucko.fabric.api.permissions.v0.Permissions;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.GameProfileArgument;
+
+import java.util.Collection;
 
 public class UnTempBanCommand {
 
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
-        dispatcher.register(Commands.literal("untempban")
-                .requires(commandSourceStack -> Permissions.check(commandSourceStack, "nexia.staff.ban", 3))
+    public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
+        dispatcher.register(CommandUtils.literal("untempban")
+                .requires(commandSourceInfo -> {
+                    if(CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
+                    return Permissions.check(CommandUtil.getPlayer(commandSourceInfo).unwrap(), "nexia.staff.ban", 3);
+                })
 
-                .then(Commands.argument("player", GameProfileArgument.gameProfile())
+                .then(CommandUtils.argument("player", GameProfileArgument.gameProfile())
                         .executes(UnTempBanCommand::unBan)
                 )
         );
     }
 
-    public static int unBan(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        CommandSourceStack sender = context.getSource();
+    public static int unBan(CommandContext<CommandSourceInfo> context) {
+        CommandSourceInfo sender = context.getSource();
 
-        BanHandler.tryUnBan(sender, GameProfileArgument.getGameProfiles(context, "player"));
+        BanHandler.tryUnBan(sender, context.getArgument("player", Collection.class));
 
         return 1;
     }

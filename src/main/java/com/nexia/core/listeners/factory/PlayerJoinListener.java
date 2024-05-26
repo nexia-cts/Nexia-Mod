@@ -1,37 +1,31 @@
 package com.nexia.core.listeners.factory;
 
-import com.combatreforged.factory.api.event.player.PlayerJoinEvent;
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.metis.api.event.player.PlayerJoinEvent;
+import com.combatreforged.metis.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
-import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.discord.Main;
 import com.nexia.discord.utilities.player.PlayerData;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
-import net.minecraft.server.level.ServerPlayer;
-import net.notcoded.codelib.players.AccuratePlayer;
 
 import java.util.Objects;
 
 import static com.nexia.discord.Main.jda;
 
 public class PlayerJoinListener {
-    public static void registerListener() {
+    public void registerListener() {
         PlayerJoinEvent.BACKEND.register(playerJoinEvent -> {
 
-            Player player = playerJoinEvent.getPlayer();
-            ServerPlayer minecraftPlayer = PlayerUtil.getMinecraftPlayer(player);
-
-            processJoin(player, minecraftPlayer);
+            NexiaPlayer player = new NexiaPlayer(playerJoinEvent.getPlayer());
+            processJoin(player);
 
             /*
             if(minecraftPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) <= 1) {
@@ -72,7 +66,7 @@ public class PlayerJoinListener {
                                 .append(Component.text("Players online: ").color(ChatFormat.normalColor))
                                         .append(Component.text(ServerTime.minecraftServer.getPlayerCount()).color(ChatFormat.brandColor2))
                                                 .append(Component.text("/").color(ChatFormat.lineColor))
-                                                        .append(Component.text(ServerTime.factoryServer.getMaxPlayerCount()).color(ChatFormat.brandColor2))
+                                                        .append(Component.text(ServerTime.metisServer.getMaxPlayerCount()).color(ChatFormat.brandColor2))
         );
         player.sendMessage(
                 Component.text(" » ").color(ChatFormat.brandColor2)
@@ -92,7 +86,7 @@ public class PlayerJoinListener {
         player.sendMessage(ChatFormat.separatorLine(null));
     }
 
-    private static void checkBooster(ServerPlayer player) {
+    private static void checkBooster(NexiaPlayer player) {
         PlayerData playerData = com.nexia.discord.utilities.player.PlayerDataManager.get(player.getUUID());
         if(!playerData.savedData.isLinked) { return; }
         Member discordUser = null;
@@ -102,57 +96,55 @@ public class PlayerJoinListener {
         } catch (Exception ignored) { }
 
         if(discordUser == null) {
-            if(Permissions.check(player, "nexia.prefix.supporter")) {
-                if(Permissions.check(player, "nexia.rank")) {
-                    ServerTime.factoryServer.runCommand("/staffprefix set " + player.getScoreboardName() + " default");
-                    ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getScoreboardName() + " supporter");
+            if(player.hasPermission("nexia.prefix.supporter")) {
+                if(player.hasPermission("nexia.rank")) {
+                    ServerTime.metisServer.runCommand("/staffprefix set " + player.getRawName() + " default");
+                    ServerTime.metisServer.runCommand("/staffprefix remove " + player.getRawName() + " supporter");
                     return;
                 }
-                ServerTime.factoryServer.runCommand("/rank " + player.getScoreboardName() + " default", 4, false);
+                ServerTime.metisServer.runCommand("/rank " + player.getRawName() + " default", 4, false);
             }
             return;
         }
 
         Role supporterRole = jda.getRoleById("1107264322951979110");
         boolean hasRole = discordUser.getRoles().contains(supporterRole);
-        boolean hasSupporterPrefix = Permissions.check(player, "nexia.prefix.supporter");
+        boolean hasSupporterPrefix = player.hasPermission("nexia.prefix.supporter");
 
         if(hasRole && !hasSupporterPrefix) {
-            if(Permissions.check(player, "nexia.rank")) {
-                ServerTime.factoryServer.runCommand("/staffprefix add " + player.getScoreboardName() + " supporter", 4, false);
+            if(player.hasPermission("nexia.rank")) {
+                ServerTime.metisServer.runCommand("/staffprefix add " + player.getRawName() + " supporter", 4, false);
                 return;
             }
-            ServerTime.factoryServer.runCommand("/rank " + player.getScoreboardName() + " supporter", 4, false);
+            ServerTime.metisServer.runCommand("/rank " + player.getRawName() + " supporter", 4, false);
         } else if(!hasRole && hasSupporterPrefix) {
-            if(Permissions.check(player, "nexia.rank")) {
-                ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getScoreboardName() + " supporter", 4, false);
-                ServerTime.factoryServer.runCommand("/staffprefix set " + player.getScoreboardName() + " default", 4, false);
+            if(player.hasPermission("nexia.rank")) {
+                ServerTime.metisServer.runCommand("/staffprefix remove " + player.getRawName() + " supporter", 4, false);
+                ServerTime.metisServer.runCommand("/staffprefix set " + player.getRawName() + " default", 4, false);
                 return;
             }
-            ServerTime.factoryServer.runCommand("/rank " + player.getScoreboardName() + " default", 4, false);
+            ServerTime.metisServer.runCommand("/rank " + player.getRawName() + " default", 4, false);
         }
     }
 
-    private static void processJoin(Player player, ServerPlayer minecraftPlayer) {
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(minecraftPlayer));
-        if(PlayerDataManager.get(nexiaPlayer).clientType.equals(com.nexia.core.utilities.player.PlayerData.ClientType.VIAFABRICPLUS)) return;
+    private static void processJoin(NexiaPlayer player) {
+        if(PlayerDataManager.get(player).clientType.equals(com.nexia.core.utilities.player.PlayerData.ClientType.VIAFABRICPLUS)) return;
 
+        com.nexia.ffa.classic.utilities.player.PlayerDataManager.addPlayerData(player);
+        com.nexia.ffa.kits.utilities.player.PlayerDataManager.addPlayerData(player);
+        com.nexia.ffa.uhc.utilities.player.PlayerDataManager.addPlayerData(player);
+        com.nexia.ffa.sky.utilities.player.PlayerDataManager.addPlayerData(player);
 
-        com.nexia.ffa.classic.utilities.player.PlayerDataManager.addPlayerData(nexiaPlayer);
-        com.nexia.ffa.kits.utilities.player.PlayerDataManager.addPlayerData(nexiaPlayer);
-        com.nexia.ffa.uhc.utilities.player.PlayerDataManager.addPlayerData(nexiaPlayer);
-        com.nexia.ffa.sky.utilities.player.PlayerDataManager.addPlayerData(nexiaPlayer);
+        com.nexia.discord.utilities.player.PlayerDataManager.addPlayerData(player.getUUID());
+        com.nexia.minigames.games.duels.util.player.PlayerDataManager.addPlayerData(player);
+        com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.addPlayerData(player);
+        com.nexia.minigames.games.oitc.util.player.PlayerDataManager.addPlayerData(player);
+        com.nexia.minigames.games.football.util.player.PlayerDataManager.addPlayerData(player);
+        com.nexia.minigames.games.skywars.util.player.PlayerDataManager.addPlayerData(player);
 
-        com.nexia.discord.utilities.player.PlayerDataManager.addPlayerData(nexiaPlayer.player().uuid);
-        com.nexia.minigames.games.duels.util.player.PlayerDataManager.addPlayerData(nexiaPlayer);
-        com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.addPlayerData(nexiaPlayer);
-        com.nexia.minigames.games.oitc.util.player.PlayerDataManager.addPlayerData(nexiaPlayer);
-        com.nexia.minigames.games.football.util.player.PlayerDataManager.addPlayerData(nexiaPlayer);
-        com.nexia.minigames.games.skywars.util.player.PlayerDataManager.addPlayerData(nexiaPlayer);
+        LobbyUtil.returnToLobby(player, true);
 
-        LobbyUtil.returnToLobby(nexiaPlayer, true);
-
-        checkBooster(minecraftPlayer);
+        checkBooster(player);
         sendJoinMessage(player);
     }
 }

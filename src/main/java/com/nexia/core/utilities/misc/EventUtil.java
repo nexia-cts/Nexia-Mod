@@ -25,7 +25,7 @@ public class EventUtil {
         //return !FfaUtil.isFfaPlayer(player) || !LobbyUtil.isLobbyWorld(player.level) || !OitcGame.isOITCPlayer(player) || !FootballGame.isFootballPlayer(player);
 
         if(FfaUtil.isFfaPlayer(player)) return false;
-        if(LobbyUtil.isLobbyWorld(player.player().get().level)) return false;
+        if(LobbyUtil.isLobbyWorld(player.unwrap().level)) return false;
         if(OitcGame.isOITCPlayer(player)) return false;
         if(FootballGame.isFootballPlayer(player)) return false;
 
@@ -34,10 +34,10 @@ public class EventUtil {
         return true;
     }
 
-    public static boolean dropItem(NexiaPlayer player, com.combatreforged.factory.api.world.item.ItemStack itemStack) {
+    public static boolean dropItem(NexiaPlayer player, com.combatreforged.metis.api.world.item.ItemStack itemStack) {
 
         if(FfaUtil.isFfaPlayer(player)) return false;
-        if(LobbyUtil.isLobbyWorld(player.player().get().level)) return false;
+        if(LobbyUtil.isLobbyWorld(player.unwrap().level)) return false;
         if(OitcGame.isOITCPlayer(player)) return false;
         if(FootballGame.isFootballPlayer(player)) return false;
 

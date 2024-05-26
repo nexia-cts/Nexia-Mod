@@ -137,8 +137,8 @@ public class BwTeam {
             team.players.add(player);
             availableTeams.remove(team);
 
-            player.getFactoryPlayer().addTag(LobbyUtil.NO_RANK_DISPLAY_TAG);
-            scoreboard.addPlayerToTeam(player.player().name, team.scoreboardTeam);
+            player.addTag(LobbyUtil.NO_RANK_DISPLAY_TAG);
+            scoreboard.addPlayerToTeam(player.getRawName(), team.scoreboardTeam);
 
 
             queueList.remove(player);
@@ -159,7 +159,7 @@ public class BwTeam {
     public static boolean fixTeamPlayer(NexiaPlayer player) {
         for (BwTeam team : allTeams.values()) {
             for (int i = 0; i < team.players.size(); i++) {
-                if (team.players.get(i).player().uuid.equals(player.player().uuid)) {
+                if (team.players.get(i).getUUID().equals(player.getUUID())) {
                     team.players.set(i, player);
                     return true;
                 }
@@ -237,7 +237,7 @@ public class BwTeam {
 
     public static void reloadPlayerTeamColors() {
         for (BwTeam team : teamsInOrder) {
-            ServerTime.factoryServer.runCommand(String.format("team modify %s color %s", team.scoreboardTeam.getName(), team.textColorName), 4, false);
+            ServerTime.metisServer.runCommand(String.format("team modify %s color %s", team.scoreboardTeam.getName(), team.textColorName), 4, false);
         }
     }
 
@@ -247,7 +247,7 @@ public class BwTeam {
         ArrayList<EntityPos> positions = new ArrayList<>();
         for (NexiaPlayer player : winners) {
             Random random = BwAreas.bedWarsWorld.getRandom();
-            positions.add(new EntityPos(player.player().get()).add(random.nextInt(9) - 4, 2, random.nextInt(9) - 4));
+            positions.add(new EntityPos(player.unwrap()).add(random.nextInt(9) - 4, 2, random.nextInt(9) - 4));
         }
         positions.add(BwAreas.bedWarsCenter.c().add(0.5, 2, 0.5));
 
@@ -271,7 +271,7 @@ public class BwTeam {
         for(NexiaPlayer viewer : BwPlayers.getViewers()) {
             viewer.sendMessage(Component.text(String.format("%s%s bed", textColor, displayName))
                     .append(Component.text(" has been destroyed by").color(ChatFormat.brandColor2))
-                    .append(Component.text(breakerColor + breaker.player().name))
+                    .append(Component.text(breakerColor + breaker.getRawName()))
             );
         }
 
@@ -286,7 +286,7 @@ public class BwTeam {
             if (players.contains(player)) {
                 volume = 0.04f;
             } else {
-                float distance = (float) new EntityPos(player.player().get()).distance(new EntityPos(blockPos));
+                float distance = (float) new EntityPos(player.unwrap()).distance(new EntityPos(blockPos));
                 distance = Math.min(distance, 20f);
                 volume = 0.03f - (distance * 0.001f);
             }

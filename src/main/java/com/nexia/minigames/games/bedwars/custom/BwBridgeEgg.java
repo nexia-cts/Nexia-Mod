@@ -23,7 +23,7 @@ public class BwBridgeEgg extends ThrownEgg {
     public int age;
 
     public BwBridgeEgg(Level level, NexiaPlayer player, Block trailBlock) {
-        super(level, player.player().get());
+        super(level, player.unwrap());
 
         this.owner = player;
         this.trailBlock = trailBlock;

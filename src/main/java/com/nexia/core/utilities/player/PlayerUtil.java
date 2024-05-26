@@ -1,14 +1,9 @@
 package com.nexia.core.utilities.player;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
 import com.google.gson.JsonParser;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.time.ServerTime;
-import net.minecraft.Util;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesPacket;
 import net.minecraft.server.bossevents.CustomBossEvent;
@@ -33,16 +28,6 @@ import java.util.UUID;
 
 public class PlayerUtil {
 
-    public static void broadcast(List<ServerPlayer> players, String string) {
-        broadcast(players, new TextComponent(string));
-    }
-
-    public static void broadcast(List<ServerPlayer> players, Component component) {
-        for (ServerPlayer player : players) {
-            player.sendMessage(component, Util.NIL_UUID);
-        }
-    }
-
     public static String getTextureID(@NotNull UUID uuid){
         String response;
 
@@ -59,15 +44,6 @@ public class PlayerUtil {
         return null;
     }
 
-
-    public static void safeSendMessage(CommandSourceStack source, Component safeMessage, net.kyori.adventure.text.Component fancyMessage, boolean bl) {
-        try {
-            ServerPlayer player = source.getPlayerOrException();
-            PlayerUtil.getFactoryPlayer(player).sendMessage(fancyMessage);
-        } catch(CommandSyntaxException ignored) {
-            source.sendSuccess(safeMessage, bl);
-        }
-    }
 
 
     public static ItemStack getPlayerHead(@NotNull UUID playerUUID) {
@@ -125,7 +101,7 @@ public class PlayerUtil {
 
     public static boolean sendBossbar(CustomBossEvent customBossEvent, @NotNull Collection<NexiaPlayer> collection) {
         Collection<ServerPlayer> playerCollection = new ArrayList<>();
-        collection.forEach(player -> playerCollection.add(player.player().get()));
+        collection.forEach(player -> playerCollection.add(player.unwrap()));
         return minecraftSendBossbar(customBossEvent, playerCollection);
     }
 
@@ -140,21 +116,13 @@ public class PlayerUtil {
     }
 
     public static boolean sendBossbar(CustomBossEvent customBossEvent, NexiaPlayer player, boolean remove) {
-        return sendBossbar(customBossEvent, player, remove);
+        return sendBossbar(customBossEvent, player.unwrap(), remove);
     }
 
     public static void broadcastSound(List<NexiaPlayer> players, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch) {
         for (NexiaPlayer player : players) {
             player.sendSound(soundEvent, soundSource, volume, pitch);
         }
-    }
-
-    public static Player getFactoryPlayer(@NotNull ServerPlayer minecraftPlayer) {
-       return ServerTime.factoryServer.getPlayer(minecraftPlayer.getUUID());
-    }
-
-    public static ServerPlayer getMinecraftPlayer(@NotNull Player player){
-        return getMinecraftPlayer(player.getUUID());
     }
 
     public static ServerPlayer getMinecraftPlayer(@NotNull UUID uuid){
@@ -169,16 +137,10 @@ public class PlayerUtil {
                 ClientboundSetTitlesPacket.Type.SUBTITLE, new TextComponent(sub)));
     }
 
-    public static ServerPlayer getPlayerAttacker(@Nullable ServerPlayer player, Entity attackerEntity) {
+    public static ServerPlayer getPlayerAttacker(@NotNull ServerPlayer player, Entity attackerEntity) {
 
-        if(player != null) {
-            if(player.getKillCredit() instanceof ServerPlayer) {
-                return (ServerPlayer) player.getKillCredit();
-            }
-
-            if(player.getCombatTracker().getKiller() instanceof ServerPlayer) {
-                return (ServerPlayer) player.getCombatTracker().getKiller();
-            }
+        if (player.getKillCredit() instanceof ServerPlayer) {
+            return (ServerPlayer) player.getKillCredit();
         }
 
         return getPlayerAttacker(attackerEntity);
@@ -188,10 +150,6 @@ public class PlayerUtil {
 
         if(player.getKillCredit() instanceof ServerPlayer) {
             return (ServerPlayer) player.getKillCredit();
-        }
-
-        if(player.getCombatTracker().getKiller() instanceof ServerPlayer) {
-            return (ServerPlayer) player.getCombatTracker().getKiller();
         }
 
         if(player.getLastDamageSource() != null && player.getLastDamageSource().getEntity() != null) getPlayerAttacker(player.getLastDamageSource().getEntity());

@@ -8,7 +8,6 @@ import com.nexia.core.gui.duels.CustomDuelGUI;
 import com.nexia.core.gui.duels.DuelGUI;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
-import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
@@ -38,7 +37,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -67,7 +65,7 @@ public abstract class ServerPlayerMixin extends Player {
     private void init(MinecraftServer minecraftServer, ServerLevel serverLevel, GameProfile gameProfile, ServerPlayerGameMode serverPlayerGameMode, CallbackInfo ci) {
         ServerPlayer player = (ServerPlayer)(Object)this;
 
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
         if(this.firstJoin) {
             BlfScheduler.delay(40, new BlfRunnable() {
                 @Override
@@ -88,7 +86,7 @@ public abstract class ServerPlayerMixin extends Player {
     @Inject(method = "attack", at = @At("HEAD"), cancellable = true)
     public void onAttack(Entity entity, CallbackInfo ci) {
         ServerPlayer attacker = (ServerPlayer) (Object) this;
-        NexiaPlayer nexiaAttacker = new NexiaPlayer(new AccuratePlayer(attacker));
+        NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
 
         if(level == LobbyUtil.lobbyWorld && entity instanceof ServerPlayer player && player != attacker) {
             String name = this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase();
@@ -101,7 +99,7 @@ public abstract class ServerPlayerMixin extends Player {
                 return;
             }
             if(name.contains("team axe")) {
-                PlayerUtil.getFactoryPlayer(attacker).runCommand("/party invite " + player.getScoreboardName());
+                nexiaAttacker.runCommand("/party invite " + player.getScoreboardName());
                 return;
             }
             return;
@@ -130,7 +128,7 @@ public abstract class ServerPlayerMixin extends Player {
     @Inject(method = "die", at = @At("HEAD"))
     private void die(DamageSource damageSource, CallbackInfo ci) {
         ServerPlayer player = (ServerPlayer)(Object)this;
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
         PlayerGameMode gameMode = PlayerDataManager.get(nexiaPlayer).gameMode;
         PlayerData duelsData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer);
 
@@ -158,7 +156,7 @@ public abstract class ServerPlayerMixin extends Player {
     @Redirect(method = "doCloseContainer", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/AbstractContainerMenu;removed(Lnet/minecraft/world/entity/player/Player;)V"))
     private void removed(AbstractContainerMenu instance, Player player) {
 
-        if (FfaUtil.isFfaPlayer(new NexiaPlayer(new AccuratePlayer((ServerPlayer) player)))) {
+        if (FfaUtil.isFfaPlayer(new NexiaPlayer((ServerPlayer) player))) {
             player.inventory.add(inventory.getCarried());
             player.inventory.setCarried(ItemStack.EMPTY);
             return;
@@ -169,6 +167,6 @@ public abstract class ServerPlayerMixin extends Player {
     @Inject(method = "tick", at = @At("HEAD"))
     private void detect(CallbackInfo ci){
         if(!DetectCommand.enabled) return;
-        DetectCommand.detect((ServerPlayer) (Object) this);
+        DetectCommand.detect(new NexiaPlayer((ServerPlayer) (Object) this));
     }
 }

@@ -13,7 +13,6 @@ import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.level.Level;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -28,7 +27,7 @@ public class TridentItemMixin {
 
         if (livingEntity instanceof ServerPlayer player) {
 
-            NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+            NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
             if (BwUtil.isBedWarsPlayer(nexiaPlayer)) {
                 return BwPlayerEvents.throwTrident(nexiaPlayer, itemStack);
             }
@@ -41,7 +40,7 @@ public class TridentItemMixin {
     @Inject(method = "releaseUsing", at = @At(value = "HEAD"), cancellable = true)
     public void changeHoldTime(ItemStack itemStack, Level level, LivingEntity livingEntity, int i, CallbackInfo ci) {
         if(livingEntity instanceof ServerPlayer player){
-            NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+            NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
             if((FfaAreas.isFfaWorld(player.level) && FfaAreas.isInFfaSpawn(nexiaPlayer)) ||
                     (com.nexia.ffa.kits.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(nexiaPlayer)) ||

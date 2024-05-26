@@ -36,7 +36,7 @@ public class FfaAreas {
     }
 
     public static boolean isInFfaSpawn(NexiaPlayer player) {
-        return PositionUtil.isBetween(spawnCorner1, spawnCorner2, player.player().get().blockPosition());
+        return PositionUtil.isBetween(spawnCorner1, spawnCorner2, player.unwrap().blockPosition());
     }
 
     public static void setFfaWorld(MinecraftServer server) {
@@ -71,7 +71,7 @@ public class FfaAreas {
             return false;
         }
 
-        return protectionMap.canBuiltAt(ffaCorner1, blockPos, player.player().get(), true);
+        return protectionMap.canBuiltAt(ffaCorner1, blockPos, player.unwrap(), true);
     }
 
     private static final String protMapPath = FfaSkyUtil.ffaSkyDir + "/protectionMap.json";

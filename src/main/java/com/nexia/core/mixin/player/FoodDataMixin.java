@@ -13,7 +13,6 @@ import com.nexia.minigames.games.skywars.SkywarsGame;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -35,7 +34,7 @@ public abstract class FoodDataMixin {
     @ModifyArg(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;heal(F)V"))
     private float heal(float par1) {
         if (!(player instanceof ServerPlayer serverPlayer)) return 1f;
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(serverPlayer));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
 
         if (BwAreas.isBedWarsWorld(serverPlayer.level) || FfaSkyUtil.isFfaPlayer(nexiaPlayer)) {
             return 0.5f;
@@ -51,7 +50,7 @@ public abstract class FoodDataMixin {
     @Inject(method = "tick", at = @At("TAIL"))
     private void modifyHunger(Player player, CallbackInfo ci) {
         if (!(player instanceof ServerPlayer serverPlayer)) return;
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(serverPlayer));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
 
         FoodData data = (FoodData)(Object)this;
 

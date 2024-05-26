@@ -1,7 +1,8 @@
 package com.nexia.ffa.uhc.utilities;
 
-import com.combatreforged.factory.api.util.Identifier;
-import com.combatreforged.factory.api.world.entity.Entity;
+import com.combatreforged.metis.api.util.Identifier;
+import com.combatreforged.metis.api.world.entity.Entity;
+import com.combatreforged.metis.api.world.entity.player.Player;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
@@ -49,7 +50,7 @@ public class FfaAreas {
 
         if(announce){
             for(Entity entity : WorldUtil.getWorld(ffaWorld).getEntities()) {
-                if(entity instanceof com.combatreforged.factory.api.world.entity.player.Player player && player.hasTag("ffa_uhc")) player.sendMessage(Component.text("[!] Map has been reloaded!").color(ChatFormat.lineTitleColor));
+                if(entity instanceof Player player && player.hasTag("ffa_uhc")) player.sendMessage(Component.text("[!] Map has been reloaded!").color(ChatFormat.lineTitleColor));
             }
         }
     }
@@ -59,7 +60,7 @@ public class FfaAreas {
     }
 
     public static boolean isInFfaSpawn(NexiaPlayer player) {
-        return PositionUtil.isBetween(spawnCorner1, spawnCorner2, player.player().get().blockPosition());
+        return PositionUtil.isBetween(spawnCorner1, spawnCorner2, player.unwrap().blockPosition());
     }
 
     public static void setFfaWorld(MinecraftServer server) {

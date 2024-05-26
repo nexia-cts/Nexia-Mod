@@ -11,7 +11,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -36,7 +35,7 @@ public abstract class ChestBlockEntityMixin extends BlockEntity {
 
     @Inject(method = "startOpen", at = @At("HEAD"))
     public void onOpen(Player player, CallbackInfo ci) {
-        if (KitRoom.isInKitRoom(new NexiaPlayer(new AccuratePlayer((ServerPlayer) player)))) {
+        if (KitRoom.isInKitRoom(new NexiaPlayer((ServerPlayer) player))) {
             nbtList.put(player.getUUID(), new CompoundTag());
             this.save(nbtList.get(player.getUUID()));
         }
@@ -44,7 +43,7 @@ public abstract class ChestBlockEntityMixin extends BlockEntity {
 
     @Inject(method = "stopOpen", at = @At("HEAD"))
     public void onClose(Player player, CallbackInfo ci) {
-        if (KitRoom.isInKitRoom(new NexiaPlayer(new AccuratePlayer((ServerPlayer) player)))) {
+        if (KitRoom.isInKitRoom(new NexiaPlayer((ServerPlayer) player))) {
             BlockState blockState = this.getBlockState();
             if(blockState.getBlock() instanceof ChestBlock) {
                 this.load(blockState, nbtList.get(player.getUUID()));

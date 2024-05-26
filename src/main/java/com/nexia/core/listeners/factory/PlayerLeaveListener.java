@@ -1,7 +1,6 @@
 package com.nexia.core.listeners.factory;
 
-import com.combatreforged.factory.api.event.player.PlayerDisconnectEvent;
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.metis.api.event.player.PlayerDisconnectEvent;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
@@ -14,16 +13,13 @@ import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import net.minecraft.server.level.ServerPlayer;
-import net.notcoded.codelib.players.AccuratePlayer;
 
 public class PlayerLeaveListener {
     public static void registerListener() {
         PlayerDisconnectEvent.BACKEND.register(playerDisconnectEvent -> {
 
-            Player player = playerDisconnectEvent.getPlayer();
-            ServerPlayer minecraftPlayer = PlayerUtil.getMinecraftPlayer(player);
-
-            processDisconnect(player, minecraftPlayer);
+            NexiaPlayer player = new NexiaPlayer(playerDisconnectEvent.getPlayer());
+            processDisconnect(player);
 
             /*
             if(Main.config.events.statusMessages){
@@ -41,34 +37,31 @@ public class PlayerLeaveListener {
 
 
 
-    private static void processDisconnect(Player player, ServerPlayer minecraftPlayer){
-
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(minecraftPlayer));
-
-        if (BwUtil.isInBedWars(nexiaPlayer)) BwPlayerEvents.leaveInBedWars(nexiaPlayer);
-        else if (FfaUtil.isFfaPlayer(nexiaPlayer)) {
-            FfaUtil.leaveOrDie(nexiaPlayer, minecraftPlayer.getLastDamageSource(), true);
+    private static void processDisconnect(NexiaPlayer player){
+        if (BwUtil.isInBedWars(player)) BwPlayerEvents.leaveInBedWars(player);
+        else if (FfaUtil.isFfaPlayer(player)) {
+            FfaUtil.leaveOrDie(player, player.unwrap().getLastDamageSource(), true);
         }
-        else if (PlayerDataManager.get(nexiaPlayer).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(nexiaPlayer, true);
-        else if (PlayerDataManager.get(nexiaPlayer).gameMode == PlayerGameMode.SKYWARS) SkywarsGame.leave(nexiaPlayer);
-        else if (PlayerDataManager.get(nexiaPlayer).gameMode == PlayerGameMode.OITC) OitcGame.leave(nexiaPlayer);
-        else if (PlayerDataManager.get(nexiaPlayer).gameMode == PlayerGameMode.FOOTBALL) FootballGame.leave(nexiaPlayer);
+        else if (PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(player, true);
+        else if (PlayerDataManager.get(player).gameMode == PlayerGameMode.SKYWARS) SkywarsGame.leave(player);
+        else if (PlayerDataManager.get(player).gameMode == PlayerGameMode.OITC) OitcGame.leave(player);
+        else if (PlayerDataManager.get(player).gameMode == PlayerGameMode.FOOTBALL) FootballGame.leave(player);
 
-        com.nexia.ffa.classic.utilities.player.PlayerDataManager.removePlayerData(nexiaPlayer);
-        com.nexia.ffa.kits.utilities.player.PlayerDataManager.removePlayerData(nexiaPlayer);
-        com.nexia.ffa.uhc.utilities.player.PlayerDataManager.removePlayerData(nexiaPlayer);
-        com.nexia.ffa.sky.utilities.player.PlayerDataManager.removePlayerData(nexiaPlayer);
+        com.nexia.ffa.classic.utilities.player.PlayerDataManager.removePlayerData(player);
+        com.nexia.ffa.kits.utilities.player.PlayerDataManager.removePlayerData(player);
+        com.nexia.ffa.uhc.utilities.player.PlayerDataManager.removePlayerData(player);
+        com.nexia.ffa.sky.utilities.player.PlayerDataManager.removePlayerData(player);
 
-        com.nexia.discord.utilities.player.PlayerDataManager.removePlayerData(minecraftPlayer.getUUID());
-        com.nexia.minigames.games.duels.util.player.PlayerDataManager.removePlayerData(nexiaPlayer);
-        com.nexia.minigames.games.oitc.util.player.PlayerDataManager.removePlayerData(nexiaPlayer);
-        com.nexia.minigames.games.football.util.player.PlayerDataManager.removePlayerData(nexiaPlayer);
-        com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.removePlayerData(nexiaPlayer);
-        com.nexia.minigames.games.skywars.util.player.PlayerDataManager.removePlayerData(nexiaPlayer);
+        com.nexia.discord.utilities.player.PlayerDataManager.removePlayerData(player.getUUID());
+        com.nexia.minigames.games.duels.util.player.PlayerDataManager.removePlayerData(player);
+        com.nexia.minigames.games.oitc.util.player.PlayerDataManager.removePlayerData(player);
+        com.nexia.minigames.games.football.util.player.PlayerDataManager.removePlayerData(player);
+        com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.removePlayerData(player);
+        com.nexia.minigames.games.skywars.util.player.PlayerDataManager.removePlayerData(player);
 
 
         //LobbyUtil.leaveAllGames(minecraftPlayer, true);
 
-        PlayerDataManager.removePlayerData(nexiaPlayer);
+        PlayerDataManager.removePlayerData(player);
     }
 }

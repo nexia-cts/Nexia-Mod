@@ -12,7 +12,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ExperienceBottleItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,7 +22,7 @@ public class ExperienceBottleItemMixin {
     @Inject(method = "use", at = @At(value = "HEAD"), cancellable = true)
     public void preventPlayers(Level level, Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
 
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer((ServerPlayer) player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer((ServerPlayer) player);
 
         if((com.nexia.core.utilities.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(PlayerGameMode.LOBBY) && com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(DuelGameMode.LOBBY) && !KitRoom.isInKitRoom(nexiaPlayer))) {
             cir.setReturnValue(new InteractionResultHolder<>(InteractionResult.FAIL, player.getItemInHand(interactionHand)));

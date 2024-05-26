@@ -1,8 +1,8 @@
 package com.nexia.core.utilities.pos;
 
-import com.combatreforged.factory.api.world.World;
-import com.combatreforged.factory.api.world.entity.player.Player;
-import com.combatreforged.factory.api.world.util.Location;
+import com.combatreforged.metis.api.world.World;
+import com.combatreforged.metis.api.world.entity.player.Player;
+import com.combatreforged.metis.api.world.util.Location;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -31,6 +31,10 @@ public class EntityPos {
 
     public EntityPos(Entity entity) {
         this(entity.getX(), entity.getY(), entity.getZ(), entity.yRot, entity.xRot);
+    }
+
+    public EntityPos(com.combatreforged.metis.api.world.entity.Entity entity) {
+        this(entity.getLocation().getX(), entity.getLocation().getY(), entity.getLocation().getZ(), entity.getLocation().getYaw(), entity.getLocation().getPitch());
     }
 
     public EntityPos(BlockPos blockPos) {

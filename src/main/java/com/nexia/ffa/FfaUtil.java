@@ -19,20 +19,17 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
-import java.util.Set;
 
 public class FfaUtil {
 
     public static final String FFA_TAG = "ffa";
 
     public static boolean isFfaPlayer(NexiaPlayer player) {
-        Set<String> tags = player.player().get().getTags();
-
-        return (tags.contains(FFA_TAG)
-                || tags.contains("ffa_classic")
-                || tags.contains("ffa_kits")
-                || tags.contains("ffa_sky")
-                || tags.contains("ffa_uhc"))
+        return (player.hasTag(FFA_TAG)
+                || player.hasTag("ffa_classic")
+                || player.hasTag("ffa_kits")
+                || player.hasTag("ffa_sky")
+                || player.hasTag("ffa_uhc"))
                 && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.FFA;
     }
 
@@ -58,7 +55,7 @@ public class FfaUtil {
     }
 
     public static void leaveOrDie(@NotNull NexiaPlayer player, @Nullable DamageSource source, boolean leaving) {
-        player.player().get().inventory.setCarried(ItemStack.EMPTY);
+        player.unwrap().inventory.setCarried(ItemStack.EMPTY);
         PlayerData data = PlayerDataManager.get(player);
 
         if(data.ffaGameMode == FfaGameMode.CLASSIC) {
@@ -72,7 +69,7 @@ public class FfaUtil {
         }
 
         if(data.ffaGameMode == FfaGameMode.SKY) {
-            FfaSkyUtil.wasInSpawn.remove(player.player().uuid);
+            FfaSkyUtil.wasInSpawn.remove(player.getUUID());
             FfaSkyUtil.leaveOrDie(player, source, leaving);
             return;
         }
@@ -94,7 +91,7 @@ public class FfaUtil {
 
     public static Component returnDeathMessage(@NotNull NexiaPlayer player, @Nullable DamageSource source) {
 
-        String name = player.player().name;
+        String name = player.getRawName();
 
         Component invalid = Component.text("Wow,").color(ChatFormat.chatColor2)
                 .append(Component.text(" ☠ " + name).color(ChatFormat.failColor))
@@ -136,7 +133,7 @@ public class FfaUtil {
         if (attacker.equals(player)) return null;
 
         String symbol = "◆";
-        Item handItem = attacker.player().get().getMainHandItem().getItem();
+        Item handItem = attacker.unwrap().getMainHandItem().getItem();
         String itemName = new ItemStack(handItem).getDisplayName().toString().toLowerCase();
 
         if (itemName.contains("sword")) {
@@ -152,11 +149,11 @@ public class FfaUtil {
         }
 
 
-        return Component.text("☠ " + player.player().name).color(ChatFormat.failColor)
+        return Component.text("☠ " + player.getRawName()).color(ChatFormat.failColor)
                 .append(Component.text(" was killed by ").color(ChatFormat.chatColor2))
-                .append(Component.text(symbol + " " + attacker.player().name).color(ChatFormat.greenColor))
+                .append(Component.text(symbol + " " + attacker.getRawName()).color(ChatFormat.greenColor))
                 .append(Component.text(" with ").color(ChatFormat.chatColor2))
-                .append(Component.text(FfaUtil.calculateHealth(attacker.getFactoryPlayer().getHealth()) + "❤").color(ChatFormat.failColor))
+                .append(Component.text(FfaUtil.calculateHealth(attacker.getHealth()) + "❤").color(ChatFormat.failColor))
                 .append(Component.text(" left.").color(ChatFormat.chatColor2));
     }
 }

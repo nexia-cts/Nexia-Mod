@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.football;
 
-import com.combatreforged.factory.api.world.types.Minecraft;
+import com.combatreforged.metis.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -33,9 +33,7 @@ import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.AABB;
-import net.notcoded.codelib.players.AccuratePlayer;
 import net.notcoded.codelib.util.TickUtil;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
@@ -84,14 +82,14 @@ public class FootballGame {
         if(data.gameMode.equals(FootballGameMode.PLAYING) && (winnerTeam == null || !winnerTeam.players.contains(player))) data.savedData.loss++;
         data.team = null;
 
-        player.getFactoryPlayer().removeTag("in_football_game");
+        player.removeTag("in_football_game");
 
-        player.reset(true, GameType.ADVENTURE);
+        player.reset(true, Minecraft.GameMode.ADVENTURE);
 
         if(!FootballGame.team1.refreshTeam()) FootballGame.endGame(FootballGame.team2);
         if(!FootballGame.team2.refreshTeam()) FootballGame.endGame(FootballGame.team1);
 
-        player.getFactoryPlayer().removeTag("football");
+        player.removeTag("football");
 
         data.gameMode = FootballGameMode.LOBBY;
     }
@@ -109,7 +107,7 @@ public class FootballGame {
 
                 if(FootballGame.endTime <= 0) {
                     for(NexiaPlayer player : FootballGame.getViewers()){
-                        player.getFactoryPlayer().runCommand("/hub", 0, false);
+                        player.runCommand("/hub", 0, false);
                     }
 
                     FootballGame.resetAll();
@@ -137,13 +135,13 @@ public class FootballGame {
         } else {
             if(FootballGame.queue.size() >= 2) {
                 for(NexiaPlayer player : FootballGame.queue){
-                    if(player.player().get() == null) return;
+                    if(player == null || player.unwrap() == null) return;
 
                     if(FootballGame.queueTime <= 5) {
                         Title title = getTitle(FootballGame.queueTime);
 
                         player.sendTitle(title);
-                        player.sendSound(new EntityPos(player.player().get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+                        player.sendSound(new EntityPos(player.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
                     }
 
                     player.sendActionBarMessage(
@@ -176,7 +174,7 @@ public class FootballGame {
         if(!team1.refreshTeam() || !team2.refreshTeam()) endGame(null);
 
         if(!FootballGame.isEnding) {
-            ServerPlayer closestPlayer = (ServerPlayer) FootballGame.world.getNearestPlayer(entity.getX(), entity.getY(), entity.getZ(), 20, e -> e instanceof ServerPlayer se && !se.isSpectator() && !se.isCreative() && team.players.contains(new NexiaPlayer(new AccuratePlayer(se))));
+            ServerPlayer closestPlayer = (ServerPlayer) FootballGame.world.getNearestPlayer(entity.getX(), entity.getY(), entity.getZ(), 20, e -> e instanceof ServerPlayer se && !se.isSpectator() && !se.isCreative() && team.players.contains(new NexiaPlayer(se)));
             if(closestPlayer != null) PlayerDataManager.get(closestPlayer.getUUID()).savedData.goals++;
             team.goals++;
             if(team.goals >= FootballGame.map.maxGoals) FootballGame.endGame(team);
@@ -198,11 +196,11 @@ public class FootballGame {
             }
 
             for(NexiaPlayer player : FootballGame.team1.players) {
-                FootballGame.team1.spawnPosition.teleportPlayer(FootballGame.world, player.player().get());
+                FootballGame.team1.spawnPosition.teleportPlayer(FootballGame.world, player.unwrap());
             }
 
             for(NexiaPlayer player : FootballGame.team2.players) {
-                FootballGame.team2.spawnPosition.teleportPlayer(FootballGame.world, player.player().get());
+                FootballGame.team2.spawnPosition.teleportPlayer(FootballGame.world, player.unwrap());
             }
         }
 
@@ -230,14 +228,14 @@ public class FootballGame {
         if(FootballGame.isStarted){
             FootballGame.spectator.add(player);
             PlayerDataManager.get(player).gameMode = FootballGameMode.SPECTATOR;
-            player.getFactoryPlayer().setGameMode(Minecraft.GameMode.SPECTATOR);
+            player.setGameMode(Minecraft.GameMode.SPECTATOR);
         } else {
             FootballGame.queue.add(player);
-            player.getFactoryPlayer().addTag(LobbyUtil.NO_DAMAGE_TAG);
+            player.addTag(LobbyUtil.NO_DAMAGE_TAG);
         }
 
-        player.player().get().teleportTo(world, 0, 101, 0, 0, 0);
-        player.player().get().setRespawnPosition(world.dimension(), new BlockPos(0, 100, 0), 0, true, false);
+        player.unwrap().teleportTo(world, 0, 101, 0, 0, 0);
+        player.unwrap().setRespawnPosition(world.dimension(), new BlockPos(0, 100, 0), 0, true, false);
     }
 
     public static void endGame(FootballTeam winnerTeam) {
@@ -250,7 +248,7 @@ public class FootballGame {
                     .append(Component.text("!").color(ChatFormat.normalColor)
                     );
             for(NexiaPlayer player : FootballGame.getViewers()){
-                if(player != null && player.player().get() != null) player.sendTitle(Title.title(msg, Component.text("")));
+                if(player != null && player.unwrap() != null) player.sendTitle(Title.title(msg, Component.text("")));
             }
 
             return;
@@ -392,21 +390,21 @@ public class FootballGame {
             for(NexiaPlayer player : FootballGame.players) {
                 //NexiaPlayer.inventory.setItem(0, normal);
                 //NexiaPlayer.inventory.setItem(1, kicking);
-                player.player().get().inventory.setItem(0, kicking);
+                player.unwrap().inventory.setItem(0, kicking);
 
                 PlayerData data = PlayerDataManager.get(player);
                 data.gameMode = FootballGameMode.PLAYING;
 
-                player.getFactoryPlayer().addTag("in_football_game");
-                player.getFactoryPlayer().addTag(LobbyUtil.NO_DAMAGE_TAG);
-                player.player().get().addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 99999, 255, false, false, false));
+                player.addTag("in_football_game");
+                player.addTag(LobbyUtil.NO_DAMAGE_TAG);
+                player.unwrap().addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 99999, 255, false, false, false));
 
                 data.team = FootballGame.assignPlayer(player);
                 while(data.team == null) {
                     data.team = FootballGame.assignPlayer(player);
                     // if you're still null then im going to beat the shit out of you
                 }
-                data.team.spawnPosition.teleportPlayer(FootballGame.world, player.player().get());
+                data.team.spawnPosition.teleportPlayer(FootballGame.world, player.unwrap());
 
                 ItemStack helmet = Items.LEATHER_HELMET.getDefaultInstance();
                 helmet.getOrCreateTag().putInt("Unbreakable", 1);
@@ -436,15 +434,15 @@ public class FootballGame {
                 leatherItem.setColor(leggings, colour);
                 leatherItem.setColor(boots, colour);
 
-                player.player().get().setItemSlot(EquipmentSlot.HEAD, helmet);
-                player.player().get().setItemSlot(EquipmentSlot.CHEST, chestplate);
-                player.player().get().setItemSlot(EquipmentSlot.LEGS, leggings);
-                player.player().get().setItemSlot(EquipmentSlot.FEET, boots);
+                player.unwrap().setItemSlot(EquipmentSlot.HEAD, helmet);
+                player.unwrap().setItemSlot(EquipmentSlot.CHEST, chestplate);
+                player.unwrap().setItemSlot(EquipmentSlot.LEGS, leggings);
+                player.unwrap().setItemSlot(EquipmentSlot.FEET, boots);
 
 
-                player.getFactoryPlayer().setGameMode(Minecraft.GameMode.SURVIVAL);
+                player.setGameMode(Minecraft.GameMode.SURVIVAL);
                 //player.setRespawnPosition(world.dimension(), pos, 0, true, false);
-                player.player().get().getCooldowns().addCooldown(Items.NETHERITE_SWORD, 200);
+                player.unwrap().getCooldowns().addCooldown(Items.NETHERITE_SWORD, 200);
             }
 
             FootballGame.spectator.clear();
@@ -453,7 +451,7 @@ public class FootballGame {
     }
 
     public static boolean isFootballPlayer(NexiaPlayer player){
-        return com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.FOOTBALL || player.getFactoryPlayer().hasTag("football") || player.getFactoryPlayer().hasTag("in_football_game");
+        return com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.FOOTBALL || player.hasTag("football") || player.hasTag("in_football_game");
     }
 
     public static void resetAll() {

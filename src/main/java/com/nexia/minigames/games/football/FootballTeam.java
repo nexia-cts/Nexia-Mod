@@ -22,7 +22,7 @@ public class FootballTeam {
 
     public boolean refreshTeam() {
         for(NexiaPlayer player : this.players) {
-            if(player.player().get() == null || !FootballGame.isFootballPlayer(player)) {
+            if(player.unwrap() == null || !FootballGame.isFootballPlayer(player)) {
                 this.removePlayer(player);
                 if(this.players.isEmpty()) return false;
             }

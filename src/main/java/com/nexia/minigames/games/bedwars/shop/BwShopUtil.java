@@ -13,7 +13,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.notcoded.codelib.players.AccuratePlayer;
 
 public class BwShopUtil {
 
@@ -144,7 +143,7 @@ public class BwShopUtil {
 
     protected static ItemStack setBlockColor(ServerPlayer player, ItemStack original) {
         try {
-            String color = BwTeam.getPlayerTeamColor(new NexiaPlayer(new AccuratePlayer(player)));
+            String color = BwTeam.getPlayerTeamColor(new NexiaPlayer(player));
             Item item = original.getItem();
 
             if (original.getItem() == Items.WHITE_WOOL) {

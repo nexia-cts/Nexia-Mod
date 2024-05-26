@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.bedwars.players;
 
-import com.combatreforged.factory.api.world.types.Minecraft;
+import com.combatreforged.metis.api.world.types.Minecraft;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
@@ -48,7 +48,6 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.notcoded.codelib.players.AccuratePlayer;
 
 public class BwPlayerEvents {
 
@@ -78,7 +77,7 @@ public class BwPlayerEvents {
         for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
             Entity entity = packet.getEntity(serverLevel);
             if (!(entity instanceof ServerPlayer target)) continue;
-            NexiaPlayer nexiaTarget = new NexiaPlayer(new AccuratePlayer(target));
+            NexiaPlayer nexiaTarget = new NexiaPlayer(target);
 
             if (!BwUtil.isBedWarsPlayer(nexiaTarget)) {
                 player.sendMessage(Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
@@ -89,12 +88,12 @@ public class BwPlayerEvents {
     }
 
     public static void afterHurt(NexiaPlayer player, DamageSource damageSource) {
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player.player().get());
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player.unwrap());
         if (attacker != null) {
             PlayerDataManager.get(player).combatTagPlayer = attacker;
-            PlayerDataManager.get(attacker.getUUID()).combatTagPlayer = player.player().get();
-            if (player.player().get().hasEffect(MobEffects.INVISIBILITY)) {
-                player.player().get().removeEffect(MobEffects.INVISIBILITY);
+            PlayerDataManager.get(attacker.getUUID()).combatTagPlayer = player.unwrap();
+            if (player.hasEffect(Minecraft.Effect.INVISIBILITY)) {
+                player.unwrap().removeEffect(MobEffects.INVISIBILITY);
             }
         }
     }
@@ -117,9 +116,9 @@ public class BwPlayerEvents {
 
         BwTeam team = BwTeam.getPlayerTeam(player);
         if (team != null && BwTeam.bedExists(team)) {
-            player.getFactoryPlayer().setGameMode(Minecraft.GameMode.SPECTATOR);
+            player.setGameMode(Minecraft.GameMode.SPECTATOR);
             BwGame.respawningList.put(player, BwGame.respawnTime * 20);
-            player.player().get().setRespawnPosition(BwAreas.bedWarsWorld.dimension(),
+            player.unwrap().setRespawnPosition(BwAreas.bedWarsWorld.dimension(),
                     BwAreas.spectatorSpawn.toBlockPos(), BwAreas.spectatorSpawn.yaw, true, false);
         } else {
             BwPlayers.eliminatePlayer(player, true);
@@ -133,7 +132,7 @@ public class BwPlayerEvents {
             // Fix spectator
             for (int i = 0; i < BwGame.spectatorList.size(); i++) {
                 NexiaPlayer spectator = BwGame.spectatorList.get(i);
-                if (spectator.player().uuid.equals(player.player().uuid)) {
+                if (spectator.getUUID().equals(player.getUUID())) {
                     BwGame.spectatorList.set(i, player);
                     return;
                 }
@@ -172,7 +171,7 @@ public class BwPlayerEvents {
 
         BlockPos blockPos = context.getClickedPos();
 
-        if (!BwAreas.canBuildAt(new NexiaPlayer(new AccuratePlayer(player)), blockPos, false)) {
+        if (!BwAreas.canBuildAt(new NexiaPlayer(player), blockPos, false)) {
             return false;
         }
 
@@ -180,18 +179,18 @@ public class BwPlayerEvents {
     }
 
     public static boolean beforePlace(NexiaPlayer player, BlockPlaceContext blockPlaceContext) {
-        if (player.player().get().isCreative()) return true;
+        if (player.unwrap().isCreative()) return true;
 
         BlockPos blockPos = blockPlaceContext.getClickedPos();
 
         if (!BwAreas.canBuildAt(player, blockPos, true)) {
             return false;
         }
-        return !BwUtil.placeTnt(player.player().get(), blockPlaceContext);
+        return !BwUtil.placeTnt(player.unwrap(), blockPlaceContext);
     }
 
     public static boolean beforeBreakBlock(NexiaPlayer player, BlockPos blockPos) {
-        if (player.player().get().isCreative()) return true;
+        if (player.unwrap().isCreative()) return true;
 
         BwTeam team = BwTeam.getPlayerTeam(player);
         BlockState blockState = BwAreas.bedWarsWorld.getBlockState(blockPos);
@@ -220,7 +219,7 @@ public class BwPlayerEvents {
             if (effect.getEffect() == MobEffects.INVISIBILITY) {
 
                 if (!BwGame.invisiblePlayerArmor.containsKey(player)) {
-                    BwGame.invisiblePlayerArmor.put(player, player.player().get().inventory.armor.toArray(new ItemStack[0]));
+                    BwGame.invisiblePlayerArmor.put(player, player.unwrap().inventory.armor.toArray(new ItemStack[0]));
                 }
                 break;
             }
@@ -230,7 +229,7 @@ public class BwPlayerEvents {
     public static ThrownEgg throwEgg(NexiaPlayer player, ItemStack itemStack) {
         CompoundTag compoundTag = itemStack.getTag();
         if (compoundTag == null || !compoundTag.getBoolean(BwBridgeEgg.itemTagKey)) {
-            return new ThrownEgg(player.player().get().level, player.player().get());
+            return new ThrownEgg(player.unwrap().level, player.unwrap());
         }
 
         Block trail = Blocks.AIR;
@@ -240,16 +239,16 @@ public class BwPlayerEvents {
         }
         if (trail == Blocks.AIR) trail = Blocks.WHITE_WOOL;
 
-        return new BwBridgeEgg(player.player().get().level, player, trail);
+        return new BwBridgeEgg(player.unwrap().level, player, trail);
     }
 
     public static ThrownTrident throwTrident(NexiaPlayer player, ItemStack itemStack) {
         CompoundTag compoundTag = itemStack.getTag();
         if (compoundTag == null || !compoundTag.getBoolean(BwTrident.itemTagKey)) {
-            return new ThrownTrident(player.player().get().level, player.player().get(), itemStack);
+            return new ThrownTrident(player.unwrap().level, player.unwrap(), itemStack);
         }
 
-        return new BwTrident(player.player().get().level, player.player().get(), itemStack);
+        return new BwTrident(player.unwrap().level, player.unwrap(), itemStack);
     }
 
     public static boolean interact(Player player, ServerboundInteractPacket serverboundInteractPacket) {
@@ -280,7 +279,7 @@ public class BwPlayerEvents {
             return false;
         }
 
-        ItemStack itemStack = ItemStackUtil.getContainerClickItem(player.player().get(), packet);
+        ItemStack itemStack = ItemStackUtil.getContainerClickItem(player.unwrap(), packet);
 
         if ((itemStack != null) && (packet.getClickType() == ClickType.THROW || slot == -999)) {
             return BwUtil.canDropItem(itemStack);

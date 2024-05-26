@@ -1,11 +1,11 @@
 package com.nexia.core.utilities.chat;
 
+import com.combatreforged.metis.api.command.CommandSourceInfo;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
-import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.player.SavedPlayerData;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
@@ -14,9 +14,9 @@ import java.time.LocalDateTime;
 
 public class PlayerMutes {
 
-    public static void mute(CommandSourceStack sender, ServerPlayer muted, long duration, String reason) {
+    public static void mute(CommandSourceInfo sender, ServerPlayer muted, long duration, String reason) {
         if (Permissions.check(muted, "nexia.staff.mute", 1)) {
-            sender.sendSuccess(LegacyChatFormat.format("{f}You can't mute staff."), false);
+            sender.sendMessage(Component.text("You can't mute staff.", ChatFormat.failColor));
             return;
         }
 
@@ -24,18 +24,32 @@ public class PlayerMutes {
         LocalDateTime currentMuteTime = mutedData.getMuteEnd();
 
         if (LocalDateTime.now().isBefore(currentMuteTime)) {
-            sender.sendSuccess(LegacyChatFormat.format("{s}This player has already been muted for {f}{}{s}." +
-                    "\n{s}Reason: {f}{}", muteTimeToText(currentMuteTime), mutedData.getMuteReason()), false);
+            sender.sendMessage(Component.text("This player has already been muted for ", ChatFormat.systemColor)
+                    .append(Component.text(muteTimeToText(currentMuteTime), ChatFormat.failColor))
+                    .append(Component.text(".", ChatFormat.systemColor))
+            );
+            sender.sendMessage(Component.text("Reason: ", ChatFormat.systemColor)
+                    .append(Component.text(mutedData.getMuteReason(), ChatFormat.failColor))
+            );
             return;
         }
 
         mutedData.setMuteEnd(LocalDateTime.now().plusSeconds(duration));
         mutedData.setMuteReason(reason);
 
-        sender.sendSuccess(LegacyChatFormat.format("{s}Muted {b2}{} {s}for {b2}{}{s}." +
-                "\n{s}Reason: {b2}{}", muted.getScoreboardName(), muteTimeToText(mutedData.getMuteEnd()), reason), false);
 
-        PlayerUtil.getFactoryPlayer(muted).sendMessage(
+        sender.sendMessage(Component.text("Muted ", ChatFormat.systemColor)
+                .append(Component.text(muted.getScoreboardName(), ChatFormat.brandColor2))
+                .append(Component.text(" for ", ChatFormat.systemColor))
+                .append(Component.text(muteTimeToText(mutedData.getMuteEnd()), ChatFormat.brandColor2))
+                .append(Component.text(".", ChatFormat.systemColor))
+        );
+
+        sender.sendMessage(Component.text("Reason: ", ChatFormat.systemColor)
+                .append(Component.text(mutedData.getMuteReason(), ChatFormat.brandColor2))
+        );
+
+        new NexiaPlayer(muted).sendMessage(
                 ChatFormat.nexiaMessage
                                 .append(Component.text("You have been muted for ").decoration(ChatFormat.bold, false))
                                         .append(Component.text(muteTimeToText(mutedData.getMuteEnd())).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
@@ -45,34 +59,37 @@ public class PlayerMutes {
 
     }
 
-    public static void unMute(CommandSourceStack sender, ServerPlayer unMuted) {
+    public static void unMute(CommandSourceInfo sender, ServerPlayer unMuted) {
         SavedPlayerData unMutedData = PlayerDataManager.get(unMuted.getUUID()).savedData;
         LocalDateTime currentMuteTime = unMutedData.getMuteEnd();
 
         if (LocalDateTime.now().isAfter(currentMuteTime)) {
-            sender.sendSuccess(LegacyChatFormat.format("{s}This player is not muted."), false);
+            sender.sendMessage(Component.text("This player is not muted.", ChatFormat.systemColor));
             return;
         }
 
         unMutedData.setMuteEnd(LocalDateTime.MIN);
         unMutedData.setMuteReason(null);
 
-        sender.sendSuccess(LegacyChatFormat.format("{s}Unmuted {b2}{}{s}.", unMuted.getScoreboardName()), false);
+        sender.sendMessage(Component.text("Unmuted ", ChatFormat.systemColor)
+                .append(Component.text(unMuted.getScoreboardName(), ChatFormat.brandColor2))
+                .append(Component.text(".", ChatFormat.systemColor))
+        );
 
-        PlayerUtil.getFactoryPlayer(unMuted).sendMessage(
+        new NexiaPlayer(unMuted).sendMessage(
                 ChatFormat.nexiaMessage
                                 .append(Component.text("You have been unmuted.").decoration(ChatFormat.bold, false))
         );
     }
 
-    public static boolean muted(ServerPlayer player) {
-        SavedPlayerData savedData = PlayerDataManager.get(player.getUUID()).savedData;
+    public static boolean muted(NexiaPlayer player) {
+        SavedPlayerData savedData = PlayerDataManager.get(player).savedData;
         LocalDateTime muteTime = savedData.getMuteEnd();
         String reason = savedData.getMuteReason();
 
         if (LocalDateTime.now().isBefore(muteTime)) {
 
-            PlayerUtil.getFactoryPlayer(player).sendMessage(
+            player.sendMessage(
                     ChatFormat.nexiaMessage
                             .append(Component.text("You have been muted for ").decoration(ChatFormat.bold, false))
                             .append(Component.text(muteTimeToText(muteTime)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))

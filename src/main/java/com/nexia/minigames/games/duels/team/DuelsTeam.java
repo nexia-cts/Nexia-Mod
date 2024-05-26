@@ -44,7 +44,7 @@ public class DuelsTeam {
 
 
     public NexiaPlayer getLeader() {
-        if(this.leader == null || this.leader.player().get() == null) {
+        if(this.leader == null || this.leader.unwrap() == null) {
             if(this.getPeople().isEmpty()) this.disbandTeam(null, false);
             else this.disbandTeam(this.getPeople().get(RandomUtil.randomInt(this.getPeople().size())), false);
         }
@@ -52,7 +52,7 @@ public class DuelsTeam {
     }
 
     public boolean isLeader(NexiaPlayer player) {
-        if(player == null || player.player().get() == null) return false;
+        if(player == null || player.unwrap() == null) return false;
         return player.equals(this.getLeader());
     }
 
@@ -76,9 +76,9 @@ public class DuelsTeam {
         this.getPeople().remove(player);
         this.getPeople().add(executor);
 
-        if(message) executor.sendMessage(Component.text("You have promoted " + player.player().name + " to the leader.").color(ChatFormat.systemColor));
+        if(message) executor.sendMessage(Component.text("You have promoted " + player.getRawName() + " to the leader.").color(ChatFormat.systemColor));
         for(NexiaPlayer tPlayer : this.all) {
-            tPlayer.sendMessage(Component.text(player.player().name + " is now the party leader.").color(ChatFormat.systemColor));
+            tPlayer.sendMessage(Component.text(player.getRawName() + " is now the party leader.").color(ChatFormat.systemColor));
         }
 
         return true;
@@ -95,7 +95,7 @@ public class DuelsTeam {
 
 
     public void disbandTeam(NexiaPlayer executor, boolean message) {
-        boolean isNull = executor == null || executor.player().get() == null;
+        boolean isNull = executor == null || executor.unwrap() == null;
 
         if(!isNull && !this.isLeader(executor)) {
             executor.sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
@@ -139,10 +139,10 @@ public class DuelsTeam {
         this.all.remove(player);
         this.alive.remove(player);
 
-        if(message) player.sendMessage(Component.text("You have left " + this.getLeader().player().name + "'s Team.").color(ChatFormat.normalColor));
+        if(message) player.sendMessage(Component.text("You have left " + this.getLeader().getRawName() + "'s Team.").color(ChatFormat.normalColor));
 
         for(NexiaPlayer ap : this.all) {
-            ap.sendMessage(Component.text(player.player().name).color(ChatFormat.brandColor1).append(Component.text(" has left the team.").color(ChatFormat.systemColor)));
+            ap.sendMessage(Component.text(player.getRawName()).color(ChatFormat.brandColor1).append(Component.text(" has left the team.").color(ChatFormat.systemColor)));
         }
     }
 
@@ -176,7 +176,7 @@ public class DuelsTeam {
         }
 
         for(NexiaPlayer ap : this.all) {
-            ap.sendMessage(Component.text(player.player().name).color(ChatFormat.brandColor1).append(Component.text(" has been invited to the team.").color(ChatFormat.systemColor)));
+            ap.sendMessage(Component.text(player.getRawName()).color(ChatFormat.brandColor1).append(Component.text(" has been invited to the team.").color(ChatFormat.systemColor)));
         }
 
         this.invited.remove(player);
@@ -187,7 +187,7 @@ public class DuelsTeam {
                         .color(ChatFormat.greenColor)
                         .decorate(ChatFormat.bold)
                         .hoverEvent(HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor2)))
-                        .clickEvent(ClickEvent.runCommand("/party join " + invitor.player().name)))
+                        .clickEvent(ClickEvent.runCommand("/party join " + invitor.getRawName())))
                 .append(Component.text("]  ").color(NamedTextColor.DARK_GRAY)
                 );
 
@@ -197,12 +197,12 @@ public class DuelsTeam {
                         .decoration(ChatFormat.bold, true)
                         .hoverEvent(HoverEvent.showText(Component.text("Click me")
                                 .color(ChatFormat.brandColor2)))
-                        .clickEvent(ClickEvent.runCommand("/party decline " + invitor.player().name)))
+                        .clickEvent(ClickEvent.runCommand("/party decline " + invitor.getRawName())))
                 .append(Component.text("]").color(NamedTextColor.DARK_GRAY)
                 );
 
         player.sendMessage(
-                Component.text(invitor.player().name).color(ChatFormat.brandColor2)
+                Component.text(invitor.getRawName()).color(ChatFormat.brandColor2)
                         .append(Component.text(" has invited you to their team!").color(ChatFormat.normalColor))
         );
 
@@ -210,9 +210,9 @@ public class DuelsTeam {
     }
 
     public void listTeam(NexiaPlayer executor) {
-        executor.sendMessage(Component.text("People on " + this.getLeader().player().name + "'s Team").color(ChatFormat.normalColor));
+        executor.sendMessage(Component.text("People on " + this.getLeader().getRawName() + "'s Team").color(ChatFormat.normalColor));
         for(NexiaPlayer player : this.all) {
-            executor.sendMessage(Component.text("» ").color(ChatFormat.brandColor1).append(Component.text(player.player().name).color(ChatFormat.normalColor)));
+            executor.sendMessage(Component.text("» ").color(ChatFormat.brandColor1).append(Component.text(player.getRawName()).color(ChatFormat.normalColor)));
         }
     }
 
@@ -236,7 +236,7 @@ public class DuelsTeam {
 
 
         for(NexiaPlayer ap : this.all) {
-            ap.sendMessage(Component.text(player.player().name).color(ChatFormat.brandColor1).append(Component.text(" has been removed from the team.").color(ChatFormat.systemColor)));
+            ap.sendMessage(Component.text(player.getRawName()).color(ChatFormat.brandColor1).append(Component.text(" has been removed from the team.").color(ChatFormat.systemColor)));
         }
 
         data.duelOptions.duelsTeam = null;
@@ -244,7 +244,7 @@ public class DuelsTeam {
         this.alive.remove(player);
         this.all.remove(player);
 
-        player.sendMessage(Component.text("You have been kicked from " + executor.player().name + "'s Team.").color(ChatFormat.failColor));
+        player.sendMessage(Component.text("You have been kicked from " + executor.getRawName() + "'s Team.").color(ChatFormat.failColor));
     }
 
     public void joinTeam(NexiaPlayer player) {
@@ -265,9 +265,9 @@ public class DuelsTeam {
         this.getPeople().add(player);
 
         data.duelOptions.duelsTeam = this;
-        player.sendMessage(Component.text("You have joined " + this.getLeader().player().name + "'s team").color(ChatFormat.normalColor));
+        player.sendMessage(Component.text("You have joined " + this.getLeader().getRawName() + "'s team").color(ChatFormat.normalColor));
         for(NexiaPlayer ap : this.all) {
-            ap.sendMessage(Component.text(player.player().name).color(ChatFormat.brandColor1).append(Component.text(" has joined the team.")));
+            ap.sendMessage(Component.text(player.getRawName()).color(ChatFormat.brandColor1).append(Component.text(" has joined the team.")));
         }
     }
 
@@ -285,8 +285,8 @@ public class DuelsTeam {
         }
 
         this.invited.remove(player);
-        player.sendMessage(Component.text("You have declined " + this.getLeader().player().name + "'s invite.").color(ChatFormat.normalColor));
-        this.getLeader().sendMessage(Component.text(player.player().name + " has declined your invite.").color(ChatFormat.failColor));
+        player.sendMessage(Component.text("You have declined " + this.getLeader().getRawName() + "'s invite.").color(ChatFormat.normalColor));
+        this.getLeader().sendMessage(Component.text(player.getRawName() + " has declined your invite.").color(ChatFormat.failColor));
     }
 
     public static DuelsTeam createTeam(NexiaPlayer player, boolean message) {

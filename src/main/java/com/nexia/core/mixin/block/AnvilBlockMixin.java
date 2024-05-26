@@ -15,7 +15,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AnvilBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,7 +26,7 @@ public class AnvilBlockMixin {
     @Inject(method = "use", cancellable = true, at = @At("HEAD"))
     private void use(BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult, CallbackInfoReturnable<InteractionResult> cir) {
         if (!(player instanceof ServerPlayer serverPlayer)) return;
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(serverPlayer));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
         PlayerData playerData = PlayerDataManager.get(nexiaPlayer);
 
         if (BwUtil.isInBedWars(nexiaPlayer) || (playerData.gameOptions != null && (playerData.gameOptions.duelsGame != null || playerData.gameOptions.teamDuelsGame != null || playerData.gameOptions.customDuelsGame != null || playerData.gameOptions.customTeamDuelsGame != null)) || LobbyUtil.isLobbyWorld(serverPlayer.getLevel()) || (FfaUtil.isFfaPlayer(nexiaPlayer) && !serverPlayer.isCreative())) {

@@ -1,9 +1,7 @@
 package com.nexia.core.gui.ffa;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;
-import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.kits.FfaKit;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
@@ -15,7 +13,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.notcoded.codelib.players.AccuratePlayer;
 
 public class KitGUI extends SimpleGui {
     static final TextComponent title = new TextComponent("Kits Menu");
@@ -59,9 +56,9 @@ public class KitGUI extends SimpleGui {
     }
 
     public static void giveKit(ServerPlayer minecraftPlayer, String name) {
-        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+        NexiaPlayer player = new NexiaPlayer(minecraftPlayer);
         FfaKit kit = FfaKit.identifyKit(name);
-        if(kit != null) kit.giveKit(new NexiaPlayer(new AccuratePlayer(minecraftPlayer)), false);
+        if(kit != null) kit.giveKit(new NexiaPlayer(minecraftPlayer), false);
         else player.sendMessage(Component.text("Invalid kit!").color(ChatFormat.failColor));
     }
 

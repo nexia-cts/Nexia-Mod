@@ -13,7 +13,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.notcoded.codelib.players.AccuratePlayer;
 
 public class QueueGUI extends SimpleGui {
     static final TextComponent title = new TextComponent("Queue Menu");
@@ -61,7 +60,7 @@ public class QueueGUI extends SimpleGui {
             assert gameMode != null;
             ItemDisplayUtil.addLore(item, "§7There are §7§l" + gameMode.queue.size() + " §7people queued up.", 0);
 
-            if(GamemodeHandler.isInQueue(new NexiaPlayer(new AccuratePlayer(player)), gameMode)) {
+            if(GamemodeHandler.isInQueue(new NexiaPlayer(this.player), gameMode)) {
                 ItemDisplayUtil.removeLore(item, 1);
                 ItemDisplayUtil.addLore(item, "§7Click to leave the queue.", 1);
             } else {
@@ -81,7 +80,7 @@ public class QueueGUI extends SimpleGui {
             ItemStack itemStack = element.getItemStack();
             Component name = itemStack.getHoverName();
 
-            NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(this.player));
+            NexiaPlayer nexiaPlayer = new NexiaPlayer(this.player);
 
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
                 if(name.getString().substring(4).equalsIgnoreCase("Leave ALL Queues")) {

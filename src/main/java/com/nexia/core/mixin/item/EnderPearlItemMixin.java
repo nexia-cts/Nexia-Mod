@@ -14,7 +14,6 @@ import net.minecraft.world.item.EnderpearlItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -36,7 +35,7 @@ public class EnderPearlItemMixin extends Item {
     private void setPlayer(Level level, Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         if (player instanceof ServerPlayer serverPlayer) {
             thrower = serverPlayer;
-            NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(serverPlayer));
+            NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
 
             if ((FfaAreas.isFfaWorld(serverPlayer.getLevel()) && FfaSkyUtil.wasInSpawn.contains(serverPlayer.getUUID())) || (com.nexia.core.utilities.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(PlayerGameMode.LOBBY) && com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(DuelGameMode.LOBBY))) {
                 cir.setReturnValue(InteractionResultHolder.pass(serverPlayer.getItemInHand(interactionHand)));
@@ -52,7 +51,7 @@ public class EnderPearlItemMixin extends Item {
     private int setPearlCooldown(int original) {
         int time = original;
         if (thrower == null) return time;
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(thrower));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(thrower);
 
         DuelGameMode duelGameMode = PlayerDataManager.get(nexiaPlayer).gameMode;
 

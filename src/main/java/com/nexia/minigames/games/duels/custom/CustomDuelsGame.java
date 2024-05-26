@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.duels.custom;
 
-import com.combatreforged.factory.api.world.types.Minecraft;
+import com.combatreforged.metis.api.world.types.Minecraft;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -26,8 +26,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.level.GameType;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -134,17 +132,17 @@ public class CustomDuelsGame { //implements Runnable{
 
         selectedMap.structureMap.pasteMap(duelLevel);
 
-        p1.reset(true, GameType.ADVENTURE);
-        p2.reset(true, GameType.ADVENTURE);
+        p1.reset(true, Minecraft.GameMode.ADVENTURE);
+        p2.reset(true, Minecraft.GameMode.ADVENTURE);
 
 
-        selectedMap.p2Pos.teleportPlayer(duelLevel, p2.player().get());
+        selectedMap.p2Pos.teleportPlayer(duelLevel, p2.unwrap());
         playerData.inviteOptions.reset();
         playerData.inDuel = true;
         removeQueue(p2, null, true);
         playerData.duelOptions.spectatingPlayer = null;
 
-        selectedMap.p1Pos.teleportPlayer(duelLevel, p1.player().get());
+        selectedMap.p1Pos.teleportPlayer(duelLevel, p1.unwrap());
 
         invitorData.inDuel = true;
         removeQueue(p2, null, true);
@@ -156,26 +154,26 @@ public class CustomDuelsGame { //implements Runnable{
 
         p2.sendMessage(ChatFormat.nexiaMessage
                 .append(Component.text("Your opponent: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                .append(Component.text(p1.player().name).color(ChatFormat.brandColor2))));
+                .append(Component.text(p1.getRawName()).color(ChatFormat.brandColor2))));
 
         p1.sendMessage(ChatFormat.nexiaMessage
                 .append(Component.text("Your opponent: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                .append(Component.text(p2.player().name)).color(ChatFormat.brandColor2)));
+                .append(Component.text(p2.getRawName())).color(ChatFormat.brandColor2)));
 
-        File p1File = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + p1.player().uuid, kitID.toLowerCase() + ".txt");
+        File p1File = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + p1.getUUID(), kitID.toLowerCase() + ".txt");
         if(p1File.exists()) {
-            InventoryUtil.loadInventory(p1, "duels/custom/" + p1.player().uuid, kitID.toLowerCase());
+            InventoryUtil.loadInventory(p1, "duels/custom/" + p1.getUUID(), kitID.toLowerCase());
 
             if(perCustomKitID != null && !perCustomKitID.trim().isEmpty()) {
-                File p2File = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + p2.player().uuid, perCustomKitID.toLowerCase() + ".txt");
+                File p2File = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + p2.getUUID(), perCustomKitID.toLowerCase() + ".txt");
                 if(p2File.exists()) {
-                    InventoryUtil.loadInventory(p2, "duels/custom/" + p2.player().uuid, perCustomKitID.toLowerCase());
+                    InventoryUtil.loadInventory(p2, "duels/custom/" + p2.getUUID(), perCustomKitID.toLowerCase());
                 } else {
-                    InventoryUtil.loadInventory(p2, "duels/custom/" + p1.player().uuid, kitID.toLowerCase());
+                    InventoryUtil.loadInventory(p2, "duels/custom/" + p1.getUUID(), kitID.toLowerCase());
                 }
 
             } else {
-                InventoryUtil.loadInventory(p2, "duels/custom/" + p1.player().uuid, kitID.toLowerCase());
+                InventoryUtil.loadInventory(p2, "duels/custom/" + p1.getUUID(), kitID.toLowerCase());
             }
 
 
@@ -218,10 +216,10 @@ public class CustomDuelsGame { //implements Runnable{
                 PlayerData victimData = PlayerDataManager.get(victim);
                 PlayerData attackerData = PlayerDataManager.get(attacker);
 
-                attacker.safeReset(false, attacker.player().get().gameMode.getGameModeForPlayer());
+                attacker.safeReset(false, Minecraft.GameMode.SURVIVAL);
 
                 for(NexiaPlayer spectator : this.spectators) {
-                    spectator.getFactoryPlayer().runCommand("/hub", 0, false);
+                    spectator.runCommand("/hub", 0, false);
                 }
 
                 victimData.gameOptions = null;
@@ -243,16 +241,16 @@ public class CustomDuelsGame { //implements Runnable{
 
                 this.isEnding = false;
 
-                if(attacker.player().get() != null) {
-                    victim.getFactoryPlayer().runCommand("/hub", 0, false);
+                if(attacker.unwrap() != null) {
+                    victim.runCommand("/hub", 0, false);
                 }
 
-                if(attacker.player().get() != null) {
-                    attacker.getFactoryPlayer().runCommand("/hub", 0, false);
+                if(attacker.unwrap() != null) {
+                    attacker.runCommand("/hub", 0, false);
                 }
 
                 for(ServerPlayer spectator : this.level.players()) {
-                    PlayerUtil.getFactoryPlayer(spectator).runCommand("/hub", 0, false);
+                    new NexiaPlayer(spectator).runCommand("/hub", 0, false);
                     spectator.kill();
                 }
 
@@ -265,19 +263,19 @@ public class CustomDuelsGame { //implements Runnable{
 
             this.currentStartTime--;
 
-            this.map.p1Pos.teleportPlayer(this.level, p1.player().get());
-            this.map.p2Pos.teleportPlayer(this.level, p2.player().get());
+            this.map.p1Pos.teleportPlayer(this.level, p1.unwrap());
+            this.map.p2Pos.teleportPlayer(this.level, p2.unwrap());
 
             if (this.startTime - this.currentStartTime >= this.startTime) {
-                p1.sendSound(new EntityPos(p1.player().get()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
-                p2.sendSound(new EntityPos(p2.player().get()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
-                p1.getFactoryPlayer().setGameMode(Minecraft.GameMode.SURVIVAL);
-                p1.getFactoryPlayer().removeTag(LobbyUtil.NO_DAMAGE_TAG);
-                p1.getFactoryPlayer().removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
+                p1.sendSound(new EntityPos(p1.unwrap()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
+                p2.sendSound(new EntityPos(p2.unwrap()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
+                p1.setGameMode(Minecraft.GameMode.SURVIVAL);
+                p1.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                p1.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
-                p2.getFactoryPlayer().setGameMode(Minecraft.GameMode.SURVIVAL);
-                p2.getFactoryPlayer().removeTag(LobbyUtil.NO_DAMAGE_TAG);
-                p2.getFactoryPlayer().removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
+                p2.setGameMode(Minecraft.GameMode.SURVIVAL);
+                p2.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                p2.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
                 this.hasStarted = true;
                 return;
             }
@@ -296,8 +294,8 @@ public class CustomDuelsGame { //implements Runnable{
             p1.sendTitle(title);
             p2.sendTitle(title);
 
-            p1.sendSound(new EntityPos(p1.player().get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
-            p2.sendSound(new EntityPos(p2.player().get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+            p1.sendSound(new EntityPos(p1.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+            p2.sendSound(new EntityPos(p2.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
 
         }
     }
@@ -308,7 +306,7 @@ public class CustomDuelsGame { //implements Runnable{
         this.hasStarted = true;
         this.isEnding = true;
 
-        boolean attackerNull = attacker == null || attacker.player().get() == null;
+        boolean attackerNull = attacker == null || attacker.unwrap() == null;
 
         if (!attackerNull) {
             this.winner = attacker;
@@ -329,22 +327,22 @@ public class CustomDuelsGame { //implements Runnable{
 
 
         if (!attackerNull) {
-            win = Component.text(attacker.player().name).color(ChatFormat.brandColor2)
+            win = Component.text(attacker.getRawName()).color(ChatFormat.brandColor2)
                     .append(Component.text(" has won the duel!").color(ChatFormat.normalColor)
                             .append(Component.text(" [")
                                     .color(ChatFormat.lineColor))
-                            .append(Component.text(FfaUtil.calculateHealth(attacker.getFactoryPlayer().getHealth()) + "❤").color(ChatFormat.failColor))
+                            .append(Component.text(FfaUtil.calculateHealth(attacker.getHealth()) + "❤").color(ChatFormat.failColor))
                             .append(Component.text("]").color(ChatFormat.lineColor))
                     );
 
             titleLose = Component.text("You lost!").color(ChatFormat.brandColor2);
             subtitleLose = Component.text("You have lost against ")
                     .color(ChatFormat.normalColor)
-                    .append(Component.text(attacker.player().name)
+                    .append(Component.text(attacker.getRawName())
                             .color(ChatFormat.brandColor2)
                             .append(Component.text(" [")
                                     .color(ChatFormat.lineColor)
-                            .append(Component.text(FfaUtil.calculateHealth(attacker.getFactoryPlayer().getHealth()) + "❤").color(ChatFormat.failColor))
+                            .append(Component.text(FfaUtil.calculateHealth(attacker.getHealth()) + "❤").color(ChatFormat.failColor))
                             .append(Component.text("]").color(ChatFormat.lineColor))
                             )
                     );
@@ -352,7 +350,7 @@ public class CustomDuelsGame { //implements Runnable{
             titleWin = Component.text("You won!").color(ChatFormat.brandColor2);
             subtitleWin = Component.text("You have won against ")
                     .color(ChatFormat.normalColor)
-                    .append(Component.text(victim.player().name)
+                    .append(Component.text(victim.getRawName())
                             .color(ChatFormat.brandColor2)
                     );
 
@@ -367,13 +365,13 @@ public class CustomDuelsGame { //implements Runnable{
         PlayerData victimData = PlayerDataManager.get(victim);
         if(victimData.gameOptions == null || victimData.gameOptions.customDuelsGame == null || victimData.gameOptions.customDuelsGame.isEnding) return;
 
-        victim.player().get().destroyVanishingCursedItems();
-        victim.player().get().inventory.dropAll();
+        victim.unwrap().destroyVanishingCursedItems();
+        victim.unwrap().inventory.dropAll();
 
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim.player().get());
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim.unwrap());
 
         if(attacker != null){
-            NexiaPlayer nexiaAttacker = new NexiaPlayer(new AccuratePlayer(attacker));
+            NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
             PlayerData attackerData = PlayerDataManager.get(nexiaAttacker);
 
             if((victimData.inDuel && attackerData.inDuel) && victimData.gameOptions.customDuelsGame == attackerData.gameOptions.customDuelsGame){

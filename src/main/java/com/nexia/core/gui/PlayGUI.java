@@ -20,7 +20,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.notcoded.codelib.players.AccuratePlayer;
 
 public class PlayGUI extends SimpleGui {
 
@@ -226,7 +225,7 @@ public class PlayGUI extends SimpleGui {
             ItemStack itemStack = element.getItemStack();
             Component name = itemStack.getHoverName();
 
-            NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(this.player));
+            NexiaPlayer nexiaPlayer = new NexiaPlayer(this.player);
 
             if(name.getString().equalsIgnoreCase("§bClassic FFA")){
                 LobbyUtil.sendGame(nexiaPlayer, "classic ffa", true, true);

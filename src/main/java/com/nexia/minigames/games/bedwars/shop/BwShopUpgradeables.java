@@ -122,10 +122,10 @@ public class BwShopUpgradeables {
 
     public static void downgradePlayerTools(NexiaPlayer player) {
         ArrayList<ItemStack[]> allUpgradeables = getActiveUpgradeables();
-        int invSize = player.player().get().inventory.items.size();
+        int invSize = player.unwrap().inventory.items.size();
 
         inv: for (int i = 0; i < invSize; i++) {
-            ItemStack invItem = player.player().get().inventory.getItem(i);
+            ItemStack invItem = player.unwrap().inventory.getItem(i);
 
             Optional<Integer> invItemLevel = getItemUpgradeLevel(invItem);
             if (invItemLevel.isEmpty() || invItemLevel.get() < 1) continue;
@@ -135,7 +135,7 @@ public class BwShopUpgradeables {
 
                 ItemStack newItem = upgradeables[invItemLevel.get() - 1].copy();
                 BwShopUtil.removeShopNbt(newItem);
-                player.player().get().inventory.setItem(i, newItem);
+                player.unwrap().inventory.setItem(i, newItem);
                 continue inv;
             }
         }

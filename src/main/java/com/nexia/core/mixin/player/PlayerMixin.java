@@ -28,7 +28,6 @@ import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -67,7 +66,7 @@ public abstract class PlayerMixin extends LivingEntity {
             for (SoundSource source : SoundSource.values()) {
                 soundSource = source;
             }
-            new NexiaPlayer(new AccuratePlayer(attacker)).sendSound(new EntityPos(attacker.position()), SoundEvents.SHIELD_BREAK, soundSource, 2, 1);
+            new NexiaPlayer(attacker).sendSound(new EntityPos(attacker.position()), SoundEvents.SHIELD_BREAK, soundSource, 2, 1);
         }
         return true;
     }
@@ -75,7 +74,7 @@ public abstract class PlayerMixin extends LivingEntity {
     @Inject(method = "canEat", cancellable = true, at = @At("HEAD"))
     private void preventFFAUsers(boolean bl, CallbackInfoReturnable<Boolean> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
         if((com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.sky.utilities.FfaAreas.isInFfaSpawn(nexiaPlayer))
                 || (com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(nexiaPlayer))
@@ -88,7 +87,7 @@ public abstract class PlayerMixin extends LivingEntity {
     @Inject(method = "hurt", cancellable = true, at = @At("HEAD"))
     private void beforeHurt(DamageSource damageSource, float damage, CallbackInfoReturnable<Boolean> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
         if (FfaSkyUtil.isFfaPlayer(nexiaPlayer) && !FfaSkyUtil.beforeDamage(nexiaPlayer, damageSource)) {
             cir.setReturnValue(false);
@@ -142,7 +141,7 @@ public abstract class PlayerMixin extends LivingEntity {
     private void afterHurt(DamageSource damageSource, float damage, CallbackInfo ci) {
         if (!((Object) this instanceof ServerPlayer player)) return;
 
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
         if (BwUtil.isBedWarsPlayer(nexiaPlayer)) {
             BwPlayerEvents.afterHurt(nexiaPlayer, damageSource);
         }
@@ -154,7 +153,7 @@ public abstract class PlayerMixin extends LivingEntity {
         hurtArmor(damageSource, damage);
         if (!((Object) this instanceof ServerPlayer player)) return vanillaArmorCalculation(damageSource, damage);
 
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
         if (BwUtil.isBedWarsPlayer(nexiaPlayer)) {
             return BwUtil.playerArmorCalculation(player, damageSource, damage);
@@ -175,7 +174,7 @@ public abstract class PlayerMixin extends LivingEntity {
     @Inject(method = "drop(Z)Z", cancellable = true, at = @At("HEAD"))
     private void drop1(boolean dropAll, CallbackInfoReturnable<Boolean> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
         ItemStack dropped = inventory.getItem(inventory.selected);
 
@@ -191,7 +190,7 @@ public abstract class PlayerMixin extends LivingEntity {
     private void getAttackDelay(CallbackInfoReturnable<Integer> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
 
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
         if (BwUtil.isBedWarsPlayer(nexiaPlayer)) {
             BwUtil.setAttackSpeed(player);
@@ -201,7 +200,7 @@ public abstract class PlayerMixin extends LivingEntity {
 
     @ModifyArg(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;setSprinting(Z)V"))
     public boolean setSprintFix(boolean par1) {
-        return com.nexia.core.utilities.player.PlayerDataManager.get(new NexiaPlayer(new AccuratePlayer((ServerPlayer) (Object) this))).savedData.isSprintFix();
+        return com.nexia.core.utilities.player.PlayerDataManager.get(new NexiaPlayer((ServerPlayer) (Object) this)).savedData.isSprintFix();
     }
 
     @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)

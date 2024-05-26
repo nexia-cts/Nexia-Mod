@@ -1,12 +1,9 @@
 package com.nexia.ffa.kits;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
-import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.kits.utilities.player.PlayerDataManager;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -47,7 +44,7 @@ public class FfaKit {
     public void giveKit(NexiaPlayer player, boolean clearEffect) {
         PlayerDataManager.get(player).kit = this;
 
-        if (clearEffect) player.getFactoryPlayer().clearEffects();
+        if (clearEffect) player.clearEffects();
 
         if (this.equals(FfaKit.RANDOM)) {
             ArrayList<String> availableKits = new ArrayList<>(stringFfaKits);

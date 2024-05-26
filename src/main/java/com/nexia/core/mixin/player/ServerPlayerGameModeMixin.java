@@ -13,7 +13,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -35,7 +34,7 @@ public class ServerPlayerGameModeMixin {
     @Inject(at = @At("HEAD"), method = "destroyBlock", cancellable = true)
     private void destroyBlock(BlockPos blockPos, CallbackInfoReturnable<Boolean> cir) {
 
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
         if (BwAreas.isBedWarsWorld(level) && !BwPlayerEvents.beforeBreakBlock(nexiaPlayer, blockPos)) {
             cir.setReturnValue(false);
@@ -53,7 +52,7 @@ public class ServerPlayerGameModeMixin {
     @Inject(at = @At("RETURN"), method = "destroyBlock")
     private void destroyBlockTail(BlockPos blockPos, CallbackInfoReturnable<Boolean> cir) {
 
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
         if (BwUtil.isBedWarsPlayer(nexiaPlayer) && isBed) {
             BwPlayerEvents.bedBroken(nexiaPlayer, blockPos);

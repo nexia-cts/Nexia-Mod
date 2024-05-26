@@ -1,4 +1,6 @@
 package com.nexia.minigames.games.bedwars.util;
+
+import com.combatreforged.metis.api.world.types.Minecraft;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
@@ -23,7 +25,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -44,10 +45,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Team;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
 
 public class BwUtil {
 
@@ -61,9 +64,9 @@ public class BwUtil {
     private static void invisibilityTick() {
         for (Iterator<NexiaPlayer> it = BwGame.invisiblePlayerArmor.keySet().iterator(); it.hasNext(); ) {
             NexiaPlayer player = it.next();
-            invisArmorCheck(player.player().get());
-            if (!player.player().get().hasEffect(MobEffects.INVISIBILITY)) {
-                regainInvisArmor(player.player().get());
+            invisArmorCheck(player);
+            if (!player.hasEffect(Minecraft.Effect.INVISIBILITY)) {
+                regainInvisArmor(player);
                 it.remove();
             }
         }
@@ -132,25 +135,25 @@ public class BwUtil {
         explosiveCooldown.put(player.getUUID(), 10);
     }
 
-    private static void invisArmorCheck(ServerPlayer player) {
+    private static void invisArmorCheck(NexiaPlayer player) {
         ItemStack[] storedArmor = BwGame.invisiblePlayerArmor.get(player);
         if (storedArmor == null) return;
-        List<ItemStack> currentArmor = player.inventory.armor;
+        List<ItemStack> currentArmor = player.unwrap().inventory.armor;
 
         for (int i = 0; i < currentArmor.size() && i < storedArmor.length; i++) {
             if (!currentArmor.get(i).isEmpty()) {
                 storedArmor[i] = currentArmor.get(i);
-                player.inventory.setItem(36 + i, ItemStack.EMPTY);
+                player.unwrap().inventory.setItem(36 + i, ItemStack.EMPTY);
             }
         }
     }
 
-    private static void regainInvisArmor(ServerPlayer player) {
+    private static void regainInvisArmor(NexiaPlayer player) {
         ItemStack[] armor = BwGame.invisiblePlayerArmor.get(player);
         if (armor == null) return;
 
         for (int i = 0; i < armor.length; i++) {
-            player.inventory.setItem(36 + i, armor[i]);
+            player.unwrap().inventory.setItem(36 + i, armor[i]);
         }
     }
 
@@ -185,7 +188,7 @@ public class BwUtil {
         return !BwUtil.isDefaultSword(itemStack);
     }
 
-    public static boolean canDropItem(com.combatreforged.factory.api.world.item.ItemStack itemStack) {
+    public static boolean canDropItem(com.combatreforged.metis.api.world.item.ItemStack itemStack) {
         String item = itemStack.getDisplayName().toString().toLowerCase();
         if (item.contains("pickaxe") || item.contains("axe")|| item.contains("shears")) {
             return false;
@@ -293,9 +296,9 @@ public class BwUtil {
     }
 
     public static void giveKillResources(NexiaPlayer victim) {
-        LivingEntity killCredit = victim.player().get().getKillCredit();
+        LivingEntity killCredit = victim.unwrap().getKillCredit();
         if (killCredit instanceof ServerPlayer attacker) {
-            Inventory inventory = victim.player().get().inventory;
+            Inventory inventory = victim.unwrap().inventory;
             for (int i = 0; i < 36; i++) {
                 ItemStack itemStack = inventory.getItem(i);
                 if (isBedWarsCurrency(itemStack)) {
@@ -306,7 +309,7 @@ public class BwUtil {
     }
 
     public static void deathClearInventory(NexiaPlayer player) {
-        Inventory inventory2 = player.player().get().inventory;
+        Inventory inventory2 = player.unwrap().inventory;
         for (int i = 0; i < inventory2.items.size(); i++) {
             if (!isTool(inventory2.items.get(i))) {
                 inventory2.items.set(i, new ItemStack(Items.AIR));
@@ -332,17 +335,17 @@ public class BwUtil {
 
     public static void announceDeath(NexiaPlayer player) {
         String mainColor = LegacyChatFormat.chatColor2;
-        String message = player.player().get().getCombatTracker().getDeathMessage().getString();
+        String message = player.unwrap().getCombatTracker().getDeathMessage().getString();
 
         message = replaceDisplayName(message, mainColor, player);
 
-        Entity killCredit = player.player().get().getKillCredit();
+        Entity killCredit = player.unwrap().getKillCredit();
         if (killCredit instanceof ServerPlayer attacker) {
-            message = replaceDisplayName(message, mainColor, new NexiaPlayer(new AccuratePlayer(attacker)));
+            message = replaceDisplayName(message, mainColor, new NexiaPlayer(attacker));
         }
 
         for(NexiaPlayer nexiaPlayer : BwPlayers.getViewers()) {
-            nexiaPlayer.player().get().sendMessage(LegacyChatFormat.format(message), Util.NIL_UUID);
+            nexiaPlayer.unwrap().sendMessage(LegacyChatFormat.format(message), Util.NIL_UUID);
         }
     }
 
@@ -352,8 +355,8 @@ public class BwUtil {
         BwTeam team = BwTeam.getPlayerTeam(player);
         if (team == null) return message;
 
-        return message.replace(player.player().get().getDisplayName().getString(),
-                team.textColor + player.player().name + mainColor);
+        return message.replace(player.unwrap().getDisplayName().getString(),
+                team.textColor + player.getRawName() + mainColor);
     }
 
     public static float getFireballInertia() {

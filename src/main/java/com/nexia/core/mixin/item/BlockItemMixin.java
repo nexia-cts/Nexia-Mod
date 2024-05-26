@@ -13,7 +13,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -26,7 +25,7 @@ public abstract class BlockItemMixin {
     private void beforePlace(BlockPlaceContext context, CallbackInfoReturnable<InteractionResult> cir) {
         ServerPlayer player = (ServerPlayer)context.getPlayer();
         if (player == null) return;
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
         BlockPos blockPos = context.getClickedPos();
         ServerLevel level = player.getLevel();
@@ -60,7 +59,7 @@ public abstract class BlockItemMixin {
     private void afterPlace(BlockPlaceContext context, CallbackInfoReturnable<InteractionResult> cir) {
         ServerPlayer player = (ServerPlayer)context.getPlayer();
         if (player == null) return;
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
         BlockPos blockPos = context.getClickedPos();
 
