@@ -1,7 +1,6 @@
 package com.nexia.core.mixin.player;
 
 import com.nexia.core.utilities.item.BlockUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaAreas;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
@@ -13,7 +12,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -35,13 +33,11 @@ public class ServerPlayerGameModeMixin {
     @Inject(at = @At("HEAD"), method = "destroyBlock", cancellable = true)
     private void destroyBlock(BlockPos blockPos, CallbackInfoReturnable<Boolean> cir) {
 
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
-
-        if (BwAreas.isBedWarsWorld(level) && !BwPlayerEvents.beforeBreakBlock(nexiaPlayer, blockPos)) {
+        if (BwAreas.isBedWarsWorld(level) && !BwPlayerEvents.beforeBreakBlock(player, blockPos)) {
             cir.setReturnValue(false);
-        }  else if (FfaAreas.isFfaWorld(level) && !FfaUhcUtil.beforeBuild(nexiaPlayer, blockPos)) {
+        }  else if (FfaAreas.isFfaWorld(level) && !FfaUhcUtil.beforeBuild(player, blockPos)) {
             cir.setReturnValue(false);
-        } else if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(level) && !FfaSkyUtil.beforeBuild(nexiaPlayer, blockPos)) {
+        } else if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(level) && !FfaSkyUtil.beforeBuild(player, blockPos)) {
             cir.setReturnValue(false);
         } else if(level.equals(FootballGame.world) && !player.isCreative()) {
             cir.setReturnValue(false);
@@ -53,10 +49,8 @@ public class ServerPlayerGameModeMixin {
     @Inject(at = @At("RETURN"), method = "destroyBlock")
     private void destroyBlockTail(BlockPos blockPos, CallbackInfoReturnable<Boolean> cir) {
 
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
-
-        if (BwUtil.isBedWarsPlayer(nexiaPlayer) && isBed) {
-            BwPlayerEvents.bedBroken(nexiaPlayer, blockPos);
+        if (BwUtil.isBedWarsPlayer(player) && isBed) {
+            BwPlayerEvents.bedBroken(player, blockPos);
         }
 
     }

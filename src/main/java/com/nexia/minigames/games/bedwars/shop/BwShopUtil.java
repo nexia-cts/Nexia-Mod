@@ -1,7 +1,6 @@
 package com.nexia.minigames.games.bedwars.shop;
 
 import com.nexia.core.utilities.item.ItemStackUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.minigames.games.bedwars.players.BwTeam;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.core.Registry;
@@ -13,7 +12,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.notcoded.codelib.players.AccuratePlayer;
 
 public class BwShopUtil {
 
@@ -144,11 +142,10 @@ public class BwShopUtil {
 
     protected static ItemStack setBlockColor(ServerPlayer player, ItemStack original) {
         try {
-            String color = BwTeam.getPlayerTeamColor(new NexiaPlayer(new AccuratePlayer(player)));
+            String color = BwTeam.getPlayerTeamColor(player);
             Item item = original.getItem();
 
             if (original.getItem() == Items.WHITE_WOOL) {
-                assert color != null;
                 item = Registry.ITEM.get(new ResourceLocation(item.toString().replace("white", color)));
             } else if (original.getItem() == Items.GLASS) {
                 item = Registry.ITEM.get(new ResourceLocation(color + "_stained_glass"));

@@ -7,18 +7,20 @@ import com.nexia.minigames.games.bedwars.players.BwTeam;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.server.level.ServerPlayer;
 
 public class BwReloadTeamColorsCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
-        dispatcher.register(Commands.literal("bwreloadteamcolors")
-                .requires(commandSourceStack -> Permissions.check(commandSourceStack, "nexia.dev.bwreloadteamcolors", 3))
-                .executes(BwReloadTeamColorsCommand::run)
-        );
+        dispatcher.register(Commands.literal("bwreloadteamcolors").executes(BwReloadTeamColorsCommand::run)
+                .requires(commandSourceStack -> Permissions.check(commandSourceStack, "nexia.dev.bwreloadteamcolors", 3)));
     }
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        BwTeam.reloadPlayerTeamColors();
+        ServerPlayer player = context.getSource().getPlayerOrException();
+
+        BwTeam.reloadPlayerTeamColors(player);
+
         return 1;
     }
 

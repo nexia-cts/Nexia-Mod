@@ -5,11 +5,9 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.gui.PlayGUI;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
-import net.notcoded.codelib.players.AccuratePlayer;
 
 public class PlayCommand {
 
@@ -55,55 +53,55 @@ public class PlayCommand {
 
     private static int playNormalFFA(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        LobbyUtil.sendGame(new NexiaPlayer(new AccuratePlayer(player)), "classic ffa", true, true);
+        LobbyUtil.sendGame(player, "classic ffa", true, true);
         return 1;
     }
 
     private static int playKitFFA(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        LobbyUtil.sendGame(new NexiaPlayer(new AccuratePlayer(player)), "kits ffa", true, true);
+        LobbyUtil.sendGame(player, "kits ffa", true, true);
         return 1;
     }
 
     private static int playUhcFFA(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        LobbyUtil.sendGame(new NexiaPlayer(new AccuratePlayer(player)), "uhc ffa", true, true);
+        LobbyUtil.sendGame(player, "uhc ffa", true, true);
         return 1;
     }
 
     private static int playSkyFFA(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        LobbyUtil.sendGame(new NexiaPlayer(new AccuratePlayer(player)), "sky ffa", true, true);
+        LobbyUtil.sendGame(player, "sky ffa", true, true);
         return 1;
     }
 
     private static int playBedWars(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        LobbyUtil.sendGame(new NexiaPlayer(new AccuratePlayer(player)), "bedwars", true, true);
+        LobbyUtil.sendGame(player, "bedwars", true, true);
         return 1;
     }
 
     private static int playDuels(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        LobbyUtil.sendGame(new NexiaPlayer(new AccuratePlayer(player)), "duels", true, true);
+        LobbyUtil.sendGame(player, "duels", true, true);
         return 1;
     }
 
     private static int playOITC(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        LobbyUtil.sendGame(new NexiaPlayer(new AccuratePlayer(player)), "oitc", true, true);
+        LobbyUtil.sendGame(player, "oitc", true, true);
         return 1;
     }
 
     private static int playFootball(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        LobbyUtil.sendGame(new NexiaPlayer(new AccuratePlayer(player)), "football", true, true);
+        LobbyUtil.sendGame(player, "football", true, true);
         return 1;
     }
 
     private static int playSkywars(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        LobbyUtil.sendGame(new NexiaPlayer(new AccuratePlayer(player)), "skywars", true, true);
+        LobbyUtil.sendGame(player, "skywars", true, true);
         return 1;
     }
 

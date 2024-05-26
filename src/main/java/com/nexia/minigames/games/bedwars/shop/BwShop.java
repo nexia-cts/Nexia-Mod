@@ -2,7 +2,6 @@ package com.nexia.minigames.games.bedwars.shop;
 
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemStackUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
@@ -19,7 +18,6 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
-import net.notcoded.codelib.players.AccuratePlayer;
 
 public class BwShop extends SimpleGui {
 
@@ -110,7 +108,7 @@ public class BwShop extends SimpleGui {
     private void purchase(ServerPlayer player, ItemStack soldItem, ItemStack cost, int slot, int targetInvSlot,
                           boolean isUpgradeable, boolean isArmorItem, boolean isSword) {
 
-        new NexiaPlayer(new AccuratePlayer(player)).removeItem(cost.getItem(), cost.getCount());
+        PlayerUtil.removeItem(player, cost.getItem(), cost.getCount());
         playPurchaseSound(player, false);
 
         if (isUpgradeable) {

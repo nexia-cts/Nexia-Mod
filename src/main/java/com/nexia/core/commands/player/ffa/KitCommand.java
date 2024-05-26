@@ -7,7 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.gui.ffa.KitGUI;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.kits.FfaKit;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
 import net.kyori.adventure.text.Component;
@@ -15,19 +15,17 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.server.level.ServerPlayer;
-import net.notcoded.codelib.players.AccuratePlayer;
 
 public class KitCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
         dispatcher.register(Commands.literal("kit")
                 .executes(context -> {
                     ServerPlayer player = context.getSource().getPlayerOrException();
-                    NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
-                    if(!FfaKitsUtil.canGoToSpawn(nexiaPlayer)) {
-                        nexiaPlayer.sendMessage(Component.text("You must be fully healed to change kits!", ChatFormat.failColor));
+                    if(!FfaKitsUtil.canGoToSpawn(player)) {
+                        PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You must be fully healed to change kits!").color(ChatFormat.failColor));
                         return 1;
                     }
-                    LobbyUtil.sendGame(nexiaPlayer, "kits ffa", false, true);
+                    LobbyUtil.sendGame(player, "kits ffa", false, true);
                     run(context);
                     return 1;
                 })
@@ -35,13 +33,12 @@ public class KitCommand {
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest(FfaKit.stringFfaKits, builder)))
                         .executes(context -> {
                             ServerPlayer player = context.getSource().getPlayerOrException();
-                            NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
-                            if(!FfaKitsUtil.canGoToSpawn(nexiaPlayer)) {
-                                nexiaPlayer.sendMessage(Component.text("You must be fully healed to change kits!").color(ChatFormat.failColor));
+                            if(!FfaKitsUtil.canGoToSpawn(player)) {
+                                PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You must be fully healed to change kits!").color(ChatFormat.failColor));
                                 return 1;
                             }
 
-                            LobbyUtil.sendGame(nexiaPlayer, "kits ffa", false, true);
+                            LobbyUtil.sendGame(player, "kits ffa", false, true);
                             selectedMap(context);
                             return 1;
                         })

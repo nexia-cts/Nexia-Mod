@@ -1,7 +1,7 @@
 package com.nexia.core.mixin.item;
 
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.duels.DuelGameMode;
@@ -15,7 +15,6 @@ import net.minecraft.world.entity.projectile.ThrownEgg;
 import net.minecraft.world.item.EggItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,11 +30,9 @@ public class EggItemMixin {
 
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void use(Level level, Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer((ServerPlayer) player));
-
-        if((com.nexia.core.utilities.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(PlayerGameMode.LOBBY) && com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(DuelGameMode.LOBBY))) {
+        if((com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode.equals(PlayerGameMode.LOBBY) && com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).gameMode.equals(DuelGameMode.LOBBY))) {
             cir.setReturnValue(new InteractionResultHolder<>(InteractionResult.FAIL, player.getItemInHand(interactionHand)));
-            nexiaPlayer.refreshInventory();
+            ItemStackUtil.sendInventoryRefreshPacket((ServerPlayer) player);
         }
         this.hand = interactionHand;
     }
@@ -46,7 +43,7 @@ public class EggItemMixin {
         if (livingEntity instanceof ServerPlayer player) {
 
             if (BwAreas.isBedWarsWorld(level)) {
-                return BwPlayerEvents.throwEgg(new NexiaPlayer(new AccuratePlayer(player)), player.getItemInHand(hand));
+                return BwPlayerEvents.throwEgg(player, player.getItemInHand(hand));
             }
 
         }

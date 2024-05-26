@@ -1,6 +1,5 @@
 package com.nexia.core.mixin.player;
 
-import com.combatreforged.factory.api.world.types.Minecraft;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
 import com.nexia.core.games.util.LobbyUtil;
@@ -8,8 +7,8 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.player.BanHandler;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
@@ -24,7 +23,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.level.GameType;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.json.simple.JSONObject;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -59,7 +57,6 @@ public abstract class PlayerListMixin {
             if (key.contains("multiplayer.player.left")) args.set(0, leaveFormat(component, leavePlayer));
             if (key.contains("multiplayer.player.join")) args.set(0, joinFormat(component, joinPlayer));
 
-            assert player != null;
             if(!PlayerMutes.muted(player)){
                 args.set(0, chatFormat(component));
             }
@@ -82,7 +79,7 @@ public abstract class PlayerListMixin {
 
         if(key.contains("multiplayer.player.join")) {
             if(joinPlayer.getTags().contains("bot")) ci.cancel();
-            if(PlayerDataManager.get(joinPlayer.getUUID()).clientType.equals(com.nexia.core.utilities.player.PlayerData.ClientType.VIAFABRICPLUS)) {
+            if(PlayerDataManager.get(joinPlayer).clientType.equals(com.nexia.core.utilities.player.PlayerData.ClientType.VIAFABRICPLUS)) {
                 joinPlayer.addTag("viafabricplus");
                 ci.cancel();
             }
@@ -92,26 +89,26 @@ public abstract class PlayerListMixin {
 
     @Inject(at = @At("RETURN"), method = "respawn")
     private void respawned(ServerPlayer oldPlayer, boolean bl, CallbackInfoReturnable<ServerPlayer> cir) {
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(oldPlayer));
+        ServerPlayer player = PlayerUtil.getFixedPlayer(oldPlayer);
 
-        ServerLevel respawn = ServerTime.minecraftServer.getLevel(nexiaPlayer.player().get().getRespawnDimension());
+        ServerLevel respawn = ServerTime.minecraftServer.getLevel(player.getRespawnDimension());
 
-        if(FfaSkyUtil.isFfaPlayer(nexiaPlayer)) {
-            FfaSkyUtil.joinOrRespawn(nexiaPlayer);
+        if(FfaSkyUtil.isFfaPlayer(player)) {
+            FfaSkyUtil.joinOrRespawn(player);
             return;
         }
 
         if(respawn != null && LobbyUtil.isLobbyWorld(respawn)) {
-            nexiaPlayer.player().get().inventory.clearContent();
-            LobbyUtil.giveItems(nexiaPlayer);
-            nexiaPlayer.player().get().setGameMode(GameType.ADVENTURE);
+            player.inventory.clearContent();
+            LobbyUtil.giveItems(player);
+            player.setGameMode(GameType.ADVENTURE);
 
-            nexiaPlayer.getFactoryPlayer().runCommand("/hub", 0, false);
+            PlayerUtil.getFactoryPlayer(player).runCommand("/hub");
             return;
         }
 
-        if (BwUtil.isInBedWars(nexiaPlayer)) { BwPlayerEvents.respawned(nexiaPlayer); }
-        if (SkywarsGame.world.equals(respawn) || SkywarsGame.isSkywarsPlayer(nexiaPlayer)) { nexiaPlayer.getFactoryPlayer().setGameMode(Minecraft.GameMode.SPECTATOR); }
+        if (BwUtil.isInBedWars(player)) { BwPlayerEvents.respawned(player); }
+        if (SkywarsGame.world.equals(respawn) || SkywarsGame.isSkywarsPlayer(player)) { player.setGameMode(GameType.SPECTATOR); }
     }
 
     @Unique

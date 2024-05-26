@@ -2,7 +2,6 @@ package com.nexia.minigames.games.bedwars.util;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
@@ -12,7 +11,6 @@ import com.nexia.minigames.games.bedwars.custom.BwExplosiveSlime;
 import com.nexia.minigames.games.bedwars.players.BwPlayers;
 import com.nexia.minigames.games.bedwars.players.BwTeam;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundUpdateAttributesPacket;
@@ -44,7 +42,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Team;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.util.*;
@@ -59,11 +56,11 @@ public class BwUtil {
     }
 
     private static void invisibilityTick() {
-        for (Iterator<NexiaPlayer> it = BwGame.invisiblePlayerArmor.keySet().iterator(); it.hasNext(); ) {
-            NexiaPlayer player = it.next();
-            invisArmorCheck(player.player().get());
-            if (!player.player().get().hasEffect(MobEffects.INVISIBILITY)) {
-                regainInvisArmor(player.player().get());
+        for (Iterator<ServerPlayer> it = BwGame.invisiblePlayerArmor.keySet().iterator(); it.hasNext(); ) {
+            ServerPlayer player = it.next();
+            invisArmorCheck(player);
+            if (!player.hasEffect(MobEffects.INVISIBILITY)) {
+                regainInvisArmor(player);
                 it.remove();
             }
         }
@@ -292,10 +289,10 @@ public class BwUtil {
                 player.getId(), player.getAttributes().getSyncableAttributes()));
     }
 
-    public static void giveKillResources(NexiaPlayer victim) {
-        LivingEntity killCredit = victim.player().get().getKillCredit();
+    public static void giveKillResources(ServerPlayer victim) {
+        LivingEntity killCredit = victim.getKillCredit();
         if (killCredit instanceof ServerPlayer attacker) {
-            Inventory inventory = victim.player().get().inventory;
+            Inventory inventory = victim.inventory;
             for (int i = 0; i < 36; i++) {
                 ItemStack itemStack = inventory.getItem(i);
                 if (isBedWarsCurrency(itemStack)) {
@@ -305,14 +302,14 @@ public class BwUtil {
         }
     }
 
-    public static void deathClearInventory(NexiaPlayer player) {
-        Inventory inventory2 = player.player().get().inventory;
+    public static void deathClearInventory(ServerPlayer player) {
+        Inventory inventory2 = player.inventory;
         for (int i = 0; i < inventory2.items.size(); i++) {
             if (!isTool(inventory2.items.get(i))) {
                 inventory2.items.set(i, new ItemStack(Items.AIR));
             }
         }
-        if (!isTool(inventory2.offhand.getFirst())) inventory2.offhand.set(0, new ItemStack(Items.AIR));
+        if (!isTool(inventory2.offhand.get(0))) inventory2.offhand.set(0, new ItemStack(Items.AIR));
     }
 
     public static void afterItemMerge(ItemEntity itemEntity) {
@@ -330,30 +327,28 @@ public class BwUtil {
         }
     }
 
-    public static void announceDeath(NexiaPlayer player) {
+    public static void announceDeath(ServerPlayer player) {
         String mainColor = LegacyChatFormat.chatColor2;
-        String message = player.player().get().getCombatTracker().getDeathMessage().getString();
+        String message = mainColor + player.getCombatTracker().getDeathMessage().getString();
 
         message = replaceDisplayName(message, mainColor, player);
 
-        Entity killCredit = player.player().get().getKillCredit();
+        Entity killCredit = player.getKillCredit();
         if (killCredit instanceof ServerPlayer attacker) {
-            message = replaceDisplayName(message, mainColor, new NexiaPlayer(new AccuratePlayer(attacker)));
+            message = replaceDisplayName(message, mainColor, attacker);
         }
 
-        for(NexiaPlayer nexiaPlayer : BwPlayers.getViewers()) {
-            nexiaPlayer.player().get().sendMessage(LegacyChatFormat.format(message), Util.NIL_UUID);
-        }
+        PlayerUtil.broadcast(BwPlayers.getViewers(), message);
     }
 
-    public static String replaceDisplayName(String message, String mainColor, NexiaPlayer player) {
+    public static String replaceDisplayName(String message, String mainColor, ServerPlayer player) {
         if (player == null) return message;
 
         BwTeam team = BwTeam.getPlayerTeam(player);
         if (team == null) return message;
 
-        return message.replace(player.player().get().getDisplayName().getString(),
-                team.textColor + player.player().name + mainColor);
+        return message.replace(player.getDisplayName().getString(),
+                team.textColor + player.getScoreboardName() + mainColor);
     }
 
     public static float getFireballInertia() {
@@ -374,14 +369,14 @@ public class BwUtil {
         return item == Items.IRON_INGOT || item == Items.GOLD_INGOT || item == Items.DIAMOND || item == Items.EMERALD;
     }
 
-    public static boolean isInBedWars(NexiaPlayer player) {
+    public static boolean isInBedWars(ServerPlayer player) {
         return PlayerDataManager.get(player).gameMode == PlayerGameMode.BEDWARS;
     }
 
-    public static boolean isBedWarsPlayer(NexiaPlayer player) {
+    public static boolean isBedWarsPlayer(ServerPlayer player) {
         if (!isInBedWars(player)) return false;
-        for (NexiaPlayer nexiaPlayer : BwPlayers.getPlayers()) {
-            if (player.equals(nexiaPlayer)) return true;
+        for (ServerPlayer serverPlayer : BwPlayers.getPlayers()) {
+            if (serverPlayer.getUUID().equals(player.getUUID())) return true;
         }
         return false;
     }

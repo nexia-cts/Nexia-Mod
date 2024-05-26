@@ -2,7 +2,7 @@ package com.nexia.minigames.games.duels.custom.kitroom.kitrooms;
 
 import com.combatreforged.factory.api.util.Identifier;
 import com.nexia.core.Main;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.world.StructureMap;
 import com.nexia.core.utilities.world.WorldUtil;
@@ -10,9 +10,11 @@ import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.dimension.DimensionType;
+import net.notcoded.codelib.players.AccuratePlayer;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
@@ -34,11 +36,11 @@ public class KitRoom {
 
     // Other
 
-    public NexiaPlayer player;
+    public AccuratePlayer player;
 
     private StructureMap kitRoom;
 
-    public KitRoom(NexiaPlayer player) {
+    public KitRoom(AccuratePlayer player) {
         this.player = player;
 
         this.uuid = null;
@@ -48,7 +50,7 @@ public class KitRoom {
         this.hasBeenGenerated = false;
     }
 
-    public static boolean isInKitRoom(NexiaPlayer player) {
+    public static boolean isInKitRoom(Player player) {
         return PlayerDataManager.get(player).kitRoom != null && !PlayerDataManager.get(player).editingKit.isEmpty();
     }
 
@@ -95,16 +97,28 @@ public class KitRoom {
     public boolean teleport() {
         if(!this.hasBeenGenerated || this.level == null) return false;
 
-        this.player.player().get().teleportTo(this.level, 0.5, 80, 0.5, 0, 0);
-        this.player.reset(true, GameType.ADVENTURE);
-        this.player.getFactoryPlayer().addTag("in_kitroom");
+        this.player.get().teleportTo(this.level, 0.5, 80, 0.5, 0, 0);
+        this.player.get().clearFire();
+        this.player.get().getEnderChestInventory().clearContent();
+        this.player.get().inventory.clearContent();
+        this.player.get().setExperiencePoints(0);
+        this.player.get().setGameMode(GameType.ADVENTURE);
+        this.player.get().setExperienceLevels(0);
+        PlayerUtil.resetHealthStatus(this.player.get());
+
+        this.player.get().addTag("in_kitroom");
 
         return true;
     }
 
     public void leave() {
-        PlayerDataManager.get(this.player).kitRoom = null;
-        this.player.reset(true, GameType.ADVENTURE);
+        PlayerDataManager.get(this.player.get()).kitRoom = null;
+        this.player.get().inventory.clearContent();
+        this.player.get().getEnderChestInventory().clearContent();
+        this.player.get().clearFire();
+        this.player.get().setExperiencePoints(0);
+        this.player.get().setExperienceLevels(0);
+        PlayerUtil.resetHealthStatus(this.player.get());
         this.delete();
     }
 

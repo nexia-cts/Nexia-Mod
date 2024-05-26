@@ -4,12 +4,10 @@ import com.combatreforged.factory.api.event.player.PlayerUseItemEvent;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.notcoded.codelib.players.AccuratePlayer;
 
 public class UseItemListener {
     public static void registerListener() {
@@ -17,13 +15,13 @@ public class UseItemListener {
 
             Player player = playerUseItemEvent.getPlayer();
             ServerPlayer minecraftPlayer = PlayerUtil.getMinecraftPlayer(player);
-            NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(minecraftPlayer));
 
             ItemStack itemStack = playerUseItemEvent.getItemStack();
 
             Component name = itemStack.getDisplayName();
 
-            PlayerGameMode gameMode = PlayerDataManager.get(nexiaPlayer).gameMode;
+            PlayerGameMode gameMode = PlayerDataManager.get(minecraftPlayer).gameMode;
+
             String sName = name.toString().toLowerCase();
 
             if(gameMode == PlayerGameMode.LOBBY) {

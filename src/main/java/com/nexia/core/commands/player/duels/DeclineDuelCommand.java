@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.minigames.games.duels.DuelGameMode;
@@ -13,7 +12,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
-import net.notcoded.codelib.players.AccuratePlayer;
 
 public class DeclineDuelCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
@@ -25,8 +23,8 @@ public class DeclineDuelCommand {
         dispatcher.register(Commands.literal(string)
                 .requires(commandSourceStack -> {
                     try {
-                        com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException().getUUID());
-                        PlayerData playerData1 = PlayerDataManager.get(commandSourceStack.getPlayerOrException().getUUID());
+                        com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException());
+                        PlayerData playerData1 = PlayerDataManager.get(commandSourceStack.getPlayerOrException());
                         return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
                     } catch (Exception ignored) {
                     }
@@ -39,7 +37,7 @@ public class DeclineDuelCommand {
     }
 
     public static int decline(CommandContext<CommandSourceStack> context, ServerPlayer player) throws CommandSyntaxException {
-        GamemodeHandler.declineDuel(new NexiaPlayer(new AccuratePlayer(context.getSource().getPlayerOrException())), new NexiaPlayer(new AccuratePlayer(player)));
+        GamemodeHandler.declineDuel(context.getSource().getPlayerOrException(), player);
         return 1;
     }
 }
