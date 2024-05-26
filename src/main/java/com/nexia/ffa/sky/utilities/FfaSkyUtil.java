@@ -1,15 +1,15 @@
 package com.nexia.ffa.sky.utilities;
 
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.google.gson.Gson;
-import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.sky.SkyFfaBlocks;
 import com.nexia.ffa.sky.utilities.player.PlayerDataManager;
@@ -18,6 +18,7 @@ import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -39,7 +40,6 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.AABB;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,7 +49,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -67,29 +66,29 @@ public class FfaSkyUtil {
     public static int woolId = 0;
     public static final HashMap<Integer, ItemStack> killRewards = new HashMap<>();
 
-    public static boolean isFfaPlayer(NexiaPlayer player) {
+    public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
         PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
-        return player.getFactoryPlayer().hasTag("ffa_sky") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.SKY;
+        return player.getTags().contains("ffa_sky") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.SKY;
     }
 
     public static void fiveTick() {
         if(ffaWorld == null) return;
         if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
-            NexiaPlayer player = new NexiaPlayer(new AccuratePlayer(minecraftPlayer));
-            if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !isInFfaSpawn(player)){
+            if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !isInFfaSpawn(minecraftPlayer)){
+                Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
                 wasInSpawn.remove(minecraftPlayer.getUUID());
                 minecraftPlayer.getCooldowns().addCooldown(Items.ENDER_PEARL, 10);
-                saveInventory(player);
+                saveInventory(minecraftPlayer);
                 player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your inventory layout was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
             }
         }
     }
 
-    public static void saveInventory(NexiaPlayer player){
+    public static void saveInventory(ServerPlayer player){
         // /config/nexia/ffa/sky/inventory/savedInventories/uuid.json
 
-        Inventory inventory = player.player().get().inventory;
+        Inventory inventory = player.inventory;
 
         ItemStack ogWoolItem = null;
         int ogWoolItemSlot = 36;
@@ -99,32 +98,32 @@ public class FfaSkyUtil {
             if (item.getItem().toString().endsWith("_wool")) {
                 ogWoolItemSlot = i;
                 ogWoolItem = item;
-                player.player().get().inventory.setItem(i, new ItemStack(Items.WHITE_WOOL, 64));
+                player.inventory.setItem(i, new ItemStack(Items.WHITE_WOOL, 64));
             }
         }
 
-        SavableInventory savableInventory = new SavableInventory(player.player().get().inventory);
+        SavableInventory savableInventory = new SavableInventory(player.inventory);
         String stringInventory = savableInventory.toSave();
 
         try {
-            String file = dataDirectory + "/inventory/savedInventories/" + player.player().uuid + ".json";
+            String file = dataDirectory + "/inventory/savedInventories/" + player.getStringUUID() + ".json";
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(stringInventory);
             fileWriter.close();
         } catch (Exception var6) {
-            LobbyUtil.returnToLobby(player, true);
-            player.sendMessage(Component.text("Failed to set Sky FFA inventory. Please try again or contact a developer.").color(ChatFormat.systemColor));
+            ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
+            player.sendMessage(LegacyChatFormat.format("{f}Failed to save Sky FFA inventory. Please try again or contact a developer."), Util.NIL_UUID);
             return;
         }
 
         if(ogWoolItem != null) {
-            player.player().get().inventory.setItem(ogWoolItemSlot, ogWoolItem);
-            player.refreshInventory();
+            player.inventory.setItem(ogWoolItemSlot, ogWoolItem);
+            ItemStackUtil.sendInventoryRefreshPacket(player);
             // problem solved
         }
     }
 
-    public static void setInventory(NexiaPlayer player){
+    public static void setInventory(ServerPlayer player){
 
         // /config/nexia/ffa/sky/inventory/savedInventories/uuid.json
         // /config/nexia/ffa/sky/inventory/default.json
@@ -138,7 +137,7 @@ public class FfaSkyUtil {
             Gson gson = new Gson();
             defaultInventory = gson.fromJson(defaultJson, SavableInventory.class);
 
-            String layoutPath = String.format(file + "/savedInventories/%s.json", player.player().uuid);
+            String layoutPath = String.format(file + "/savedInventories/%s.json", player.getStringUUID());
             if(new File(layoutPath).exists()) {
                 String layoutJson = Files.readString(Path.of(layoutPath));
                 layout = gson.fromJson(layoutJson, SavableInventory.class);
@@ -148,32 +147,33 @@ public class FfaSkyUtil {
         }
 
         if(defaultInventory == null) {
-            LobbyUtil.returnToLobby(player, true);
-            player.sendMessage(Component.text("Failed to set Sky FFA inventory. Please try again or contact a developer.").color(ChatFormat.systemColor));
+            ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
+            player.sendMessage(LegacyChatFormat.format("{f}Failed to set Sky FFA inventory. Please try again or contact a developer."), Util.NIL_UUID);
             return;
         }
         
         if(layout != null) {
-            InventoryMerger.mergeSafe(player.player().get(), layout.asPlayerInventory(), defaultInventory.asPlayerInventory());
+            InventoryMerger.mergeSafe(player, layout.asPlayerInventory(), defaultInventory.asPlayerInventory());
         } else {
-            player.player().get().inventory.replaceWith(defaultInventory.asPlayerInventory());
+            player.inventory.replaceWith(defaultInventory.asPlayerInventory());
         }
 
         for (int i = 0; i < 41; i++) {
-            Item item = player.player().get().inventory.getItem(i).getItem();
+            Item item = player.inventory.getItem(i).getItem();
             if (item.toString().endsWith("_wool")) {
                 ItemStack coloredWool = setWoolColor(new ItemStack(Items.WHITE_WOOL, 64));
-                player.player().get().inventory.setItem(i, coloredWool);
+                player.inventory.setItem(i, coloredWool);
             }
         }
 
-        player.refreshInventory();
+        ItemStackUtil.sendInventoryRefreshPacket(player);
     }
 
-    public static void joinOrRespawn(NexiaPlayer player) {
-        wasInSpawn.add(player.player().uuid);
-        player.reset(true, GameType.SURVIVAL);
-        player.player().get().addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1000000, 1, true, false, false));
+    public static void joinOrRespawn(ServerPlayer player) {
+        PlayerUtil.resetHealthStatus(player);
+        wasInSpawn.add(player.getUUID());
+        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1000000, 1, true, false, false));
+        player.setGameMode(GameType.SURVIVAL);
         setInventory(player);
     }
 
@@ -186,36 +186,33 @@ public class FfaSkyUtil {
         return itemStack;
     }
 
-    public static void clearEnderpearls(NexiaPlayer player) {
+    public static void clearEnderpearls(ServerPlayer player) {
         BlockPos c1 = ffaCorner1.offset(-10, -ffaCorner1.getY(), -10);
         BlockPos c2 = ffaCorner2.offset(10, 319 - ffaCorner2.getY(), 10);
         AABB aabb = new AABB(c1, c2);
         Predicate<Entity> predicate = o -> true;
         for (ThrownEnderpearl pearl : ffaWorld.getEntities(EntityType.ENDER_PEARL, aabb, predicate)) {
-            if (pearl.getOwner() != null && pearl.getOwner().getUUID().equals(player.player().uuid)) {
+            if (pearl.getOwner() != null && pearl.getOwner().getUUID().equals(player.getUUID())) {
                 pearl.remove();
             }
         }
     }
 
 
-    public static void leaveOrDie(@NotNull NexiaPlayer player, @Nullable DamageSource source, boolean leaving) {
+    public static void leaveOrDie(@NotNull ServerPlayer player, @Nullable DamageSource source, boolean leaving) {
 
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player.player().get());
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
 
-        if(attacker != null) {
-            NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(attacker));
-            if(!nexiaPlayer.equals(player)) {
-                SavedPlayerData data = PlayerDataManager.get(nexiaPlayer).savedData;
+        if(attacker != null && attacker != player) {
+            SavedPlayerData data = PlayerDataManager.get(attacker).savedData;
 
-                data.killstreak++;
-                if(data.killstreak > data.bestKillstreak){
-                    data.bestKillstreak = data.killstreak;
-                }
-                data.kills++;
-                FfaSkyUtil.killHeal(nexiaPlayer);
-                FfaSkyUtil.giveKillLoot(nexiaPlayer, player);
+            data.killstreak++;
+            if(data.killstreak > data.bestKillstreak){
+                data.bestKillstreak = data.killstreak;
             }
+            data.kills++;
+            FfaSkyUtil.killHeal(attacker);
+            FfaSkyUtil.giveKillLoot(attacker, player);
         }
 
         FfaSkyUtil.clearEnderpearls(player);
@@ -233,19 +230,19 @@ public class FfaSkyUtil {
         }
     }
 
-    public static void clearArrows(NexiaPlayer player) {
+    public static void clearArrows(ServerPlayer player) {
         BlockPos c1 = ffaCorner1.offset(-10, -ffaCorner1.getY(), -10);
         BlockPos c2 = ffaCorner2.offset(10, 319 - ffaCorner2.getY(), 10);
         AABB aabb = new AABB(c1, c2);
         Predicate<Entity> predicate = o -> true;
         for (Arrow arrow : ffaWorld.getEntities(EntityType.ARROW, aabb, predicate)) {
-            if (arrow.getOwner() != null && arrow.getOwner().getUUID().equals(player.player().uuid)) {
+            if (arrow.getOwner() != null && arrow.getOwner().getUUID().equals(player.getUUID())) {
                 arrow.remove();
             }
         }
     }
 
-    public static void giveKillLoot(NexiaPlayer attacker, NexiaPlayer player) {
+    public static void giveKillLoot(ServerPlayer attacker, ServerPlayer player) {
         if(!FfaSkyUtil.isFfaPlayer(attacker)) return;
         HashMap<Integer, ItemStack> availableRewards = (HashMap<Integer, ItemStack>) killRewards.clone();
         ArrayList<ItemStack> givenRewards = new ArrayList<>();
@@ -253,66 +250,68 @@ public class FfaSkyUtil {
 
         for (int i = 0; i < Math.min(2, availableRewards.size()); i++) {
             // Pick reward
-            int randomIndex = new Random().nextInt(availableRewards.size());
+            int randomIndex = attacker.getRandom().nextInt(availableRewards.size());
             int killRewardIndex = (Integer)availableRewards.keySet().toArray()[randomIndex];
             ItemStack reward = availableRewards.get(killRewardIndex);
             availableRewards.remove(killRewardIndex);
 
             // Give reward
-            if (attacker.player().get().inventory.contains(reward)) {
-                attacker.player().get().inventory.add(reward.copy());
+            if (attacker.inventory.contains(reward)) {
+                attacker.inventory.add(reward.copy());
             }
             givenRewards.add(reward.copy());
         }
 
         // Inform player about given rewards
         
-        attacker.sendMessage(Component.text("[").color(ChatFormat.arrowColor)
+        PlayerUtil.getFactoryPlayer(attacker).sendMessage(Component.text("[").color(ChatFormat.arrowColor)
                 .append(Component.text("☠").color(ChatFormat.brandColor1))
                 .append(Component.text("] ").color(ChatFormat.arrowColor))
-                .append(Component.text(player.player().name).color(ChatFormat.brandColor2))
+                .append(Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2))
         );
 
         for (ItemStack givenReward : givenRewards) {
             String itemName = LegacyChatFormat.removeColors(givenReward.getHoverName().getString());
             if (givenReward.getCount() > 1) itemName += "s";
-            attacker.sendMessage(Component.text("[").color(ChatFormat.arrowColor)
+            PlayerUtil.getFactoryPlayer(attacker).sendMessage(Component.text("[").color(ChatFormat.arrowColor)
                     .append(Component.text("+" + givenReward.getCount()).color(ChatFormat.brandColor1))
                     .append(Component.text("] ").color(ChatFormat.arrowColor))
                     .append(Component.text(itemName).color(ChatFormat.brandColor2))
             );
         }
-        attacker.sendSound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.MASTER, 0.75f, 1f);
+        PlayerUtil.sendSound(attacker, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.MASTER, 0.75f, 1f);
     }
 
-    public static void killHeal(NexiaPlayer player) {
+    public static void killHeal(ServerPlayer player) {
         if(!FfaSkyUtil.isFfaPlayer(player)) return;
         int minHeal = 4;
         int maxHeal = 11;
-        float maxHealth = player.player().get().getMaxHealth();
-        float lostHearts = maxHealth - player.player().get().getHealth();
+        float maxHealth = player.getMaxHealth();
+        float lostHearts = maxHealth - player.getHealth();
 
         int heal = (int)(minHeal + (lostHearts - minHeal) * (maxHeal - minHeal) / (maxHealth - minHeal));
 
-        if (player.player().get().hasEffect(MobEffects.REGENERATION)) {
-            player.player().get().heal(heal);
+        if (player.hasEffect(MobEffects.REGENERATION)) {
+            player.heal(heal);
         } else {
-            player.player().get().addEffect(new MobEffectInstance(MobEffects.REGENERATION, heal, 5, false, false));
+            player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, heal, 5, false, false));
         }
     }
 
-    public static boolean canGoToSpawn(NexiaPlayer player) {
-        if(!FfaSkyUtil.isFfaPlayer(player) || FfaSkyUtil.wasInSpawn.contains(player.player().uuid)) return true;
-        return !(Math.round(player.getFactoryPlayer().getHealth()) < 20);
+    public static boolean canGoToSpawn(ServerPlayer player) {
+        if(!FfaSkyUtil.isFfaPlayer(player) || FfaSkyUtil.wasInSpawn.contains(player.getUUID())) return true;
+        return !(Math.round(player.getHealth()) < 20);
     }
 
-    public static void sendToSpawn(NexiaPlayer player) {
+    public static void sendToSpawn(ServerPlayer player) {
+        player.inventory.clearContent();
         FfaSkyUtil.clearArrows(player);
         FfaSkyUtil.clearEnderpearls(player);
-        FfaSkyUtil.wasInSpawn.add(player.player().uuid);
+        player.removeAllEffects();
+        FfaSkyUtil.wasInSpawn.add(player.getUUID());
 
-        player.reset(true, GameType.SURVIVAL);
-        spawn.teleportPlayer(ffaWorld, player.player().get());
+        player.setGameMode(GameType.ADVENTURE);
+        spawn.teleportPlayer(ffaWorld, player);
         FfaSkyUtil.setInventory(player);
     }
 
@@ -329,29 +328,35 @@ public class FfaSkyUtil {
         return potion;
     }
 
-    public static boolean beforeBuild(NexiaPlayer player, BlockPos blockPos) {
-        if (player.player().get().isCreative()) return true;
-        if (wasInSpawn.contains(player.player().uuid) || blockPos.getY() >= buildLimitY) {
-            player.sendHandItemPacket();
+    public static boolean beforeBuild(ServerPlayer player, BlockPos blockPos) {
+        if (player.isCreative()) return true;
+        if (wasInSpawn.contains(player.getUUID()) || blockPos.getY() >= buildLimitY) {
+            InventoryUtil.sendHandItemPacket(player, player.getUsedItemHand());
             return false;
         }
         return canBuild(player, blockPos);
     }
 
-    public static boolean beforeDamage(NexiaPlayer player, DamageSource damageSource) {
+    public static boolean beforeDamage(ServerPlayer player, DamageSource damageSource) {
         if (damageSource == DamageSource.OUT_OF_WORLD) return true;
 
         return !isInFfaSpawn(player);
     }
 
-    public static void afterPlace(NexiaPlayer player, BlockPos blockPos, InteractionHand hand) {
-        if (!player.player().get().isCreative()) {
-            if (player.player().get().getItemInHand(hand).getItem().toString().endsWith("_wool")) {
-                player.player().get().getItemInHand(hand).setCount(64);
-                player.refreshInventory();
+    public static void afterPlace(ServerPlayer player, BlockPos blockPos, InteractionHand hand) {
+        if (!player.isCreative()) {
+            if (player.getItemInHand(hand).getItem().toString().endsWith("_wool")) {
+                player.getItemInHand(hand).setCount(64);
+                ItemStackUtil.sendInventoryRefreshPacket(player);
             }
             SkyFfaBlocks.placeBlock(blockPos);
         }
+    }
+
+    private static ItemStack shears() {
+        ItemStack shears = new ItemStack(Items.SHEARS);
+        shears.enchant(Enchantments.DIGGING_EFFICIENCY, 4);
+        return shears;
     }
 
     static {

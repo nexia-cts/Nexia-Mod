@@ -1,9 +1,9 @@
 package com.nexia.minigames.games.bedwars.custom;
 
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.projectile.ThrownEgg;
 import net.minecraft.world.level.Level;
@@ -18,12 +18,12 @@ public class BwBridgeEgg extends ThrownEgg {
     public EntityPos[] previousPositions;
     public int oldestPosIndex;
 
-    public NexiaPlayer owner;
+    public ServerPlayer owner;
     public Block trailBlock;
     public int age;
 
-    public BwBridgeEgg(Level level, NexiaPlayer player, Block trailBlock) {
-        super(level, player.player().get());
+    public BwBridgeEgg(Level level, ServerPlayer player, Block trailBlock) {
+        super(level, player);
 
         this.owner = player;
         this.trailBlock = trailBlock;

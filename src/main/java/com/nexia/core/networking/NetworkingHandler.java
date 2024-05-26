@@ -14,20 +14,20 @@ public class NetworkingHandler {
 
     public NetworkingHandler() {
         ServerPlayConnectionEvents.JOIN.register(detectionNetworkChannel,(handler, sender, server) -> {
-            PlayerDataManager.addPlayerData(handler.player.getUUID());
+            PlayerDataManager.addPlayerData(handler.player);
 
             if(!ServerPlayNetworking.canSend(handler.player, detectCombatify)) {
                 if(ServerPlayNetworking.canSend(handler.player, new ResourceLocation("fabric", "registry/sync/direct"))) {
-                    PlayerDataManager.get(handler.player.getUUID()).clientType = PlayerData.ClientType.VIAFABRICPLUS;
+                    PlayerDataManager.get(handler.player).clientType = PlayerData.ClientType.VIAFABRICPLUS;
                     handler.player.connection.disconnect(new TextComponent("§5§lNexia\n§7You need to install §c§lCombatify§7 in order to join the server.\n\n§chttps://modrinth.com/mod/combatify"));
                     return;
                 }
 
-                PlayerDataManager.get(handler.player.getUUID()).clientType = PlayerData.ClientType.COMBAT_TEST;
+                PlayerDataManager.get(handler.player).clientType = PlayerData.ClientType.COMBAT_TEST;
                 return;
             }
 
-            PlayerDataManager.get(handler.player.getUUID()).clientType = PlayerData.ClientType.COMBATIFY;
+            PlayerDataManager.get(handler.player).clientType = PlayerData.ClientType.COMBATIFY;
             return;
         });
     }

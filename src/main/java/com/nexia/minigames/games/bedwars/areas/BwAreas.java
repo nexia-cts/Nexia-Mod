@@ -1,7 +1,8 @@
 package com.nexia.minigames.games.bedwars.areas;
 
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.pos.ProtectionBlock;
@@ -82,31 +83,32 @@ public class BwAreas {
         return !canBuildAt(null, blockPos, false);
     }
 
-    public static boolean canBuildAt(@Nullable NexiaPlayer player, BlockPos blockPos, boolean sendMessage) {
+    public static boolean canBuildAt(@Nullable ServerPlayer player, BlockPos blockPos, boolean sendMessage) {
         ProtectionMap protectionMap = BwAreas.protectionMap;
         BlockPos mapPos = blockPos.subtract(bedWarsCorner1);
         sendMessage = sendMessage && player != null;
 
+        Player factoryPlayer = null;
+
+        if(player != null) {
+            factoryPlayer = PlayerUtil.getFactoryPlayer(player);
+        }
+
         if (protectionMap == null) {
             if (sendMessage) {
-                player.sendMessage(Component.text("An error occurred, please inform the admins.").color(ChatFormat.failColor));
+                factoryPlayer.sendMessage(Component.text("An error occurred, please inform the admins.").color(ChatFormat.failColor));
             }
             return false;
         }
 
-        if ((player != null && !isBedWarsWorld(player.player().get().getLevel())) || !isInsideBorder(mapPos, protectionMap.map)) {
+        if ((player != null && !isBedWarsWorld(player.getLevel())) || !isInsideBorder(mapPos, protectionMap.map)) {
             if (sendMessage) {
-                player.sendMessage(Component.text("You have reached the built limit.").color(ChatFormat.failColor));
+                factoryPlayer.sendMessage(Component.text("You have reached the built limit.").color(ChatFormat.failColor));
             }
             return false;
         }
 
-        ServerPlayer serverPlayer = null;
-        if(player != null) {
-            serverPlayer = player.player().get();
-        }
-
-        return protectionMap.canBuiltAt(bedWarsCorner1, blockPos, serverPlayer, sendMessage);
+        return protectionMap.canBuiltAt(bedWarsCorner1, blockPos, player, sendMessage);
     }
 
     public static void tick() {

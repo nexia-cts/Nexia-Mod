@@ -6,7 +6,6 @@ import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.duels.CustomDuelGUI;
 import com.nexia.core.gui.duels.DuelGUI;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.FfaUtil;
@@ -36,7 +35,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -62,16 +60,13 @@ public abstract class ServerPlayerMixin extends Player {
     @Inject(method = "<init>", at = @At("TAIL"))
     private void init(MinecraftServer minecraftServer, ServerLevel serverLevel, GameProfile gameProfile, ServerPlayerGameMode serverPlayerGameMode, CallbackInfo ci) {
         ServerPlayer player = (ServerPlayer)(Object)this;
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
-        if (FfaUtil.isFfaPlayer(nexiaPlayer) || BwUtil.isBedWarsPlayer(nexiaPlayer) || OitcGame.isOITCPlayer(nexiaPlayer)) {
+        if (FfaUtil.isFfaPlayer(player) || BwUtil.isBedWarsPlayer(player) || OitcGame.isOITCPlayer(player)) {
             spawnInvulnerableTime = 0;
         }
     }
     @Inject(method = "attack", at = @At("HEAD"), cancellable = true)
     public void onAttack(Entity entity, CallbackInfo ci) {
         ServerPlayer attacker = (ServerPlayer) (Object) this;
-        NexiaPlayer nexiaAttacker = new NexiaPlayer(new AccuratePlayer(attacker));
-
         if(level == LobbyUtil.lobbyWorld && entity instanceof ServerPlayer player && player != attacker) {
             String name = this.getItemInHand(InteractionHand.MAIN_HAND).getDisplayName().toString().toLowerCase();
             if(name.contains("custom duel sword")) {
@@ -89,17 +84,15 @@ public abstract class ServerPlayerMixin extends Player {
             return;
         }
 
-        if(level.equals(FootballGame.world) && FootballGame.isFootballPlayer(nexiaAttacker) && entity instanceof ArmorStand) {
+        if(level.equals(FootballGame.world) && FootballGame.isFootballPlayer(attacker) && entity instanceof ArmorStand) {
 
             if(!this.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(Items.NETHERITE_SWORD)) {
-                nexiaAttacker.sendSound(SoundEvents.PLAYER_ATTACK_NODAMAGE, SoundSource.PLAYERS, 100, 1);
-
-
+                PlayerUtil.sendSound(attacker, SoundEvents.PLAYER_ATTACK_NODAMAGE, SoundSource.PLAYERS, 100, 1);
                 ci.cancel();
                 return;
             }
             if(attacker.getCooldowns().isOnCooldown(Items.NETHERITE_SWORD)) {
-                nexiaAttacker.sendSound(SoundEvents.PLAYER_ATTACK_NODAMAGE, SoundSource.PLAYERS, 100, 1);
+                PlayerUtil.sendSound(attacker, SoundEvents.PLAYER_ATTACK_NODAMAGE, SoundSource.PLAYERS, 100, 1);
                 ci.cancel();
                 return;
             }
@@ -112,27 +105,26 @@ public abstract class ServerPlayerMixin extends Player {
     @Inject(method = "die", at = @At("HEAD"))
     private void die(DamageSource damageSource, CallbackInfo ci) {
         ServerPlayer player = (ServerPlayer)(Object)this;
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(new AccuratePlayer(player));
-        PlayerGameMode gameMode = PlayerDataManager.get(nexiaPlayer).gameMode;
-        PlayerData duelsData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer);
+        PlayerGameMode gameMode = PlayerDataManager.get(player).gameMode;
+        PlayerData duelsData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
 
-        if (FfaUtil.isFfaPlayer(nexiaPlayer)) {
-            FfaUtil.leaveOrDie(nexiaPlayer, damageSource, false);
+        if (FfaUtil.isFfaPlayer(player)) {
+            FfaUtil.leaveOrDie(player, damageSource, false);
         }
         else if (BwAreas.isBedWarsWorld(getLevel())) {
-            BwPlayerEvents.death(nexiaPlayer );
+            BwPlayerEvents.death(player);
         }
         else if(gameMode == PlayerGameMode.OITC){
-            OitcGame.death(nexiaPlayer, damageSource);
+            OitcGame.death(player, damageSource);
         }
         else if(gameMode == PlayerGameMode.SKYWARS) {
-            SkywarsGame.death(nexiaPlayer, damageSource);
+            SkywarsGame.death(player, damageSource);
         }
         else if(gameMode == PlayerGameMode.LOBBY && duelsData.gameOptions != null) {
-            if(duelsData.gameOptions.duelsGame != null) duelsData.gameOptions.duelsGame.death(nexiaPlayer, damageSource);
-            if(duelsData.gameOptions.teamDuelsGame != null) duelsData.gameOptions.teamDuelsGame.death(nexiaPlayer, damageSource);
-            if(duelsData.gameOptions.customDuelsGame != null) duelsData.gameOptions.customDuelsGame.death(nexiaPlayer, damageSource);
-            if(duelsData.gameOptions.customTeamDuelsGame != null) duelsData.gameOptions.customTeamDuelsGame.death(nexiaPlayer, damageSource);
+            if(duelsData.gameOptions.duelsGame != null) duelsData.gameOptions.duelsGame.death(player, damageSource);
+            if(duelsData.gameOptions.teamDuelsGame != null) duelsData.gameOptions.teamDuelsGame.death(player, damageSource);
+            if(duelsData.gameOptions.customDuelsGame != null) duelsData.gameOptions.customDuelsGame.death(player, damageSource);
+            if(duelsData.gameOptions.customTeamDuelsGame != null) duelsData.gameOptions.customTeamDuelsGame.death(player, damageSource);
         }
 
     }
@@ -140,7 +132,7 @@ public abstract class ServerPlayerMixin extends Player {
     @Redirect(method = "doCloseContainer", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/AbstractContainerMenu;removed(Lnet/minecraft/world/entity/player/Player;)V"))
     private void removed(AbstractContainerMenu instance, Player player) {
 
-        if (FfaUtil.isFfaPlayer(new NexiaPlayer(new AccuratePlayer((ServerPlayer) player)))) {
+        if (FfaUtil.isFfaPlayer(player)) {
             player.inventory.add(inventory.getCarried());
             player.inventory.setCarried(ItemStack.EMPTY);
             return;

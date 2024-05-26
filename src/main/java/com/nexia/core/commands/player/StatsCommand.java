@@ -36,7 +36,7 @@ public class StatsCommand {
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 
         ServerPlayer mcPlayer = context.getSource().getPlayerOrException();
-        PlayerData executerData = com.nexia.core.utilities.player.PlayerDataManager.get(mcPlayer.getUUID());
+        PlayerData executerData = com.nexia.core.utilities.player.PlayerDataManager.get(mcPlayer);
         Player player = PlayerUtil.getFactoryPlayer(mcPlayer);
 
 
@@ -54,7 +54,7 @@ public class StatsCommand {
         if(executerData.gameMode == PlayerGameMode.FFA){
 
             message = ChatFormat.separatorLine("FFA Classic Stats");
-            SavedPlayerData data = PlayerDataManager.get(mcPlayer.getUUID()).savedData;
+            SavedPlayerData data = PlayerDataManager.get(mcPlayer).savedData;
 
             int kills = data.kills;
             int deaths = data.deaths;
@@ -63,7 +63,7 @@ public class StatsCommand {
 
             if(executerData.ffaGameMode == FfaGameMode.KITS) {
                 message = ChatFormat.separatorLine("Kit FFA Stats");
-                com.nexia.ffa.kits.utilities.player.SavedPlayerData kData = com.nexia.ffa.kits.utilities.player.PlayerDataManager.get(mcPlayer.getUUID()).savedData;
+                com.nexia.ffa.kits.utilities.player.SavedPlayerData kData = com.nexia.ffa.kits.utilities.player.PlayerDataManager.get(mcPlayer).savedData;
                 kills = kData.kills;
                 deaths = kData.deaths;
                 killstreak = kData.killstreak;
@@ -72,7 +72,7 @@ public class StatsCommand {
 
             if(executerData.ffaGameMode == FfaGameMode.UHC) {
                 message = ChatFormat.separatorLine("UHC FFA Stats");
-                com.nexia.ffa.uhc.utilities.player.SavedPlayerData kData = com.nexia.ffa.uhc.utilities.player.PlayerDataManager.get(mcPlayer.getUUID()).savedData;
+                com.nexia.ffa.uhc.utilities.player.SavedPlayerData kData = com.nexia.ffa.uhc.utilities.player.PlayerDataManager.get(mcPlayer).savedData;
                 kills = kData.kills;
                 deaths = kData.deaths;
                 killstreak = kData.killstreak;
@@ -81,7 +81,7 @@ public class StatsCommand {
 
             if(executerData.ffaGameMode == FfaGameMode.SKY) {
                 message = ChatFormat.separatorLine("Sky FFA Stats");
-                com.nexia.ffa.sky.utilities.player.SavedPlayerData kData = com.nexia.ffa.sky.utilities.player.PlayerDataManager.get(mcPlayer.getUUID()).savedData;
+                com.nexia.ffa.sky.utilities.player.SavedPlayerData kData = com.nexia.ffa.sky.utilities.player.PlayerDataManager.get(mcPlayer).savedData;
                 kills = kData.kills;
                 deaths = kData.deaths;
                 killstreak = kData.killstreak;
@@ -114,7 +114,7 @@ public class StatsCommand {
 
         if(executerData.gameMode == PlayerGameMode.LOBBY){
             message = ChatFormat.separatorLine("Duels Stats");
-            com.nexia.minigames.games.duels.util.player.SavedPlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(mcPlayer.getUUID()).savedData;
+            com.nexia.minigames.games.duels.util.player.SavedPlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(mcPlayer).savedData;
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
@@ -130,7 +130,7 @@ public class StatsCommand {
 
         if(executerData.gameMode == PlayerGameMode.BEDWARS){
             message = ChatFormat.separatorLine("Bedwars Stats");
-            com.nexia.minigames.games.bedwars.util.player.SavedPlayerData data = com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.get(mcPlayer.getUUID()).savedData;
+            com.nexia.minigames.games.bedwars.util.player.SavedPlayerData data = com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.get(mcPlayer).savedData;
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
@@ -149,7 +149,7 @@ public class StatsCommand {
 
         if(executerData.gameMode == PlayerGameMode.OITC){
             message = ChatFormat.separatorLine("OITC Stats");
-            com.nexia.minigames.games.oitc.util.player.SavedPlayerData data = com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(mcPlayer.getUUID()).savedData;
+            com.nexia.minigames.games.oitc.util.player.SavedPlayerData data = com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(mcPlayer).savedData;
 
             player.sendMessage(message);
             player.sendMessage(user);
@@ -169,7 +169,7 @@ public class StatsCommand {
 
         if(executerData.gameMode == PlayerGameMode.FOOTBALL){
             message = ChatFormat.separatorLine("Football Stats");
-            com.nexia.minigames.games.football.util.player.SavedPlayerData data = com.nexia.minigames.games.football.util.player.PlayerDataManager.get(mcPlayer.getUUID()).savedData;
+            com.nexia.minigames.games.football.util.player.SavedPlayerData data = com.nexia.minigames.games.football.util.player.PlayerDataManager.get(mcPlayer).savedData;
 
             player.sendMessage(message);
             player.sendMessage(user);
@@ -189,7 +189,7 @@ public class StatsCommand {
 
         if(executerData.gameMode == PlayerGameMode.SKYWARS){
             message = ChatFormat.separatorLine("SkyWars Stats");
-            com.nexia.minigames.games.skywars.util.player.SavedPlayerData data = com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(mcPlayer.getUUID()).savedData;
+            com.nexia.minigames.games.skywars.util.player.SavedPlayerData data = com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(mcPlayer).savedData;
 
             player.sendMessage(message);
             player.sendMessage(user);
@@ -233,7 +233,7 @@ public class StatsCommand {
 
         if(gamemode.equalsIgnoreCase("ffa classic") || gamemode.equalsIgnoreCase("kit ffa") || gamemode.equalsIgnoreCase("sky ffa") || gamemode.equalsIgnoreCase("uhc ffa")){
             message = ChatFormat.separatorLine("FFA Classic Stats");
-            SavedPlayerData data = PlayerDataManager.get(otherPlayer.getUUID()).savedData;
+            SavedPlayerData data = PlayerDataManager.get(otherPlayer).savedData;
 
             int kills = data.kills;
             int deaths = data.deaths;
@@ -242,7 +242,7 @@ public class StatsCommand {
 
             if(gamemode.equalsIgnoreCase("kit ffa")) {
                 message = ChatFormat.separatorLine("Kit FFA Stats");
-                com.nexia.ffa.kits.utilities.player.SavedPlayerData kData = com.nexia.ffa.kits.utilities.player.PlayerDataManager.get(otherPlayer.getUUID()).savedData;
+                com.nexia.ffa.kits.utilities.player.SavedPlayerData kData = com.nexia.ffa.kits.utilities.player.PlayerDataManager.get(otherPlayer).savedData;
                 kills = kData.kills;
                 deaths = kData.deaths;
                 killstreak = kData.killstreak;
@@ -251,7 +251,7 @@ public class StatsCommand {
 
             if(gamemode.equalsIgnoreCase("sky ffa")) {
                 message = ChatFormat.separatorLine("Sky FFA Stats");
-                com.nexia.ffa.sky.utilities.player.SavedPlayerData kData = com.nexia.ffa.sky.utilities.player.PlayerDataManager.get(otherPlayer.getUUID()).savedData;
+                com.nexia.ffa.sky.utilities.player.SavedPlayerData kData = com.nexia.ffa.sky.utilities.player.PlayerDataManager.get(otherPlayer).savedData;
                 kills = kData.kills;
                 deaths = kData.deaths;
                 killstreak = kData.killstreak;
@@ -260,7 +260,7 @@ public class StatsCommand {
 
             if(gamemode.equalsIgnoreCase("uhc ffa")) {
                 message = ChatFormat.separatorLine("UHC FFA Stats");
-                com.nexia.ffa.uhc.utilities.player.SavedPlayerData kData = com.nexia.ffa.uhc.utilities.player.PlayerDataManager.get(otherPlayer.getUUID()).savedData;
+                com.nexia.ffa.uhc.utilities.player.SavedPlayerData kData = com.nexia.ffa.uhc.utilities.player.PlayerDataManager.get(otherPlayer).savedData;
                 kills = kData.kills;
                 deaths = kData.deaths;
                 killstreak = kData.killstreak;
@@ -293,7 +293,7 @@ public class StatsCommand {
 
         if(gamemode.equalsIgnoreCase("duels")){
             message = ChatFormat.separatorLine("Duels Stats");
-            com.nexia.minigames.games.duels.util.player.SavedPlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(otherPlayer.getUUID()).savedData;
+            com.nexia.minigames.games.duels.util.player.SavedPlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(otherPlayer).savedData;
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
@@ -309,7 +309,7 @@ public class StatsCommand {
 
         if(gamemode.equalsIgnoreCase("bedwars")){
             message = ChatFormat.separatorLine("Bedwars Stats");
-            com.nexia.minigames.games.bedwars.util.player.SavedPlayerData data = com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.get(otherPlayer.getUUID()).savedData;
+            com.nexia.minigames.games.bedwars.util.player.SavedPlayerData data = com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.get(otherPlayer).savedData;
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
@@ -328,7 +328,7 @@ public class StatsCommand {
 
         if(gamemode.equalsIgnoreCase("oitc")){
             message = ChatFormat.separatorLine("OITC Stats");
-            com.nexia.minigames.games.oitc.util.player.SavedPlayerData data = com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(otherPlayer.getUUID()).savedData;
+            com.nexia.minigames.games.oitc.util.player.SavedPlayerData data = com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(otherPlayer).savedData;
 
             player.sendMessage(message);
             player.sendMessage(user);
@@ -348,7 +348,7 @@ public class StatsCommand {
 
         if(gamemode.equalsIgnoreCase("football")){
             message = ChatFormat.separatorLine("Football Stats");
-            com.nexia.minigames.games.football.util.player.SavedPlayerData data = com.nexia.minigames.games.football.util.player.PlayerDataManager.get(otherPlayer.getUUID()).savedData;
+            com.nexia.minigames.games.football.util.player.SavedPlayerData data = com.nexia.minigames.games.football.util.player.PlayerDataManager.get(otherPlayer).savedData;
 
             player.sendMessage(message);
             player.sendMessage(user);
@@ -368,7 +368,7 @@ public class StatsCommand {
 
         if(gamemode.equalsIgnoreCase("skywars")){
             message = ChatFormat.separatorLine("SkyWars Stats");
-            com.nexia.minigames.games.skywars.util.player.SavedPlayerData data = com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(otherPlayer.getUUID()).savedData;
+            com.nexia.minigames.games.skywars.util.player.SavedPlayerData data = com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(otherPlayer).savedData;
 
             player.sendMessage(message);
             player.sendMessage(user);

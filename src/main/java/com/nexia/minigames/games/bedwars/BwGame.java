@@ -1,10 +1,8 @@
 package com.nexia.minigames.games.bedwars;
 
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.misc.NxFileUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.time.ServerTime;
@@ -20,8 +18,6 @@ import com.nexia.minigames.games.bedwars.util.BwPlayerTracker;
 import com.nexia.minigames.games.bedwars.util.BwScoreboard;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.bedwars.util.player.PlayerDataManager;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.title.Title;
 import net.minecraft.Util;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,9 +28,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.scores.PlayerTeam;
-import net.notcoded.codelib.players.AccuratePlayer;
 
-import java.time.Duration;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -50,7 +44,7 @@ public class BwGame {
     public static final int playersInTeam = 1;
     public static int maxPlayerCount = 0;
 
-    public static ArrayList<NexiaPlayer> queueList = new ArrayList<>();
+    public static ArrayList<ServerPlayer> queueList = new ArrayList<>();
     public static final int requiredPlayers = playersInTeam * 2;
 
     public static final int queueWaitTime = 15;
@@ -62,18 +56,18 @@ public class BwGame {
     protected static final int winScreenTime = 7;
     protected static int winScreenTimer = winScreenTime;
 
-    public static ArrayList<NexiaPlayer> spectatorList = new ArrayList<>();
+    public static ArrayList<ServerPlayer> spectatorList = new ArrayList<>();
     public static PlayerTeam spectatorTeam;
 
-    public static HashMap<NexiaPlayer, Integer> respawningList = new HashMap<>();
+    public static HashMap<ServerPlayer, Integer> respawningList = new HashMap<>();
     public static final int respawnTime = 5;
 
-    public static HashMap<NexiaPlayer, Integer> invulnerabilityList = new HashMap<>();
+    public static HashMap<ServerPlayer, Integer> invulnerabilityList = new HashMap<>();
     public static final int invulnerabilityTime = 1;
-    public static HashMap<NexiaPlayer, ItemStack[]> invisiblePlayerArmor = new HashMap<>();
-    public static HashMap<NexiaPlayer, ArrayList<BwTrident>> gameTridents = new HashMap<>();
+    public static HashMap<ServerPlayer, ItemStack[]> invisiblePlayerArmor = new HashMap<>();
+    public static HashMap<ServerPlayer, ArrayList<BwTrident>> gameTridents = new HashMap<>();
 
-    public static ArrayList<NexiaPlayer> winners = new ArrayList<>();
+    public static ArrayList<ServerPlayer> winners = new ArrayList<>();
     public static Integer winnerColor = null;
 
     // ----- TICK METHODS --------------------------------------------------------------------------------
@@ -97,34 +91,31 @@ public class BwGame {
     }
 
     private static void respawnTick() {
-        for (Iterator<NexiaPlayer> it = respawningList.keySet().iterator(); it.hasNext(); ) {
-            NexiaPlayer player = it.next();
+        for (Iterator<ServerPlayer> it = respawningList.keySet().iterator(); it.hasNext(); ) {
+            ServerPlayer player = it.next();
             int timeLeft = respawningList.get(player);
 
             if (timeLeft % 20 == 0) {
-                player.sendTitle(Title.title(Component.text("You died!").color(ChatFormat.failColor),
-                        Component.text("Respawning in ").color(ChatFormat.brandColor1)
-                                .append(Component.text(timeLeft / 20).color(ChatFormat.brandColor2))
-                                .append(Component.text("...").color(ChatFormat.brandColor1)),
-                        Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0))
-                ));
-
+                PlayerUtil.sendTitle(player, "\247cYou died!",
+                        LegacyChatFormat.brandColor1 + "Respawning in " +
+                                LegacyChatFormat.brandColor2 + timeLeft / 20 + LegacyChatFormat.brandColor1 + "...",
+                        0, 20, 10);
             }
             respawningList.replace(player, timeLeft - 1);
             if (respawningList.get(player) <= 0) {
                 it.remove();
-                if (BwUtil.isBedWarsPlayer(player)) BwPlayers.sendToSpawn(player);
+                if (BwUtil.isBedWarsPlayer(player)) BwPlayers.sendToSpawn(PlayerUtil.getFixedPlayer(player));
             }
         }
     }
 
     private static void invulnerabilityTick() {
-        for (Iterator<NexiaPlayer> it = invulnerabilityList.keySet().iterator(); it.hasNext(); ) {
-            NexiaPlayer player = it.next();
+        for (Iterator<ServerPlayer> it = invulnerabilityList.keySet().iterator(); it.hasNext(); ) {
+            ServerPlayer player = it.next();
             invulnerabilityList.replace(player, invulnerabilityList.get(player) - 1);
             if (invulnerabilityList.get(player) <= 0) {
                 it.remove();
-                if (BwUtil.isBedWarsPlayer(player)) player.player().get().setInvulnerable(false);
+                if (BwUtil.isBedWarsPlayer(player)) player.setInvulnerable(false);
             }
         }
     }
@@ -149,12 +140,8 @@ public class BwGame {
             queueCountdown = queueWaitTime;
             startBedWars();
         } else if (announcedQueueSeconds.contains(queueCountdown)) {
-            for(NexiaPlayer player : queueList) {
-                player.sendMessage(Component.text("The game will start in ").color(ChatFormat.systemColor)
-                        .append(Component.text(queueCountdown).color(ChatFormat.brandColor2)
-                                .append(Component.text( "seconds.").color(ChatFormat.systemColor)))
-                );
-            }
+            PlayerUtil.broadcast(queueList, LegacyChatFormat.chatColor2 + "The game will start in " +
+                    LegacyChatFormat.brandColor2 + queueCountdown + LegacyChatFormat.chatColor2 + " seconds.");
         }
         if (queueCountdown > 0 && queueCountdown <= 3) {
             PlayerUtil.broadcastSound(queueList, SoundEvents.NOTE_BLOCK_PLING, SoundSource.MASTER, 0.05f, 1f);
@@ -183,16 +170,11 @@ public class BwGame {
 
         int secondsLeft = gameLength - gameTicks / 20;
 
-        if (secondsLeft <= gameEndWarningTimes.getFirst()) {
+        if (secondsLeft <= gameEndWarningTimes.get(0)) {
             for (Integer warningTime : gameEndWarningTimes) {
                 if (secondsLeft == warningTime) {
-                    for(NexiaPlayer player : BwPlayers.getViewers()) {
-                        player.sendMessage(Component.text("The game will end in ").color(ChatFormat.systemColor)
-                                .append(Component.text(secondsLeft).color(ChatFormat.failColor))
-                                .append(Component.text(" seconds.").color(ChatFormat.systemColor))
-                        );
-                    }
-
+                    PlayerUtil.broadcast(BwPlayers.getViewers(),
+                            "\2477The game will end in \247c" + secondsLeft + " \2477seconds.");
                     break;
                 }
             }
@@ -237,26 +219,15 @@ public class BwGame {
         for (BwTeam team : BwTeam.allTeams.values()) {
             if (team.players == null) continue;
 
-            for (NexiaPlayer player : team.players) {
-                player.player().get().getEnderChestInventory().clearContent();
-                player.getFactoryPlayer().getInventory().clear();
+            for (ServerPlayer player : team.players) {
+                player.getEnderChestInventory().clearContent();
+                player.inventory.clearContent();
                 BwPlayers.sendToSpawn(player);
-
-                player.sendMessage(Component.text("The game has started. ", ChatFormat.systemColor)
-                        .append(Component.text("Good luck!", ChatFormat.brandColor2))
-                );
-
-                player.sendTitle(Title.title(
-                        Component.text("You're", ChatFormat.normalColor)
-                                .append(Component.text(team.textColor + team.displayName))
-                                .append(Component.text("!", ChatFormat.normalColor)),
-
-
-                        Component.text(""),
-                        Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofSeconds(1))
-                ));
-
-                player.getFactoryPlayer().removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                player.sendMessage(new TextComponent(LegacyChatFormat.chatColor2 + "The game has started. " +
+                        LegacyChatFormat.brandColor2 + "Good luck" + LegacyChatFormat.chatColor2 + "!"), Util.NIL_UUID);
+                PlayerUtil.sendTitle(player,
+                        "You're " + team.textColor + team.displayName + "\247f!", "", 0, 60, 20);
+                player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
             }
         }
     }
@@ -291,47 +262,32 @@ public class BwGame {
     private static void sendGameEndMessage() {
         ArrayList<BwTeam> aliveTeams = BwTeam.getAliveTeams();
 
-        Component victoryTitle = Component.text("Victory!", ChatFormat.goldColor);
-        Component gameEndTitle = Component.text("Game over!", ChatFormat.goldColor);
-        Title.Times time = Title.Times.of(Duration.ofMillis(250), Duration.ofSeconds(4), Duration.ofSeconds(1));
+        String victoryTitle = "\2476Victory!";
+        String gameEndTitle = "\2476Game Over!";
+        int[] time = {5, 80, 20};
 
         if (aliveTeams.size() == 1) {
-            BwTeam winnerTeam = aliveTeams.getFirst();
+            BwTeam winnerTeam = aliveTeams.get(0);
             String whoWon;
             if (winnerTeam.players.size() == 1) {
                 PlayerDataManager.get(winnerTeam.players.stream().findFirst().get()).savedData.wins++;
-                whoWon = winnerTeam.textColor + winnerTeam.players.getFirst().player().name;
+                whoWon = winnerTeam.textColor + winnerTeam.players.get(0).getScoreboardName();
             } else {
                 whoWon = winnerTeam.textColor + winnerTeam.displayName + " team";
-                for(NexiaPlayer player : winnerTeam.players) {
+                for(ServerPlayer player : winnerTeam.players) {
                     PlayerDataManager.get(player).savedData.wins++;
                 }
             }
 
-            Component subtitle = Component.text(whoWon).append(Component.text(" has won the game!", ChatFormat.systemColor));
-
-            for(NexiaPlayer player : winnerTeam.players) {
-                player.sendTitle(Title.title(victoryTitle, subtitle, time));
-            }
-
-            for(NexiaPlayer player : spectatorList) {
-                player.sendTitle(Title.title(gameEndTitle, subtitle, time));
-            }
-
-            for(NexiaPlayer player : BwPlayers.getViewers()) {
-                player.sendMessage(subtitle);
-            }
+            String subtitle = whoWon + "\2477 has won the game!";
+            PlayerUtil.broadcastTitle(winnerTeam.players, victoryTitle, subtitle, time[0], time[1], time[2]);
+            PlayerUtil.broadcastTitle(spectatorList, gameEndTitle, subtitle, time[0], time[1], time[2]);
+            PlayerUtil.broadcast(BwPlayers.getViewers(), subtitle);
 
         } else {
-            Component subtitle = Component.text("The game ended in a ", ChatFormat.systemColor)
-                    .append(Component.text("draw", ChatFormat.goldColor))
-                    .append(Component.text("!", ChatFormat.systemColor));
-
-
-            for(NexiaPlayer player : BwPlayers.getViewers()) {
-                player.sendTitle(Title.title(gameEndTitle, subtitle, time));
-                player.sendMessage(subtitle);
-            }
+            String subtitle = "\2477The game ended in a draw!";
+            PlayerUtil.broadcastTitle(BwPlayers.getViewers(), gameEndTitle, subtitle, time[0], time[1], time[2]);
+            PlayerUtil.broadcast(BwPlayers.getViewers(), subtitle);
         }
     }
 
@@ -354,7 +310,7 @@ public class BwGame {
             }
         }
 
-        for (NexiaPlayer player : gameTridents.keySet()) {
+        for (ServerPlayer player : gameTridents.keySet()) {
             for (BwTrident trident : gameTridents.get(player)) {
                 trident.remove();
             }
@@ -367,8 +323,9 @@ public class BwGame {
 
         BwAreas.spawnQueueBuild();
 
-        for (NexiaPlayer player : spectatorList) {
-            if (player == null || player.player().get() == null) continue;
+        for (ServerPlayer player : spectatorList) {
+            player = PlayerUtil.getFixedPlayer(player);
+            if (player == null) continue;
             LobbyUtil.returnToLobby(player, true);
             BwScoreboard.removeScoreboardFor(player);
         }

@@ -2,16 +2,14 @@ package com.nexia.minigames.games.bedwars.players;
 
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.bedwars.BwGame;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.util.BwScoreboard;
-import net.kyori.adventure.text.Component;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,24 +27,24 @@ public class BwPlayers {
 
     public static final String BED_WARS_IN_GAME_TAG = "in_bedwars";
 
-    private static void setInBedWars(NexiaPlayer player) {
+    private static void setInBedWars(ServerPlayer player) {
         PlayerData playerData = PlayerDataManager.get(player);
 
         playerData.gameMode = PlayerGameMode.BEDWARS;
-        player.getFactoryPlayer().addTag(BwPlayers.BED_WARS_IN_GAME_TAG);
+        player.addTag(BwPlayers.BED_WARS_IN_GAME_TAG);
     }
 
-    public static void joinQueue(NexiaPlayer player) {
+    public static void joinQueue(ServerPlayer player) {
         setInBedWars(player);
 
-        BwAreas.queueSpawn.teleportPlayer(BwAreas.bedWarsWorld, player.player().get());
-        player.player().get().setRespawnPosition(BwAreas.bedWarsWorld.dimension(),
+        BwAreas.queueSpawn.teleportPlayer(BwAreas.bedWarsWorld, player);
+        player.setRespawnPosition(BwAreas.bedWarsWorld.dimension(),
                 BwAreas.queueSpawn.toBlockPos(), BwAreas.queueSpawn.yaw, true, false);
-
-        player.reset(true, GameType.ADVENTURE);
+        PlayerUtil.resetHealthStatus(PlayerUtil.getFactoryPlayer(player));
+        player.setGameMode(GameType.ADVENTURE);
 
         //player.setInvulnerable(true);
-        player.player().get().addTag(LobbyUtil.NO_DAMAGE_TAG);
+        player.addTag(LobbyUtil.NO_DAMAGE_TAG);
 
         BwGame.queueList.add(player);
         if (!BwGame.isQueueCountdownActive && BwGame.queueList.size() >= BwGame.requiredPlayers) {
@@ -54,22 +52,19 @@ public class BwPlayers {
         }
     }
 
-    public static void leaveQueue(NexiaPlayer player) {
+    public static void leaveQueue(ServerPlayer player) {
         BwGame.queueList.remove(player);
         if (BwGame.isQueueCountdownActive && BwGame.queueList.size() < BwGame.requiredPlayers) {
             BwGame.endQueueCountdown();
         }
     }
 
-    public static void eliminatePlayer(NexiaPlayer player, boolean becomeSpectator) {
+    public static void eliminatePlayer(ServerPlayer player, boolean becomeSpectator) {
         BwTeam team = BwTeam.getPlayerTeam(player);
 
         if (team != null) {
-            Component eliminationMessage = Component.text(team.textColor + player.player().name).append(Component.text(" has been eliminated", ChatFormat.systemColor));
-
-            for(NexiaPlayer nexiaPlayers : getPlayers()) {
-                nexiaPlayers.sendMessage(eliminationMessage);
-            }
+            String eliminationMessage = team.textColor + player.getScoreboardName() + " \2477has been eliminated";
+            PlayerUtil.broadcast(getPlayers(), eliminationMessage);
 
             com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.get(player).savedData.loss++;
             team.players.remove(player);
@@ -81,7 +76,7 @@ public class BwPlayers {
             }
         }
 
-        player.player().get().getEnderChestInventory().clearContent();
+        player.getEnderChestInventory().clearContent();
         BwScoreboard.updateScoreboard();
 
         if (becomeSpectator) {
@@ -95,27 +90,28 @@ public class BwPlayers {
         }
     }
 
-    public static void becomeSpectator(NexiaPlayer player) {
+    public static void becomeSpectator(ServerPlayer player) {
         setInBedWars(player);
 
-        player.player().get().setGameMode(GameType.SPECTATOR);
-        BwAreas.spectatorSpawn.teleportPlayer(BwAreas.bedWarsWorld, player.player().get());
-        player.player().get().setRespawnPosition(BwAreas.bedWarsWorld.dimension(),
+        player.setGameMode(GameType.SPECTATOR);
+        BwAreas.spectatorSpawn.teleportPlayer(BwAreas.bedWarsWorld, player);
+        player.setRespawnPosition(BwAreas.bedWarsWorld.dimension(),
                 BwAreas.spectatorSpawn.toBlockPos(), BwAreas.spectatorSpawn.yaw, true, false);
 
         BwGame.spectatorList.add(player);
-        player.getFactoryPlayer().addTag(LobbyUtil.NO_RANK_DISPLAY_TAG);
+        player.addTag(LobbyUtil.NO_RANK_DISPLAY_TAG);
         ServerScoreboard scoreboard = ServerTime.minecraftServer.getScoreboard();
-        scoreboard.addPlayerToTeam(player.player().name, BwGame.spectatorTeam);
+        scoreboard.addPlayerToTeam(player.getScoreboardName(), BwGame.spectatorTeam);
 
         BwScoreboard.sendBedWarsScoreboard(player);
         BwScoreboard.sendLines(player);
     }
 
-    public static void sendToSpawn(NexiaPlayer player) {
-        player.safeReset(true, GameType.SURVIVAL);
+    public static void sendToSpawn(ServerPlayer player) {
+        PlayerUtil.resetHealthStatus(PlayerUtil.getFactoryPlayer(player));
+        player.setGameMode(GameType.SURVIVAL);
         giveSpawnItems(player);
-        player.player().get().setInvulnerable(true);
+        player.setInvulnerable(true);
         BwGame.invulnerabilityList.put(player, BwGame.invulnerabilityTime * 20);
 
         EntityPos respawnPos = BwAreas.bedWarsCenter;
@@ -123,26 +119,26 @@ public class BwPlayers {
         if (team != null && team.spawn != null) {
             respawnPos = team.spawn;
         }
-        player.player().get().setRespawnPosition(BwAreas.bedWarsWorld.dimension(), respawnPos.toBlockPos(), respawnPos.yaw, true, false);
-        player.player().get().teleportTo(BwAreas.bedWarsWorld, respawnPos.x, respawnPos.y, respawnPos.z, respawnPos.yaw, respawnPos.pitch);
+        player.setRespawnPosition(BwAreas.bedWarsWorld.dimension(), respawnPos.toBlockPos(), respawnPos.yaw, true, false);
+        player.teleportTo(BwAreas.bedWarsWorld, respawnPos.x, respawnPos.y, respawnPos.z, respawnPos.yaw, respawnPos.pitch);
     }
 
-    private static void giveSpawnItems(NexiaPlayer player) {
+    private static void giveSpawnItems(ServerPlayer player) {
         ItemStack sword = new ItemStack(Items.STONE_SWORD);
         sword.getOrCreateTag().putInt("Unbreakable", 1);
-        player.player().get().inventory.add(sword);
+        player.inventory.add(sword);
 
-        if (player.player().get().inventory.getItem(36).isEmpty()) {
-            player.player().get().inventory.setItem(36, getArmorItem(Items.LEATHER_BOOTS, player));
+        if (player.inventory.getItem(36).isEmpty()) {
+            player.inventory.setItem(36, getArmorItem(Items.LEATHER_BOOTS, player));
         }
-        if (player.player().get().inventory.getItem(37).isEmpty()) {
-            player.player().get().inventory.setItem(37, getArmorItem(Items.LEATHER_LEGGINGS, player));
+        if (player.inventory.getItem(37).isEmpty()) {
+            player.inventory.setItem(37, getArmorItem(Items.LEATHER_LEGGINGS, player));
         }
-        player.player().get().inventory.setItem(38, getArmorItem(Items.LEATHER_CHESTPLATE, player));
-        player.player().get().inventory.setItem(39, getArmorItem(Items.LEATHER_HELMET, player));
+        player.inventory.setItem(38, getArmorItem(Items.LEATHER_CHESTPLATE, player));
+        player.inventory.setItem(39, getArmorItem(Items.LEATHER_HELMET, player));
     }
 
-    private static ItemStack getArmorItem(Item item, NexiaPlayer player) {
+    private static ItemStack getArmorItem(Item item, ServerPlayer player) {
         ItemStack itemStack = item.getDefaultInstance();
         itemStack.getOrCreateTag().putInt("Unbreakable", 1);
 
@@ -158,14 +154,14 @@ public class BwPlayers {
     // Lists ----------------------------------------------------
     // A viewer is someone playing the game or spectating the game
 
-    public static ArrayList<NexiaPlayer> getViewers() {
-        ArrayList<NexiaPlayer> viewers = new ArrayList<>(getPlayers());
+    public static ArrayList<ServerPlayer> getViewers() {
+        ArrayList<ServerPlayer> viewers = new ArrayList<>(getPlayers());
         viewers.addAll(BwGame.spectatorList);
         return viewers;
     }
 
-    public static ArrayList<NexiaPlayer> getPlayers() {
-        ArrayList<NexiaPlayer> list = new ArrayList<>();
+    public static ArrayList<ServerPlayer> getPlayers() {
+        ArrayList<ServerPlayer> list = new ArrayList<>();
         for (BwTeam team : BwTeam.allTeams.values()) {
             if (team.players != null) {
                 list.addAll(team.players);

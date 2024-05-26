@@ -3,9 +3,8 @@ package com.nexia.ffa.uhc.utilities;
 import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.core.utilities.pos.PositionUtil;
 import com.nexia.core.utilities.world.StructureMap;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.ffa.Main;
@@ -13,6 +12,7 @@ import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.notcoded.codelib.util.world.structure.Rotation;
 
@@ -58,8 +58,12 @@ public class FfaAreas {
         return level.dimension().toString().contains(Main.uhc.worldName);
     }
 
-    public static boolean isInFfaSpawn(NexiaPlayer player) {
-        return PositionUtil.isBetween(spawnCorner1, spawnCorner2, player.player().get().blockPosition());
+    public static boolean isInFfaSpawn(Player player) {
+        BlockVec3 pos = new BlockVec3(player.position());
+
+        return pos.x >= spawnCorner1.getX() && pos.x <= spawnCorner2.getX() &&
+                pos.y >= spawnCorner1.getY() && pos.y <= spawnCorner2.getY() &&
+                pos.z >= spawnCorner1.getZ() && pos.z <= spawnCorner2.getZ();
     }
 
     public static void setFfaWorld(MinecraftServer server) {

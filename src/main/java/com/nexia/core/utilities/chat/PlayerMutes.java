@@ -20,7 +20,7 @@ public class PlayerMutes {
             return;
         }
 
-        SavedPlayerData mutedData = PlayerDataManager.get(muted.getUUID()).savedData;
+        SavedPlayerData mutedData = PlayerDataManager.get(muted).savedData;
         LocalDateTime currentMuteTime = mutedData.getMuteEnd();
 
         if (LocalDateTime.now().isBefore(currentMuteTime)) {
@@ -46,7 +46,7 @@ public class PlayerMutes {
     }
 
     public static void unMute(CommandSourceStack sender, ServerPlayer unMuted) {
-        SavedPlayerData unMutedData = PlayerDataManager.get(unMuted.getUUID()).savedData;
+        SavedPlayerData unMutedData = PlayerDataManager.get(unMuted).savedData;
         LocalDateTime currentMuteTime = unMutedData.getMuteEnd();
 
         if (LocalDateTime.now().isAfter(currentMuteTime)) {
@@ -66,7 +66,7 @@ public class PlayerMutes {
     }
 
     public static boolean muted(ServerPlayer player) {
-        SavedPlayerData savedData = PlayerDataManager.get(player.getUUID()).savedData;
+        SavedPlayerData savedData = PlayerDataManager.get(player).savedData;
         LocalDateTime muteTime = savedData.getMuteEnd();
         String reason = savedData.getMuteReason();
 

@@ -33,7 +33,7 @@ public abstract class LivingEntityMixin {
     @ModifyArg(method = "hurt", index = 1, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;actuallyHurt(Lnet/minecraft/world/damagesource/DamageSource;F)V"))
     protected float hurt(DamageSource damageSource, float value) {
         if((Object) this instanceof ServerPlayer player) {
-            if(PlayerDataManager.get(player.getUUID()).gameMode == PlayerGameMode.LOBBY) {
+            if(PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) {
                 return value;
             }
         }

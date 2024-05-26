@@ -10,7 +10,6 @@ import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.core.utilities.time.ServerTime;
 import net.kyori.adventure.text.Component;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
@@ -64,8 +63,8 @@ public class MessageCommand {
 
     private static int replyCommand(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer sender = context.getSource().getPlayerOrException();
-        PlayerData senderData = PlayerDataManager.get(sender.getUUID());
-        ServerPlayer receiver = ServerTime.minecraftServer.getPlayerList().getPlayer(senderData.lastMessageSender.getUUID());
+        PlayerData senderData = PlayerDataManager.get(sender);
+        ServerPlayer receiver = PlayerUtil.getFixedPlayer(senderData.lastMessageSender);
 
         if (receiver == null) {
             sender.sendMessage(LegacyChatFormat.format("{s}Nobody to reply to"), Util.NIL_UUID);
@@ -95,7 +94,7 @@ public class MessageCommand {
 
                         ));
 
-        PlayerDataManager.get(receiver.getUUID()).lastMessageSender = sender;
+        PlayerDataManager.get(receiver).lastMessageSender = sender;
     }
 
 }
