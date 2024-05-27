@@ -26,7 +26,7 @@ public class RankCommand {
 
         dispatcher.register(CommandUtils.literal("rank")
                 .requires(commandSourceInfo -> {
-                    if(CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
+                    if(!CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
                     return Permissions.check(CommandUtil.getPlayer(commandSourceInfo).unwrap(), "nexia.staff.rank");
                 })
                 .then(CommandUtils.argument("player", EntityArgument.player())

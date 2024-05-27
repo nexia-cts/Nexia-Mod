@@ -39,7 +39,7 @@ public class KitEditorCommand {
         dispatcher.register((CommandUtils.literal("kiteditor")
                 .requires(commandSourceInfo -> {
                     try {
-                        if(CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
+                        if(!CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
                         NexiaPlayer player = new NexiaPlayer(CommandUtil.getPlayer(commandSourceInfo));
 
                         com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
