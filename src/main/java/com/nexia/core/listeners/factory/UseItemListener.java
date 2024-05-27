@@ -8,7 +8,7 @@ import com.nexia.core.utilities.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
 
 public class UseItemListener {
-    public static void registerListener() {
+    public void registerListener() {
         PlayerUseItemEvent.BACKEND.register(playerUseItemEvent -> {
 
             NexiaPlayer player = new NexiaPlayer(playerUseItemEvent.getPlayer());

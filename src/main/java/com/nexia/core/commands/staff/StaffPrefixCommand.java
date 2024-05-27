@@ -10,7 +10,6 @@ import com.nexia.core.utilities.misc.CommandUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.time.ServerTime;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -25,10 +24,7 @@ public class StaffPrefixCommand {
         NexiaRank.ranks.forEach(rank -> ranks.add(rank.id));
 
         dispatcher.register(CommandUtils.literal("staffprefix")
-                .requires(commandSourceInfo -> {
-                    if(CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
-                    return Permissions.check(CommandUtil.getPlayer(commandSourceInfo).unwrap(), "nexia.staff.prefix");
-                })
+                .requires(commandSourceInfo -> CommandUtil.hasPermission(commandSourceInfo, "nexia.staff.prefix"))
                 .then(CommandUtils.argument("type", StringArgumentType.string())
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest((new String[]{"set", "add", "remove"}), builder)))
                         .then(CommandUtils.argument("player", EntityArgument.player())

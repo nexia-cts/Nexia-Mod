@@ -8,7 +8,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.CommandUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,10 +15,7 @@ import net.minecraft.server.level.ServerPlayer;
 public class HealCommand {
     public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
         dispatcher.register(CommandUtils.literal("heal").executes(HealCommand::run)
-                .requires(commandSourceInfo -> {
-                    if(CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
-                    return Permissions.check(CommandUtil.getPlayer(commandSourceInfo).unwrap(), "nexia.staff.heal", 1);
-                })
+                .requires(commandSourceInfo -> CommandUtil.hasPermission(commandSourceInfo, "nexia.staff.heal", 1))
                 .then(CommandUtils.argument("player", EntityArgument.player())
                         .executes(context -> HealCommand.heal(context, context.getArgument("player", ServerPlayer.class)))
                 )
