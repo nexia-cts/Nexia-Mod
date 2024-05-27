@@ -29,14 +29,18 @@ public class CommandUtil {
 
     public static boolean hasPermission(CommandSourceInfo context, @NotNull String permission) {
         if(!checkPlayerInCommand(context)) return false;
+        NexiaPlayer player = getPlayer(context);
+        if(player == null || player.unwrap() == null) return false;
 
-        return Permissions.check(getPlayer(context).unwrap(), permission);
+        return Permissions.check(player.unwrap(), permission);
     }
 
     public static boolean hasPermission(CommandSourceInfo context, @NotNull String permission, int defaultRequiredLevel) {
         if(!checkPlayerInCommand(context)) return false;
+        NexiaPlayer player = getPlayer(context);
+        if(player == null || player.unwrap() == null) return false;
 
-        return Permissions.check(getPlayer(context).unwrap(), permission, defaultRequiredLevel);
+        return Permissions.check(player.unwrap(), permission, defaultRequiredLevel);
     }
 
     public static boolean hasPermission(CommandContext<CommandSourceInfo> context, @NotNull String permission) {

@@ -10,7 +10,6 @@ import com.nexia.core.utilities.misc.CommandUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.time.ServerTime;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -25,10 +24,7 @@ public class RankCommand {
         NexiaRank.ranks.forEach(rank -> ranks.add(rank.id));
 
         dispatcher.register(CommandUtils.literal("rank")
-                .requires(commandSourceInfo -> {
-                    if(!CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
-                    return Permissions.check(CommandUtil.getPlayer(commandSourceInfo).unwrap(), "nexia.staff.rank");
-                })
+                .requires(commandSourceInfo -> CommandUtil.hasPermission(commandSourceInfo, "nexia.staff.rank"))
                 .then(CommandUtils.argument("player", EntityArgument.player())
                         .then(CommandUtils.argument("rank", StringArgumentType.string())
                                 .suggests(((context, builder) -> SharedSuggestionProvider.suggest((ranks), builder)))

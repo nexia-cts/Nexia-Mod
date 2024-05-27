@@ -8,7 +8,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.CommandUtil;
 import com.nexia.core.utilities.player.BanHandler;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.arguments.GameProfileArgument;
 
@@ -17,10 +16,7 @@ import java.util.Collection;
 public class TempBanCommand {
     public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
         dispatcher.register(CommandUtils.literal("tempban")
-                .requires(commandSourceInfo -> {
-                    if(CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
-                    return Permissions.check(CommandUtil.getPlayer(commandSourceInfo).unwrap(), "nexia.staff.ban", 3);
-                })
+                .requires(commandSourceInfo -> CommandUtil.hasPermission(commandSourceInfo, "nexia.staff.ban", 3))
                 .then(CommandUtils.argument("player", GameProfileArgument.gameProfile())
                         .then(CommandUtils.argument("duration", StringArgumentType.word())
                                 .then(CommandUtils.argument("reason", StringArgumentType.greedyString())

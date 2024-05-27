@@ -7,7 +7,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.CommandUtil;
 import com.nexia.core.utilities.time.ServerTime;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.GameProfileArgument;
@@ -18,20 +17,14 @@ import java.util.Collection;
 public class UnBanCommand {
     public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
         dispatcher.register(CommandUtils.literal("unban")
-                .requires(commandSourceInfo -> {
-                    if(CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
-                    return Permissions.check(CommandUtil.getPlayer(commandSourceInfo).unwrap(), "nexia.staff.ban", 3);
-                })
+                .requires(commandSourceInfo -> CommandUtil.hasPermission(commandSourceInfo, "nexia.staff.ban", 3))
                 .then(CommandUtils.argument("player", GameProfileArgument.gameProfile())
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest((ServerTime.minecraftServer.getPlayerList().getBans().getUserList()), builder)))
                         .executes(context -> UnBanCommand.unban(context.getSource(), context.getArgument("player", Collection.class)))
                 )
         );
         dispatcher.register(CommandUtils.literal("pardon")
-                .requires(commandSourceInfo -> {
-                    if(CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
-                    return Permissions.check(CommandUtil.getPlayer(commandSourceInfo).unwrap(), "nexia.staff.ban", 3);
-                })
+                .requires(commandSourceInfo -> CommandUtil.hasPermission(commandSourceInfo, "nexia.staff.ban", 3))
                 .then(CommandUtils.argument("player", GameProfileArgument.gameProfile())
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest((ServerTime.minecraftServer.getPlayerList().getBans().getUserList()), builder)))
                         .executes(context -> UnBanCommand.unban(context.getSource(), context.getArgument("player", Collection.class)))

@@ -10,7 +10,7 @@ import net.kyori.adventure.text.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 public class UseItemListener {
-    public static void registerListener() {
+    public void registerListener() {
         PlayerUseItemEvent.BACKEND.register(playerUseItemEvent -> {
 
             Player player = playerUseItemEvent.getPlayer();

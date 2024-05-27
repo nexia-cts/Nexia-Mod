@@ -22,12 +22,7 @@ public class ShoutCommand {
     
     public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
         dispatcher.register(CommandUtils.literal("shout")
-                        .requires(context -> {
-                            try {
-                                return CommandUtil.hasPermission(context, "nexia.prefix.supporter");
-                            } catch (Exception ignored) { }
-                            return false;
-                        })
+                .requires(commandSourceInfo -> CommandUtil.hasPermission(commandSourceInfo, "nexia.prefix.supporter"))
                 .then(CommandUtils.argument("message", StringArgumentType.greedyString())
                         .executes(context -> ShoutCommand.shout(context, StringArgumentType.getString(context, "message")))
                 )

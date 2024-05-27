@@ -8,7 +8,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.misc.CommandUtil;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.SharedSuggestionProvider;
 
@@ -18,10 +17,7 @@ import java.util.Objects;
 public class ListInventoriesCommand {
     public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
         dispatcher.register((CommandUtils.literal("listinventories")
-                .requires(commandSourceInfo -> {
-                    if(CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
-                    return Permissions.check(CommandUtil.getPlayer(commandSourceInfo).unwrap(), "nexia.inventory.list", 4);
-                })
+                .requires(commandSourceInfo -> CommandUtil.hasPermission(commandSourceInfo, "nexia.inventory.list", 4))
                 .then(CommandUtils.argument("type", StringArgumentType.string())
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest((Objects.requireNonNull(new File(InventoryUtil.dirpath).list())), builder)))
                         .executes(ListInventoriesCommand::run)
