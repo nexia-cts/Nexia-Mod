@@ -117,8 +117,6 @@ public class StatsCommand {
                 player.sendMessage(start
                         .append(Component.text(" Rating: ").color(ChatFormat.brandColor2))
                         .append(Component.text(rating).color(ChatFormat.goldColor))
-                        .append(Component.text("/").color(ChatFormat.arrowColor))
-                        .append(Component.text(bestKillstreak).color(ChatFormat.goldColor))
                 );
             }
         }
