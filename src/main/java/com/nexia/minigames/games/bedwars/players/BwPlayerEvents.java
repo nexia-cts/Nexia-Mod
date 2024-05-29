@@ -3,6 +3,7 @@ package com.nexia.minigames.games.bedwars.players;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
+import com.nexia.minigames.games.bedwars.util.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
@@ -16,7 +17,6 @@ import com.nexia.minigames.games.bedwars.shop.BwShopUpgradeables;
 import com.nexia.minigames.games.bedwars.upgrades.BwUpgradeShop;
 import com.nexia.minigames.games.bedwars.util.BwScoreboard;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
-import com.nexia.minigames.games.bedwars.util.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -38,8 +38,7 @@ import net.minecraft.world.entity.projectile.ThrownEgg;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.food.FoodData;
 import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
@@ -150,8 +149,10 @@ public class BwPlayerEvents {
             BwPlayers.leaveQueue(player);
         } else if (BwPlayers.getPlayers().contains(player)) {
             BwPlayers.eliminatePlayer(player, false);
-        } else BwGame.spectatorList.remove(player);
-        BwScoreboard.removeScoreboardFor(player);
+        } else if (BwGame.spectatorList.contains(player)) {
+            BwGame.spectatorList.remove(player);
+            BwScoreboard.removeScoreboardFor(player);
+        }
     }
 
     // Ability to shoot fireballs

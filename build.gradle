@@ -37,8 +37,6 @@ base {
 repositories {
 	flatDir { dirs("libraries") }
 
-	mavenCentral()
-
 	maven { url 'https://github.com/not-coded/notcoded-maven/raw/fabric/' }
 	maven { url 'https://maven.nucleoid.xyz' }
 	//maven { url "https://maven.rizecookey.net/" }
@@ -84,14 +82,11 @@ dependencies {
 	include(modApi("io.github.blumbo:inventory-merger:${project.inventory_merger_version}"))
 	include(modApi("net.notcoded:codelib:${project.codelib_version}+${project.minecraft_version}"))
 
-	compileOnly("net.luckperms:api:${project.luckperms_api_version}")
-
 
 	// discord shit
 	include(api("net.dv8tion:JDA:${project.jda_version}"))
 	include(api("club.minnced:discord-webhooks:${project.discord_webhooks_version}") { exclude(group: "org.json") })
 	include(api("org.json:json:${project.json_version}"))
-
 
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.

@@ -30,6 +30,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.dimension.DimensionType;
@@ -104,11 +105,20 @@ public class SkywarsGame {
             SkywarsGame.map = SkywarsMap.calculateMap(SkywarsGame.queue.size(), true);
         }
         SkywarsGame.queue.remove(accuratePlayer);
+
         SkywarsGame.alive.remove(accuratePlayer);
 
         data.kills = 0;
 
-        PlayerUtil.sendBossbar(SkywarsGame.BOSSBAR, minecraftPlayer, true);
+        PlayerUtil.resetHealthStatus(accuratePlayer.get());
+        accuratePlayer.get().setGameMode(GameType.ADVENTURE);
+
+        accuratePlayer.get().inventory.clearContent();
+        accuratePlayer.get().setExperienceLevels(0);
+        accuratePlayer.get().setExperiencePoints(0);
+        minecraftPlayer.inventory.setCarried(ItemStack.EMPTY);
+        minecraftPlayer.getEnderChestInventory().clearContent();
+
         player.removeTag(SKYWARS_TAG);
 
         data.gameMode = SkywarsGameMode.LOBBY;

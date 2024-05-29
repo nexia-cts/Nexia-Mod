@@ -1,5 +1,6 @@
 package com.nexia.core.mixin.entity;
 
+import com.nexia.core.Main;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -39,7 +40,8 @@ public abstract class ThrownTridentMixin extends AbstractArrow {
         }
         */
 
-        bonus -= 2;
+        if(Main.config.enhancements.tridentDamagePatch) bonus -= 2;
+
         return bonus;
     }
 

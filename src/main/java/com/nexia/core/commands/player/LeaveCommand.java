@@ -1,14 +1,10 @@
 package com.nexia.core.commands.player;
-
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.server.level.ServerPlayer;
-import net.notcoded.codelib.players.AccuratePlayer;
 
 public class LeaveCommand {
 
@@ -24,11 +20,7 @@ public class LeaveCommand {
     }
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        ServerPlayer player = context.getSource().getPlayerOrException();
-
-        new NexiaPlayer(new AccuratePlayer(player)).leaveAllGames();
-        LobbyUtil.returnToLobby(player, true);
-
+        LobbyUtil.leaveAllGames(context.getSource().getPlayerOrException(), true);
         return 1;
     }
 

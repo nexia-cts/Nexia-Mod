@@ -4,7 +4,6 @@ import com.combatreforged.factory.api.event.player.PlayerJoinEvent;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
@@ -18,7 +17,6 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.level.ServerPlayer;
-import net.notcoded.codelib.players.AccuratePlayer;
 
 import java.util.Objects;
 
@@ -148,10 +146,7 @@ public class PlayerJoinListener {
         com.nexia.minigames.games.oitc.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.minigames.games.football.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         com.nexia.minigames.games.skywars.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
-
-        new NexiaPlayer(new AccuratePlayer(minecraftPlayer)).leaveAllGames();
-        LobbyUtil.returnToLobby(minecraftPlayer, true);
-
+        LobbyUtil.leaveAllGames(minecraftPlayer, true);
         checkBooster(minecraftPlayer);
         sendJoinMessage(player);
     }
