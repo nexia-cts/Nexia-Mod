@@ -60,6 +60,7 @@ public class StatsCommand {
             int deaths = data.deaths;
             int killstreak = data.killstreak;
             int bestKillstreak = data.bestKillstreak;
+            int rating = 0;
 
             if(executerData.ffaGameMode == FfaGameMode.KITS) {
                 message = ChatFormat.separatorLine("Kit FFA Stats");
@@ -68,6 +69,7 @@ public class StatsCommand {
                 deaths = kData.deaths;
                 killstreak = kData.killstreak;
                 bestKillstreak = kData.bestKillstreak;
+                rating = kData.rating;
             }
 
             if(executerData.ffaGameMode == FfaGameMode.UHC) {
@@ -110,6 +112,15 @@ public class StatsCommand {
                                             .append(Component.text("/").color(ChatFormat.arrowColor))
                                                     .append(Component.text(bestKillstreak).color(ChatFormat.goldColor))
             );
+
+            if (executerData.ffaGameMode == FfaGameMode.KITS) {
+                player.sendMessage(start
+                        .append(Component.text(" Rating: ").color(ChatFormat.brandColor2))
+                        .append(Component.text(rating).color(ChatFormat.goldColor))
+                        .append(Component.text("/").color(ChatFormat.arrowColor))
+                        .append(Component.text(bestKillstreak).color(ChatFormat.goldColor))
+                );
+            }
         }
 
         if(executerData.gameMode == PlayerGameMode.LOBBY){

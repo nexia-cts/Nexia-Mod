@@ -174,7 +174,20 @@ public class FfaKitsUtil {
     public static void leaveOrDie(@NotNull ServerPlayer player, @Nullable DamageSource source, boolean leaving) {
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
 
-        if(!leaving) FfaKitsUtil.setDeathMessage(player, source);
+        if (!leaving) {
+            FfaKitsUtil.setDeathMessage(player, source);
+
+            if (attacker != null) {
+                int rating = PlayerDataManager.get(player).savedData.rating;
+                int opponent_rating = PlayerDataManager.get(attacker).savedData.rating;
+
+                int relative_point_increase = opponent_rating * (1 - rating);
+                int relative_point_decrease= rating * (1 - opponent_rating);
+
+                rating = (int) ((relative_point_increase + 0.25) / (relative_point_increase + relative_point_decrease + 0.5));
+                opponent_rating = (int) ((relative_point_increase + relative_point_decrease + 0.5) / (relative_point_increase + 0.25));
+            }
+        }
 
         if (attacker != null) {
             FfaKitsUtil.clearThrownTridents(attacker);
