@@ -1,13 +1,22 @@
-package com.nexia.core.utilities.misc;
+package com.nexia.core.utilities.commands;
 
 import com.combatreforged.metis.api.command.CommandSourceInfo;
 import com.combatreforged.metis.api.world.entity.player.Player;
 import com.mojang.brigadier.context.CommandContext;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.core.utilities.time.ServerTime;
 import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.minecraft.commands.CommandSource;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 public class CommandUtil {
     public static boolean checkPlayerInCommand(@NotNull CommandSourceInfo sourceInfo)  {
@@ -57,5 +66,55 @@ public class CommandUtil {
             return true;
         }
         return false;
+    }
+
+    public static CommandSourceStack getCommandSourceStack(CommandSourceInfo info) {
+        CommandSourceStack commandSourceStack = new CommandSourceStack(new CommandSource() {
+            @Override
+            public void sendMessage(Component component, UUID uUID) {
+            }
+
+            @Override
+            public boolean acceptsSuccess() {
+                return false;
+            }
+
+            @Override
+            public boolean acceptsFailure() {
+                return false;
+            }
+
+            @Override
+            public boolean shouldInformAdmins() {
+                return false;
+            }
+        }, new Vec3(0, 0, 0), new Vec2(0, 0), ServerTime.minecraftServer.overworld(), info.getSender().getPermissionLevel(), "", new TextComponent(""), ServerTime.minecraftServer, null);
+
+        return commandSourceStack;
+    }
+
+    public static CommandSourceStack getCommandSourceStack(CommandSourceInfo info, @NotNull NexiaPlayer player) {
+        CommandSourceStack commandSourceStack = new CommandSourceStack(new CommandSource() {
+            @Override
+            public void sendMessage(Component component, UUID uUID) {
+            }
+
+            @Override
+            public boolean acceptsSuccess() {
+                return false;
+            }
+
+            @Override
+            public boolean acceptsFailure() {
+                return false;
+            }
+
+            @Override
+            public boolean shouldInformAdmins() {
+                return false;
+            }
+        }, new Vec3(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ()), new Vec2(player.getLocation().getPitch(), player.getLocation().getYaw()), ServerTime.minecraftServer.overworld(), info.getSender().getPermissionLevel(), player.getRawName(), new TextComponent(player.getRawName()), ServerTime.minecraftServer, player.unwrap());
+
+        return commandSourceStack;
     }
 }

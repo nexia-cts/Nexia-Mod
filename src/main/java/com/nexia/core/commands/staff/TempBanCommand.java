@@ -6,7 +6,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.misc.CommandUtil;
+import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.core.utilities.player.BanHandler;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.arguments.GameProfileArgument;

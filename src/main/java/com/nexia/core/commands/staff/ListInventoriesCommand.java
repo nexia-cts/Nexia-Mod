@@ -7,7 +7,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
-import com.nexia.core.utilities.misc.CommandUtil;
+import com.nexia.core.utilities.commands.CommandUtil;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.SharedSuggestionProvider;
 

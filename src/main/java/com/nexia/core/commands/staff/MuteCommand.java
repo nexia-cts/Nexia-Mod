@@ -9,7 +9,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
-import com.nexia.core.utilities.misc.CommandUtil;
+import com.nexia.core.utilities.commands.CommandUtil;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
