@@ -211,7 +211,7 @@ public class FfaSkyUtil {
                 data.bestKillstreak = data.killstreak;
             }
             data.kills++;
-            FfaSkyUtil.killHeal(attacker);
+            player.heal(player.getMaxHealth());
             FfaSkyUtil.giveKillLoot(attacker, player);
         }
 
@@ -247,7 +247,6 @@ public class FfaSkyUtil {
         HashMap<Integer, ItemStack> availableRewards = (HashMap<Integer, ItemStack>) killRewards.clone();
         ArrayList<ItemStack> givenRewards = new ArrayList<>();
 
-
         for (int i = 0; i < Math.min(2, availableRewards.size()); i++) {
             // Pick reward
             int randomIndex = attacker.getRandom().nextInt(availableRewards.size());
@@ -256,9 +255,7 @@ public class FfaSkyUtil {
             availableRewards.remove(killRewardIndex);
 
             // Give reward
-            if (attacker.inventory.contains(reward)) {
-                attacker.inventory.add(reward.copy());
-            }
+            attacker.inventory.add(reward.copy());
             givenRewards.add(reward.copy());
         }
 
@@ -280,22 +277,6 @@ public class FfaSkyUtil {
             );
         }
         PlayerUtil.sendSound(attacker, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.MASTER, 0.75f, 1f);
-    }
-
-    public static void killHeal(ServerPlayer player) {
-        if(!FfaSkyUtil.isFfaPlayer(player)) return;
-        int minHeal = 4;
-        int maxHeal = 11;
-        float maxHealth = player.getMaxHealth();
-        float lostHearts = maxHealth - player.getHealth();
-
-        int heal = (int)(minHeal + (lostHearts - minHeal) * (maxHeal - minHeal) / (maxHealth - minHeal));
-
-        if (player.hasEffect(MobEffects.REGENERATION)) {
-            player.heal(heal);
-        } else {
-            player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, heal, 5, false, false));
-        }
     }
 
     public static boolean canGoToSpawn(ServerPlayer player) {

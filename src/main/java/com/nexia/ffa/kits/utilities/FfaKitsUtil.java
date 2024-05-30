@@ -48,7 +48,7 @@ public class FfaKitsUtil {
 
     public static void calculateKill(ServerPlayer attacker, ServerPlayer player){
 
-        BlfScheduler.delay(20, new BlfRunnable() {
+        BlfScheduler.delay(5, new BlfRunnable() {
             @Override
             public void run() {
                 attacker.heal(attacker.getMaxHealth());
@@ -178,14 +178,11 @@ public class FfaKitsUtil {
             FfaKitsUtil.setDeathMessage(player, source);
 
             if (attacker != null) {
-                int rating = PlayerDataManager.get(player).savedData.rating;
-                int opponent_rating = PlayerDataManager.get(attacker).savedData.rating;
+                SavedPlayerData player_data = PlayerDataManager.get(player).savedData;
+                SavedPlayerData opponent_data = PlayerDataManager.get(player).savedData;
 
-                int relative_point_increase = opponent_rating * (1 - rating);
-                int relative_point_decrease= rating * (1 - opponent_rating);
-
-                rating = (int) ((relative_point_increase + 0.25) / (relative_point_increase + relative_point_decrease + 0.5));
-                opponent_rating = (int) ((relative_point_increase + relative_point_decrease + 0.5) / (relative_point_increase + 0.25));
+                player_data.rating -= 5;
+                opponent_data.rating += 5;
             }
         }
 
