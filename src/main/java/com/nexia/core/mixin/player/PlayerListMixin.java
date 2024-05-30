@@ -1,28 +1,23 @@
 package com.nexia.core.mixin.player;
 
+import com.combatreforged.metis.api.world.types.Minecraft;
 import com.mojang.authlib.GameProfile;
-import com.mojang.brigadier.StringReader;
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.player.BanHandler;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
-import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import net.minecraft.ChatFormatting;
-import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
-import net.minecraft.stats.Stats;
-import net.minecraft.world.level.GameType;
 import org.json.simple.JSONObject;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -44,25 +39,25 @@ import static com.nexia.core.utilities.time.ServerTime.leavePlayer;
 @Mixin(PlayerList.class)
 public abstract class PlayerListMixin {
 
+
     @Unique
     private ServerPlayer joinPlayer = null;
+
 
     @ModifyArgs(method = "broadcastMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ClientboundChatPacket;<init>(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
     private void handleChat(Args args) {
         try {
             Component component = args.get(0);
             ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayer(args.get(2));
-            String key = ((TranslatableComponent) component).getKey();
 
-            if (key.contains("multiplayer.player.left")) args.set(0, leaveFormat(component, leavePlayer));
-            if (key.contains("multiplayer.player.join")) args.set(0, joinFormat(component, joinPlayer));
-
-            if(!PlayerMutes.muted(player)){
+            assert player != null;
+            if(!PlayerMutes.muted(new NexiaPlayer(player))){
                 args.set(0, chatFormat(component));
             }
 
         } catch (Exception ignored) {}
     }
+
 
     @Inject(method = "broadcastMessage", at = @At("HEAD"), cancellable = true)
     private void handleBotMessages(Component component, ChatType chatType, UUID uUID, CallbackInfo ci) {
@@ -79,7 +74,7 @@ public abstract class PlayerListMixin {
 
         if(key.contains("multiplayer.player.join")) {
             if(joinPlayer.getTags().contains("bot")) ci.cancel();
-            if(PlayerDataManager.get(joinPlayer).clientType.equals(com.nexia.core.utilities.player.PlayerData.ClientType.VIAFABRICPLUS)) {
+            if(PlayerDataManager.get(joinPlayer.getUUID()).clientType.equals(com.nexia.core.utilities.player.PlayerData.ClientType.VIAFABRICPLUS)) {
                 joinPlayer.addTag("viafabricplus");
                 ci.cancel();
             }
@@ -89,85 +84,26 @@ public abstract class PlayerListMixin {
 
     @Inject(at = @At("RETURN"), method = "respawn")
     private void respawned(ServerPlayer oldPlayer, boolean bl, CallbackInfoReturnable<ServerPlayer> cir) {
-        ServerPlayer player = PlayerUtil.getFixedPlayer(oldPlayer);
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(oldPlayer);
 
-        ServerLevel respawn = ServerTime.minecraftServer.getLevel(player.getRespawnDimension());
+        ServerLevel respawn = ServerTime.minecraftServer.getLevel(nexiaPlayer.unwrap().getRespawnDimension());
 
-        if(FfaSkyUtil.isFfaPlayer(player)) {
-            FfaSkyUtil.joinOrRespawn(player);
+        if(FfaSkyUtil.isFfaPlayer(nexiaPlayer)) {
+            FfaSkyUtil.joinOrRespawn(nexiaPlayer);
             return;
         }
 
         if(respawn != null && LobbyUtil.isLobbyWorld(respawn)) {
-            player.inventory.clearContent();
-            LobbyUtil.giveItems(player);
-            player.setGameMode(GameType.ADVENTURE);
+            nexiaPlayer.unwrap().inventory.clearContent();
+            LobbyUtil.giveItems(nexiaPlayer);
+            nexiaPlayer.setGameMode(Minecraft.GameMode.ADVENTURE);
 
-            PlayerUtil.getFactoryPlayer(player).runCommand("/hub");
+            nexiaPlayer.runCommand("/hub", 0, false);
             return;
         }
 
-        if (BwUtil.isInBedWars(player)) { BwPlayerEvents.respawned(player); }
-        if (SkywarsGame.world.equals(respawn) || SkywarsGame.isSkywarsPlayer(player)) { player.setGameMode(GameType.SPECTATOR); }
-    }
-
-    @Unique
-    private static Component joinFormat(Component original, ServerPlayer joinPlayer) {
-        try {
-            String name = joinPlayer.getScoreboardName();
-            if(name.isEmpty()) { return original; }
-
-            Component component;
-            boolean firstJoiner = joinPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) < 1;
-
-            try {
-                // this is so hacky lmfao
-
-                component = ComponentArgument.textComponent().parse(new StringReader(
-                        "[{\"text\":\"[\",\"color\":\"#4A4A4A\"},{\"text\":\"+\",\"color\":\"" + ChatFormat.greenColor.asHexString().toUpperCase() + "\"},{\"text\":\"]\",\"color\":\"#4A4A4A\"},{\"text\":\" " + name + "\",\"color\":\"" + ChatFormat.greenColor.asHexString().toUpperCase() + "\"}]"
-                ));
-
-                if(firstJoiner) {
-                    component = ComponentArgument.textComponent().parse(new StringReader(
-                            "[{\"text\":\"[\",\"color\":\"#4A4A4A\"},{\"text\":\"!\",\"color\":\"" + ChatFormat.goldColor.asHexString().toUpperCase() + "\"},{\"text\":\"]\",\"color\":\"#4A4A4A\"},{\"text\":\" " + name + "\",\"color\":\"" + ChatFormat.goldColor.asHexString().toUpperCase() + "\"}]"
-                    ));
-                }
-
-            } catch (Throwable ignored) {
-                component = LegacyChatFormat.format("§8[§a+§8] §a{}", name);
-
-                if(firstJoiner) {
-                    component = LegacyChatFormat.format("§8[§6!§8] §6{}", name);
-                }
-            }
-
-
-            return component;
-        } catch (Exception var8) {
-            return original;
-        }
-    }
-
-    @Unique
-    private static Component leaveFormat(Component original, ServerPlayer leavePlayer) {
-        try {
-            String name = leavePlayer.getScoreboardName();
-            if(name.isEmpty()) { return original; }
-
-            Component component;
-            try {
-                // this is so hacky lmfao
-                component = ComponentArgument.textComponent().parse(new StringReader(
-                        "[{\"text\":\"[\",\"color\":\"#4A4A4A\"},{\"text\":\"-\",\"color\":\"" + ChatFormat.failColor.asHexString().toUpperCase() + "\"},{\"text\":\"]\",\"color\":\"#4A4A4A\"},{\"text\":\" " + name + "\",\"color\":\"" + ChatFormat.failColor.asHexString().toUpperCase() + "\"}]"
-                ));
-            } catch (Throwable ignored) {
-                component = LegacyChatFormat.format("§8[§c-§8] §c{}", name);
-            }
-
-            return component;
-        } catch (Exception var8) {
-            return original;
-        }
+        if (BwUtil.isInBedWars(nexiaPlayer)) { BwPlayerEvents.respawned(nexiaPlayer); }
+        if (SkywarsGame.world.equals(respawn) || SkywarsGame.isSkywarsPlayer(nexiaPlayer)) { nexiaPlayer.setGameMode(Minecraft.GameMode.SPECTATOR); }
     }
 
     @Inject(method = "canPlayerLogin", at = @At("TAIL"), cancellable = true)
