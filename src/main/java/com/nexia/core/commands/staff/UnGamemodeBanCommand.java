@@ -5,6 +5,7 @@ import com.combatreforged.metis.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.commands.CommandUtil;
@@ -13,7 +14,7 @@ import com.nexia.core.utilities.player.NexiaPlayer;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 
 public class UnGamemodeBanCommand {
 
@@ -29,7 +30,7 @@ public class UnGamemodeBanCommand {
         );
     }
 
-    public static int unBan(CommandContext<CommandSourceInfo> context) {
+    public static int unBan(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         CommandSourceInfo sender = context.getSource();
 
         PlayerGameMode gameMode = PlayerGameMode.identifyGamemode(StringArgumentType.getString(context, "gamemode"));
@@ -42,7 +43,7 @@ public class UnGamemodeBanCommand {
             return 1;
         }
 
-        GamemodeBanHandler.tryUnGamemodeBan(sender, new NexiaPlayer(context.getArgument("player", ServerPlayer.class)), gameMode);
+        GamemodeBanHandler.tryUnGamemodeBan(sender, new NexiaPlayer(context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()))), gameMode);
 
         return 1;
     }

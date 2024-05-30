@@ -31,8 +31,9 @@ public class KitLayoutCommand {
                 .requires(commandSourceInfo -> {
                     try {
                         if(!CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
-                        NexiaPlayer player = new NexiaPlayer(CommandUtil.getPlayer(commandSourceInfo));
+                        NexiaPlayer player = CommandUtil.getPlayer(commandSourceInfo);
 
+                        assert player != null;
                         com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
                         PlayerData playerData1 = PlayerDataManager.get(player);
                         return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;

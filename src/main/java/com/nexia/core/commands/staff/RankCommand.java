@@ -13,6 +13,7 @@ import com.nexia.core.utilities.time.ServerTime;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class RankCommand {
                 .then(CommandUtils.argument("player", EntityArgument.player())
                         .then(CommandUtils.argument("rank", StringArgumentType.string())
                                 .suggests(((context, builder) -> SharedSuggestionProvider.suggest((ranks), builder)))
-                                .executes(context -> RankCommand.give(context, context.getArgument("player", ServerPlayer.class), StringArgumentType.getString(context, "rank")))))
+                                .executes(context -> RankCommand.give(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())), StringArgumentType.getString(context, "rank")))))
         );
     }
 

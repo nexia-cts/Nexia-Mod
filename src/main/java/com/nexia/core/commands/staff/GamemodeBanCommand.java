@@ -13,6 +13,7 @@ import com.nexia.core.utilities.player.NexiaPlayer;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.server.level.ServerPlayer;
 
 public class GamemodeBanCommand {
@@ -24,7 +25,7 @@ public class GamemodeBanCommand {
                                 .suggests(((context, builder) -> SharedSuggestionProvider.suggest((PlayerGameMode.stringPlayerGameModes), builder)))
                                 .then(CommandUtils.argument("duration", StringArgumentType.word())
                                         .then(CommandUtils.argument("reason", StringArgumentType.greedyString())
-                                                .executes(context -> GamemodeBanCommand.ban(context.getSource(), context.getArgument("player", ServerPlayer.class), StringArgumentType.getString(context, "gamemode"), StringArgumentType.getString(context, "reason"), StringArgumentType.getString(context, "duration"))))
+                                                .executes(context -> GamemodeBanCommand.ban(context.getSource(), context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())), StringArgumentType.getString(context, "gamemode"), StringArgumentType.getString(context, "reason"), StringArgumentType.getString(context, "duration"))))
                                 )
                         )
                 ));

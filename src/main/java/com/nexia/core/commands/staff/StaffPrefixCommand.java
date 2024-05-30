@@ -13,6 +13,7 @@ import com.nexia.core.utilities.time.ServerTime;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class StaffPrefixCommand {
                                         .executes(context -> {
 
                                             String type = StringArgumentType.getString(context, "type");
-                                            ServerPlayer mcOtherPlayer = context.getArgument("player", ServerPlayer.class);
+                                            ServerPlayer mcOtherPlayer = context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()));
                                             NexiaPlayer otherPlayer = new NexiaPlayer(mcOtherPlayer);
                                             String prefix = StringArgumentType.getString(context, "prefix");
 

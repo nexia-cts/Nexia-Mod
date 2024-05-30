@@ -10,6 +10,7 @@ import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.server.level.ServerPlayer;
 
 public class HealCommand {
@@ -17,7 +18,7 @@ public class HealCommand {
         dispatcher.register(CommandUtils.literal("heal").executes(HealCommand::run)
                 .requires(commandSourceInfo -> CommandUtil.hasPermission(commandSourceInfo, "nexia.staff.heal", 1))
                 .then(CommandUtils.argument("player", EntityArgument.player())
-                        .executes(context -> HealCommand.heal(context, context.getArgument("player", ServerPlayer.class)))
+                        .executes(context -> HealCommand.heal(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()))))
                 )
         );
     }

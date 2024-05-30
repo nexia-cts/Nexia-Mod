@@ -5,22 +5,23 @@ import com.combatreforged.metis.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.misc.CommandUtil;
+import com.nexia.core.utilities.commands.CommandUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.server.level.ServerPlayer;
 
 public class PingCommand {
     public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
         dispatcher.register(CommandUtils.literal("ping").executes(PingCommand::run)
                 .then(CommandUtils.argument("player", EntityArgument.player())
-                        .executes(context -> PingCommand.ping(context, context.getArgument("player", ServerPlayer.class)))
+                        .executes(context -> PingCommand.ping(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()))))
                 )
         );
         dispatcher.register(CommandUtils.literal("latency").executes(PingCommand::run)
                 .then(CommandUtils.argument("player", EntityArgument.player())
-                        .executes(context -> PingCommand.ping(context, context.getArgument("player", ServerPlayer.class)))
+                        .executes(context -> PingCommand.ping(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()))))
                 )
         );
     }
