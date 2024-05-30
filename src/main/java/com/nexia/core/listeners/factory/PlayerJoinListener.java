@@ -15,6 +15,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
+import net.minecraft.stats.Stats;
 
 import java.util.Objects;
 
@@ -25,28 +26,26 @@ public class PlayerJoinListener {
         PlayerJoinEvent.BACKEND.register(playerJoinEvent -> {
 
             NexiaPlayer player = new NexiaPlayer(playerJoinEvent.getPlayer());
-            processJoin(player);
 
-            /*
-            if(minecraftPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) <= 1) {
+            if(player.unwrap().getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) <= 1) {
                 playerJoinEvent.setJoinMessage(
                         Component.text("[").color(ChatFormat.lineColor)
-                                .append(Component.text("!").color(TextColor.fromHexString("#ff9940")))
-                                                        .append(Component.text("] ").color(ChatFormat.lineColor))
-                                                                .append(Component.text(player.getRawName()).color(TextColor.fromHexString("#ff9940")))
+                                .append(Component.text("!", ChatFormat.goldColor))
+                                .append(Component.text("] ").color(ChatFormat.lineColor))
+                                .append(Component.text(player.getRawName(), ChatFormat.goldColor))
 
 
                 );
             } else {
                 playerJoinEvent.setJoinMessage(
                         Component.text("[").color(ChatFormat.lineColor)
-                                        .append(Component.text("+").color(ChatFormat.greenColor))
-                                                .append(Component.text("] ").color(ChatFormat.lineColor))
-                                                        .append(Component.text(player.getRawName()).color(ChatFormat.greenColor))
+                                .append(Component.text("+").color(ChatFormat.greenColor))
+                                .append(Component.text("] ").color(ChatFormat.lineColor))
+                                .append(Component.text(player.getRawName()).color(ChatFormat.greenColor))
                 );
             }
 
-             */
+            processJoin(player);
         });
     }
 

@@ -2,9 +2,9 @@ package com.nexia.core.listeners.factory;
 
 import com.combatreforged.metis.api.event.player.PlayerDisconnectEvent;
 import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
-import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
@@ -12,26 +12,22 @@ import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
-import net.minecraft.server.level.ServerPlayer;
+import net.kyori.adventure.text.Component;
 
 public class PlayerLeaveListener {
-    public static void registerListener() {
+    public void registerListener() {
         PlayerDisconnectEvent.BACKEND.register(playerDisconnectEvent -> {
 
             NexiaPlayer player = new NexiaPlayer(playerDisconnectEvent.getPlayer());
             processDisconnect(player);
 
-            /*
-            if(Main.config.events.statusMessages){
-                playerDisconnectEvent.setLeaveMessage(
-                        Component.text("[").color(ChatFormat.lineColor)
-                                .append(Component.text("-").color(ChatFormat.failColor)
-                                .append(Component.text("] ").color(ChatFormat.lineColor))
-                                .append(Component.text(player.getRawName()).color(ChatFormat.failColor)))
-                );
-            }
 
-             */
+            playerDisconnectEvent.setLeaveMessage(
+                    Component.text("[").color(ChatFormat.lineColor)
+                            .append(Component.text("-").color(ChatFormat.failColor))
+                            .append(Component.text("] ").color(ChatFormat.lineColor))
+                            .append(Component.text(player.getRawName()).color(ChatFormat.failColor))
+            );
         });
     }
 
