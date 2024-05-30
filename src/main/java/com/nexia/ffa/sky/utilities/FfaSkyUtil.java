@@ -211,7 +211,7 @@ public class FfaSkyUtil {
                 data.bestKillstreak = data.killstreak;
             }
             data.kills++;
-            player.heal(player.getMaxHealth());
+            FfaSkyUtil.killHeal(attacker);
             FfaSkyUtil.giveKillLoot(attacker, player);
         }
 
@@ -277,6 +277,22 @@ public class FfaSkyUtil {
             );
         }
         PlayerUtil.sendSound(attacker, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.MASTER, 0.75f, 1f);
+    }
+
+    public static void killHeal(ServerPlayer player) {
+        if(!FfaSkyUtil.isFfaPlayer(player)) return;
+        int minHeal = 4;
+        int maxHeal = 11;
+        float maxHealth = player.getMaxHealth();
+        float lostHearts = maxHealth - player.getHealth();
+
+        int heal = (int)(minHeal + (lostHearts - minHeal) * (maxHeal - minHeal) / (maxHealth - minHeal));
+
+        if (player.hasEffect(MobEffects.REGENERATION)) {
+            player.heal(heal);
+        } else {
+            player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, heal, 5, false, false));
+        }
     }
 
     public static boolean canGoToSpawn(ServerPlayer player) {
