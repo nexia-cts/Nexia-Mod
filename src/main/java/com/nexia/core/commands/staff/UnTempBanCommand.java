@@ -4,11 +4,10 @@ import com.combatreforged.metis.api.command.CommandSourceInfo;
 import com.combatreforged.metis.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.core.utilities.player.BanHandler;
 import net.minecraft.commands.arguments.GameProfileArgument;
-
-import java.util.Collection;
 
 public class UnTempBanCommand {
 
@@ -21,10 +20,10 @@ public class UnTempBanCommand {
         );
     }
 
-    public static int unBan(CommandContext<CommandSourceInfo> context) {
+    public static int unBan(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         CommandSourceInfo sender = context.getSource();
 
-        BanHandler.tryUnBan(sender, context.getArgument("player", Collection.class));
+        BanHandler.tryUnBan(sender, context.getArgument("player", GameProfileArgument.Result.class).getNames(CommandUtil.getCommandSourceStack(context.getSource())));
 
         return 1;
     }
