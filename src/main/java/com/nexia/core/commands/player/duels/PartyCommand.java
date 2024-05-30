@@ -15,6 +15,7 @@ import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.team.DuelsTeam;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.server.level.ServerPlayer;
 
 public class PartyCommand {
@@ -30,6 +31,7 @@ public class PartyCommand {
                         if(!CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
                         NexiaPlayer player = CommandUtil.getPlayer(commandSourceInfo);
 
+                        assert player != null;
                         com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
                         PlayerData playerData1 = PlayerDataManager.get(player);
                         return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
@@ -38,19 +40,19 @@ public class PartyCommand {
                     return false;
                 })
                 .then(CommandUtils.literal("invite")
-                        .then(CommandUtils.argument("player", EntityArgument.player()).executes(context -> PartyCommand.invitePlayer(context, context.getArgument("player", ServerPlayer.class))))
+                        .then(CommandUtils.argument("player", EntityArgument.player()).executes(context -> PartyCommand.invitePlayer(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())))))
                 )
                 .then(CommandUtils.literal("promote")
-                        .then(CommandUtils.argument("player", EntityArgument.player()).executes(context -> PartyCommand.promotePlayer(context, context.getArgument("player", ServerPlayer.class))))
+                        .then(CommandUtils.argument("player", EntityArgument.player()).executes(context -> PartyCommand.promotePlayer(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())))))
                 )
                 .then(CommandUtils.literal("join")
-                        .then(CommandUtils.argument("player", EntityArgument.player()).executes(context -> PartyCommand.joinTeam(context, context.getArgument("player", ServerPlayer.class))))
+                        .then(CommandUtils.argument("player", EntityArgument.player()).executes(context -> PartyCommand.joinTeam(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())))))
                 )
                 .then(CommandUtils.literal("kick")
-                        .then(CommandUtils.argument("player", EntityArgument.player()).executes(context -> PartyCommand.kickPlayer(context, context.getArgument("player", ServerPlayer.class)))
+                        .then(CommandUtils.argument("player", EntityArgument.player()).executes(context -> PartyCommand.kickPlayer(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()))))
                 )
                 .then(CommandUtils.literal("decline")
-                        .then(CommandUtils.argument("player", EntityArgument.player()).executes(context -> PartyCommand.declinePlayer(context, context.getArgument("player", ServerPlayer.class))))
+                        .then(CommandUtils.argument("player", EntityArgument.player()).executes(context -> PartyCommand.declinePlayer(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())))))
                 )
                 .then(CommandUtils.literal("disband").executes(PartyCommand::disbandTeam))
                 .then(CommandUtils.literal("create").executes(PartyCommand::createTeam))

@@ -12,6 +12,7 @@ import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.server.level.ServerPlayer;
 
 public class DeclineDuelCommand {
@@ -25,8 +26,9 @@ public class DeclineDuelCommand {
                 .requires(commandSourceInfo -> {
                     try {
                         if(!CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
-                        NexiaPlayer player = new NexiaPlayer(CommandUtil.getPlayer(commandSourceInfo));
+                        NexiaPlayer player = CommandUtil.getPlayer(commandSourceInfo);
 
+                        assert player != null;
                         com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
                         PlayerData playerData1 = PlayerDataManager.get(player);
                         return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
@@ -35,7 +37,7 @@ public class DeclineDuelCommand {
                     return false;
                 })
                 .then(CommandUtils.argument("player", EntityArgument.player())
-                        .executes(context -> DeclineDuelCommand.decline(context, context.getArgument("player", ServerPlayer.class)))
+                        .executes(context -> DeclineDuelCommand.decline(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()))))
                 )
         );
     }

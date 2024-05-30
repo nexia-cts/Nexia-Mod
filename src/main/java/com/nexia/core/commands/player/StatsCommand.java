@@ -18,6 +18,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.text.DecimalFormat;
@@ -28,7 +29,7 @@ public class StatsCommand {
                 .then(CommandUtils.argument("player", EntityArgument.player())
                         .then(CommandUtils.argument("gamemode", StringArgumentType.greedyString())
                                 .suggests(((context, builder) -> SharedSuggestionProvider.suggest((LobbyUtil.statsGameModes), builder)))
-                                .executes(context -> StatsCommand.other(context, context.getArgument("player", ServerPlayer.class), StringArgumentType.getString(context, "gamemode")))))
+                                .executes(context -> StatsCommand.other(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())), StringArgumentType.getString(context, "gamemode")))))
         );
     }
 

@@ -69,6 +69,11 @@ public class CommandUtil {
     }
 
     public static CommandSourceStack getCommandSourceStack(CommandSourceInfo info) {
+
+        if(checkPlayerInCommand(info) && getPlayer(info) != null) {
+            return getCommandSourceStack(info, getPlayer(info));
+        }
+
         CommandSourceStack commandSourceStack = new CommandSourceStack(new CommandSource() {
             @Override
             public void sendMessage(Component component, UUID uUID) {
@@ -88,7 +93,7 @@ public class CommandUtil {
             public boolean shouldInformAdmins() {
                 return false;
             }
-        }, new Vec3(0, 0, 0), new Vec2(0, 0), ServerTime.minecraftServer.overworld(), info.getSender().getPermissionLevel(), "", new TextComponent(""), ServerTime.minecraftServer, null);
+        }, new Vec3(0, 0, 0), new Vec2(0, 0), ServerTime.minecraftServer.overworld(), info.getSender().getPermissionLevel(), null, null, ServerTime.minecraftServer, null);
 
         return commandSourceStack;
     }

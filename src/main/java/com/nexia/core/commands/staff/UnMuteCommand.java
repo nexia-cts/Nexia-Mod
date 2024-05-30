@@ -4,9 +4,11 @@ import com.combatreforged.metis.api.command.CommandSourceInfo;
 import com.combatreforged.metis.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.commands.CommandUtil;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.server.level.ServerPlayer;
 
 public class UnMuteCommand {
@@ -20,9 +22,9 @@ public class UnMuteCommand {
         );
     }
 
-    public static int unMute(CommandContext<CommandSourceInfo> context) {
+    public static int unMute(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         CommandSourceInfo sender = context.getSource();
-        ServerPlayer muted = context.getArgument("player", ServerPlayer.class);
+        ServerPlayer muted = context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()));
 
         PlayerMutes.unMute(sender, muted);
 

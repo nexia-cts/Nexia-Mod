@@ -12,6 +12,7 @@ import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.server.level.ServerPlayer;
 
 public class AcceptDuelCommand {
@@ -25,7 +26,7 @@ public class AcceptDuelCommand {
                 .requires(commandSourceInfo -> {
                     try {
                         if(!CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
-                        NexiaPlayer player = new NexiaPlayer(CommandUtil.getPlayer(commandSourceInfo));
+                        NexiaPlayer player = CommandUtil.getPlayer(commandSourceInfo);
 
                         com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
                         PlayerData playerData1 = PlayerDataManager.get(player);
@@ -35,7 +36,7 @@ public class AcceptDuelCommand {
                     return false;
                 })
                 .then(CommandUtils.argument("player", EntityArgument.player())
-                        .executes(context -> AcceptDuelCommand.accept(context, context.getArgument("player", ServerPlayer.class)))
+                        .executes(context -> AcceptDuelCommand.accept(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()))))
                 )
         );
     }

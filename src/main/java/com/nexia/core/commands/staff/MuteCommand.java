@@ -12,6 +12,7 @@ import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.commands.CommandUtil;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.HashMap;
@@ -38,7 +39,7 @@ public class MuteCommand {
     public static int mute(CommandContext<CommandSourceInfo> context, String durationArg, String reason) throws CommandSyntaxException {
 
         CommandSourceInfo sender = context.getSource();
-        ServerPlayer muted = context.getArgument("player", ServerPlayer.class);
+        ServerPlayer muted = context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()));
 
         int durationInSeconds;
         try {

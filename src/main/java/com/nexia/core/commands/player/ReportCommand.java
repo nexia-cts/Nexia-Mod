@@ -15,6 +15,7 @@ import com.nexia.discord.Main;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.awt.*;
@@ -44,7 +45,7 @@ public class ReportCommand {
         dispatcher.register(CommandUtils.literal("report")
                 .then(CommandUtils.argument("player", EntityArgument.player())
                         .then(CommandUtils.argument("reason", StringArgumentType.greedyString())
-                                .executes(context -> ReportCommand.report(context, context.getArgument("player", ServerPlayer.class), StringArgumentType.getString(context, "reason")))
+                                .executes(context -> ReportCommand.report(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())), StringArgumentType.getString(context, "reason")))
                         )
                 )
         );

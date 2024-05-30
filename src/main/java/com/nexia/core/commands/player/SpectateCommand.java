@@ -20,6 +20,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.server.level.ServerPlayer;
 
 public class SpectateCommand {
@@ -30,6 +31,7 @@ public class SpectateCommand {
                         if(!CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
                         NexiaPlayer player = CommandUtil.getPlayer(commandSourceInfo);
 
+                        assert player != null;
                         com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
                         PlayerData playerData1 = PlayerDataManager.get(player);
                         return (playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY) || (playerData1.gameMode == PlayerGameMode.FFA);
@@ -39,7 +41,7 @@ public class SpectateCommand {
                 })
                         .executes(SpectateCommand::gameModeSpectate)
                 .then(CommandUtils.argument("player", EntityArgument.player())
-                        .executes(context -> SpectateCommand.spectate(context, context.getArgument("player", ServerPlayer.class)))
+                        .executes(context -> SpectateCommand.spectate(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()))))
                 )
         );
     }

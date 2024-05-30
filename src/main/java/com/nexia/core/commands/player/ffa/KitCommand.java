@@ -21,7 +21,7 @@ public class KitCommand {
         dispatcher.register(CommandUtils.literal("kit")
                 .executes(context -> {
                     if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-                    NexiaPlayer player = new NexiaPlayer(CommandUtil.getPlayer(context));
+                    NexiaPlayer player = CommandUtil.getPlayer(context);
                     if(!FfaKitsUtil.canGoToSpawn(player)) {
                         player.sendMessage(Component.text("You must be fully healed to change kits!", ChatFormat.failColor));
                         return 0;
