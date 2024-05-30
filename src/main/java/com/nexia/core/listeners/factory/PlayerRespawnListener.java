@@ -21,7 +21,7 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.Random;
 
 public class PlayerRespawnListener {
-    public static void registerListener(){
+    public void registerListener(){
         PlayerRespawnEvent.BACKEND.register((respawnEvent) -> {
             NexiaPlayer player = new NexiaPlayer(respawnEvent.getPlayer());
 
