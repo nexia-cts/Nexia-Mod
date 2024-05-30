@@ -34,13 +34,13 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerGamePacketListenerImpl.class)
 public class ServerGamePacketListenerMixin {
 
-    @Shadow public ServerPlayer player;
+    @Shadow
+    public ServerPlayer player;
 
     @Inject(method = "handleChat", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
     private void handleChat(ServerboundChatPacket serverboundChatPacket, CallbackInfo ci) {
@@ -87,10 +87,13 @@ public class ServerGamePacketListenerMixin {
     // |_|  \_\_/___\___|\_____\___/ \___/|_|\_\___|\__, |
     //                                               __/ |
     //                                              |___/
+    /*
     @Redirect(method = "handleInteract", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;getCurrentAttackReach(F)F"))
     public float redirectReachLonger(ServerPlayer playerEntity, float f) {
         return playerEntity.getCurrentAttackReach(f) + 0.75F;
     }
+    
+     */
 
     @Inject(at = @At("HEAD"), method = "onDisconnect")
     private void getLeavePlayer(Component component, CallbackInfo ci) {
@@ -167,7 +170,7 @@ public class ServerGamePacketListenerMixin {
 
         if ((action == ServerboundPlayerActionPacket.Action.DROP_ITEM ||
                 action == ServerboundPlayerActionPacket.Action.DROP_ALL_ITEMS) &&
-                    !EventUtil.dropItem(nexiaPlayer, inv.getItem(player.inventory.selected))) {
+                !EventUtil.dropItem(nexiaPlayer, inv.getItem(player.inventory.selected))) {
             player.connection.send(new ClientboundContainerSetSlotPacket(0, 36 + inv.selected, inv.getSelected()));
             ci.cancel();
             return;
@@ -187,12 +190,12 @@ public class ServerGamePacketListenerMixin {
             }
         }
 
-        if(PlayerDataManager.get(nexiaPlayer).gameMode == PlayerGameMode.LOBBY){
+        if (PlayerDataManager.get(nexiaPlayer).gameMode == PlayerGameMode.LOBBY) {
             ci.cancel();
             return;
         }
 
-        if(OitcGame.isOITCPlayer(nexiaPlayer)){
+        if (OitcGame.isOITCPlayer(nexiaPlayer)) {
             ci.cancel();
             return;
         }
