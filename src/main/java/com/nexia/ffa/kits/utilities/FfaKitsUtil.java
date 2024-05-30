@@ -62,6 +62,7 @@ public class FfaKitsUtil {
         if(player.getTags().contains("bot") || attacker.getTags().contains("bot")) return;
 
         SavedPlayerData data = PlayerDataManager.get(attacker).savedData;
+        data.rating += 5;
         data.killstreak++;
         if(data.killstreak > data.bestKillstreak){
             data.bestKillstreak = data.killstreak;
@@ -107,6 +108,7 @@ public class FfaKitsUtil {
         if(player.getTags().contains("bot")) return;
 
         SavedPlayerData data = PlayerDataManager.get(player).savedData;
+        data.rating -= 5;
         data.deaths++;
         if(data.killstreak > data.bestKillstreak){
             data.bestKillstreak = data.killstreak;
@@ -174,17 +176,7 @@ public class FfaKitsUtil {
     public static void leaveOrDie(@NotNull ServerPlayer player, @Nullable DamageSource source, boolean leaving) {
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
 
-        if (!leaving) {
-            FfaKitsUtil.setDeathMessage(player, source);
-
-            if (attacker != null) {
-                SavedPlayerData player_data = PlayerDataManager.get(player).savedData;
-                SavedPlayerData opponent_data = PlayerDataManager.get(player).savedData;
-
-                player_data.rating -= 5;
-                opponent_data.rating += 5;
-            }
-        }
+        if (!leaving) FfaKitsUtil.setDeathMessage(player, source);
 
         if (attacker != null) {
             FfaKitsUtil.clearThrownTridents(attacker);
