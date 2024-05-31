@@ -144,6 +144,15 @@ public class ServerGamePacketListenerMixin {
             }
         }
 
+        if (BwUtil.isBedWarsPlayer(player)) {
+            // If clicks on crafting slot
+            if (containerId == 0 && slot >= 1 && slot <= 4) {
+                ci.cancel();
+                ItemStackUtil.sendInventoryRefreshPacket(player);
+                return;
+            }
+        }
+
         if (FfaUtil.isFfaPlayer(player)) {
             // If clicks on crafting slot
             if (containerId == 0 && slot >= 1 && slot <= 4) {
