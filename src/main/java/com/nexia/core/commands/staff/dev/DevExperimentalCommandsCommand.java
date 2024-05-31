@@ -60,7 +60,7 @@ public class DevExperimentalCommandsCommand {
             ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("ffa", name)).location(), (
                     new RuntimeWorldConfig()
                             .setDimensionType(DimensionType.OVERWORLD_LOCATION)
-                            .setGenerator(getChunkGenerator())
+                            .setGenerator(getChunkGenerator(null))
                             .setDifficulty(Difficulty.HARD)
                             .setGameRule(GameRules.RULE_KEEPINVENTORY, true)
                             .setGameRule(GameRules.RULE_MOBGRIEFING, false)

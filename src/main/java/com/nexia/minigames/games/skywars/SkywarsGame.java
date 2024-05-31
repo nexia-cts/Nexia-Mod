@@ -33,6 +33,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.notcoded.codelib.players.AccuratePlayer;
 import net.notcoded.codelib.util.TickUtil;
@@ -56,7 +57,7 @@ public class SkywarsGame {
 
     public static RuntimeWorldConfig config = new RuntimeWorldConfig()
             .setDimensionType(DimensionType.OVERWORLD_LOCATION)
-            .setGenerator(getChunkGenerator())
+            .setGenerator(getChunkGenerator(Biomes.PLAINS))
             .setDifficulty(Difficulty.EASY)
             .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
             .setGameRule(GameRules.RULE_MOBGRIEFING, true)
