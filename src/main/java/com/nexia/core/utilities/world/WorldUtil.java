@@ -25,6 +25,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WorldUtil {
+    private static final String templateWorldName = "template:void";
+
+    public static boolean isTemplateVoidWorld(Level level) {
+        return getWorldName(level).equalsIgnoreCase(templateWorldName);
+    }
+
+    public static ServerLevel templateWorld;
+
+    public static void setVoidWorld(MinecraftServer server) {
+        for (ServerLevel level : server.getAllLevels()) {
+            if (isTemplateVoidWorld(level)) {
+                templateWorld = level;
+                break;
+            }
+        }
+    }
+
     public static World getWorld(@NotNull Level level) {
         return ServerTime.factoryServer.getWorld(WorldUtil.getIdentifierWorldName(level));
     }
@@ -66,7 +83,12 @@ public class WorldUtil {
     }
 
     public static ChunkGenerator getChunkGenerator() {
-        return new VoidChunkGenerator(BuiltinRegistries.BIOME, Biomes.PLAINS);
+        try {
+            return new VoidChunkGenerator(BuiltinRegistries.BIOME, Biomes.PLAINS);
+        } catch (Exception exception) {
+            if (templateWorld == null || templateWorld.getChunkSource().getGenerator() == null) return ServerTime.minecraftServer.overworld().getChunkSource().getGenerator();
+            return templateWorld.getChunkSource().getGenerator();
+        }
     }
 
     public static void deleteTempWorlds() {
