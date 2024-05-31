@@ -19,12 +19,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CraftingMenu.class)
 public class CraftingMixin {
+
+    // Set crafter to player
     @Unique
     private static ServerPlayer crafter;
+
     @Inject(method = "slotChangedCraftingGrid", at = @At("HEAD"))
     private static void craft(int i, Level level, Player player, CraftingContainer craftingContainer, ResultContainer resultContainer, CallbackInfo ci) {
-        if (player instanceof ServerPlayer) {
-            crafter = (ServerPlayer) player;
+        if (player instanceof ServerPlayer serverPlayer) {
+            crafter = serverPlayer;
         }
     }
 
@@ -45,7 +48,9 @@ public class CraftingMixin {
     private static ItemStack setCraftResultPacketItem(ItemStack itemStack) {
         if (crafter == null) return itemStack;
 
-        if (BwUtil.isInBedWars(crafter) || FfaUtil.isFfaPlayer(crafter)) return ItemStack.EMPTY;
+        if (BwUtil.isInBedWars(crafter) || FfaUtil.isFfaPlayer(crafter)) {
+            return ItemStack.EMPTY;
+        }
 
         return itemStack;
     }

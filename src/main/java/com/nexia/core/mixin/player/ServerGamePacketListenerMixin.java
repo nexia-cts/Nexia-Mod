@@ -128,14 +128,6 @@ public class ServerGamePacketListenerMixin {
         int slot = clickPacket.getSlotNum();
         ItemStack itemStack = clickPacket.getItem();
 
-        if ((clickPacket.getClickType() == ClickType.THROW || slot == -999)) {
-            if (!EventUtil.dropItem(player, itemStack)) {
-                ci.cancel();
-                ItemStackUtil.sendInventoryRefreshPacket(player);
-                return;
-            }
-        }
-
         if (BwUtil.isBedWarsPlayer(player)) {
             if (!BwPlayerEvents.containerClick(player, clickPacket)) {
                 ci.cancel();
@@ -144,16 +136,15 @@ public class ServerGamePacketListenerMixin {
             }
         }
 
-        if (BwUtil.isBedWarsPlayer(player)) {
-            // If clicks on crafting slot
-            if (containerId == 0 && slot >= 1 && slot <= 4) {
+        if ((clickPacket.getClickType() == ClickType.THROW || slot == -999)) {
+            if (!EventUtil.dropItem(player, itemStack)) {
                 ci.cancel();
                 ItemStackUtil.sendInventoryRefreshPacket(player);
                 return;
             }
         }
 
-        if (FfaUtil.isFfaPlayer(player)) {
+        if (FfaUtil.isFfaPlayer(player) || BwUtil.isBedWarsPlayer(player)) {
             // If clicks on crafting slot
             if (containerId == 0 && slot >= 1 && slot <= 4) {
                 ci.cancel();

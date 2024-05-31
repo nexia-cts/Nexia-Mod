@@ -1,4 +1,5 @@
 package com.nexia.minigames.games.bedwars.util;
+
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
@@ -279,6 +280,7 @@ public class BwUtil {
     public static void setAttackSpeed(ServerPlayer player) {
         UUID hasteUuid = UUID.fromString("AF8B6E3F-3328-4C0A-AA36-5BA2BB9DBEF3");
         AttributeInstance attackSpeed = player.getAttribute(Attributes.ATTACK_SPEED);
+        assert attackSpeed != null;
         AttributeModifier modifier = attackSpeed.getModifier(hasteUuid);
 
         if (modifier != null) {
@@ -308,7 +310,7 @@ public class BwUtil {
                 inventory2.items.set(i, new ItemStack(Items.AIR));
             }
         }
-        if (!isTool(inventory2.offhand.get(0))) inventory2.offhand.set(0, new ItemStack(Items.AIR));
+        if (!isTool(inventory2.offhand.getFirst())) inventory2.offhand.set(0, new ItemStack(Items.AIR));
     }
 
     public static void afterItemMerge(ItemEntity itemEntity) {
