@@ -66,22 +66,14 @@ public class FfaKitsUtil {
 
         // START RATING SYSTEM
 
-        // OLD
-
-        // ATTACKER
         int attackerOldRating = data.rating;
-        // I=I+B*(1-R)
-        int relativeIncrease = 0;
-
-        // VICTIM
         int victimOldRating = playerData.rating;
-        // D=D+R*(1-B)
-        int relativeDecrease = 0;
 
-        // NEW
+        int relativeIncrease = attackerOldRating * (1 - victimOldRating);
+        int relativeDecrease = victimOldRating * (1 - attackerOldRating);
 
-        int attackerNewRating = data.rating;
-        int victimNewRating = playerData.rating;
+        int attackerNewRating = data.rating + relativeIncrease;
+        int victimNewRating = playerData.rating - relativeDecrease;
 
 
         data.rating = attackerNewRating;
