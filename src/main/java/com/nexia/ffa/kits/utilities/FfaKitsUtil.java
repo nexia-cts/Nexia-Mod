@@ -64,14 +64,18 @@ public class FfaKitsUtil {
         int attackerOldRating = data.rating;
         int victimOldRating = playerData.rating;
 
-        int attackerOldRelativeIncrease = data.relative_increase;
-        int attackerNewRelativeIncrease = attackerOldRelativeIncrease + attackerOldRating * (1 - victimOldRating);
+        int attackerRelativeIncrease = data.relative_increase + attackerOldRating * (1 - victimOldRating);
+        int attackerRelativeDecrease = data.relative_decrease + victimOldRating * (1 - attackerOldRating);
+        int victimRelativeIncrease = playerData.relative_increase + attackerOldRating * (1 - victimOldRating);
+        int victimRelativeDecrease = playerData.relative_decrease + victimOldRating * (1 - attackerOldRating);
 
-        int victimOldRelativeDecrease = playerData.relative_decrease;
-        int victimNewRelativeDecrease = victimOldRelativeDecrease + victimOldRating * (1 - attackerOldRating);
+        data.relative_increase = attackerRelativeIncrease;
+        data.relative_decrease = attackerRelativeDecrease;
+        playerData.relative_increase = victimRelativeIncrease;
+        playerData.relative_decrease = victimRelativeDecrease;
 
-        int attackerNewRating = data.rating + attackerNewRelativeIncrease;
-        int victimNewRating = playerData.rating - victimNewRelativeDecrease;
+        int attackerNewRating = data.rating + attackerRelativeIncrease;
+        int victimNewRating = playerData.rating - victimRelativeDecrease;
 
 
         data.rating = attackerNewRating;
