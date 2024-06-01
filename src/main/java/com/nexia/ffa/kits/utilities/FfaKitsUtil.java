@@ -48,12 +48,7 @@ public class FfaKitsUtil {
 
     public static void calculateKill(ServerPlayer attacker, ServerPlayer player){
 
-        BlfScheduler.delay(5, new BlfRunnable() {
-            @Override
-            public void run() {
-                attacker.heal(attacker.getMaxHealth());
-            }
-        });
+        attacker.heal(attacker.getMaxHealth());
 
         FfaKitsUtil.clearArrows(attacker);
         FfaKitsUtil.clearSpectralArrows(attacker);
