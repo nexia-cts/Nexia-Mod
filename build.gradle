@@ -78,6 +78,9 @@ dependencies {
 	include(implementation("com.googlecode.json-simple:json-simple:${project.json_simple_version}"))
 	modApi("me.lucko:fabric-permissions-api:${project.fabric_permissions_api_version}")
 
+
+	modApi("com.nexia:gato-anticheat:${project.gato_anticheat_version}+${project.minecraft_version}")
+
 	include(modApi("net.blumbo:blfscheduler:${project.blfscheduler_version}"))
 	include(modApi("io.github.blumbo:inventory-merger:${project.inventory_merger_version}"))
 	include(modApi("net.notcoded:codelib:${project.codelib_version}+${project.minecraft_version}"))

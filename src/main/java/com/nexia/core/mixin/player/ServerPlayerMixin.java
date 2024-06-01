@@ -6,6 +6,7 @@ import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.duels.CustomDuelGUI;
 import com.nexia.core.gui.duels.DuelGUI;
+import com.nexia.core.utilities.player.BanHandler;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.FfaUtil;
@@ -142,7 +143,14 @@ public abstract class ServerPlayerMixin extends Player {
     }
     @Inject(method = "tick", at = @At("HEAD"))
     private void detect(CallbackInfo ci){
+        ServerPlayer player = (ServerPlayer) (Object) this;
+
+        com.nexia.gatoanticheat.players.PlayerData antiCheatPlayerData = com.nexia.gatoanticheat.players.PlayerData.get(player);
+        if(antiCheatPlayerData.hitsBlocked >= 5) {
+            BanHandler.handlePunishment(player, BanHandler.Punishment.REACH);
+        }
+
         if(!DetectCommand.enabled) return;
-        DetectCommand.detect((ServerPlayer) (Object) this);
+        DetectCommand.detect(player);
     }
 }

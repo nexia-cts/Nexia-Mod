@@ -3,6 +3,7 @@ package com.nexia.core.utilities.player;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
+import com.nexia.core.utilities.http.DiscordWebhook;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.discord.Main;
 import net.fabricmc.loader.api.FabricLoader;
@@ -13,6 +14,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -24,6 +26,25 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class BanHandler {
+
+    private static boolean sendWebhook(ServerPlayer player, Punishment punishment){
+        DiscordWebhook webhook = new DiscordWebhook(Main.config.punishmentWebhook);
+        webhook.addEmbed(new DiscordWebhook.EmbedObject()
+                .setAuthor((player.getScoreboardName()), null, null)
+                .setDescription("Please take action immediately.")
+                .setColor(Color.RED)
+
+                .addField("Server: ", ServerTime.serverType.type.toUpperCase(), false)
+                .addField("Punishment:", punishment.name(), false)
+                .setThumbnail("https://mc-heads.net/avatar/" + player.getScoreboardName() + "/64")
+        );
+        try {
+            webhook.execute();
+            return true;
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
 
     static final String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/tempbans";
 
@@ -145,5 +166,14 @@ public class BanHandler {
         }
 
         sender.sendSuccess(LegacyChatFormat.format("{s}Unbanned {b2}{}{s}.", unBanned.getName()), false);
+    }
+
+    public static void handlePunishment(ServerPlayer player, Punishment punishment) {
+        sendWebhook(player, punishment);
+        player.connection.disconnect(LegacyChatFormat.format("{f}Stop cheating.\nIf you think this is a false detection, please contact the mods."));
+    }
+
+    public enum Punishment {
+        REACH
     }
 }
