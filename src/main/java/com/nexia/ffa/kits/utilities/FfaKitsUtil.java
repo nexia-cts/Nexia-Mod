@@ -62,7 +62,33 @@ public class FfaKitsUtil {
         if(player.getTags().contains("bot") || attacker.getTags().contains("bot")) return;
 
         SavedPlayerData data = PlayerDataManager.get(attacker).savedData;
-        data.rating += 5;
+        SavedPlayerData playerData = PlayerDataManager.get(player).savedData;
+
+        // START RATING SYSTEM
+
+        // OLD
+
+        // ATTACKER
+        int attackerOldRating = data.rating;
+        // I=I+B*(1-R)
+        int relativeIncrease = 0;
+
+        // VICTIM
+        int victimOldRating = playerData.rating;
+        // D=D+R*(1-B)
+        int relativeDecrease = 0;
+
+        // NEW
+
+        int attackerNewRating = data.rating;
+        int victimNewRating = playerData.rating;
+
+
+        data.rating = attackerNewRating;
+        playerData.rating = victimNewRating;
+
+        // END RATING SYSTEM
+
         data.killstreak++;
         if(data.killstreak > data.bestKillstreak){
             data.bestKillstreak = data.killstreak;
@@ -108,7 +134,6 @@ public class FfaKitsUtil {
         if(player.getTags().contains("bot")) return;
 
         SavedPlayerData data = PlayerDataManager.get(player).savedData;
-        data.rating -= 5;
         data.deaths++;
         if(data.killstreak > data.bestKillstreak){
             data.bestKillstreak = data.killstreak;
