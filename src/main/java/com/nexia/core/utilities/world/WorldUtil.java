@@ -13,7 +13,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
@@ -83,13 +82,9 @@ public class WorldUtil {
         worldHandle.delete();
     }
 
-    public static ChunkGenerator getChunkGenerator(ResourceKey<Biome> biome) {
+    public static ChunkGenerator getChunkGenerator(@NotNull ResourceKey<Biome> biome) {
         try {
-            if (biome == null) {
-                return new VoidChunkGenerator(BuiltinRegistries.BIOME);
-            } else {
-                return new VoidChunkGenerator(BuiltinRegistries.BIOME, biome);
-            }
+            return new VoidChunkGenerator(BuiltinRegistries.BIOME, biome);
         } catch (Exception exception) {
             if (templateWorld == null || templateWorld.getChunkSource().getGenerator() == null) return ServerTime.minecraftServer.overworld().getChunkSource().getGenerator();
             return templateWorld.getChunkSource().getGenerator();

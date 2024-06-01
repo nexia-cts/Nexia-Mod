@@ -70,7 +70,7 @@ public class KitRoom {
 
         RuntimeWorldConfig config = new RuntimeWorldConfig()
                 .setDimensionType(DimensionType.OVERWORLD_LOCATION)
-                .setGenerator(getChunkGenerator(Biomes.PLAINS))
+                .setGenerator(getChunkGenerator(Biomes.THE_VOID))
                 .setDifficulty(Difficulty.HARD)
                 .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
                 .setGameRule(GameRules.RULE_MOBGRIEFING, false)
