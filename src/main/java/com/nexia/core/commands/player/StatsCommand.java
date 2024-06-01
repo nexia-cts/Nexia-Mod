@@ -69,7 +69,7 @@ public class StatsCommand {
                 deaths = kData.deaths;
                 killstreak = kData.killstreak;
                 bestKillstreak = kData.bestKillstreak;
-                rating = kData.rating;
+                rating = 100 * kData.rating;
             }
 
             if(executerData.ffaGameMode == FfaGameMode.UHC) {

@@ -61,17 +61,21 @@ public class FfaKitsUtil {
 
         // START RATING SYSTEM
 
-        int attackerOldRating = data.rating;
-        int victimOldRating = playerData.rating;
+        double attackerOldRating = data.rating;
+        double victimOldRating = playerData.rating;
 
-        int attackerOldRelativeIncrease = data.relative_increase;
-        int attackerNewRelativeIncrease = attackerOldRelativeIncrease + attackerOldRating * (1 - victimOldRating);
+        double attackerRelativeIncrease = data.relative_increase + attackerOldRating * (1 - victimOldRating);
+        double attackerRelativeDecrease = data.relative_decrease + victimOldRating * (1 - attackerOldRating);
+        double victimRelativeIncrease = playerData.relative_increase + attackerOldRating * (1 - victimOldRating);
+        double victimRelativeDecrease = playerData.relative_decrease + victimOldRating * (1 - attackerOldRating);
 
-        int victimOldRelativeDecrease = playerData.relative_decrease;
-        int victimNewRelativeDecrease = victimOldRelativeDecrease + victimOldRating * (1 - attackerOldRating);
+        data.relative_increase = attackerRelativeIncrease;
+        data.relative_decrease = attackerRelativeDecrease;
+        playerData.relative_increase = victimRelativeIncrease;
+        playerData.relative_decrease = victimRelativeDecrease;
 
-        int attackerNewRating = data.rating + attackerNewRelativeIncrease;
-        int victimNewRating = playerData.rating - victimNewRelativeDecrease;
+        double attackerNewRating = (attackerRelativeIncrease + 0.25) / (attackerRelativeIncrease + attackerRelativeDecrease + 0.5);
+        double victimNewRating = (victimRelativeIncrease + 0.25) / (victimRelativeIncrease + victimRelativeDecrease + 0.5);
 
 
         data.rating = attackerNewRating;
