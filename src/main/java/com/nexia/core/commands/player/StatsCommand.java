@@ -257,7 +257,7 @@ public class StatsCommand {
                 deaths = kData.deaths;
                 killstreak = kData.killstreak;
                 bestKillstreak = kData.bestKillstreak;
-                rating = Math.round(kData.rating * 100);
+                rating = Math.round(kData.rating * 1000);
             }
 
             if(gamemode.equalsIgnoreCase("sky ffa")) {
