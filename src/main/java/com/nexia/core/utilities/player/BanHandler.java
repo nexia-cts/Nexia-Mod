@@ -4,10 +4,9 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.http.DiscordWebhook;
+import com.nexia.core.utilities.player.anticheat.Punishment;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.discord.Main;
-import net.blumbo.blfscheduler.BlfRunnable;
-import net.blumbo.blfscheduler.BlfScheduler;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.TextComponent;
@@ -29,7 +28,7 @@ import java.util.HashMap;
 
 public class BanHandler {
 
-    private static boolean sendWebhook(ServerPlayer player, Punishment punishment){
+    private static boolean sendWebhook(ServerPlayer player, Punishment.Type punishment){
         DiscordWebhook webhook = new DiscordWebhook(Main.config.punishmentWebhook);
         webhook.addEmbed(new DiscordWebhook.EmbedObject()
                 .setAuthor((player.getScoreboardName()), null, null)
@@ -170,17 +169,8 @@ public class BanHandler {
         sender.sendSuccess(LegacyChatFormat.format("{s}Unbanned {b2}{}{s}.", unBanned.getName()), false);
     }
 
-    public static void handlePunishment(ServerPlayer player, Punishment punishment) {
+    public static void handlePunishment(ServerPlayer player, Punishment.Type punishment) {
         sendWebhook(player, punishment);
-        BlfScheduler.delay(20, new BlfRunnable() {
-            @Override
-            public void run() {
-                player.connection.disconnect(LegacyChatFormat.format("{f}Stop cheating.\nIf you think this is a false detection, please contact the mods."));
-            }
-        });
-    }
-
-    public enum Punishment {
-        REACH
+        player.connection.disconnect(LegacyChatFormat.format("{f}Stop cheating.\nIf you think this is a false detection, please contact the mods."));
     }
 }
