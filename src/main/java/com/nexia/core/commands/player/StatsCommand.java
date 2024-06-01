@@ -69,7 +69,7 @@ public class StatsCommand {
                 deaths = kData.deaths;
                 killstreak = kData.killstreak;
                 bestKillstreak = kData.bestKillstreak;
-                rating = Math.round(kData.rating * 1000);
+                rating = Math.round(kData.rating * 100);
             }
 
             if(executerData.ffaGameMode == FfaGameMode.UHC) {
@@ -257,7 +257,7 @@ public class StatsCommand {
                 deaths = kData.deaths;
                 killstreak = kData.killstreak;
                 bestKillstreak = kData.bestKillstreak;
-                rating = Math.round(kData.rating * 1000);
+                rating = Math.round(kData.rating * 100);
             }
 
             if(gamemode.equalsIgnoreCase("sky ffa")) {
