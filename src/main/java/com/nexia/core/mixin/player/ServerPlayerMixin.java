@@ -38,6 +38,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -53,6 +54,8 @@ public abstract class ServerPlayerMixin extends Player {
     @Shadow private int spawnInvulnerableTime;
 
     @Shadow public abstract void attack(Entity entity);
+
+    @Unique boolean punished = false;
 
     public ServerPlayerMixin(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
         super(level, blockPos, f, gameProfile);
@@ -146,7 +149,8 @@ public abstract class ServerPlayerMixin extends Player {
         ServerPlayer player = (ServerPlayer) (Object) this;
 
         com.nexia.gatoanticheat.players.PlayerData antiCheatPlayerData = com.nexia.gatoanticheat.players.PlayerData.get(player);
-        if(antiCheatPlayerData.hitsBlocked >= 5) {
+        if(antiCheatPlayerData.hitsBlocked >= 5 && !this.punished) {
+            this.punished = true;
             BanHandler.handlePunishment(player, BanHandler.Punishment.REACH);
         }
 

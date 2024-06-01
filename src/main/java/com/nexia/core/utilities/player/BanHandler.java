@@ -6,6 +6,8 @@ import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.http.DiscordWebhook;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.discord.Main;
+import net.blumbo.blfscheduler.BlfRunnable;
+import net.blumbo.blfscheduler.BlfScheduler;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.TextComponent;
@@ -170,7 +172,12 @@ public class BanHandler {
 
     public static void handlePunishment(ServerPlayer player, Punishment punishment) {
         sendWebhook(player, punishment);
-        player.connection.disconnect(LegacyChatFormat.format("{f}Stop cheating.\nIf you think this is a false detection, please contact the mods."));
+        BlfScheduler.delay(20, new BlfRunnable() {
+            @Override
+            public void run() {
+                player.connection.disconnect(LegacyChatFormat.format("{f}Stop cheating.\nIf you think this is a false detection, please contact the mods."));
+            }
+        });
     }
 
     public enum Punishment {
