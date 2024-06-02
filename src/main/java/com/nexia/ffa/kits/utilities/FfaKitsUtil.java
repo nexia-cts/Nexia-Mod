@@ -66,11 +66,17 @@ public class FfaKitsUtil {
 
         double attackerOldRating = data.rating;
         double victimOldRating = playerData.rating;
+        double encounterCount = KillTracker.getEncounterCount(attacker.getUUID(), player.getUUID());
 
-        double attackerRelativeIncrease = data.relative_increase + attackerOldRating * (1 - victimOldRating);
+        // Avoid division by zero
+        encounterCount = Math.max(encounterCount, 1);
+
+        double encounterFactor = 1.0 + Math.log(1 + encounterCount);
+
+        double attackerRelativeIncrease = data.relative_increase + (attackerOldRating * (1 - victimOldRating)) / encounterFactor;
         double attackerRelativeDecrease = data.relative_decrease;
         double victimRelativeIncrease = playerData.relative_increase;
-        double victimRelativeDecrease = playerData.relative_decrease + victimOldRating * (1 - attackerOldRating);
+        double victimRelativeDecrease = playerData.relative_decrease + (victimOldRating * (1 - attackerOldRating)) / encounterFactor;
 
         data.relative_increase = attackerRelativeIncrease;
         data.relative_decrease = attackerRelativeDecrease;
@@ -190,15 +196,22 @@ public class FfaKitsUtil {
     }
 
     // KillTracker class for tracking kill counts
-    private static class KillTracker {
+    public static class KillTracker {
         private static final Map<UUID, Map<UUID, Integer>> killCounts = new HashMap<>();
+        private static final Map<UUID, Map<UUID, Integer>> encounterCounts = new HashMap<>();
 
         public static void incrementKillCount(UUID attacker, UUID victim) {
             killCounts.computeIfAbsent(attacker, k -> new HashMap<>()).merge(victim, 1, Integer::sum);
+            encounterCounts.computeIfAbsent(attacker, k -> new HashMap<>()).merge(victim, 1, Integer::sum);
+            encounterCounts.computeIfAbsent(victim, k -> new HashMap<>()).merge(attacker, 1, Integer::sum);
         }
 
         public static int getKillCount(UUID attacker, UUID victim) {
             return killCounts.getOrDefault(attacker, new HashMap<>()).getOrDefault(victim, 0);
+        }
+
+        public static int getEncounterCount(UUID player1, UUID player2) {
+            return encounterCounts.getOrDefault(player1, new HashMap<>()).getOrDefault(player2, 0);
         }
     }
 
