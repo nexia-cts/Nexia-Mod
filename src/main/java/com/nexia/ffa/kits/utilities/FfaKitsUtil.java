@@ -139,7 +139,8 @@ public class FfaKitsUtil {
 
             if (!com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(minecraftPlayer) && PlayerDataManager.get(minecraftPlayer).kit == null) {
                 PlayerUtil.getFactoryPlayer(minecraftPlayer).sendTitle(Title.title(Component.text("No kit selected!").color(ChatFormat.failColor), Component.text("You need to select a kit!").color(ChatFormat.failColor)));
-                PlayerUtil.sendSound(minecraftPlayer, new EntityPos(minecraftPlayer), SoundEvents.NOTE_BLOCK_DIDGERIDOO, SoundSource.BLOCKS, 10, 1);
+                PlayerUtil.sendSound(minecraftPlayer, new EntityPos(minecraftPlayer), SoundEvents.NOTE_BLOCK_DIDGERIDOO, SoundSource.BLOCKS, 10
+                        , 1);
                 FfaKitsUtil.sendToSpawn(minecraftPlayer);
                 return;
             }
@@ -289,7 +290,7 @@ public class FfaKitsUtil {
     }
 
     public static boolean canGoToSpawn(ServerPlayer player) {
-        if(!FfaKitsUtil.isFfaPlayer(player) || FfaKitsUtil.wasInSpawn.contains(player.getUUID())) return true;
+        if (!FfaKitsUtil.isFfaPlayer(player) || FfaKitsUtil.wasInSpawn.contains(player.getUUID())) return true;
         return !(Math.round(player.getHealth()) < 20);
     }
 
@@ -300,10 +301,10 @@ public class FfaKitsUtil {
 
         Component msg = FfaUtil.returnDeathMessage(minecraftPlayer, source);
 
-        if(attacker != null && msg.toString().contains("somehow killed themselves")  && attacker != minecraftPlayer) {
+        if (attacker != null && msg.toString().contains("somehow killed themselves") && attacker != minecraftPlayer) {
 
             Component component = FfaUtil.returnClassicDeathMessage(minecraftPlayer, attacker);
-            if(component != null) msg = component;
+            if (component != null) msg = component;
 
             calculateKill(attacker, minecraftPlayer);
         }
@@ -324,7 +325,7 @@ public class FfaKitsUtil {
 
         player.setGameMode(GameType.ADVENTURE);
         FfaAreas.spawn.teleportPlayer(FfaAreas.ffaWorld, player);
-        if(data.kit != null) data.kit.giveKit(player, true);
+        if (data.kit != null) data.kit.giveKit(player, true);
         else {
             BlfScheduler.delay(20, new BlfRunnable() {
                 @Override
