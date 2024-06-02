@@ -83,8 +83,8 @@ public class FfaKitsUtil {
         playerData.relative_increase = victimRelativeIncrease;
         playerData.relative_decrease = victimRelativeDecrease;
 
-        double attackerNewRating = (attackerRelativeIncrease + 0.25) / (attackerRelativeIncrease + attackerRelativeDecrease + 0.5);
-        double victimNewRating = (victimRelativeIncrease + 0.25) / (victimRelativeIncrease + victimRelativeDecrease + 0.5);
+        double attackerNewRating = (attackerRelativeIncrease + 0.25) /10 * (0.1 * (attackerRelativeIncrease + attackerRelativeDecrease + 0.4));
+        double victimNewRating = (victimRelativeIncrease + 0.25) /10 * (0.1 * (victimRelativeIncrease + victimRelativeDecrease + 0.4));
 
         data.rating = attackerNewRating;
         playerData.rating = victimNewRating;
@@ -105,8 +105,7 @@ public class FfaKitsUtil {
                         .color(ChatFormat.chatColor2)
                         .append(Component.text(player.getScoreboardName()).color(ChatFormat.failColor))
                         .append(Component.text(" ").color(ChatFormat.chatColor2))
-                        .append(Component.text(killCount).color(ChatFormat.failColor))
-                        .append(Component.text(" times!").color(ChatFormat.chatColor2))
+                        .append(Component.text(killCount + " times out of " + encounterCount + " fights!").color(ChatFormat.failColor))
         );
 
         if (data.killstreak % 5 == 0) {
