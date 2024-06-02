@@ -184,7 +184,6 @@ public class FfaKitsUtil {
         // If attacker is null, set death message and return
         if (attacker == null) {
             setDeathMessage(player, null);
-            return;
         }
 
         // Calculate encounter count and kill count
