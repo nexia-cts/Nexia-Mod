@@ -43,100 +43,74 @@ import static com.nexia.ffa.kits.utilities.FfaAreas.*;
 public class FfaKitsUtil {
 
     public static ArrayList<UUID> wasInSpawn = new ArrayList<>();
-    private static final Map<UUID, UUID> lastAttackers = new HashMap<>(); // Map to store the last attacker for each player
 
     public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
         com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
         return player.getTags().contains("ffa_kits") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.KITS;
     }
 
-    // Define ScoreboardUtil class with setPlayerScore method
-    public static class ScoreboardUtil {
-
-        public static void setPlayerScore(ServerPlayer player, String scoreboardName, int score) {
-        }
-    }
-
-    // Method to set the last attacker for a player
-    public static void setLastAttacker(UUID playerUUID, UUID attackerUUID) {
-        lastAttackers.put(playerUUID, attackerUUID);
-    }
-
-    // Method to get the last attacker for a player
-    public static UUID getLastAttacker(UUID playerUUID) {
-        return lastAttackers.get(playerUUID);
-    }
-
-    // Method to handle player attacks
-    public static void handlePlayerAttack(ServerPlayer player, ServerPlayer attacker) {
-        // Handle the attack event
-        // For example, apply damage to the player or any other actions
-
-        // Set the attacker as the last attacker for the player
-        setLastAttacker(player.getUUID(), attacker.getUUID());
-    }
-
-    public static void calculateKill(ServerPlayer attacker, ServerPlayer victim) {
+    public static void calculateKill(ServerPlayer attacker, ServerPlayer player) {
         attacker.heal(attacker.getMaxHealth());
 
-        if (victim.getTags().contains("bot") || attacker.getTags().contains("bot")) return;
+        FfaKitsUtil.clearArrows(attacker);
+        FfaKitsUtil.clearSpectralArrows(attacker);
+        FfaKitsUtil.clearThrownTridents(attacker);
 
-        SavedPlayerData attackerData = PlayerDataManager.get(attacker).savedData;
-        SavedPlayerData victimData = PlayerDataManager.get(victim).savedData;
+        if (player.getTags().contains("bot") || attacker.getTags().contains("bot")) return;
+
+        SavedPlayerData data = PlayerDataManager.get(attacker).savedData;
+        SavedPlayerData playerData = PlayerDataManager.get(player).savedData;
 
         // Counting the number of kills and encounters
-        int killCount = KillTracker.getKillCount(attacker.getUUID(), victim.getUUID());
-        int victimKillCount = KillTracker.getKillCount(victim.getUUID(), attacker.getUUID());
+        int killCount = KillTracker.getKillCount(attacker.getUUID(), player.getUUID());
+        int victimKillCount = KillTracker.getKillCount(player.getUUID(), attacker.getUUID());
         double encounterCount = killCount + victimKillCount;
 
         // START RATING SYSTEM
-        double attackerOldRating = attackerData.rating;
-        double victimOldRating = victimData.rating;
+        double attackerOldRating = data.rating;
+        double victimOldRating = playerData.rating;
 
         // Avoid division by zero
         double encounterFactor = encounterCount > 0 ? 1.0 + Math.log(1 + encounterCount) : 1.0;
 
-        double attackerRelativeIncrease = attackerData.relative_increase + (attackerOldRating * (1 - victimOldRating)) / encounterFactor;
-        double attackerRelativeDecrease = attackerData.relative_decrease;
-        double victimRelativeIncrease = victimData.relative_increase;
-        double victimRelativeDecrease = victimData.relative_decrease + (victimOldRating * (1 - attackerOldRating)) / encounterFactor;
+        double attackerRelativeIncrease = data.relative_increase + (attackerOldRating * (1 - victimOldRating)) / encounterFactor;
+        double attackerRelativeDecrease = data.relative_decrease;
+        double victimRelativeIncrease = playerData.relative_increase;
+        double victimRelativeDecrease = playerData.relative_decrease + (victimOldRating * (1 - attackerOldRating)) / encounterFactor;
 
-        attackerData.relative_increase = attackerRelativeIncrease;
-        attackerData.relative_decrease = attackerRelativeDecrease;
-        victimData.relative_increase = victimRelativeIncrease;
-        victimData.relative_decrease = victimRelativeDecrease;
+        data.relative_increase = attackerRelativeIncrease;
+        data.relative_decrease = attackerRelativeDecrease;
+        playerData.relative_increase = victimRelativeIncrease;
+        playerData.relative_decrease = victimRelativeDecrease;
 
-        double attackerNewRating = (attackerRelativeIncrease + 1.25) / (attackerRelativeIncrease + attackerRelativeDecrease + 2.5);
-        double victimNewRating = (victimRelativeIncrease + 1.25) / (victimRelativeIncrease + victimRelativeDecrease + 2.5);
+        double attackerNewRating = (attackerRelativeIncrease + 0.25) / (attackerRelativeIncrease + attackerRelativeDecrease + 0.5);
+        double victimNewRating = (victimRelativeIncrease + 0.25) / (victimRelativeIncrease + victimRelativeDecrease + 0.5);
 
-        attackerData.rating = attackerNewRating;
-        victimData.rating = victimNewRating;
+        data.rating = attackerNewRating;
+        playerData.rating = victimNewRating;
+
+        attacker.getScoreboard().getPlayerScore(attacker.getUUID(), "Rating").setScore((int) Math.round(victimNewRating * 100));
+        player.getScoreboard().getPlayerScore(player.getUUID(), "Rating").setScore((int) Math.round(attackerNewRating * 100));
         // END RATING SYSTEM
 
-        attackerData.killstreak++;
-        if (attackerData.killstreak > attackerData.bestKillstreak) {
-            attackerData.bestKillstreak = attackerData.killstreak;
+        data.killstreak++;
+        if (data.killstreak > data.bestKillstreak) {
+            data.bestKillstreak = data.killstreak;
         }
-        attackerData.kills++;
+        data.kills++;
 
         // Increment kill count for attacker
-        KillTracker.incrementKillCount(attacker.getUUID(), victim.getUUID());
+        KillTracker.incrementKillCount(attacker.getUUID(), player.getUUID());
 
-        // Update scoreboard for both attacker and victim
-        ScoreboardUtil.setPlayerScore(attacker, "Rating", (int) attackerNewRating * 100);
-        ScoreboardUtil.setPlayerScore(victim, "Rating", (int) victimNewRating * 100);
-
-        // Send messages to players
         PlayerUtil.getFactoryPlayer(attacker).sendMessage(
                 Component.text("You have killed ")
                         .color(ChatFormat.chatColor2)
-                        .append(Component.text(victim.getScoreboardName()).color(ChatFormat.failColor))
+                        .append(Component.text(player.getScoreboardName()).color(ChatFormat.failColor))
                         .append(Component.text(" ").color(ChatFormat.chatColor2))
                         .append(Component.text(killCount + " times out of " + (int) encounterCount + " encounters!").color(ChatFormat.failColor))
         );
 
-        // Send killstreak message if applicable
-        if (attackerData.killstreak % 5 == 0) {
+        if (data.killstreak % 5 == 0) {
             for (ServerPlayer serverPlayer : FfaAreas.ffaWorld.players()) {
                 PlayerUtil.getFactoryPlayer(serverPlayer).sendMessage(
                         Component.text("[")
@@ -145,13 +119,12 @@ public class FfaKitsUtil {
                                 .append(Component.text("] ").color(ChatFormat.lineColor))
                                 .append(Component.text(attacker.getScoreboardName()).color(ChatFormat.normalColor))
                                 .append(Component.text(" now has a killstreak of ").color(ChatFormat.chatColor2))
-                                .append(Component.text(attackerData.killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
+                                .append(Component.text(data.killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
                                 .append(Component.text("!").color(ChatFormat.chatColor2))
                 );
             }
         }
     }
-
     public static void fiveTick() {
         if (ffaWorld == null) return;
         if (ffaWorld.players().isEmpty()) return;
@@ -159,8 +132,7 @@ public class FfaKitsUtil {
 
             if (!com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(minecraftPlayer) && PlayerDataManager.get(minecraftPlayer).kit == null) {
                 PlayerUtil.getFactoryPlayer(minecraftPlayer).sendTitle(Title.title(Component.text("No kit selected!").color(ChatFormat.failColor), Component.text("You need to select a kit!").color(ChatFormat.failColor)));
-                PlayerUtil.sendSound(minecraftPlayer, new EntityPos(minecraftPlayer), SoundEvents.NOTE_BLOCK_DIDGERIDOO, SoundSource.BLOCKS, 10
-                        , 1);
+                PlayerUtil.sendSound(minecraftPlayer, new EntityPos(minecraftPlayer), SoundEvents.NOTE_BLOCK_DIDGERIDOO, SoundSource.BLOCKS, 10, 1);
                 FfaKitsUtil.sendToSpawn(minecraftPlayer);
                 return;
             }
@@ -177,20 +149,6 @@ public class FfaKitsUtil {
         if (player.getTags().contains("bot")) return;
 
         SavedPlayerData data = PlayerDataManager.get(player).savedData;
-
-        // Get the attacker
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
-
-        // If attacker is null, set death message and return
-        if (attacker == null) {
-            setDeathMessage(player, null);
-        }
-
-        // Calculate encounter count and kill count
-        int killCount = KillTracker.getKillCount(attacker.getUUID(), player.getUUID());
-        int victimKillCount = KillTracker.getKillCount(player.getUUID(), attacker.getUUID());
-        double encounterCount = killCount + victimKillCount;
-
         data.deaths++;
         if (data.killstreak > data.bestKillstreak) {
             data.bestKillstreak = data.killstreak;
@@ -211,9 +169,6 @@ public class FfaKitsUtil {
             }
         }
         data.killstreak = 0;
-
-        // Send death message
-        setDeathMessage(player, attacker.getLastDamageSource());
     }
 
     public static void clearThrownTridents(ServerPlayer player) {
@@ -249,19 +204,6 @@ public class FfaKitsUtil {
             killCounts.computeIfAbsent(attacker, k -> new HashMap<>()).merge(victim, 1, Integer::sum);
             encounterCounts.computeIfAbsent(attacker, k -> new HashMap<>()).merge(victim, 1, Integer::sum);
             encounterCounts.computeIfAbsent(victim, k -> new HashMap<>()).merge(attacker, 1, Integer::sum);
-            // Increment encounter counts for both players
-            incrementEncounterCount(attacker, victim);
-            incrementEncounterCount(victim, attacker);
-        }
-
-        public static void incrementEncounterCount(UUID player1, UUID player2) {
-            int count = encounterCounts.getOrDefault(player1, new HashMap<>()).getOrDefault(player2, 0);
-            encounterCounts.computeIfAbsent(player1, k -> new HashMap<>()).put(player2, count + 1);
-        }
-
-        public static void incrementEncounterCount(UUID player1, UUID player2, int amount) {
-            int count = encounterCounts.getOrDefault(player1, new HashMap<>()).getOrDefault(player2, 0);
-            encounterCounts.computeIfAbsent(player1, k -> new HashMap<>()).put(player2, count + amount);
         }
 
         public static int getKillCount(UUID attacker, UUID victim) {
@@ -309,7 +251,7 @@ public class FfaKitsUtil {
     }
 
     public static boolean canGoToSpawn(ServerPlayer player) {
-        if (!FfaKitsUtil.isFfaPlayer(player) || FfaKitsUtil.wasInSpawn.contains(player.getUUID())) return true;
+        if(!FfaKitsUtil.isFfaPlayer(player) || FfaKitsUtil.wasInSpawn.contains(player.getUUID())) return true;
         return !(Math.round(player.getHealth()) < 20);
     }
 
@@ -320,10 +262,10 @@ public class FfaKitsUtil {
 
         Component msg = FfaUtil.returnDeathMessage(minecraftPlayer, source);
 
-        if (attacker != null && msg.toString().contains("somehow killed themselves") && attacker != minecraftPlayer) {
+        if(attacker != null && msg.toString().contains("somehow killed themselves")  && attacker != minecraftPlayer) {
 
             Component component = FfaUtil.returnClassicDeathMessage(minecraftPlayer, attacker);
-            if (component != null) msg = component;
+            if(component != null) msg = component;
 
             calculateKill(attacker, minecraftPlayer);
         }
@@ -344,7 +286,7 @@ public class FfaKitsUtil {
 
         player.setGameMode(GameType.ADVENTURE);
         FfaAreas.spawn.teleportPlayer(FfaAreas.ffaWorld, player);
-        if (data.kit != null) data.kit.giveKit(player, true);
+        if(data.kit != null) data.kit.giveKit(player, true);
         else {
             BlfScheduler.delay(20, new BlfRunnable() {
                 @Override
