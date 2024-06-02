@@ -157,13 +157,19 @@ public class FfaKitsUtil {
 
         SavedPlayerData data = PlayerDataManager.get(player).savedData;
 
-        // Calculate encounter count and kill count before updating deaths
+        // Get the attacker
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
-        if (attacker != null) {
-            int killCount = KillTracker.getKillCount(attacker.getUUID(), player.getUUID());
-            int victimKillCount = KillTracker.getKillCount(player.getUUID(), attacker.getUUID());
-            double encounterCount = killCount + victimKillCount;
+
+        // If attacker is null, set death message and return
+        if (attacker == null) {
+            setDeathMessage(player, null);
+            return;
         }
+
+        // Calculate encounter count and kill count
+        int killCount = KillTracker.getKillCount(attacker.getUUID(), player.getUUID());
+        int victimKillCount = KillTracker.getKillCount(player.getUUID(), attacker.getUUID());
+        double encounterCount = killCount + victimKillCount;
 
         data.deaths++;
         if (data.killstreak > data.bestKillstreak) {
@@ -186,8 +192,8 @@ public class FfaKitsUtil {
         }
         data.killstreak = 0;
 
-        // Send death message after updating encounter count and kill count
-        setDeathMessage(player, null);
+        // Send death message
+        setDeathMessage(player, attacker.getLastDamageSource());
     }
 
     public static void clearThrownTridents(ServerPlayer player) {

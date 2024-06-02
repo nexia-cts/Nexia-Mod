@@ -5,6 +5,7 @@ import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.kits.utilities.player.PlayerDataManager;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -76,8 +77,14 @@ public class FfaKit {
             previousKits.put(player, selectedKit);
 
             InventoryUtil.loadInventory(player, "ffa_kits", selectedKit);
+
+            // Announce the kit received to the player
+            player.sendMessage(new TextComponent("You received the " + selectedKit + " kit!"), player.getUUID());
         } else {
             InventoryUtil.loadInventory(player, "ffa_kits", this.id);
+
+            // Announce the kit received to the player
+            player.sendMessage(new TextComponent("You received the " + this.id + " kit!"), player.getUUID());
         }
     }
 }
