@@ -29,6 +29,7 @@ import net.minecraft.world.entity.projectile.SpectralArrow;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.scores.Objective;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,6 +40,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 import static com.nexia.ffa.kits.utilities.FfaAreas.*;
+import static com.nexia.minigames.games.bedwars.util.BwScoreboard.objective;
 
 public class FfaKitsUtil {
 
@@ -89,8 +91,9 @@ public class FfaKitsUtil {
         data.rating = attackerNewRating;
         playerData.rating = victimNewRating;
 
-        attacker.getScoreboard().getPlayerScore(attacker.getUUID(), "Rating").setScore((int) Math.round(victimNewRating * 100));
-        player.getScoreboard().getPlayerScore(player.getUUID(), "Rating").setScore((int) Math.round(attackerNewRating * 100));
+        Objective objective = null;
+        player.getServer().getScoreboard().getOrCreatePlayerScore(attacker.getScoreboardName(), objective).setScore((int) Math.round(attackerNewRating * 100));
+        attacker.getServer().getScoreboard().getOrCreatePlayerScore(player.getScoreboardName(), objective).setScore((int) Math.round(victimNewRating * 100));
         // END RATING SYSTEM
 
         data.killstreak++;
@@ -111,7 +114,7 @@ public class FfaKitsUtil {
         );
 
         if (data.killstreak % 5 == 0) {
-            for (ServerPlayer serverPlayer : FfaAreas.ffaWorld.players()) {
+            for (ServerPlayer serverPlayer : ffaWorld.players()) {
                 PlayerUtil.getFactoryPlayer(serverPlayer).sendMessage(
                         Component.text("[")
                                 .color(ChatFormat.lineColor)

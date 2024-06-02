@@ -30,7 +30,7 @@ public class BwScoreboard {
     public static final int timerLine = 1;
 
     private static final Scoreboard scoreboard = new Scoreboard();
-    private static final Objective objective = new Objective(
+    public static final Objective objective = new Objective(
             scoreboard, objectiveName, ObjectiveCriteria.DUMMY,
             title, ObjectiveCriteria.RenderType.INTEGER);
 
