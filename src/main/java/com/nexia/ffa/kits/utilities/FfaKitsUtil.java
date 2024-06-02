@@ -69,7 +69,9 @@ public class FfaKitsUtil {
         // START RATING SYSTEM
         double attackerOldRating = data.rating;
         double victimOldRating = playerData.rating;
-        double encounterFactor = 1.0 + Math.log(1 + encounterCount);
+
+        // Avoid division by zero
+        double encounterFactor = encounterCount > 0 ? 1.0 + Math.log(1 + encounterCount) : 1.0;
 
         double attackerRelativeIncrease = data.relative_increase + (attackerOldRating * (1 - victimOldRating)) / encounterFactor;
         double attackerRelativeDecrease = data.relative_decrease;
@@ -81,8 +83,8 @@ public class FfaKitsUtil {
         playerData.relative_increase = victimRelativeIncrease;
         playerData.relative_decrease = victimRelativeDecrease;
 
-        double attackerNewRating = (attackerRelativeIncrease + 0.25) /10 * (0.1 * attackerRelativeIncrease + attackerRelativeDecrease + 0.4);
-        double victimNewRating = (victimRelativeIncrease + 0.25) /10 * (0.1 * victimRelativeIncrease + victimRelativeDecrease + 0.4);
+        double attackerNewRating = (attackerRelativeIncrease + 0.25) / (attackerRelativeIncrease + attackerRelativeDecrease + 0.5);
+        double victimNewRating = (victimRelativeIncrease + 0.25) / (victimRelativeIncrease + victimRelativeDecrease + 0.5);
 
         data.rating = attackerNewRating;
         playerData.rating = victimNewRating;
@@ -117,7 +119,6 @@ public class FfaKitsUtil {
             }
         }
     }
-
     public static void fiveTick() {
         if (ffaWorld == null) return;
         if (ffaWorld.players().isEmpty()) return;
