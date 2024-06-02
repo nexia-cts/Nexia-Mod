@@ -96,6 +96,9 @@ public class FfaKitsUtil {
         }
         data.kills++;
 
+        // Increment kill count for attacker
+        KillTracker.incrementKillCount(attacker.getUUID(), player.getUUID());
+
         PlayerUtil.getFactoryPlayer(attacker).sendMessage(
                 Component.text("You have killed ")
                         .color(ChatFormat.chatColor2)
