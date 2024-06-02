@@ -5,11 +5,14 @@ import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.kits.utilities.player.PlayerDataManager;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FfaKit {
     public static ArrayList<FfaKit> ffaKits = new ArrayList<>();
@@ -28,6 +31,9 @@ public class FfaKit {
     public static final FfaKit REAPER = new FfaKit("reaper", new ItemStack(Items.NETHERITE_HOE));
     public static final FfaKit RANDOM = new FfaKit("random", new ItemStack(Items.BARRIER));
 
+    // Keep track of previously selected kits for each player
+    private static Map<ServerPlayer, String> previousKits = new HashMap<>();
+
     public FfaKit(String id, ItemStack item) {
         this.id = id;
         this.item = item;
@@ -42,7 +48,7 @@ public class FfaKit {
         }
         return null;
     }
-// im in vc with Shitfood and I wanted to show how goofy chatgpt code is
+
     public void giveKit(ServerPlayer player, boolean clearEffect) {
         Player fPlayer = PlayerUtil.getFactoryPlayer(player);
         PlayerDataManager.get(player).kit = this;
@@ -52,10 +58,33 @@ public class FfaKit {
         if (this.equals(FfaKit.RANDOM)) {
             ArrayList<String> availableKits = new ArrayList<>(stringFfaKits);
             availableKits.remove(RANDOM.id); // Remove "RANDOM" from the list of available kits
-            String selectedKit = availableKits.get(RandomUtil.randomInt(availableKits.size()));
+
+            // Get the previously selected kit for this player
+            String previousKit = previousKits.getOrDefault(player, "");
+
+            // Remove the previously selected kit from available kits
+            availableKits.remove(previousKit);
+
+            String selectedKit;
+            if (!availableKits.isEmpty()) {
+                selectedKit = availableKits.get(RandomUtil.randomInt(availableKits.size()));
+            } else {
+                // If no available kits (all kits were chosen before), select a random one
+                selectedKit = stringFfaKits.get(RandomUtil.randomInt(stringFfaKits.size()));
+            }
+
+            // Store the selected kit as the previous kit for this player
+            previousKits.put(player, selectedKit);
+
             InventoryUtil.loadInventory(player, "ffa_kits", selectedKit);
+
+            // Announce the kit received to the player
+            player.sendMessage(new TextComponent("You received the " + selectedKit + " kit!"), player.getUUID());
         } else {
             InventoryUtil.loadInventory(player, "ffa_kits", this.id);
+
+            // Announce the kit received to the player
+            player.sendMessage(new TextComponent("You received the " + this.id + " kit!"), player.getUUID());
         }
     }
 }
