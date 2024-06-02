@@ -75,10 +75,10 @@ public class FfaKitsUtil {
         // Avoid division by zero
         double encounterFactor = encounterCount > 0 ? 1.0 + Math.log(1 + encounterCount) : 1.0;
 
-        double attackerRelativeIncrease = data.relative_increase + (attackerOldRating * (1 - victimOldRating)) / encounterFactor;
+        double attackerRelativeIncrease = data.relative_increase + (victimOldRating * (1 - attackerOldRating)) / encounterFactor;
         double attackerRelativeDecrease = data.relative_decrease;
         double victimRelativeIncrease = playerData.relative_increase;
-        double victimRelativeDecrease = playerData.relative_decrease + (victimOldRating * (1 - attackerOldRating)) / encounterFactor;
+        double victimRelativeDecrease = playerData.relative_decrease + (attackerOldRating * (1 - victimOldRating)) / encounterFactor;
 
         data.relative_increase = attackerRelativeIncrease;
         data.relative_decrease = attackerRelativeDecrease;
