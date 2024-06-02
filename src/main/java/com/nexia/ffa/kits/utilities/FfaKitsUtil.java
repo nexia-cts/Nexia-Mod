@@ -10,6 +10,7 @@ import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.kits.FfaKit;
+import net.minecraft.network.chat.TextComponent;
 import com.nexia.ffa.kits.utilities.player.PlayerData;
 import com.nexia.ffa.kits.utilities.player.PlayerDataManager;
 import com.nexia.ffa.kits.utilities.player.SavedPlayerData;
@@ -30,6 +31,8 @@ import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +43,6 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 import static com.nexia.ffa.kits.utilities.FfaAreas.*;
-import static com.nexia.minigames.games.bedwars.util.BwScoreboard.objective;
 
 public class FfaKitsUtil {
 
@@ -92,9 +94,15 @@ public class FfaKitsUtil {
         data.rating = attackerNewRating;
         playerData.rating = victimNewRating;
 
-        Objective objective = null;
-        player.getServer().getScoreboard().getOrCreatePlayerScore(attacker.getScoreboardName(), objective).setScore((int) Math.round(attackerNewRating * 100));
-        attacker.getServer().getScoreboard().getOrCreatePlayerScore(player.getScoreboardName(), objective).setScore((int) Math.round(victimNewRating * 100));
+        if (attacker.getServer() != null) {
+            Scoreboard scoreboard = attacker.getServer().getScoreboard();
+            Objective ratingObjective = scoreboard.getObjective("Rating");
+            if (ratingObjective == null) {
+                ratingObjective = scoreboard.addObjective("Rating", ObjectiveCriteria.DUMMY, new TextComponent("Rating"), ObjectiveCriteria.RenderType.INTEGER);
+            }
+            scoreboard.getOrCreatePlayerScore(attacker.getScoreboardName(), ratingObjective).setScore((int) Math.round(attackerNewRating * 100));
+            scoreboard.getOrCreatePlayerScore(player.getScoreboardName(), ratingObjective).setScore((int) Math.round(victimNewRating * 100));
+        }
         // END RATING SYSTEM
 
         data.killstreak++;
