@@ -43,6 +43,7 @@ import static com.nexia.ffa.kits.utilities.FfaAreas.*;
 public class FfaKitsUtil {
 
     public static ArrayList<UUID> wasInSpawn = new ArrayList<>();
+    private static final Map<UUID, UUID> lastAttackers = new HashMap<>(); // Map to store the last attacker for each player
 
     public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
         com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
@@ -54,6 +55,25 @@ public class FfaKitsUtil {
 
         public static void setPlayerScore(ServerPlayer player, String scoreboardName, int score) {
         }
+    }
+
+    // Method to set the last attacker for a player
+    public static void setLastAttacker(UUID playerUUID, UUID attackerUUID) {
+        lastAttackers.put(playerUUID, attackerUUID);
+    }
+
+    // Method to get the last attacker for a player
+    public static UUID getLastAttacker(UUID playerUUID) {
+        return lastAttackers.get(playerUUID);
+    }
+
+    // Method to handle player attacks
+    public static void handlePlayerAttack(ServerPlayer player, ServerPlayer attacker) {
+        // Handle the attack event
+        // For example, apply damage to the player or any other actions
+
+        // Set the attacker as the last attacker for the player
+        setLastAttacker(player.getUUID(), attacker.getUUID());
     }
 
     public static void calculateKill(ServerPlayer attacker, ServerPlayer victim) {
