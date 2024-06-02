@@ -49,65 +49,74 @@ public class FfaKitsUtil {
         return player.getTags().contains("ffa_kits") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.KITS;
     }
 
-    public static void calculateKill(ServerPlayer attacker, ServerPlayer player) {
+    // Define ScoreboardUtil class with setPlayerScore method
+    public static class ScoreboardUtil {
+
+        public static void setPlayerScore(ServerPlayer player, String scoreboardName, int score) {
+        }
+    }
+
+    public static void calculateKill(ServerPlayer attacker, ServerPlayer victim) {
         attacker.heal(attacker.getMaxHealth());
 
-        FfaKitsUtil.clearArrows(attacker);
-        FfaKitsUtil.clearSpectralArrows(attacker);
-        FfaKitsUtil.clearThrownTridents(attacker);
+        if (victim.getTags().contains("bot") || attacker.getTags().contains("bot")) return;
 
-        if (player.getTags().contains("bot") || attacker.getTags().contains("bot")) return;
-
-        SavedPlayerData data = PlayerDataManager.get(attacker).savedData;
-        SavedPlayerData playerData = PlayerDataManager.get(player).savedData;
+        SavedPlayerData attackerData = PlayerDataManager.get(attacker).savedData;
+        SavedPlayerData victimData = PlayerDataManager.get(victim).savedData;
 
         // Counting the number of kills and encounters
-        int killCount = KillTracker.getKillCount(attacker.getUUID(), player.getUUID());
-        int victimKillCount = KillTracker.getKillCount(player.getUUID(), attacker.getUUID());
+        int killCount = KillTracker.getKillCount(attacker.getUUID(), victim.getUUID());
+        int victimKillCount = KillTracker.getKillCount(victim.getUUID(), attacker.getUUID());
         double encounterCount = killCount + victimKillCount;
 
         // START RATING SYSTEM
-        double attackerOldRating = data.rating;
-        double victimOldRating = playerData.rating;
+        double attackerOldRating = attackerData.rating;
+        double victimOldRating = victimData.rating;
 
         // Avoid division by zero
         double encounterFactor = encounterCount > 0 ? 1.0 + Math.log(1 + encounterCount) : 1.0;
 
-        double attackerRelativeIncrease = data.relative_increase + (attackerOldRating * (1 - victimOldRating)) / encounterFactor;
-        double attackerRelativeDecrease = data.relative_decrease;
-        double victimRelativeIncrease = playerData.relative_increase;
-        double victimRelativeDecrease = playerData.relative_decrease + (victimOldRating * (1 - attackerOldRating)) / encounterFactor;
+        double attackerRelativeIncrease = attackerData.relative_increase + (attackerOldRating * (1 - victimOldRating)) / encounterFactor;
+        double attackerRelativeDecrease = attackerData.relative_decrease;
+        double victimRelativeIncrease = victimData.relative_increase;
+        double victimRelativeDecrease = victimData.relative_decrease + (victimOldRating * (1 - attackerOldRating)) / encounterFactor;
 
-        data.relative_increase = attackerRelativeIncrease;
-        data.relative_decrease = attackerRelativeDecrease;
-        playerData.relative_increase = victimRelativeIncrease;
-        playerData.relative_decrease = victimRelativeDecrease;
+        attackerData.relative_increase = attackerRelativeIncrease;
+        attackerData.relative_decrease = attackerRelativeDecrease;
+        victimData.relative_increase = victimRelativeIncrease;
+        victimData.relative_decrease = victimRelativeDecrease;
 
-        double attackerNewRating = (attackerRelativeIncrease + 0.25) / (attackerRelativeIncrease + attackerRelativeDecrease + 0.5);
-        double victimNewRating = (victimRelativeIncrease + 0.25) / (victimRelativeIncrease + victimRelativeDecrease + 0.5);
+        double attackerNewRating = (attackerRelativeIncrease + 1.25) / (attackerRelativeIncrease + attackerRelativeDecrease + 2.5);
+        double victimNewRating = (victimRelativeIncrease + 1.25) / (victimRelativeIncrease + victimRelativeDecrease + 2.5);
 
-        data.rating = attackerNewRating;
-        playerData.rating = victimNewRating;
+        attackerData.rating = attackerNewRating;
+        victimData.rating = victimNewRating;
         // END RATING SYSTEM
 
-        data.killstreak++;
-        if (data.killstreak > data.bestKillstreak) {
-            data.bestKillstreak = data.killstreak;
+        attackerData.killstreak++;
+        if (attackerData.killstreak > attackerData.bestKillstreak) {
+            attackerData.bestKillstreak = attackerData.killstreak;
         }
-        data.kills++;
+        attackerData.kills++;
 
         // Increment kill count for attacker
-        KillTracker.incrementKillCount(attacker.getUUID(), player.getUUID());
+        KillTracker.incrementKillCount(attacker.getUUID(), victim.getUUID());
 
+        // Update scoreboard for both attacker and victim
+        ScoreboardUtil.setPlayerScore(attacker, "Rating", (int) attackerNewRating * 100);
+        ScoreboardUtil.setPlayerScore(victim, "Rating", (int) victimNewRating * 100);
+
+        // Send messages to players
         PlayerUtil.getFactoryPlayer(attacker).sendMessage(
                 Component.text("You have killed ")
                         .color(ChatFormat.chatColor2)
-                        .append(Component.text(player.getScoreboardName()).color(ChatFormat.failColor))
+                        .append(Component.text(victim.getScoreboardName()).color(ChatFormat.failColor))
                         .append(Component.text(" ").color(ChatFormat.chatColor2))
                         .append(Component.text(killCount + " times out of " + (int) encounterCount + " encounters!").color(ChatFormat.failColor))
         );
 
-        if (data.killstreak % 5 == 0) {
+        // Send killstreak message if applicable
+        if (attackerData.killstreak % 5 == 0) {
             for (ServerPlayer serverPlayer : FfaAreas.ffaWorld.players()) {
                 PlayerUtil.getFactoryPlayer(serverPlayer).sendMessage(
                         Component.text("[")
@@ -116,12 +125,13 @@ public class FfaKitsUtil {
                                 .append(Component.text("] ").color(ChatFormat.lineColor))
                                 .append(Component.text(attacker.getScoreboardName()).color(ChatFormat.normalColor))
                                 .append(Component.text(" now has a killstreak of ").color(ChatFormat.chatColor2))
-                                .append(Component.text(data.killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
+                                .append(Component.text(attackerData.killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
                                 .append(Component.text("!").color(ChatFormat.chatColor2))
                 );
             }
         }
     }
+
     public static void fiveTick() {
         if (ffaWorld == null) return;
         if (ffaWorld.players().isEmpty()) return;
@@ -146,6 +156,15 @@ public class FfaKitsUtil {
         if (player.getTags().contains("bot")) return;
 
         SavedPlayerData data = PlayerDataManager.get(player).savedData;
+
+        // Calculate encounter count and kill count before updating deaths
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
+        if (attacker != null) {
+            int killCount = KillTracker.getKillCount(attacker.getUUID(), player.getUUID());
+            int victimKillCount = KillTracker.getKillCount(player.getUUID(), attacker.getUUID());
+            double encounterCount = killCount + victimKillCount;
+        }
+
         data.deaths++;
         if (data.killstreak > data.bestKillstreak) {
             data.bestKillstreak = data.killstreak;
@@ -166,6 +185,9 @@ public class FfaKitsUtil {
             }
         }
         data.killstreak = 0;
+
+        // Send death message after updating encounter count and kill count
+        setDeathMessage(player, null);
     }
 
     public static void clearThrownTridents(ServerPlayer player) {
@@ -201,6 +223,19 @@ public class FfaKitsUtil {
             killCounts.computeIfAbsent(attacker, k -> new HashMap<>()).merge(victim, 1, Integer::sum);
             encounterCounts.computeIfAbsent(attacker, k -> new HashMap<>()).merge(victim, 1, Integer::sum);
             encounterCounts.computeIfAbsent(victim, k -> new HashMap<>()).merge(attacker, 1, Integer::sum);
+            // Increment encounter counts for both players
+            incrementEncounterCount(attacker, victim);
+            incrementEncounterCount(victim, attacker);
+        }
+
+        public static void incrementEncounterCount(UUID player1, UUID player2) {
+            int count = encounterCounts.getOrDefault(player1, new HashMap<>()).getOrDefault(player2, 0);
+            encounterCounts.computeIfAbsent(player1, k -> new HashMap<>()).put(player2, count + 1);
+        }
+
+        public static void incrementEncounterCount(UUID player1, UUID player2, int amount) {
+            int count = encounterCounts.getOrDefault(player1, new HashMap<>()).getOrDefault(player2, 0);
+            encounterCounts.computeIfAbsent(player1, k -> new HashMap<>()).put(player2, count + amount);
         }
 
         public static int getKillCount(UUID attacker, UUID victim) {
