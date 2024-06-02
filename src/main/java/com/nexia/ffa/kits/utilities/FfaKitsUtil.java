@@ -50,7 +50,6 @@ public class FfaKitsUtil {
     }
 
     public static void calculateKill(ServerPlayer attacker, ServerPlayer player) {
-
         attacker.heal(attacker.getMaxHealth());
 
         FfaKitsUtil.clearArrows(attacker);
@@ -62,15 +61,14 @@ public class FfaKitsUtil {
         SavedPlayerData data = PlayerDataManager.get(attacker).savedData;
         SavedPlayerData playerData = PlayerDataManager.get(player).savedData;
 
-        // START RATING SYSTEM
+        // Counting the number of kills and encounters
+        int killCount = KillTracker.getKillCount(attacker.getUUID(), player.getUUID());
+        int victimKillCount = KillTracker.getKillCount(player.getUUID(), attacker.getUUID());
+        double encounterCount = killCount + victimKillCount;
 
+        // START RATING SYSTEM
         double attackerOldRating = data.rating;
         double victimOldRating = playerData.rating;
-        double encounterCount = KillTracker.getEncounterCount(attacker.getUUID(), player.getUUID());
-
-        // Avoid division by zero
-        encounterCount = Math.max(encounterCount, 1);
-
         double encounterFactor = 1.0 + Math.log(1 + encounterCount);
 
         double attackerRelativeIncrease = data.relative_increase + (attackerOldRating * (1 - victimOldRating)) / encounterFactor;
@@ -88,7 +86,6 @@ public class FfaKitsUtil {
 
         data.rating = attackerNewRating;
         playerData.rating = victimNewRating;
-
         // END RATING SYSTEM
 
         data.killstreak++;
@@ -97,15 +94,12 @@ public class FfaKitsUtil {
         }
         data.kills++;
 
-        KillTracker.incrementKillCount(attacker.getUUID(), player.getUUID());
-        int killCount = KillTracker.getKillCount(attacker.getUUID(), player.getUUID());
-
         PlayerUtil.getFactoryPlayer(attacker).sendMessage(
                 Component.text("You have killed ")
                         .color(ChatFormat.chatColor2)
                         .append(Component.text(player.getScoreboardName()).color(ChatFormat.failColor))
                         .append(Component.text(" ").color(ChatFormat.chatColor2))
-                        .append(Component.text(killCount + " times out of " + encounterCount + " fights!").color(ChatFormat.failColor))
+                        .append(Component.text(killCount + " times out of " + (int) encounterCount + " fights!").color(ChatFormat.failColor))
         );
 
         if (data.killstreak % 5 == 0) {
