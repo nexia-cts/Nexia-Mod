@@ -99,7 +99,7 @@ public class FfaKitsUtil {
                         .color(ChatFormat.chatColor2)
                         .append(Component.text(player.getScoreboardName()).color(ChatFormat.failColor))
                         .append(Component.text(" ").color(ChatFormat.chatColor2))
-                        .append(Component.text(killCount + " times out of " + (int) encounterCount + " fights!").color(ChatFormat.failColor))
+                        .append(Component.text(killCount + " times out of " + (int) encounterCount + " encounters!").color(ChatFormat.failColor))
         );
 
         if (data.killstreak % 5 == 0) {
