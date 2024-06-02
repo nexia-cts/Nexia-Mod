@@ -33,10 +33,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
 
 import static com.nexia.ffa.kits.utilities.FfaAreas.*;
+
 public class FfaKitsUtil {
 
     public static ArrayList<UUID> wasInSpawn = new ArrayList<>();
@@ -46,7 +49,7 @@ public class FfaKitsUtil {
         return player.getTags().contains("ffa_kits") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.KITS;
     }
 
-    public static void calculateKill(ServerPlayer attacker, ServerPlayer player){
+    public static void calculateKill(ServerPlayer attacker, ServerPlayer player) {
 
         attacker.heal(attacker.getMaxHealth());
 
@@ -54,7 +57,7 @@ public class FfaKitsUtil {
         FfaKitsUtil.clearSpectralArrows(attacker);
         FfaKitsUtil.clearThrownTridents(attacker);
 
-        if(player.getTags().contains("bot") || attacker.getTags().contains("bot")) return;
+        if (player.getTags().contains("bot") || attacker.getTags().contains("bot")) return;
 
         SavedPlayerData data = PlayerDataManager.get(attacker).savedData;
         SavedPlayerData playerData = PlayerDataManager.get(player).savedData;
@@ -77,22 +80,34 @@ public class FfaKitsUtil {
         double attackerNewRating = (attackerRelativeIncrease + 0.25) / (attackerRelativeIncrease + attackerRelativeDecrease + 0.5);
         double victimNewRating = (victimRelativeIncrease + 0.25) / (victimRelativeIncrease + victimRelativeDecrease + 0.5);
 
-
         data.rating = attackerNewRating;
         playerData.rating = victimNewRating;
 
         // END RATING SYSTEM
 
         data.killstreak++;
-        if(data.killstreak > data.bestKillstreak){
+        if (data.killstreak > data.bestKillstreak) {
             data.bestKillstreak = data.killstreak;
         }
         data.kills++;
 
-        if(data.killstreak % 5 == 0) {
+        KillTracker.incrementKillCount(attacker.getUUID(), player.getUUID());
+        int killCount = KillTracker.getKillCount(attacker.getUUID(), player.getUUID());
+
+        PlayerUtil.getFactoryPlayer(attacker).sendMessage(
+                Component.text("You have killed ")
+                        .color(ChatFormat.chatColor2)
+                        .append(Component.text(player.getScoreboardName()).color(ChatFormat.failColor))
+                        .append(Component.text(" ").color(ChatFormat.chatColor2))
+                        .append(Component.text(killCount).color(ChatFormat.failColor))
+                        .append(Component.text(" times!").color(ChatFormat.chatColor2))
+        );
+
+        if (data.killstreak % 5 == 0) {
             for (ServerPlayer serverPlayer : FfaAreas.ffaWorld.players()) {
                 PlayerUtil.getFactoryPlayer(serverPlayer).sendMessage(
-                        Component.text("[").color(ChatFormat.lineColor)
+                        Component.text("[")
+                                .color(ChatFormat.lineColor)
                                 .append(Component.text("☠").color(ChatFormat.failColor))
                                 .append(Component.text("] ").color(ChatFormat.lineColor))
                                 .append(Component.text(attacker.getScoreboardName()).color(ChatFormat.normalColor))
@@ -106,17 +121,17 @@ public class FfaKitsUtil {
 
     public static void fiveTick() {
         if (ffaWorld == null) return;
-        if(ffaWorld.players().isEmpty()) return;
+        if (ffaWorld.players().isEmpty()) return;
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
 
-            if(!com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(minecraftPlayer) && PlayerDataManager.get(minecraftPlayer).kit == null) {
+            if (!com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(minecraftPlayer) && PlayerDataManager.get(minecraftPlayer).kit == null) {
                 PlayerUtil.getFactoryPlayer(minecraftPlayer).sendTitle(Title.title(Component.text("No kit selected!").color(ChatFormat.failColor), Component.text("You need to select a kit!").color(ChatFormat.failColor)));
                 PlayerUtil.sendSound(minecraftPlayer, new EntityPos(minecraftPlayer), SoundEvents.NOTE_BLOCK_DIDGERIDOO, SoundSource.BLOCKS, 10, 1);
                 FfaKitsUtil.sendToSpawn(minecraftPlayer);
                 return;
             }
 
-            if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(minecraftPlayer)){
+            if (wasInSpawn.contains(minecraftPlayer.getUUID()) && !com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(minecraftPlayer)) {
                 Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
                 wasInSpawn.remove(minecraftPlayer.getUUID());
                 player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your kit was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
@@ -124,19 +139,20 @@ public class FfaKitsUtil {
         }
     }
 
-    public static void calculateDeath(ServerPlayer player){
-        if(player.getTags().contains("bot")) return;
+    public static void calculateDeath(ServerPlayer player) {
+        if (player.getTags().contains("bot")) return;
 
         SavedPlayerData data = PlayerDataManager.get(player).savedData;
         data.deaths++;
-        if(data.killstreak > data.bestKillstreak){
+        if (data.killstreak > data.bestKillstreak) {
             data.bestKillstreak = data.killstreak;
         }
 
-        if(data.killstreak >= 5) {
+        if (data.killstreak >= 5) {
             for (ServerPlayer serverPlayer : FfaAreas.ffaWorld.players()) {
                 PlayerUtil.getFactoryPlayer(serverPlayer).sendMessage(
-                        Component.text("[").color(ChatFormat.lineColor)
+                        Component.text("[")
+                                .color(ChatFormat.lineColor)
                                 .append(Component.text("☠").color(ChatFormat.failColor))
                                 .append(Component.text("] ").color(ChatFormat.lineColor))
                                 .append(Component.text(player.getScoreboardName()).color(ChatFormat.normalColor))
@@ -170,6 +186,19 @@ public class FfaKitsUtil {
             if (arrow.getOwner() != null && arrow.getOwner().getUUID().equals(player.getUUID())) {
                 arrow.remove();
             }
+        }
+    }
+
+    // KillTracker class for tracking kill counts
+    private static class KillTracker {
+        private static final Map<UUID, Map<UUID, Integer>> killCounts = new HashMap<>();
+
+        public static void incrementKillCount(UUID attacker, UUID victim) {
+            killCounts.computeIfAbsent(attacker, k -> new HashMap<>()).merge(victim, 1, Integer::sum);
+        }
+
+        public static int getKillCount(UUID attacker, UUID victim) {
+            return killCounts.getOrDefault(attacker, new HashMap<>()).getOrDefault(victim, 0);
         }
     }
 
