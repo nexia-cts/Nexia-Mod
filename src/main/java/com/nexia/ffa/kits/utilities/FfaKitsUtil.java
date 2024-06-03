@@ -1,17 +1,14 @@
 package com.nexia.ffa.kits.utilities;
 
-import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.ffa.KitGUI;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.kits.FfaKit;
-import net.minecraft.network.chat.TextComponent;
 import com.nexia.ffa.kits.utilities.player.PlayerData;
 import com.nexia.ffa.kits.utilities.player.PlayerDataManager;
 import com.nexia.ffa.kits.utilities.player.SavedPlayerData;
@@ -31,15 +28,10 @@ import net.minecraft.world.entity.projectile.SpectralArrow;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.scores.Objective;
-import net.minecraft.world.scores.Scoreboard;
-import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
 

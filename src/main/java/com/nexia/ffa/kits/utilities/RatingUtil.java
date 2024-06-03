@@ -7,10 +7,7 @@ import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.kits.utilities.player.PlayerDataManager;
 import com.nexia.ffa.kits.utilities.player.SavedPlayerData;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -93,45 +90,44 @@ public class RatingUtil {
             ArmorStand titleArmorStand = new ArmorStand(level, x, y + 1.3, z);
             titleArmorStand.setInvisible(true);
             titleArmorStand.setNoGravity(true);
-            titleArmorStand.setCustomName((net.minecraft.network.chat.Component) Component.text("L").color(TextColor.fromHexString("#ff800b")).append(Component.text("E").color(TextColor.fromHexString("#ff8d09"))).append(Component.text("A").color(TextColor.fromHexString("#ff9a07"))).append(Component.text("D").color(TextColor.fromHexString("#ffa805"))).append(Component.text("E").color(TextColor.fromHexString("#ffb503"))).append(Component.text("R").color(TextColor.fromHexString("#ffc201"))).append(Component.text("B").color(TextColor.fromHexString("#ffb503"))).append(Component.text("O").color(TextColor.fromHexString("#ffa805"))).append(Component.text("A").color(TextColor.fromHexString("#ff9a07"))).append(Component.text("R").color(TextColor.fromHexString("#ff8d09"))).append(Component.text("D").color(TextColor.fromHexString("#ff800b"))).decorate(TextDecoration.BOLD));
+            titleArmorStand.setCustomName(Component.nullToEmpty("LEADERBOARD"));
             titleArmorStand.setCustomNameVisible(true);
 
             ArmorStand subTitleArmorStand = new ArmorStand(level, x, y + 1, z);
             subTitleArmorStand.setInvisible(true);
             subTitleArmorStand.setNoGravity(true);
-            subTitleArmorStand.setCustomName((net.minecraft.network.chat.Component) Component.text("M").color(TextColor.fromHexString("#ff800b")).append(Component.text("O").color(TextColor.fromHexString("#ff8d09"))).append(Component.text("S").color(TextColor.fromHexString("#ff9a07"))).append(Component.text("T").color(TextColor.fromHexString("#ffa805"))).append(Component.text(" ").color(TextColor.fromHexString("#ffb503"))).append(Component.text("P").color(TextColor.fromHexString("#ffc201"))).append(Component.text("O").color(TextColor.fromHexString("#ffb503"))).append(Component.text("I").color(TextColor.fromHexString("#ffa805"))).append(Component.text("N").color(TextColor.fromHexString("#ff9a07"))).append(Component.text("T").color(TextColor.fromHexString("#ff8d09"))).append(Component.text("S").color(TextColor.fromHexString("#ff800b"))).decorate(TextDecoration.BOLD));
+            subTitleArmorStand.setCustomName(Component.nullToEmpty("MOST POINTS"));
             subTitleArmorStand.setCustomNameVisible(true);
 
             ArmorStand firstArmorStand = new ArmorStand(level, x, y + 0.5, z);
             firstArmorStand.setInvisible(true);
             firstArmorStand.setNoGravity(true);
-            firstArmorStand.setCustomName((net.minecraft.network.chat.Component) Component.text("#1 ").color(TextColor.fromHexString("#ffc201")).append(Component.text(playerNames[0]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[0]).color(TextColor.fromHexString("#ffc201")))));
+            firstArmorStand.setCustomName(Component.nullToEmpty("#1 " + playerNames[0] + " " + scores[0]));
             firstArmorStand.setCustomNameVisible(true);
 
             ArmorStand secondArmorStand = new ArmorStand(level, x, y + 0.25, z);
             secondArmorStand.setInvisible(true);
             secondArmorStand.setNoGravity(true);
-            secondArmorStand.setCustomName((net.minecraft.network.chat.Component) Component.text("#2 ").color(TextColor.fromHexString("#d0d0d0")).append(Component.text(playerNames[1])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[1]).color(TextColor.fromHexString("#ffc201"))));
+            secondArmorStand.setCustomName(Component.nullToEmpty("#2 " + playerNames[1] + " " + scores[1]));
             secondArmorStand.setCustomNameVisible(true);
 
             ArmorStand thirdArmorStand = new ArmorStand(level, x, y, z);
             thirdArmorStand.setInvisible(true);
             thirdArmorStand.setNoGravity(true);
-            thirdArmorStand.setCustomName((net.minecraft.network.chat.Component) Component.text("#3 ").color(TextColor.fromHexString("#c77b30")).append(Component.text(playerNames[2])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[2]).color(TextColor.fromHexString("#ffc201"))));
+            thirdArmorStand.setCustomName(Component.nullToEmpty("#3 " + playerNames[2] + " " + scores[2]));
             thirdArmorStand.setCustomNameVisible(true);
 
             ArmorStand fourthArmorStand = new ArmorStand(level, x, y - 0.25, z);
             fourthArmorStand.setInvisible(true);
             fourthArmorStand.setNoGravity(true);
-            fourthArmorStand.setCustomName((net.minecraft.network.chat.Component) Component.text("#4 ").color(NamedTextColor.WHITE).append(Component.text(playerNames[3])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[3]).color(TextColor.fromHexString("#ffc201"))));
+            fourthArmorStand.setCustomName(Component.nullToEmpty("#4 " + playerNames[3] + " " + scores[3]));
             fourthArmorStand.setCustomNameVisible(true);
 
             ArmorStand fifthArmorStand = new ArmorStand(level, x, y - 0.5, z);
             fifthArmorStand.setInvisible(true);
             fifthArmorStand.setNoGravity(true);
-            fifthArmorStand.setCustomName((net.minecraft.network.chat.Component) Component.text("#5 ").color(NamedTextColor.WHITE).append(Component.text(playerNames[4])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[4]).color(TextColor.fromHexString("#ffc201"))));
+            fifthArmorStand.setCustomName(Component.nullToEmpty("#5 " + playerNames[4] + " " + scores[4]));
             fifthArmorStand.setCustomNameVisible(true);
         }
     }
 }
-
