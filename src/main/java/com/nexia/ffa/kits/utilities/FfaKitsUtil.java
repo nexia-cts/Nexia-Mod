@@ -53,14 +53,14 @@ public class FfaKitsUtil {
         return player.getTags().contains("ffa_kits") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.KITS;
     }
 
-    public static void calculateKill(ServerPlayer attacker, ServerPlayer player) {
+    public static double[] calculateKill(ServerPlayer attacker, ServerPlayer player) {
         attacker.heal(attacker.getMaxHealth());
 
         FfaKitsUtil.clearArrows(attacker);
         FfaKitsUtil.clearSpectralArrows(attacker);
         FfaKitsUtil.clearThrownTridents(attacker);
 
-        if (player.getTags().contains("bot") || attacker.getTags().contains("bot")) return;
+        if (player.getTags().contains("bot") || attacker.getTags().contains("bot")) return new double[0];
 
         SavedPlayerData data = PlayerDataManager.get(attacker).savedData;
         SavedPlayerData playerData = PlayerDataManager.get(player).savedData;
@@ -116,13 +116,13 @@ public class FfaKitsUtil {
         // Increment kill count for attacker
         KillTracker.incrementKillCount(attacker.getUUID(), player.getUUID());
 
-        PlayerUtil.getFactoryPlayer(attacker).sendMessage(
-                Component.text("You have killed ")
-                        .color(ChatFormat.chatColor2)
-                        .append(Component.text(player.getScoreboardName()).color(ChatFormat.failColor))
-                        .append(Component.text(" ").color(ChatFormat.chatColor2))
-                        .append(Component.text(killCount + " times out of " + (int) encounterCount + " encounters!").color(ChatFormat.failColor))
-        );
+        // PlayerUtil.getFactoryPlayer(attacker).sendMessage(
+        //         Component.text("You have killed ")
+        //                 .color(ChatFormat.chatColor2)
+        //                 .append(Component.text(player.getScoreboardName()).color(ChatFormat.failColor))
+        //                 .append(Component.text(" ").color(ChatFormat.chatColor2))
+        //                .append(Component.text(killCount + " times out of " + (int) encounterCount + " encounters!").color(ChatFormat.failColor))
+        // );
 
         if (data.killstreak % 5 == 0) {
             for (ServerPlayer serverPlayer : ffaWorld.players()) {
@@ -138,7 +138,9 @@ public class FfaKitsUtil {
                 );
             }
         }
+        return new double[]{attackerOldRating, attackerNewRating, victimOldRating, victimNewRating};
     }
+
     public static void fiveTick() {
         if (ffaWorld == null) return;
         if (ffaWorld.players().isEmpty()) return;
@@ -269,25 +271,48 @@ public class FfaKitsUtil {
         return !(Math.round(player.getHealth()) < 20);
     }
 
-    public static void setDeathMessage(@NotNull ServerPlayer minecraftPlayer, @Nullable DamageSource source) {
+    public static net.kyori.adventure.text.@NotNull TextComponent setDeathMessage(@NotNull ServerPlayer minecraftPlayer, @Nullable DamageSource source) {
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(minecraftPlayer);
 
         calculateDeath(minecraftPlayer);
 
         Component msg = FfaUtil.returnDeathMessage(minecraftPlayer, source);
 
-        if(attacker != null && msg.toString().contains("somehow killed themselves")  && attacker != minecraftPlayer) {
-
+        if (attacker != null && msg.toString().contains("somehow killed themselves") && attacker != minecraftPlayer) {
             Component component = FfaUtil.returnClassicDeathMessage(minecraftPlayer, attacker);
-            if(component != null) msg = component;
+            if (component != null) msg = component;
 
-            calculateKill(attacker, minecraftPlayer);
+            double[] ratings = calculateKill(attacker, minecraftPlayer);
+            if (ratings != null) {
+                double attackerOldRating = ratings[0];
+                double attackerNewRating = ratings[1];
+                double victimOldRating = ratings[2];
+                double victimNewRating = ratings[3];
+
+                double attackerRatingChange = attackerNewRating - attackerOldRating;
+                double victimRatingChange = victimNewRating - victimOldRating;
+
+                msg = msg.append(Component.text(" (Rating change: ")
+                                .color(ChatFormat.chatColor2))
+                        .append(Component.text(String.format("%.2f", victimRatingChange))
+                                .color(ChatFormat.failColor))
+                        .append(Component.text(" / ")
+                                .color(ChatFormat.chatColor2))
+                        .append(Component.text("+")
+                                .color(ChatFormat.greenColor))
+                        .append(Component.text(String.format("%.2f", attackerRatingChange))
+                                .color(ChatFormat.greenColor))
+                        .append(Component.text(")")
+                                .color(ChatFormat.chatColor2));
+            }
         }
 
         for (Player player : ServerTime.factoryServer.getPlayers()) {
             if (player.hasTag("ffa_kits")) player.sendMessage(msg);
         }
+        return null;
     }
+
 
     public static void sendToSpawn(ServerPlayer player) {
         PlayerData data = PlayerDataManager.get(player);
