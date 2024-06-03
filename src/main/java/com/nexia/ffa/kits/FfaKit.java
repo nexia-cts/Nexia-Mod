@@ -23,13 +23,15 @@ public class FfaKit {
 
     public ItemStack item;
 
-    public static final FfaKit KNIGHT = new FfaKit("knight", new ItemStack(Items.DIAMOND_SWORD));
-    public static final FfaKit POSEIDON = new FfaKit("poseidon", new ItemStack(Items.TRIDENT));
-    public static final FfaKit BRUTE = new FfaKit("brute", new ItemStack(Items.NETHERITE_AXE));
-    public static final FfaKit HUNTER = new FfaKit("hunter", new ItemStack(Items.CROSSBOW));
-    public static final FfaKit NINJA = new FfaKit("ninja", new ItemStack(Items.SUGAR));
-    public static final FfaKit REAPER = new FfaKit("reaper", new ItemStack(Items.NETHERITE_HOE));
-    public static final FfaKit RANDOM = new FfaKit("random", new ItemStack(Items.BARRIER));
+    public static final FfaKit KNIGHT = new FfaKit("Knight", new ItemStack(Items.DIAMOND_SWORD));
+    public static final FfaKit POSEIDON = new FfaKit("Poseidon", new ItemStack(Items.TRIDENT));
+    public static final FfaKit BRUTE = new FfaKit("Brute", new ItemStack(Items.DIAMOND_AXE));
+    public static final FfaKit ROGUE = new FfaKit("Rogue", new ItemStack(Items.SUGAR));
+    public static final FfaKit VIKING = new FfaKit("Viking", new ItemStack(Items.SHIELD));
+    public static final FfaKit HUNTER = new FfaKit("Hunter", new ItemStack(Items.BOW));
+    public static final FfaKit ARBALIST = new FfaKit("Arbalist", new ItemStack(Items.CROSSBOW));
+    public static final FfaKit REAPER = new FfaKit("Reaper", new ItemStack(Items.NETHERITE_HOE));
+    public static final FfaKit RANDOM = new FfaKit("Random", new ItemStack(Items.REDSTONE));
 
     // Keep track of previously selected kits for each player
     private static Map<ServerPlayer, String> previousKits = new HashMap<>();
