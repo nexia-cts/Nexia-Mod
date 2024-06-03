@@ -87,7 +87,7 @@ public class RatingUtil {
 
 
             double x = 0.5;
-            double y = 82;
+            double y = 81.8;
             double z = -5.5;
             ArmorStand titleArmorStand = new ArmorStand(level, x, y + 1.3, z);
             titleArmorStand.setInvisible(true);
