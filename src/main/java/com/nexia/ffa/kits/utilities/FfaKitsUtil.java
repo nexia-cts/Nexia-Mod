@@ -68,17 +68,13 @@ public class FfaKitsUtil {
         // Counting the number of kills and encounters
         int killCount = KillTracker.getKillCount(attacker.getUUID(), player.getUUID());
         int victimKillCount = KillTracker.getKillCount(player.getUUID(), attacker.getUUID());
-        double encounterCount = killCount + victimKillCount;
 
         // START RATING SYSTEM
         double attackerOldRating = data.rating;
         double victimOldRating = playerData.rating;
 
-        // Avoid division by zero
-        double encounterFactor = encounterCount > 0 ? 1.0 + Math.log(1 + encounterCount) : 1.0;
-
-        double killWeight = ((victimOldRating / attackerOldRating) / 2) + (((double) (victimKillCount + 5) / (killCount + 5)) / 2);
-        double deathWeight = ((attackerOldRating / victimOldRating) / 2) + (((double) (killCount + 5) / (victimKillCount + 5)) / 2);
+        double killWeight = ((victimOldRating / attackerOldRating) / 2) + ((double) ((victimKillCount + 5) / (killCount + 5)) / 2);
+        double deathWeight = ((attackerOldRating / victimOldRating) / 2) + ((double) ((killCount + 5) / (victimKillCount + 5)) / 2);
 
         double attackerRelativeIncrease = data.relative_increase + Math.sqrt(killWeight);
         double attackerRelativeDecrease = data.relative_decrease;
@@ -115,14 +111,6 @@ public class FfaKitsUtil {
 
         // Increment kill count for attacker
         KillTracker.incrementKillCount(attacker.getUUID(), player.getUUID());
-
-        // PlayerUtil.getFactoryPlayer(attacker).sendMessage(
-        //         Component.text("You have killed ")
-        //                 .color(ChatFormat.chatColor2)
-        //                 .append(Component.text(player.getScoreboardName()).color(ChatFormat.failColor))
-        //                 .append(Component.text(" ").color(ChatFormat.chatColor2))
-        //                .append(Component.text(killCount + " times out of " + (int) encounterCount + " encounters!").color(ChatFormat.failColor))
-        // );
 
         if (data.killstreak % 5 == 0) {
             for (ServerPlayer serverPlayer : ffaWorld.players()) {
@@ -226,9 +214,6 @@ public class FfaKitsUtil {
             return killCounts.getOrDefault(attacker, new HashMap<>()).getOrDefault(victim, 0);
         }
 
-        public static int getEncounterCount(UUID player1, UUID player2) {
-            return encounterCounts.getOrDefault(player1, new HashMap<>()).getOrDefault(player2, 0);
-        }
     }
 
     public static void clearSpectralArrows(ServerPlayer player) {
