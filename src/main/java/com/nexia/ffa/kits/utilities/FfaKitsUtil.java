@@ -276,8 +276,10 @@ public class FfaKitsUtil {
 
                 double attackerRatingChange = attackerNewRating - attackerOldRating;
                 double victimRatingChange = victimNewRating - victimOldRating;
+                victimRatingChange = Math.round(victimRatingChange * 100);
+                attackerRatingChange = Math.round(attackerRatingChange * 100);
 
-                msg = msg.append(Component.text(" (Rating change: ")
+                msg = msg.append(Component.text(" (")
                                 .color(ChatFormat.chatColor2))
                         .append(Component.text(String.format("%.2f", victimRatingChange))
                                 .color(ChatFormat.failColor))
