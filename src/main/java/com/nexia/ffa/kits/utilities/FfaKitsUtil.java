@@ -73,8 +73,8 @@ public class FfaKitsUtil {
         double attackerOldRating = data.rating;
         double victimOldRating = playerData.rating;
 
-        double killWeight = ((victimOldRating / attackerOldRating) / 2) + ((double) ((victimKillCount + 5) / (killCount + 5)) / 2);
-        double deathWeight = ((attackerOldRating / victimOldRating) / 2) + ((double) ((killCount + 5) / (victimKillCount + 5)) / 2);
+        double killWeight = victimOldRating / attackerOldRating + (double) (victimKillCount + 5) / (killCount + 5);
+        double deathWeight = attackerOldRating / victimOldRating + (double) (killCount + 5) / (victimKillCount + 5);
 
         double attackerRelativeIncrease = data.relative_increase + Math.sqrt(killWeight);
         double attackerRelativeDecrease = data.relative_decrease;
@@ -86,8 +86,8 @@ public class FfaKitsUtil {
         playerData.relative_increase = victimRelativeIncrease;
         playerData.relative_decrease = victimRelativeDecrease;
 
-        double attackerNewRating = (attackerRelativeIncrease + 5) / (attackerRelativeDecrease + 5);
-        double victimNewRating = (victimRelativeIncrease + 5) / (victimRelativeDecrease + 5);
+        double attackerNewRating = (attackerRelativeIncrease + 10) / (attackerRelativeDecrease + 10);
+        double victimNewRating = (victimRelativeIncrease + 10) / (victimRelativeDecrease + 10);
 
         data.rating = attackerNewRating;
         playerData.rating = victimNewRating;
