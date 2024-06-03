@@ -28,8 +28,8 @@ public class FfaKit {
     public static final FfaKit BRUTE = new FfaKit("Brute", new ItemStack(Items.DIAMOND_AXE));
     public static final FfaKit ROGUE = new FfaKit("Rogue", new ItemStack(Items.SUGAR));
     public static final FfaKit VIKING = new FfaKit("Viking", new ItemStack(Items.SHIELD));
-    public static final FfaKit HUNTER = new FfaKit("Hunter", new ItemStack(Items.BOW));
-    public static final FfaKit ARBALIST = new FfaKit("Arbalist", new ItemStack(Items.CROSSBOW));
+    public static final FfaKit ARCHER = new FfaKit("Archer", new ItemStack(Items.BOW));
+    public static final FfaKit HUNTER = new FfaKit("Hunter", new ItemStack(Items.CROSSBOW));
     public static final FfaKit REAPER = new FfaKit("Reaper", new ItemStack(Items.NETHERITE_HOE));
     public static final FfaKit RANDOM = new FfaKit("Random", new ItemStack(Items.REDSTONE));
 
