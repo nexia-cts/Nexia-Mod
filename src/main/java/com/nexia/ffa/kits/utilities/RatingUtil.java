@@ -4,6 +4,8 @@ import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.types.Minecraft;
+import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.kits.utilities.player.PlayerDataManager;
 import com.nexia.ffa.kits.utilities.player.SavedPlayerData;
@@ -84,49 +86,49 @@ public class RatingUtil {
             }
 
 
-            double x = 166.5;
-            double y = 46;
-            double z = 52.5;
+            double x = 0.5;
+            double y = 82;
+            double z = -5.5;
             ArmorStand titleArmorStand = new ArmorStand(level, x, y + 1.3, z);
             titleArmorStand.setInvisible(true);
             titleArmorStand.setNoGravity(true);
-            titleArmorStand.setCustomName(Component.nullToEmpty("LEADERBOARD"));
+            titleArmorStand.setCustomName(new TextComponent(LegacyChatFormat.brandColor1 + "LEADERBOARD"));
             titleArmorStand.setCustomNameVisible(true);
 
             ArmorStand subTitleArmorStand = new ArmorStand(level, x, y + 1, z);
             subTitleArmorStand.setInvisible(true);
             subTitleArmorStand.setNoGravity(true);
-            subTitleArmorStand.setCustomName(Component.nullToEmpty("MOST POINTS"));
+            subTitleArmorStand.setCustomName(new TextComponent(LegacyChatFormat.brandColor1 + "MOST POINTS"));
             subTitleArmorStand.setCustomNameVisible(true);
 
             ArmorStand firstArmorStand = new ArmorStand(level, x, y + 0.5, z);
             firstArmorStand.setInvisible(true);
             firstArmorStand.setNoGravity(true);
-            firstArmorStand.setCustomName(Component.nullToEmpty("#1 " + playerNames[0] + " " + scores[0]));
+            firstArmorStand.setCustomName(new TextComponent(LegacyChatFormat.brandColor2 + "#1 " + playerNames[0] + " " + scores[0]));
             firstArmorStand.setCustomNameVisible(true);
 
             ArmorStand secondArmorStand = new ArmorStand(level, x, y + 0.25, z);
             secondArmorStand.setInvisible(true);
             secondArmorStand.setNoGravity(true);
-            secondArmorStand.setCustomName(Component.nullToEmpty("#2 " + playerNames[1] + " " + scores[1]));
+            secondArmorStand.setCustomName(new TextComponent(LegacyChatFormat.brandColor2 + "#2 " + playerNames[1] + " " + scores[1]));
             secondArmorStand.setCustomNameVisible(true);
 
             ArmorStand thirdArmorStand = new ArmorStand(level, x, y, z);
             thirdArmorStand.setInvisible(true);
             thirdArmorStand.setNoGravity(true);
-            thirdArmorStand.setCustomName(Component.nullToEmpty("#3 " + playerNames[2] + " " + scores[2]));
+            thirdArmorStand.setCustomName(new TextComponent(LegacyChatFormat.brandColor2 + "#3 " + playerNames[2] + " " + scores[2]));
             thirdArmorStand.setCustomNameVisible(true);
 
             ArmorStand fourthArmorStand = new ArmorStand(level, x, y - 0.25, z);
             fourthArmorStand.setInvisible(true);
             fourthArmorStand.setNoGravity(true);
-            fourthArmorStand.setCustomName(Component.nullToEmpty("#4 " + playerNames[3] + " " + scores[3]));
+            fourthArmorStand.setCustomName(new TextComponent(LegacyChatFormat.brandColor2 + "#4 " + playerNames[3] + " " + scores[3]));
             fourthArmorStand.setCustomNameVisible(true);
 
             ArmorStand fifthArmorStand = new ArmorStand(level, x, y - 0.5, z);
             fifthArmorStand.setInvisible(true);
             fifthArmorStand.setNoGravity(true);
-            fifthArmorStand.setCustomName(Component.nullToEmpty("#5 " + playerNames[4] + " " + scores[4]));
+            fifthArmorStand.setCustomName(new TextComponent(LegacyChatFormat.brandColor2 + "#5 " + playerNames[4] + " " + scores[4]));
             fifthArmorStand.setCustomNameVisible(true);
         }
     }
