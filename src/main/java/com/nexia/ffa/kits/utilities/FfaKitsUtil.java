@@ -1,5 +1,6 @@
 package com.nexia.ffa.kits.utilities;
 
+import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.ffa.KitGUI;
@@ -42,6 +43,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
 
+import static com.nexia.core.utilities.time.ServerTime.factoryServer;
 import static com.nexia.ffa.kits.utilities.FfaAreas.*;
 
 public class FfaKitsUtil {
@@ -73,21 +75,18 @@ public class FfaKitsUtil {
         double attackerOldRating = data.rating;
         double victimOldRating = playerData.rating;
 
-        double killWeight = victimOldRating / attackerOldRating + (double) (victimKillCount + 5) / (killCount + 5);
-        double deathWeight = attackerOldRating / victimOldRating + (double) (killCount + 5) / (victimKillCount + 5);
-
-        double attackerRelativeIncrease = data.relative_increase + Math.sqrt(killWeight);
+        double attackerRelativeIncrease = data.relative_increase + Math.sqrt(victimOldRating / attackerOldRating) + 1/Math.sqrt((double) (victimKillCount + 10) / (killCount + 10));
         double attackerRelativeDecrease = data.relative_decrease;
         double victimRelativeIncrease = playerData.relative_increase;
-        double victimRelativeDecrease = playerData.relative_decrease + 1/Math.sqrt(deathWeight);
+        double victimRelativeDecrease = playerData.relative_decrease + 1/Math.sqrt(attackerOldRating / victimOldRating) + 1/Math.sqrt((double) (killCount + 10) / (victimKillCount + 10));
 
         data.relative_increase = attackerRelativeIncrease;
         data.relative_decrease = attackerRelativeDecrease;
         playerData.relative_increase = victimRelativeIncrease;
         playerData.relative_decrease = victimRelativeDecrease;
 
-        double attackerNewRating = (attackerRelativeIncrease + 10) / (attackerRelativeDecrease + 10);
-        double victimNewRating = (victimRelativeIncrease + 10) / (victimRelativeDecrease + 10);
+        double attackerNewRating = (attackerRelativeIncrease + 20) / (attackerRelativeDecrease + 20);
+        double victimNewRating = (victimRelativeIncrease + 20) / (victimRelativeDecrease + 20);
 
         data.rating = attackerNewRating;
         playerData.rating = victimNewRating;
@@ -276,8 +275,8 @@ public class FfaKitsUtil {
 
                 double attackerRatingChange = attackerNewRating - attackerOldRating;
                 double victimRatingChange = victimNewRating - victimOldRating;
-                victimRatingChange = Math.round(victimRatingChange * 100);
-                attackerRatingChange = Math.round(attackerRatingChange * 100);
+                victimRatingChange = victimRatingChange * 100;
+                attackerRatingChange = attackerRatingChange * 100;
 
                 msg = msg.append(Component.text(" (")
                                 .color(ChatFormat.chatColor2))
@@ -294,7 +293,7 @@ public class FfaKitsUtil {
             }
         }
 
-        for (Player player : ServerTime.factoryServer.getPlayers()) {
+        for (Player player : factoryServer.getPlayers()) {
             if (player.hasTag("ffa_kits")) player.sendMessage(msg);
         }
         return null;
@@ -323,3 +322,4 @@ public class FfaKitsUtil {
         }
     }
 }
+    
