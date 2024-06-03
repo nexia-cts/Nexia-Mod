@@ -67,40 +67,8 @@ public class FfaKitsUtil {
         SavedPlayerData data = PlayerDataManager.get(attacker).savedData;
         SavedPlayerData playerData = PlayerDataManager.get(player).savedData;
 
-        // Counting the number of kills and encounters
-        int killCount = KillTracker.getKillCount(attacker.getUUID(), player.getUUID());
-        int victimKillCount = KillTracker.getKillCount(player.getUUID(), attacker.getUUID());
-
-        // START RATING SYSTEM
-        double attackerOldRating = data.rating;
-        double victimOldRating = playerData.rating;
-
-        double attackerRelativeIncrease = data.relative_increase + Math.sqrt(victimOldRating / attackerOldRating) + 1/Math.sqrt((double) (victimKillCount + 10) / (killCount + 10));
-        double attackerRelativeDecrease = data.relative_decrease;
-        double victimRelativeIncrease = playerData.relative_increase;
-        double victimRelativeDecrease = playerData.relative_decrease + 1/Math.sqrt(attackerOldRating / victimOldRating) + 1/Math.sqrt((double) (killCount + 10) / (victimKillCount + 10));
-
-        data.relative_increase = attackerRelativeIncrease;
-        data.relative_decrease = attackerRelativeDecrease;
-        playerData.relative_increase = victimRelativeIncrease;
-        playerData.relative_decrease = victimRelativeDecrease;
-
-        double attackerNewRating = (attackerRelativeIncrease + 20) / (attackerRelativeDecrease + 20);
-        double victimNewRating = (victimRelativeIncrease + 20) / (victimRelativeDecrease + 20);
-
-        data.rating = attackerNewRating;
-        playerData.rating = victimNewRating;
-
-        if (attacker.getServer() != null) {
-            Scoreboard scoreboard = attacker.getServer().getScoreboard();
-            Objective ratingObjective = scoreboard.getObjective("Rating");
-            if (ratingObjective == null) {
-                ratingObjective = scoreboard.addObjective("Rating", ObjectiveCriteria.DUMMY, new TextComponent("Rating"), ObjectiveCriteria.RenderType.INTEGER);
-            }
-            scoreboard.getOrCreatePlayerScore(attacker.getScoreboardName(), ratingObjective).setScore((int) Math.round(attackerNewRating * 100));
-            scoreboard.getOrCreatePlayerScore(player.getScoreboardName(), ratingObjective).setScore((int) Math.round(victimNewRating * 100));
-        }
-        // END RATING SYSTEM
+        double[] ratings = RatingUtil.calculateRating(attacker, player);
+        RatingUtil.updateLeaderboard();
 
         data.killstreak++;
         if (data.killstreak > data.bestKillstreak) {
@@ -125,7 +93,7 @@ public class FfaKitsUtil {
                 );
             }
         }
-        return new double[]{attackerOldRating, attackerNewRating, victimOldRating, victimNewRating};
+        return ratings;
     }
 
     public static void fiveTick() {
@@ -196,23 +164,6 @@ public class FfaKitsUtil {
                 arrow.remove();
             }
         }
-    }
-
-    // KillTracker class for tracking kill counts
-    public static class KillTracker {
-        private static final Map<UUID, Map<UUID, Integer>> killCounts = new HashMap<>();
-        private static final Map<UUID, Map<UUID, Integer>> encounterCounts = new HashMap<>();
-
-        public static void incrementKillCount(UUID attacker, UUID victim) {
-            killCounts.computeIfAbsent(attacker, k -> new HashMap<>()).merge(victim, 1, Integer::sum);
-            encounterCounts.computeIfAbsent(attacker, k -> new HashMap<>()).merge(victim, 1, Integer::sum);
-            encounterCounts.computeIfAbsent(victim, k -> new HashMap<>()).merge(attacker, 1, Integer::sum);
-        }
-
-        public static int getKillCount(UUID attacker, UUID victim) {
-            return killCounts.getOrDefault(attacker, new HashMap<>()).getOrDefault(victim, 0);
-        }
-
     }
 
     public static void clearSpectralArrows(ServerPlayer player) {
