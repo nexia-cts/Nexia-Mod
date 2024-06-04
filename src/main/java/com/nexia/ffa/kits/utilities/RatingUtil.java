@@ -40,7 +40,7 @@ public class RatingUtil {
         double attackerRelativeIncrease = attackerData.relative_increase + Math.sqrt(victimOldRating / attackerOldRating) + Math.sqrt((double) (victimKillCount + 10) / (killCount + 10));
         double attackerRelativeDecrease = attackerData.relative_decrease;
         double victimRelativeIncrease = playerData.relative_increase;
-        double victimRelativeDecrease = playerData.relative_decrease + 1/Math.sqrt(attackerOldRating / victimOldRating) + 1/Math.sqrt((double) (killCount + 10) / (victimKillCount + 10));
+        double victimRelativeDecrease = playerData.relative_decrease + 1 / Math.sqrt(attackerOldRating / victimOldRating) + 1 / Math.sqrt((double) (killCount + 10) / (victimKillCount + 10));
 
         attackerData.relative_increase = attackerRelativeIncrease;
         attackerData.relative_decrease = attackerRelativeDecrease;
@@ -77,69 +77,45 @@ public class RatingUtil {
                 }
             }
 
-            String[] playerNames = {"playerName", "playerName", "playerName", "playerName", "playerName"};
-            int[] scores = {0, 0, 0, 0, 0};
-
+            String[] playerNames = new String[5];
+            int[] scores = new int[5];
 
             Scoreboard scoreboard = minecraftServer.getScoreboard();
             Objective ratingObjective = scoreboard.getObjective("Rating");
 
             int i = 0;
             for (Score score : scoreboard.getPlayerScores(ratingObjective)) {
+                if (i >= 5) break;
                 playerNames[i] = score.getOwner();
                 scores[i] = score.getScore();
-
                 i++;
-                if (i > 4) {
-                    break;
-                }
             }
 
+            if (i < 5) {
+                for (int j = i; j < 5; j++) {
+                    playerNames[j] = "N/A";
+                    scores[j] = 0;
+                }
+            }
 
             double x = 0.5;
             double y = 81.8;
             double z = -5.5;
-            ArmorStand titleArmorStand = new ArmorStand(level, x, y + 1.3, z);
-            titleArmorStand.setInvisible(true);
-            titleArmorStand.setNoGravity(true);
-            titleArmorStand.setCustomName(new TextComponent(LegacyChatFormat.brandColor1 + "LEADERBOARD"));
-            titleArmorStand.setCustomNameVisible(true);
-
-            ArmorStand subTitleArmorStand = new ArmorStand(level, x, y + 1, z);
-            subTitleArmorStand.setInvisible(true);
-            subTitleArmorStand.setNoGravity(true);
-            subTitleArmorStand.setCustomName(new TextComponent(LegacyChatFormat.brandColor1 + "MOST POINTS"));
-            subTitleArmorStand.setCustomNameVisible(true);
-
-            ArmorStand firstArmorStand = new ArmorStand(level, x, y + 0.5, z);
-            firstArmorStand.setInvisible(true);
-            firstArmorStand.setNoGravity(true);
-            firstArmorStand.setCustomName(new TextComponent(LegacyChatFormat.brandColor2 + "#1 " + playerNames[0] + " " + scores[0]));
-            firstArmorStand.setCustomNameVisible(true);
-
-            ArmorStand secondArmorStand = new ArmorStand(level, x, y + 0.25, z);
-            secondArmorStand.setInvisible(true);
-            secondArmorStand.setNoGravity(true);
-            secondArmorStand.setCustomName(new TextComponent(LegacyChatFormat.brandColor2 + "#2 " + playerNames[1] + " " + scores[1]));
-            secondArmorStand.setCustomNameVisible(true);
-
-            ArmorStand thirdArmorStand = new ArmorStand(level, x, y, z);
-            thirdArmorStand.setInvisible(true);
-            thirdArmorStand.setNoGravity(true);
-            thirdArmorStand.setCustomName(new TextComponent(LegacyChatFormat.brandColor2 + "#3 " + playerNames[2] + " " + scores[2]));
-            thirdArmorStand.setCustomNameVisible(true);
-
-            ArmorStand fourthArmorStand = new ArmorStand(level, x, y - 0.25, z);
-            fourthArmorStand.setInvisible(true);
-            fourthArmorStand.setNoGravity(true);
-            fourthArmorStand.setCustomName(new TextComponent(LegacyChatFormat.brandColor2 + "#4 " + playerNames[3] + " " + scores[3]));
-            fourthArmorStand.setCustomNameVisible(true);
-
-            ArmorStand fifthArmorStand = new ArmorStand(level, x, y - 0.5, z);
-            fifthArmorStand.setInvisible(true);
-            fifthArmorStand.setNoGravity(true);
-            fifthArmorStand.setCustomName(new TextComponent(LegacyChatFormat.brandColor2 + "#5 " + playerNames[4] + " " + scores[4]));
-            fifthArmorStand.setCustomNameVisible(true);
+            createArmorStand(level, x, y + 1.25, z, LegacyChatFormat.brandColor1 + "LEADERBOARD");
+            createArmorStand(level, x, y + 1, z, LegacyChatFormat.brandColor1 + "MOST POINTS");
+            createArmorStand(level, x, y + 0.5, z, LegacyChatFormat.brandColor2 + "#1 " + playerNames[0] + " " + scores[0]);
+            createArmorStand(level, x, y + 0.25, z, LegacyChatFormat.brandColor2 + "#2 " + playerNames[1] + " " + scores[1]);
+            createArmorStand(level, x, y, z, LegacyChatFormat.brandColor2 + "#3 " + playerNames[2] + " " + scores[2]);
+            createArmorStand(level, x, y - 0.25, z, LegacyChatFormat.brandColor2 + "#4 " + playerNames[3] + " " + scores[3]);
+            createArmorStand(level, x, y - 0.5, z, LegacyChatFormat.brandColor2 + "#5 " + playerNames[4] + " " + scores[4]);
         }
+    }
+
+    private static void createArmorStand(ServerLevel level, double x, double y, double z, String customName) {
+        ArmorStand armorStand = new ArmorStand(level, x, y, z);
+        armorStand.setInvisible(true);
+        armorStand.setNoGravity(true);
+        armorStand.setCustomName(new TextComponent(customName));
+        armorStand.setCustomNameVisible(true);
     }
 }
