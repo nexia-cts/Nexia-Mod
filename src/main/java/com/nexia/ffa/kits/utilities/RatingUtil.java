@@ -4,12 +4,16 @@ import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.types.Minecraft;
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.kits.utilities.player.PlayerDataManager;
 import com.nexia.ffa.kits.utilities.player.SavedPlayerData;
-import net.minecraft.network.chat.Component;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -101,21 +105,25 @@ public class RatingUtil {
             double x = 0.5;
             double y = 81.8;
             double z = -5.5;
-            createArmorStand(level, x, y + 1.25, z, LegacyChatFormat.brandColor1 + "LEADERBOARD");
-            createArmorStand(level, x, y + 1, z, LegacyChatFormat.brandColor1 + "MOST POINTS");
-            createArmorStand(level, x, y + 0.5, z, LegacyChatFormat.brandColor2 + "#1 " + playerNames[0] + " " + scores[0]);
-            createArmorStand(level, x, y + 0.25, z, LegacyChatFormat.brandColor2 + "#2 " + playerNames[1] + " " + scores[1]);
-            createArmorStand(level, x, y, z, LegacyChatFormat.brandColor2 + "#3 " + playerNames[2] + " " + scores[2]);
-            createArmorStand(level, x, y - 0.25, z, LegacyChatFormat.brandColor2 + "#4 " + playerNames[3] + " " + scores[3]);
-            createArmorStand(level, x, y - 0.5, z, LegacyChatFormat.brandColor2 + "#5 " + playerNames[4] + " " + scores[4]);
+
+
+            createArmorStand(level, x, y + 1.25, z, ObjectMappings.convertComponent(Component.text("L").color(TextColor.fromHexString("#ff800b")).append(Component.text("E").color(TextColor.fromHexString("#ff8d09"))).append(Component.text("A").color(TextColor.fromHexString("#ff9a07"))).append(Component.text("D").color(TextColor.fromHexString("#ffa805"))).append(Component.text("E").color(TextColor.fromHexString("#ffb503"))).append(Component.text("R").color(TextColor.fromHexString("#ffc201"))).append(Component.text("B").color(TextColor.fromHexString("#ffb503"))).append(Component.text("O").color(TextColor.fromHexString("#ffa805"))).append(Component.text("A").color(TextColor.fromHexString("#ff9a07"))).append(Component.text("R").color(TextColor.fromHexString("#ff8d09"))).append(Component.text("D").color(TextColor.fromHexString("#ff800b"))).decorate(TextDecoration.BOLD)));
+            createArmorStand(level, x, y + 1, z, ObjectMappings.convertComponent(Component.text("M").color(TextColor.fromHexString("#ff800b")).append(Component.text("O").color(TextColor.fromHexString("#ff8d09"))).append(Component.text("S").color(TextColor.fromHexString("#ff9a07"))).append(Component.text("T").color(TextColor.fromHexString("#ffa805"))).append(Component.text(" ").color(TextColor.fromHexString("#ffb503"))).append(Component.text("P").color(TextColor.fromHexString("#ffc201"))).append(Component.text("O").color(TextColor.fromHexString("#ffb503"))).append(Component.text("I").color(TextColor.fromHexString("#ffa805"))).append(Component.text("N").color(TextColor.fromHexString("#ff9a07"))).append(Component.text("T").color(TextColor.fromHexString("#ff8d09"))).append(Component.text("S").color(TextColor.fromHexString("#ff800b"))).decorate(TextDecoration.BOLD)));
+            createArmorStand(level, x, y + 0.5, z, ObjectMappings.convertComponent(Component.text("#1 ").color(TextColor.fromHexString("#ffc201")).append(Component.text(playerNames[0]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[0]).color(TextColor.fromHexString("#ffc201"))))));
+            createArmorStand(level, x, y + 0.25, z, ObjectMappings.convertComponent(Component.text("#2 ").color(TextColor.fromHexString("#d0d0d0")).append(Component.text(playerNames[1]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[1]).color(TextColor.fromHexString("#ffc201"))))));
+            createArmorStand(level, x, y, z, ObjectMappings.convertComponent(Component.text("#3 ").color(TextColor.fromHexString("#c77b30")).append(Component.text(playerNames[2]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[2]).color(TextColor.fromHexString("#ffc201"))))));
+            createArmorStand(level, x, y - 0.25, z, ObjectMappings.convertComponent(Component.text("#4 ").color(NamedTextColor.WHITE).append(Component.text(playerNames[3]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[3]).color(TextColor.fromHexString("#ffc201"))))));
+            createArmorStand(level, x, y - 0.5, z, ObjectMappings.convertComponent(Component.text("#5 ").color(NamedTextColor.WHITE).append(Component.text(playerNames[4]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[4]).color(TextColor.fromHexString("#ffc201"))))));
         }
     }
 
-    private static void createArmorStand(ServerLevel level, double x, double y, double z, String customName) {
+    private static void createArmorStand(ServerLevel level, double x, double y, double z, net.minecraft.network.chat.Component customName) {
         ArmorStand armorStand = new ArmorStand(level, x, y, z);
         armorStand.setInvisible(true);
         armorStand.setNoGravity(true);
-        armorStand.setCustomName(new TextComponent(customName));
+        armorStand.setCustomName(customName);
         armorStand.setCustomNameVisible(true);
+
+        level.addFreshEntity(armorStand);
     }
 }
