@@ -25,6 +25,7 @@ import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -90,7 +91,7 @@ public class RatingUtil {
             Scoreboard scoreboard = minecraftServer.getScoreboard();
             Objective ratingObjective = scoreboard.getObjective("Rating");
 
-            List<Score> playerScores = scoreboard.getPlayerScores(ratingObjective).stream().toList();
+            List<Score> playerScores = new java.util.ArrayList<>(scoreboard.getPlayerScores(ratingObjective).stream().toList());
             Collections.reverse(playerScores);
 
             int i = 0;
