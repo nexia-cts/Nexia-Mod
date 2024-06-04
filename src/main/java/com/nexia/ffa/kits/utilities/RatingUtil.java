@@ -25,6 +25,9 @@ import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
+import java.util.Collections;
+import java.util.List;
+
 import static com.nexia.core.utilities.time.ServerTime.factoryServer;
 import static com.nexia.core.utilities.time.ServerTime.minecraftServer;
 
@@ -87,8 +90,11 @@ public class RatingUtil {
             Scoreboard scoreboard = minecraftServer.getScoreboard();
             Objective ratingObjective = scoreboard.getObjective("Rating");
 
+            List<Score> playerScores = scoreboard.getPlayerScores(ratingObjective).stream().toList();
+            Collections.reverse(playerScores);
+
             int i = 0;
-            for (Score score : scoreboard.getPlayerScores(ratingObjective)) {
+            for (Score score : playerScores) {
                 if (i >= 5) break;
                 playerNames[i] = score.getOwner();
                 scores[i] = score.getScore();
