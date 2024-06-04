@@ -53,6 +53,16 @@ public class RatingUtil {
         attackerData.rating = attackerNewRating;
         playerData.rating = victimNewRating;
 
+        if (attacker.getServer() != null) {
+            Scoreboard scoreboard = attacker.getServer().getScoreboard();
+            Objective ratingObjective = scoreboard.getObjective("Rating");
+            if (ratingObjective == null) {
+                ratingObjective = scoreboard.addObjective("Rating", ObjectiveCriteria.DUMMY, new TextComponent("Rating"), ObjectiveCriteria.RenderType.INTEGER);
+            }
+            scoreboard.getOrCreatePlayerScore(attacker.getScoreboardName(), ratingObjective).setScore((int) Math.round(attackerNewRating * 100));
+            scoreboard.getOrCreatePlayerScore(player.getScoreboardName(), ratingObjective).setScore((int) Math.round(victimNewRating * 100));
+        }
+
         return new double[]{attackerOldRating, attackerNewRating, victimOldRating, victimNewRating};
     }
 
