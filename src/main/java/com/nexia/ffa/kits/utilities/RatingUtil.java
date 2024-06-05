@@ -139,4 +139,8 @@ public class RatingUtil {
 
         level.addFreshEntity(armorStand);
     }
+
+    public static double calculateRatingDifference(double newRating, double oldRating) {
+        return (newRating - oldRating) * 100;
+    }
 }
