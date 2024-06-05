@@ -5,8 +5,6 @@ import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
-import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.kits.utilities.player.PlayerDataManager;
 import com.nexia.ffa.kits.utilities.player.SavedPlayerData;
@@ -25,7 +23,6 @@ import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,7 +32,7 @@ import static com.nexia.core.utilities.time.ServerTime.minecraftServer;
 public class RatingUtil {
     static ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("ffa", "kits"), new RuntimeWorldConfig()).asWorld();
 
-    public static double[] calculateRating(ServerPlayer attacker, ServerPlayer player) {
+    public static void calculateRating(ServerPlayer attacker, ServerPlayer player) {
         SavedPlayerData attackerData = PlayerDataManager.get(attacker).savedData;
         SavedPlayerData playerData = PlayerDataManager.get(player).savedData;
 
@@ -72,7 +69,6 @@ public class RatingUtil {
             scoreboard.getOrCreatePlayerScore(player.getScoreboardName(), ratingObjective).setScore((int) Math.round(victimNewRating * 100));
         }
 
-        return new double[]{attackerOldRating, attackerNewRating, victimOldRating, victimNewRating};
     }
 
     public static void updateLeaderboard() {
@@ -114,7 +110,6 @@ public class RatingUtil {
             double y = 79.75;
             double z = -5.5;
 
-
             createArmorStand(level, x, y + 1.25, z, ObjectMappings.convertComponent(Component.text("LEADERBOARD").color(TextColor.fromHexString("#A201F9")).decorate(TextDecoration.BOLD)));
             createArmorStand(level, x, y + 1, z, ObjectMappings.convertComponent(Component.text("HIGHEST RATING").color(TextColor.fromHexString("#A201F9")).decorate(TextDecoration.BOLD)));
             createArmorStand(level, x, y + 0.5, z, ObjectMappings.convertComponent(Component.text("#1 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[0]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[0]).color(TextColor.fromHexString("#F1BA41"))))));
@@ -139,5 +134,9 @@ public class RatingUtil {
         armorStand.setCustomNameVisible(true);
 
         level.addFreshEntity(armorStand);
+    }
+
+    public static double calculateRatingDifference(double newRating, double oldRating) {
+        return (newRating - oldRating) * 100;
     }
 }

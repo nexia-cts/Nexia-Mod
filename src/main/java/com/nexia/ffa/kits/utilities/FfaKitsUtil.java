@@ -47,19 +47,18 @@ public class FfaKitsUtil {
         return player.getTags().contains("ffa_kits") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.KITS;
     }
 
-    public static double[] calculateKill(ServerPlayer attacker, ServerPlayer player) {
+    public static void calculateKill(ServerPlayer attacker, ServerPlayer player) {
         attacker.heal(attacker.getMaxHealth());
 
         FfaKitsUtil.clearArrows(attacker);
         FfaKitsUtil.clearSpectralArrows(attacker);
         FfaKitsUtil.clearThrownTridents(attacker);
 
-        if (player.getTags().contains("bot") || attacker.getTags().contains("bot")) return null;
+        if (player.getTags().contains("bot") || attacker.getTags().contains("bot")) return;
 
         SavedPlayerData data = PlayerDataManager.get(attacker).savedData;
-        SavedPlayerData playerData = PlayerDataManager.get(player).savedData;
 
-        double[] ratings = RatingUtil.calculateRating(attacker, player);
+        RatingUtil.calculateRating(attacker, player);
         RatingUtil.updateLeaderboard();
 
         data.killstreak++;
@@ -85,7 +84,6 @@ public class FfaKitsUtil {
                 );
             }
         }
-        return ratings;
     }
 
     public static void fiveTick() {
@@ -209,31 +207,27 @@ public class FfaKitsUtil {
             Component component = FfaUtil.returnClassicDeathMessage(minecraftPlayer, attacker);
             if (component != null) msg = component;
 
-            double[] ratings = calculateKill(attacker, minecraftPlayer);
-            if (ratings != null) {
-                double attackerOldRating = ratings[0];
-                double attackerNewRating = ratings[1];
-                double victimOldRating = ratings[2];
-                double victimNewRating = ratings[3];
 
-                double attackerRatingChange = attackerNewRating - attackerOldRating;
-                double victimRatingChange = victimNewRating - victimOldRating;
-                victimRatingChange = victimRatingChange * 100;
-                attackerRatingChange = attackerRatingChange * 100;
+            double attackerOldRating = PlayerDataManager.get(attacker).savedData.rating;
+            double victimOldRating = PlayerDataManager.get(minecraftPlayer).savedData.rating;
 
-                msg = msg.append(Component.text(" (")
-                                .color(ChatFormat.chatColor2))
-                        .append(Component.text(String.format("%.2f", victimRatingChange))
-                                .color(ChatFormat.failColor))
-                        .append(Component.text(" / ")
-                                .color(ChatFormat.chatColor2))
-                        .append(Component.text("+")
-                                .color(ChatFormat.greenColor))
-                        .append(Component.text(String.format("%.2f", attackerRatingChange))
-                                .color(ChatFormat.greenColor))
-                        .append(Component.text(")")
-                                .color(ChatFormat.chatColor2));
-            }
+            calculateKill(attacker, minecraftPlayer);
+
+            double attackerNewRating = PlayerDataManager.get(attacker).savedData.rating;
+            double victimNewRating = PlayerDataManager.get(minecraftPlayer).savedData.rating;
+
+            msg = msg.append(Component.text(" (")
+                            .color(ChatFormat.chatColor2))
+                    .append(Component.text(String.format("%.2f", RatingUtil.calculateRatingDifference(victimNewRating, victimOldRating)))
+                            .color(ChatFormat.failColor))
+                    .append(Component.text(" / ")
+                            .color(ChatFormat.chatColor2))
+                    .append(Component.text("+")
+                            .color(ChatFormat.greenColor))
+                    .append(Component.text(String.format("%.2f", RatingUtil.calculateRatingDifference(attackerNewRating, attackerOldRating)))
+                            .color(ChatFormat.greenColor))
+                    .append(Component.text(")")
+                            .color(ChatFormat.chatColor2));
         }
 
         for (Player player : factoryServer.getPlayers()) {
