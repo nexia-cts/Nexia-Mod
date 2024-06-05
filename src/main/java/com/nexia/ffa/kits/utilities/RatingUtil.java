@@ -43,10 +43,10 @@ public class RatingUtil {
         double victimOldRating = playerData.rating;
         double killWeight = Math.sqrt(victimOldRating / attackerOldRating) + Math.sqrt((double) (victimKillCount + 5) / (killCount + 5));
         double deathWeight = 1 / Math.sqrt(attackerOldRating / victimOldRating) + 1 / Math.sqrt((double) (killCount + 5) / (victimKillCount + 5));
-        double attackerRelativeIncrease = attackerData.relative_increase + attackerData.relative_increase / 100 * killWeight;
+        double attackerRelativeIncrease = attackerData.relative_increase + attackerData.relative_increase / 40 * killWeight;
         double attackerRelativeDecrease = attackerData.relative_decrease;
         double victimRelativeIncrease = playerData.relative_increase;
-        double victimRelativeDecrease = playerData.relative_decrease + playerData.relative_decrease / 100 * deathWeight;
+        double victimRelativeDecrease = playerData.relative_decrease + playerData.relative_decrease / 40 * deathWeight;
 
         attackerData.relative_increase = attackerRelativeIncrease;
         attackerData.relative_decrease = attackerRelativeDecrease;
