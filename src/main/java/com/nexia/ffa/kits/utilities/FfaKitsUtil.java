@@ -54,7 +54,7 @@ public class FfaKitsUtil {
         FfaKitsUtil.clearSpectralArrows(attacker);
         FfaKitsUtil.clearThrownTridents(attacker);
 
-        if (player.getTags().contains("bot") || attacker.getTags().contains("bot")) return new double[0];
+        if (player.getTags().contains("bot") || attacker.getTags().contains("bot")) return null;
 
         SavedPlayerData data = PlayerDataManager.get(attacker).savedData;
         SavedPlayerData playerData = PlayerDataManager.get(player).savedData;
