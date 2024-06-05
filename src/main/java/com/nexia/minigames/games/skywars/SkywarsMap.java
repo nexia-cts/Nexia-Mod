@@ -81,12 +81,16 @@ public class SkywarsMap {
             new EntityPos(-68.5,81.0,29.5))
     ), new StructureMap(new ResourceLocation("skywars", "below"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-76, -9, -76), true));
 
-    public static SkywarsMap NULL = new SkywarsMap("null", 4, new ArrayList<>(Arrays.asList(
+    public static SkywarsMap NULL = new SkywarsMap("null", 8, new ArrayList<>(Arrays.asList(
             new EntityPos(25.5, 77.0, 25.5),
             new EntityPos(-24.5, 77.0, 25.5),
             new EntityPos(25.5, 77.0, -24.5),
+            new EntityPos(-49.5, 77, 0.5),
+            new EntityPos(0.5, 77, 50.5),
+            new EntityPos(50.5, 77, 0.5),
+            new EntityPos(0.5, 77, -49.5),
             new EntityPos(-24.5, 77.0, -24.5))
-    ), new StructureMap(new ResourceLocation("skywars", "null"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-33, -42, -33), true));
+    ), new StructureMap(new ResourceLocation("skywars", "null"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-54, -42, -54), true));
 
 
     public static SkywarsMap SHROOMS = new SkywarsMap("shrooms", 8, new ArrayList<>(Arrays.asList(
