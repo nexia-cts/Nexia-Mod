@@ -41,20 +41,20 @@ public class RatingUtil {
 
         double attackerOldRating = attackerData.rating;
         double victimOldRating = playerData.rating;
-        double killWeight = Math.sqrt(victimOldRating / attackerOldRating) + Math.sqrt((double) (victimKillCount + 10) / (killCount + 10));
-        double deathWeight = 1 / Math.sqrt(attackerOldRating / victimOldRating) + 1 / Math.sqrt((double) (killCount + 10) / (victimKillCount + 10));
-        double attackerRelativeIncrease = attackerData.relative_increase + attackerData.relative_increase / 40 * killWeight;
+        double killWeight = Math.sqrt(victimOldRating / attackerOldRating) + Math.sqrt((double) (victimKillCount + 5) / (killCount + 5));
+        double deathWeight = 1 / Math.sqrt(attackerOldRating / victimOldRating) + 1 / Math.sqrt((double) (killCount + 5) / (victimKillCount + 5));
+        double attackerRelativeIncrease = attackerData.relative_increase + attackerData.relative_increase / 100 * killWeight;
         double attackerRelativeDecrease = attackerData.relative_decrease;
         double victimRelativeIncrease = playerData.relative_increase;
-        double victimRelativeDecrease = playerData.relative_decrease + playerData.relative_decrease / 40 * deathWeight;
+        double victimRelativeDecrease = playerData.relative_decrease + playerData.relative_decrease / 100 * deathWeight;
 
         attackerData.relative_increase = attackerRelativeIncrease;
         attackerData.relative_decrease = attackerRelativeDecrease;
         playerData.relative_increase = victimRelativeIncrease;
         playerData.relative_decrease = victimRelativeDecrease;
 
-        double attackerNewRating = (attackerRelativeIncrease + 20) / (attackerRelativeDecrease + 20);
-        double victimNewRating = (victimRelativeIncrease + 20) / (victimRelativeDecrease + 20);
+        double attackerNewRating = (attackerRelativeIncrease) / (attackerRelativeDecrease);
+        double victimNewRating = (victimRelativeIncrease) / (victimRelativeDecrease);
 
         attackerData.rating = attackerNewRating;
         playerData.rating = victimNewRating;

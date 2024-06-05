@@ -17,7 +17,7 @@ public class SavedPlayerData {
         this.deaths = 0;
 
         this.rating = 1;
-        this.relative_increase = 0;
-        this.relative_decrease = 0;
+        this.relative_increase = 10;
+        this.relative_decrease = 10;
     }
 }
