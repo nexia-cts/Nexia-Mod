@@ -23,14 +23,15 @@ import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static com.nexia.core.utilities.time.ServerTime.factoryServer;
-import static com.nexia.core.utilities.time.ServerTime.minecraftServer;
+import static com.nexia.core.utilities.time.ServerTime.*;
 
 public class RatingUtil {
     static ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("ffa", "kits"), new RuntimeWorldConfig()).asWorld();
+    static List<Score> oldScores = null;
 
     public static void calculateRating(ServerPlayer attacker, ServerPlayer player) {
         SavedPlayerData attackerData = PlayerDataManager.get(attacker).savedData;
@@ -88,8 +89,13 @@ public class RatingUtil {
             Scoreboard scoreboard = minecraftServer.getScoreboard();
             Objective ratingObjective = scoreboard.getObjective("Rating");
 
+
             List<Score> playerScores = new java.util.ArrayList<>(scoreboard.getPlayerScores(ratingObjective).stream().toList());
             Collections.reverse(playerScores);
+
+            givePlayersProRank(playerScores, oldScores);
+
+            oldScores = playerScores;
 
             int i = 0;
             for (Score score : playerScores) {
@@ -138,5 +144,20 @@ public class RatingUtil {
 
     public static double calculateRatingDifference(double newRating, double oldRating) {
         return (newRating - oldRating) * 100;
+    }
+
+    private static void givePlayersProRank(List<Score> newScores, List<Score> oldScores) {
+        if (oldScores == null) return;
+
+        int i = 0;
+        for (Score score : newScores) {
+            if (i >= 5) break;
+
+            // TODO for each player give the rank
+
+            i += 1;
+        }
+
+        // TODO check if the player is in the newscores list, if they're not remove their rank
     }
 }
