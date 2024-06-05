@@ -26,11 +26,11 @@ public class FfaKit {
     public static final FfaKit KNIGHT = new FfaKit("Knight", new ItemStack(Items.DIAMOND_SWORD));
     public static final FfaKit POSEIDON = new FfaKit("Poseidon", new ItemStack(Items.TRIDENT));
     public static final FfaKit BRUTE = new FfaKit("Brute", new ItemStack(Items.DIAMOND_AXE));
-    public static final FfaKit ROGUE = new FfaKit("Rogue", new ItemStack(Items.SUGAR));
+    public static final FfaKit NINJA = new FfaKit("Ninja", new ItemStack(Items.SUGAR));
     public static final FfaKit VIKING = new FfaKit("Viking", new ItemStack(Items.SHIELD));
     public static final FfaKit ARCHER = new FfaKit("Archer", new ItemStack(Items.BOW));
     public static final FfaKit HUNTER = new FfaKit("Hunter", new ItemStack(Items.CROSSBOW));
-    public static final FfaKit REAPER = new FfaKit("Reaper", new ItemStack(Items.NETHERITE_HOE));
+    public static final FfaKit FARMER = new FfaKit("Farmer", new ItemStack(Items.DIAMOND_HOE));
     public static final FfaKit RANDOM = new FfaKit("Random", new ItemStack(Items.REDSTONE));
 
     // Keep track of previously selected kits for each player

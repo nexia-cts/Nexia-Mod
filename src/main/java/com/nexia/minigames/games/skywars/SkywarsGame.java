@@ -58,7 +58,7 @@ public class SkywarsGame {
     public static RuntimeWorldConfig config = new RuntimeWorldConfig()
             .setDimensionType(DimensionType.OVERWORLD_LOCATION)
             .setGenerator(getChunkGenerator(Biomes.PLAINS))
-            .setDifficulty(Difficulty.EASY)
+            .setDifficulty(Difficulty.HARD)
             .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
             .setGameRule(GameRules.RULE_MOBGRIEFING, true)
             .setGameRule(GameRules.RULE_WEATHER_CYCLE, false)
@@ -404,12 +404,12 @@ public class SkywarsGame {
                     Component.text("[").color(ChatFormat.lineColor)
                             .append(Component.text("⚠").color(ChatFormat.failColor))
                             .append(Component.text("]").color(ChatFormat.lineColor))
-                            .append(Component.text(" In 1 minute, the closest player to center will win.").color(TextColor.fromHexString("#FFE588")))
+                            .append(Component.text(" In 1 minute, the closest player to center will win. (0, 80, 0)").color(TextColor.fromHexString("#FFE588")))
             );
 
             fPlayer.sendTitle(
                     Title.title(Component.text("⚠").color(ChatFormat.failColor),
-                            Component.text(" In 1 minute, the closest player to center will win.").color(TextColor.fromHexString("#FFE588")))
+                            Component.text(" In 1 minute, the closest player to center will win. (0, 80, 0)").color(TextColor.fromHexString("#FFE588")))
             );
         }
     }
