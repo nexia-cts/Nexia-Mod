@@ -23,6 +23,7 @@ import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -150,16 +151,25 @@ public class RatingUtil {
 
     private static void givePlayersProRank(List<Score> newScores, List<Score> oldScores) {
         if (oldScores == null) return;
+        List<String> playerList = new ArrayList<>();
 
         int i = 0;
         for (Score score : newScores) {
             if (i >= 5) break;
+            playerList.add(score.getOwner());
 
-            // TODO for each player give the rank
+            // TODO give rank
 
             i += 1;
         }
 
-        // TODO check if the player is in the newscores list, if they're not remove their rank
+        int j = 0;
+        for (Score score : oldScores) {
+            if (j >= 5) break;
+            if (!playerList.contains(score.getOwner())) {
+                // TODO remove rank
+            }
+            j += 1;
+        }
     }
 }
