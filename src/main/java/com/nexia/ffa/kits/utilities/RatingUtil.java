@@ -50,6 +50,7 @@ public class RatingUtil {
         double victimUniqueFights = playerData.uniqueOpponents;
         double victimTotalFights = playerData.totalFights;
 
+
 // Calculate win probabilities
         double attackerWinProbability = attackerOldRating / (attackerOldRating + victimOldRating);
         double victimWinProbability = victimOldRating / (attackerOldRating + victimOldRating);
@@ -61,23 +62,29 @@ public class RatingUtil {
 // Update ratings based on win probabilities and diversity factors
         double attackerNewRating;
         double victimNewRating;
+        double attackerRelativeDecrease = attackerData.relative_decrease;
+        double victimRelativeIncrease = attackerData.relative_increase;
 
+        double attackerRelativeIncrease;
         if (attackerWinProbability > 0.5) {
-            attackerNewRating = attackerOldRating + Math.sqrt(victimOldRating / attackerOldRating) + Math.sqrt((double) Math.max(1, victimKillCount) / Math.max(1, killCount));
-            attackerNewRating *= attackerDiversityFactor;
+            attackerRelativeIncrease = attackerData.relative_increase + Math.sqrt(victimOldRating / attackerOldRating) + Math.sqrt((double) Math.max(1, victimKillCount) / Math.max(1, killCount));
+            // attackerRelativeIncrease *= attackerDiversityFactor;
         } else {
-            attackerNewRating = attackerOldRating + 1 / Math.sqrt(attackerOldRating / victimOldRating) + 1 / Math.sqrt((double) Math.max(1, killCount) / Math.max(1, victimKillCount));
-            attackerNewRating *= attackerDiversityFactor;
+            attackerRelativeIncrease = attackerData.relative_increase + 1 / Math.sqrt(attackerOldRating / victimOldRating) + 1 / Math.sqrt((double) Math.max(1, killCount) / Math.max(1, victimKillCount));
+            // attackerRelativeIncrease *= attackerDiversityFactor;
         }
 
+        double victimRelativeDecrease;
         if (victimWinProbability > 0.5) {
-            victimNewRating = victimOldRating + 1 / Math.sqrt(victimOldRating / attackerOldRating) + 1 / Math.sqrt((double) Math.max(1, victimKillCount) / Math.max(1, killCount));
-            victimNewRating *= victimDiversityFactor;
+            victimRelativeDecrease = playerData.relative_decrease + 1 / Math.sqrt(victimOldRating / attackerOldRating) + 1 / Math.sqrt((double) Math.max(1, victimKillCount) / Math.max(1, killCount));
+            // victimRelativeDecrease *= victimDiversityFactor;
         } else {
-            victimNewRating = victimOldRating + Math.sqrt(attackerOldRating / victimOldRating) + Math.sqrt((double) Math.max(1, killCount) / Math.max(1, victimKillCount));
-            victimNewRating *= victimDiversityFactor;
+            victimRelativeDecrease = playerData.relative_decrease + Math.sqrt(attackerOldRating / victimOldRating) + Math.sqrt((double) Math.max(1, killCount) / Math.max(1, victimKillCount));
+            // victimRelativeDecrease *= victimDiversityFactor;
         }
-
+// Rating
+        attackerNewRating = Math.max(2, attackerRelativeIncrease) / Math.max(2, attackerRelativeDecrease);
+        victimNewRating = Math.max(2, victimRelativeIncrease) / Math.max(2, victimRelativeDecrease);
 // Update players' ratings
         attackerData.rating = attackerNewRating;
         playerData.rating = victimNewRating;
