@@ -46,7 +46,7 @@ public class Main implements ModInitializer, FactoryPlugin {
 			punishment.check((ServerPlayer) player);
 		});
 
-		PlayerDetectionEvent.NOSWING.register((player, entity) -> {
+		PlayerDetectionEvent.NO_SWING.register((player, entity) -> {
 			Punishment punishment = PlayerDataManager.get(player).punishment;
 			punishment.noSwingOffences++;
 			punishment.check((ServerPlayer) player);
