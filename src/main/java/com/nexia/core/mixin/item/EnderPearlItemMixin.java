@@ -1,6 +1,5 @@
 package com.nexia.core.mixin.item;
 
-import com.nexia.core.Main;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.ffa.sky.utilities.FfaAreas;
@@ -49,7 +48,7 @@ public class EnderPearlItemMixin extends Item {
 
     @ModifyArg(method = "use", index = 1, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemCooldowns;addCooldown(Lnet/minecraft/world/item/Item;I)V"))
     private int setPearlCooldown(int original) {
-        int time = Main.config.enhancements.enderpearlCooldown;
+        int time = original;
         if (thrower == null) return time;
 
         DuelGameMode duelGameMode = PlayerDataManager.get(thrower).gameMode;
