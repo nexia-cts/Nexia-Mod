@@ -43,25 +43,45 @@ public class RatingUtil {
 
         double attackerOldRating = attackerData.rating;
         double victimOldRating = playerData.rating;
-        double killWeight = Math.sqrt(victimOldRating / attackerOldRating) + Math.sqrt((double) Math.max(1, victimKillCount) / Math.max(1, killCount));
-        double deathWeight = 1 / Math.sqrt(attackerOldRating / victimOldRating) + 1 / Math.sqrt((double) Math.max(1, killCount) / Math.max(1, victimKillCount));
-        killWeight = killWeight * (Math.max(1, attackerData.relative_increase) + Math.max(1, attackerData.relative_decrease)) / 40;
-        deathWeight = deathWeight * (Math.max(1, playerData.relative_increase) + Math.max(1, playerData.relative_decrease)) / 40;
-        double attackerRelativeIncrease = attackerData.relative_increase + killWeight;
-        double attackerRelativeDecrease = attackerData.relative_decrease;
-        double victimRelativeIncrease = playerData.relative_increase;
-        double victimRelativeDecrease = playerData.relative_decrease + deathWeight;
 
-        attackerData.relative_increase = attackerRelativeIncrease;
-        attackerData.relative_decrease = attackerRelativeDecrease;
-        playerData.relative_increase = victimRelativeIncrease;
-        playerData.relative_decrease = victimRelativeDecrease;
+        double attackerUniqueFights = attackerData.uniqueOpponents;
+        double attackerTotalFights = attackerData.totalFights;
 
-        double attackerNewRating = (attackerRelativeIncrease) / (attackerRelativeDecrease);
-        double victimNewRating = (victimRelativeIncrease) / (victimRelativeDecrease);
+        double victimUniqueFights = playerData.uniqueOpponents;
+        double victimTotalFights = playerData.totalFights;
 
+// Calculate win probabilities
+        double attackerWinProbability = attackerOldRating / (attackerOldRating + victimOldRating);
+        double victimWinProbability = victimOldRating / (attackerOldRating + victimOldRating);
+
+// Calculate diversity factors
+        double attackerDiversityFactor = 1 + (attackerUniqueFights / Math.max(1, attackerTotalFights));
+        double victimDiversityFactor = 1 + (victimUniqueFights / Math.max(1, victimTotalFights));
+
+// Update ratings based on win probabilities and diversity factors
+        double attackerNewRating;
+        double victimNewRating;
+
+        if (attackerWinProbability > 0.5) {
+            attackerNewRating = attackerOldRating + Math.sqrt(victimOldRating / attackerOldRating) + Math.sqrt((double) Math.max(1, victimKillCount) / Math.max(1, killCount));
+            attackerNewRating *= attackerDiversityFactor;
+        } else {
+            attackerNewRating = attackerOldRating + 1 / Math.sqrt(attackerOldRating / victimOldRating) + 1 / Math.sqrt((double) Math.max(1, killCount) / Math.max(1, victimKillCount));
+            attackerNewRating *= attackerDiversityFactor;
+        }
+
+        if (victimWinProbability > 0.5) {
+            victimNewRating = victimOldRating + 1 / Math.sqrt(victimOldRating / attackerOldRating) + 1 / Math.sqrt((double) Math.max(1, victimKillCount) / Math.max(1, killCount));
+            victimNewRating *= victimDiversityFactor;
+        } else {
+            victimNewRating = victimOldRating + Math.sqrt(attackerOldRating / victimOldRating) + Math.sqrt((double) Math.max(1, killCount) / Math.max(1, victimKillCount));
+            victimNewRating *= victimDiversityFactor;
+        }
+
+// Update players' ratings
         attackerData.rating = attackerNewRating;
         playerData.rating = victimNewRating;
+
 
         if (attacker.getServer() != null) {
             Scoreboard scoreboard = attacker.getServer().getScoreboard();
