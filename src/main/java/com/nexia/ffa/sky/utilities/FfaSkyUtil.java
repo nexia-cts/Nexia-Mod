@@ -128,6 +128,8 @@ public class FfaSkyUtil {
         // /config/nexia/ffa/sky/inventory/savedInventories/uuid.json
         // /config/nexia/ffa/sky/inventory/default.json
 
+        if (!isFfaPlayer(player)) return;
+
         SavableInventory defaultInventory = null;
         SavableInventory layout = null;
 
