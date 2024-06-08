@@ -125,6 +125,8 @@ public class FfaUhcUtil {
         // /config/nexia/ffa/uhc/inventory/savedInventories/uuid.json
         // /config/nexia/ffa/uhc/inventory/default.json
 
+        if (!isFfaPlayer(player)) return;
+
         SavableInventory defaultInventory = null;
         SavableInventory layout = null;
 

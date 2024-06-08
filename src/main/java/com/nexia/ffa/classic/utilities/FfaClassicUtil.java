@@ -179,6 +179,8 @@ public class FfaClassicUtil {
         // /config/nexia/ffa/classic/inventory/savedInventories/uuid.json
         // /config/nexia/ffa/classic/inventory/default.json
 
+        if (!isFfaPlayer(player)) return;
+
         SavableInventory defaultInventory = null;
         SavableInventory layout = null;
 
