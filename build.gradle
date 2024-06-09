@@ -88,6 +88,7 @@ dependencies {
 	include(modApi("net.notcoded:codelib:${project.codelib_version}+${project.minecraft_version}"))
 
 	include(implementation("net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT"))
+	include(implementation("net.kyori:adventure-text-serializer-gson:4.1.0-SNAPSHOT"))
 
 	// discord shit
 	include(api("net.dv8tion:JDA:${project.jda_version}"))

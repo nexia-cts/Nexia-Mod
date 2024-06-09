@@ -38,6 +38,42 @@ public class ChatFormat {
     public static TextDecoration underlined = TextDecoration.UNDERLINED;
     public static TextDecoration obfuscated = TextDecoration.OBFUSCATED;
 
+    // Minecraft Chat Colours (but better)
+
+    public class Minecraft {
+        public static TextColor dark_red = TextColor.fromHexString("#b51413");
+
+        public static TextColor red = ChatFormat.failColor;
+
+        public static TextColor gold = ChatFormat.goldColor;
+
+        public static TextColor yellow = TextColor.fromHexString("#fff60c");
+
+        public static TextColor dark_green = TextColor.fromHexString("#1b9c19");
+
+        public static TextColor green = ChatFormat.greenColor;
+
+        public static TextColor aqua = TextColor.fromHexString("#28e2ff");
+
+        public static TextColor dark_aqua = TextColor.fromHexString("#399ca9");
+
+        public static TextColor dark_blue = TextColor.fromHexString("#263daa");
+
+        public static TextColor blue = TextColor.fromHexString("#2955ff");
+
+        public static TextColor light_purple = ChatFormat.brandColor2;
+
+        public static TextColor dark_purple = ChatFormat.brandColor1;
+
+        public static TextColor white = TextColor.fromHexString("#ffffff");
+
+        public static TextColor gray = TextColor.fromHexString("#c7c7c7");
+
+        public static TextColor dark_gray = TextColor.fromHexString("#767676");
+
+        public static TextColor black = TextColor.fromHexString("#252525");
+    }
+
     // Text
 
     public static Component nexiaMessage = MiniMessage.get().parse(String.format("<bold><gradient:%s:%s>Nexia</gradient></bold> <color:%s>»</color> ", ChatFormat.brandColor1, ChatFormat.brandColor2, ChatFormat.arrowColor));
