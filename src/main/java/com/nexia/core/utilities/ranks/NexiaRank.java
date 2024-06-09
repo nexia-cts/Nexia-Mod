@@ -92,7 +92,7 @@ public class NexiaRank {
 
     public static final NexiaRank FEMBOY = new NexiaRank(
             "Femboy",
-            "Femboy",
+            "femboy",
             new NexiaPlayerTeam("Femboy", "XBFemboy", "#FA6BC3", "#FDB3EB", ChatFormatting.WHITE)
     );
 
