@@ -81,19 +81,13 @@ public class NexiaRank {
     public static final NexiaRank PRO = new NexiaRank(
             "Pro",
             "pro",
-            new NexiaPlayerTeam("Pro", "ZAPro", "#360033", "#2E1437", ChatFormatting.WHITE)
+            new NexiaPlayerTeam("Pro", "ZAPro", "#A201F9", "#E401ED", ChatFormatting.WHITE)
     );
 
     public static final NexiaRank GOD = new NexiaRank(
             "God",
             "god",
             new NexiaPlayerTeam("God", "XYGod", "#ffb347", "#ffcc33", ChatFormatting.WHITE)
-    );
-
-    public static final NexiaRank FEMBOY = new NexiaRank(
-            "Femboy",
-            "femboy",
-            new NexiaPlayerTeam("Femboy", "XBFemboy", "#FA6BC3", "#FDB3EB", ChatFormatting.WHITE)
     );
 
     public static final NexiaRank SUPPORTER = new NexiaRank(
