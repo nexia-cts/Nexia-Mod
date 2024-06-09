@@ -1,8 +1,10 @@
 package com.nexia.core.games.util;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.nbt.NBTObject;
+import com.combatreforged.factory.api.world.nbt.NBTValue;
+import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.BanHandler;
 import com.nexia.core.utilities.player.GamemodeBanHandler;
@@ -29,21 +31,19 @@ import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.minigames.games.skywars.SkywarsGameMode;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import org.json.simple.JSONObject;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 import static com.nexia.core.utilities.player.BanHandler.getBanTime;
@@ -102,6 +102,15 @@ public class LobbyUtil {
             BwPlayerEvents.leaveInBedWars(minecraftPlayer);
         }
         else if (FfaUtil.isFfaPlayer(minecraftPlayer)) {
+            if((FfaClassicUtil.isFfaPlayer(minecraftPlayer) && !FfaClassicUtil.canGoToSpawn(minecraftPlayer)) ||
+                    (FfaKitsUtil.isFfaPlayer(minecraftPlayer)) && !FfaKitsUtil.canGoToSpawn(minecraftPlayer) ||
+                            (FfaSkyUtil.isFfaPlayer(minecraftPlayer) && !FfaSkyUtil.canGoToSpawn(minecraftPlayer) ||
+                                    (FfaUhcUtil.isFfaPlayer(minecraftPlayer) && !FfaUhcUtil.canGoToSpawn(minecraftPlayer)))) {
+
+                player.sendMessage(Component.text("You must be fully healed to go to spawn!").color(ChatFormat.failColor));
+                return;
+            }
+
             FfaUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
         }
         else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) {
@@ -131,6 +140,16 @@ public class LobbyUtil {
 
     public static void returnToLobby(ServerPlayer minecraftPlayer, boolean tp) {
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+
+        if((FfaClassicUtil.isFfaPlayer(minecraftPlayer) && !FfaClassicUtil.canGoToSpawn(minecraftPlayer)) ||
+                (FfaKitsUtil.isFfaPlayer(minecraftPlayer)) && !FfaKitsUtil.canGoToSpawn(minecraftPlayer) ||
+                (FfaSkyUtil.isFfaPlayer(minecraftPlayer) && !FfaSkyUtil.canGoToSpawn(minecraftPlayer) ||
+                        (FfaUhcUtil.isFfaPlayer(minecraftPlayer) && !FfaUhcUtil.canGoToSpawn(minecraftPlayer)))) {
+
+            player.sendMessage(Component.text("You must be fully healed to go to spawn!").color(ChatFormat.failColor));
+            return;
+        }
+
         for(String tag : LobbyUtil.removedTags) {
             if(player.hasTag(tag)) player.removeTag(tag);
         }
@@ -178,49 +197,68 @@ public class LobbyUtil {
     }
 
     public static void giveItems(ServerPlayer minecraftPlayer) {
-        ItemStack compass = new ItemStack(Items.COMPASS);
-        compass.setHoverName(new TextComponent("§eGamemode Selector"));
-        ItemDisplayUtil.addGlint(compass);
-        ItemDisplayUtil.addLore(compass, "§eRight click §7to open the menu.", 0);
 
-        ItemStack nameTag = new ItemStack(Items.NAME_TAG);
-        nameTag.setHoverName(new TextComponent("§ePrefix Selector"));
-        ItemDisplayUtil.addGlint(nameTag);
-        ItemDisplayUtil.addLore(nameTag, "§eRight click §7to open the menu.", 0);
+        Player factoryPlayer = PlayerUtil.getFactoryPlayer(minecraftPlayer);
 
-        ItemStack queueSword = new ItemStack(Items.IRON_SWORD);
-        queueSword.setHoverName(new TextComponent("§eDuel Sword"));
-        ItemDisplayUtil.addGlint(queueSword);
-        ItemDisplayUtil.addLore(queueSword, "§eRight click §7to queue menu.", 0);
-        ItemDisplayUtil.addLore(queueSword, "§eHit a player §7to duel them.", 1);
+        NBTObject hideAttrubtesNBTObject = NBTObject.create();
+        hideAttrubtesNBTObject.set("HideFlags", NBTValue.of(39));
 
-        ItemStack teamSword = new ItemStack(Items.IRON_AXE);
-        teamSword.setHoverName(new TextComponent("§eTeam Axe"));
-        ItemDisplayUtil.addGlint(teamSword);
-        ItemDisplayUtil.addLore(teamSword, "§eRight click §7to list the team.", 0);
-        ItemDisplayUtil.addLore(teamSword, "§eHit a player §7to invite them to your team.", 1);
+        NBTObject unbreakableNBTObject = hideAttrubtesNBTObject.copy();
+        unbreakableNBTObject.set("Unbreakable", NBTValue.of(1));
 
-        ItemStack customDuelSword = new ItemStack(Items.DIAMOND_SWORD);
-        customDuelSword.setHoverName(new TextComponent("§eCustom Duel Sword"));
-        ItemDisplayUtil.addGlint(customDuelSword);
-        ItemDisplayUtil.addLore(customDuelSword, "§eHit a player §7to duel them in your custom kit.", 0);
+
+        com.combatreforged.factory.api.world.item.ItemStack compass = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.COMPASS);
+        compass.setItemNBT(hideAttrubtesNBTObject.copy());
+        compass.setLore(Component.text("Right click to open the gamemode selector menu.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
+        compass.setDisplayName(Component.text("Gamemode Selector", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
+
+
+        com.combatreforged.factory.api.world.item.ItemStack nameTag = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.NAME_TAG);
+        nameTag.setItemNBT(hideAttrubtesNBTObject.copy());
+        nameTag.setLore(Component.text("Right click to open the prefix selector menu.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
+        nameTag.setDisplayName(Component.text("Prefix Selector", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
+
+
+        com.combatreforged.factory.api.world.item.ItemStack queueSword = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.IRON_SWORD);
+        queueSword.setItemNBT(hideAttrubtesNBTObject.copy());
+        queueSword.setLore(new ArrayList<>(Arrays.asList(
+                Component.text("Right click to open the queue menu.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false),
+                Component.text("Hit a player to duel them.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false)
+        )));
+        queueSword.setDisplayName(Component.text("Duel Sword", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
+
+
+        com.combatreforged.factory.api.world.item.ItemStack teamSword = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.IRON_AXE);
+        teamSword.setItemNBT(hideAttrubtesNBTObject.copy());
+        teamSword.setLore(new ArrayList<>(Arrays.asList(
+                Component.text("Right click to list the team you're in.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false),
+                Component.text("Hit a player to invite them to your team.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false)
+        )));
+        teamSword.setDisplayName(Component.text("Team Axe", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
+
+
+        com.combatreforged.factory.api.world.item.ItemStack customDuelSword = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.DIAMOND_SWORD);
+        customDuelSword.setItemNBT(hideAttrubtesNBTObject.copy());
+        customDuelSword.setLore(Component.text("Hit a player to duel them in your custom kit.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
+        customDuelSword.setDisplayName(Component.text("Custom Duel Sword", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
 
         if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter")) {
-            ItemStack elytra = new ItemStack(Items.ELYTRA);
-            elytra.setHoverName(new TextComponent("§5§lSupporter Elytra"));
-            ItemDisplayUtil.addGlint(elytra);
-            elytra.getOrCreateTag().putBoolean("Unbreakable", true);
-            ItemDisplayUtil.addLore(elytra, "§7Thanks for supporting the server!", 0);
-            elytra.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
-            minecraftPlayer.setItemSlot(EquipmentSlot.CHEST, elytra);
+
+            com.combatreforged.factory.api.world.item.ItemStack elytra = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.ELYTRA);
+            elytra.setItemNBT(unbreakableNBTObject.copy());
+            elytra.setLore(Component.text("Thanks for supporting the server!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
+            elytra.setDisplayName(Component.text("Supporter Elytra", ChatFormat.brandColor2).decorate(ChatFormat.bold).decoration(ChatFormat.italic, false));
+
+            factoryPlayer.getInventory().setItemStack(38, elytra);
         }
 
 
-        minecraftPlayer.setSlot(0, customDuelSword); // 1st slot
-        minecraftPlayer.setSlot(4, compass); //middle slot
-        minecraftPlayer.setSlot(3, nameTag); //left
-        minecraftPlayer.setSlot(5, queueSword); //right
-        minecraftPlayer.setSlot(8, teamSword); // like right right not right
+        factoryPlayer.getInventory().setItemStack(0, customDuelSword); // 1st slot
+        factoryPlayer.getInventory().setItemStack(4, compass); // middle slot
+        factoryPlayer.getInventory().setItemStack(3, nameTag); // left
+        factoryPlayer.getInventory().setItemStack(5, queueSword); // right
+        factoryPlayer.getInventory().setItemStack(8, teamSword); // like right right not right
+
         ItemStackUtil.sendInventoryRefreshPacket(minecraftPlayer);
     }
 
