@@ -1,6 +1,7 @@
 package com.nexia.core.gui.ffa;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.kits.FfaKit;
@@ -17,6 +18,7 @@ import net.minecraft.world.item.Items;
 
 public class KitGUI extends SimpleGui {
     static final TextComponent title = new TextComponent("Kits Menu");
+
     public KitGUI(MenuType<?> type, ServerPlayer player, boolean includePlayer) {
         super(type, player, includePlayer);
     }
@@ -48,7 +50,7 @@ public class KitGUI extends SimpleGui {
 
             ItemStack item = ffaKits.item;
 
-            item.setHoverName(new TextComponent("§f" + StringUtil.capitalize(ffaKits.id.replaceAll("_", " "))));
+            item.setHoverName(ObjectMappings.convertComponent(Component.text(StringUtil.capitalize(ffaKits.id.replaceAll("_", " ")), ChatFormat.Minecraft.white)));
 
             this.setSlot(slot, item);
 
