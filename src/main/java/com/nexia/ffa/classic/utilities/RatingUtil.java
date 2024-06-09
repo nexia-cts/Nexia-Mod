@@ -51,7 +51,7 @@ public class RatingUtil {
         double attackerNewRating;
         double victimNewRating;
         double attackerRelativeDecrease = attackerData.relative_decrease;
-        double victimRelativeIncrease = attackerData.relative_increase;
+        double victimRelativeIncrease = playerData.relative_increase;
 
         double attackerRelativeIncrease;
         attackerRelativeIncrease = attackerData.relative_increase + Math.sqrt(victimOldRating / attackerOldRating) + Math.sqrt((double) Math.max(1, victimKillCount) / Math.max(1, killCount));
