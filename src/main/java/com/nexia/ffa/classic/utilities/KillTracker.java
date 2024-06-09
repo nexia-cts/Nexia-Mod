@@ -1,4 +1,4 @@
-package com.nexia.ffa.kits.utilities;
+package com.nexia.ffa.classic.utilities;
 
 import java.util.HashMap;
 import java.util.HashSet;

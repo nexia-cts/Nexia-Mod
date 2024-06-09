@@ -1,4 +1,4 @@
-package com.nexia.ffa.kits.utilities;
+package com.nexia.ffa.classic.utilities;
 
 import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.Entity;
@@ -6,8 +6,8 @@ import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.ffa.kits.utilities.player.PlayerDataManager;
-import com.nexia.ffa.kits.utilities.player.SavedPlayerData;
+import com.nexia.ffa.classic.utilities.player.PlayerDataManager;
+import com.nexia.ffa.classic.utilities.player.SavedPlayerData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -24,14 +24,13 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import static com.nexia.core.utilities.time.ServerTime.*;
 
 public class RatingUtil {
-    static ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("ffa", "kits"), new RuntimeWorldConfig()).asWorld();
+    static ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("ffa", "classic"), new RuntimeWorldConfig()).asWorld();
     static List<Score> oldScores = null;
 
     public static void calculateRating(ServerPlayer attacker, ServerPlayer player) {
@@ -44,22 +43,11 @@ public class RatingUtil {
         double attackerOldRating = attackerData.rating;
         double victimOldRating = playerData.rating;
 
-        double attackerUniqueFights = attackerData.uniqueOpponents;
-        double attackerTotalFights = attackerData.totalFights;
-
-        double victimUniqueFights = playerData.uniqueOpponents;
-        double victimTotalFights = playerData.totalFights;
-
-
-// Calculate win probabilities
+        // Calculate win probabilities
         double attackerWinProbability = attackerOldRating / (attackerOldRating + victimOldRating);
         double victimWinProbability = victimOldRating / (attackerOldRating + victimOldRating);
 
-// Calculate diversity factors
-        double attackerDiversityFactor = 1 + (attackerUniqueFights / Math.max(1, attackerTotalFights));
-        double victimDiversityFactor = 1 + (victimUniqueFights / Math.max(1, victimTotalFights));
-
-// Update ratings based on win probabilities and diversity factors
+        // Update ratings based on win probabilities and diversity factors
         double attackerNewRating;
         double victimNewRating;
         double attackerRelativeDecrease = attackerData.relative_decrease;
@@ -82,10 +70,10 @@ public class RatingUtil {
             victimRelativeDecrease = playerData.relative_decrease + Math.sqrt(attackerOldRating / victimOldRating) + Math.sqrt((double) Math.max(1, killCount) / Math.max(1, victimKillCount));
             // victimRelativeDecrease *= victimDiversityFactor;
         }
-// Rating
+        // Rating
         attackerNewRating = (attackerRelativeIncrease + 2 *(2 / (2 + attackerRelativeIncrease))) / (attackerRelativeDecrease + 2 * (2 / (2 + attackerRelativeDecrease)));
         victimNewRating = (victimRelativeIncrease + 2 *(2 / (2 + victimRelativeIncrease))) / (victimRelativeDecrease + 2 * (2 / (2 + victimRelativeDecrease)));
-// Update players' ratings
+        // Update players' ratings
         attackerData.rating = attackerNewRating;
         playerData.rating = victimNewRating;
 

@@ -97,13 +97,19 @@ public class FfaClassicUtil {
         });
 
         if(player.getTags().contains("bot") || attacker.getTags().contains("bot")) return;
-
         SavedPlayerData data = PlayerDataManager.get(attacker).savedData;
+
+        RatingUtil.calculateRating(attacker, player);
+        RatingUtil.updateLeaderboard();
+
         data.killstreak++;
         if(data.killstreak > data.bestKillstreak){
             data.bestKillstreak = data.killstreak;
         }
         data.kills++;
+
+        // Increment kill count for attacker
+        KillTracker.incrementKillCount(attacker.getUUID(), player.getUUID());
 
         if(data.killstreak % 5 == 0){
             for(ServerPlayer serverPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()){
@@ -162,7 +168,26 @@ public class FfaClassicUtil {
             Component component = FfaUtil.returnClassicDeathMessage(minecraftPlayer, attacker);
             if(component != null) msg = component;
 
+            double attackerOldRating = PlayerDataManager.get(attacker).savedData.rating;
+            double victimOldRating = PlayerDataManager.get(minecraftPlayer).savedData.rating;
+
             calculateKill(attacker, minecraftPlayer);
+
+            double attackerNewRating = PlayerDataManager.get(attacker).savedData.rating;
+            double victimNewRating = PlayerDataManager.get(minecraftPlayer).savedData.rating;
+
+            msg = msg.append(Component.text(" (")
+                            .color(ChatFormat.chatColor2))
+                    .append(Component.text(String.format("%.2f", RatingUtil.calculateRatingDifference(victimNewRating, victimOldRating)))
+                            .color(ChatFormat.failColor))
+                    .append(Component.text(" / ")
+                            .color(ChatFormat.chatColor2))
+                    .append(Component.text("+")
+                            .color(ChatFormat.greenColor))
+                    .append(Component.text(String.format("%.2f", RatingUtil.calculateRatingDifference(attackerNewRating, attackerOldRating)))
+                            .color(ChatFormat.greenColor))
+                    .append(Component.text(")")
+                            .color(ChatFormat.chatColor2));
         }
 
         for (Player player : ServerTime.factoryServer.getPlayers()) {
