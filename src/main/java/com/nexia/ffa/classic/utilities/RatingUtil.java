@@ -54,26 +54,15 @@ public class RatingUtil {
         double victimRelativeIncrease = attackerData.relative_increase;
 
         double attackerRelativeIncrease;
-        if (attackerWinProbability < 0.5) {
-            attackerRelativeIncrease = attackerData.relative_increase + Math.sqrt(victimOldRating / attackerOldRating) + Math.sqrt((double) Math.max(1, victimKillCount) / Math.max(1, killCount));
-            // attackerRelativeIncrease *= attackerDiversityFactor;
-        } else {
-            attackerRelativeIncrease = attackerData.relative_increase + 1 / Math.sqrt(attackerOldRating / victimOldRating) + 1 / Math.sqrt((double) Math.max(1, killCount) / Math.max(1, victimKillCount));
-            // attackerRelativeIncrease *= attackerDiversityFactor;
-        }
+        attackerRelativeIncrease = attackerData.relative_increase + Math.sqrt(victimOldRating / attackerOldRating) + Math.sqrt((double) Math.max(1, victimKillCount) / Math.max(1, killCount));
 
         double victimRelativeDecrease;
-        if (victimWinProbability < 0.5) {
-            victimRelativeDecrease = playerData.relative_decrease + 1 / Math.sqrt(victimOldRating / attackerOldRating) + 1 / Math.sqrt((double) Math.max(1, victimKillCount) / Math.max(1, killCount));
-            // victimRelativeDecrease *= victimDiversityFactor;
-        } else {
-            victimRelativeDecrease = playerData.relative_decrease + Math.sqrt(attackerOldRating / victimOldRating) + Math.sqrt((double) Math.max(1, killCount) / Math.max(1, victimKillCount));
-            // victimRelativeDecrease *= victimDiversityFactor;
-        }
+        victimRelativeDecrease = playerData.relative_decrease + 1 / Math.sqrt(attackerOldRating / victimOldRating) + 1 / Math.sqrt((double) Math.max(1, killCount) / Math.max(1, victimKillCount));
+
         // Rating
-        attackerNewRating = (attackerRelativeIncrease + 2) / (attackerRelativeDecrease + 2);
-        victimNewRating = (victimRelativeIncrease + 2) / (victimRelativeDecrease + 2);
-        // Update players' ratings
+        attackerNewRating = (attackerRelativeIncrease + 2 * (2 / (2 + attackerRelativeIncrease))) / (attackerRelativeDecrease + 2 * (2 / (2 + attackerRelativeDecrease)));
+        victimNewRating = (victimRelativeIncrease + 2 * (2 / (2 + victimRelativeIncrease))) / (victimRelativeDecrease + 2 * (2 / (2 + victimRelativeDecrease)));
+        // Update Rating
         attackerData.rating = attackerNewRating;
         playerData.rating = victimNewRating;
 
