@@ -71,8 +71,8 @@ public class RatingUtil {
             // victimRelativeDecrease *= victimDiversityFactor;
         }
         // Rating
-        attackerNewRating = (attackerRelativeIncrease + 2 *(2 / (2 + attackerRelativeIncrease))) / (attackerRelativeDecrease + 2 * (2 / (2 + attackerRelativeDecrease)));
-        victimNewRating = (victimRelativeIncrease + 2 *(2 / (2 + victimRelativeIncrease))) / (victimRelativeDecrease + 2 * (2 / (2 + victimRelativeDecrease)));
+        attackerNewRating = (attackerRelativeIncrease + 2 * Math.sqrt((2 / (2 + attackerRelativeIncrease))) / (attackerRelativeDecrease + 2 * (2 / (2 + attackerRelativeDecrease))));
+        victimNewRating = (victimRelativeIncrease + 2 * Math.sqrt((2 / (2 + victimRelativeIncrease))) / (victimRelativeDecrease + 2 * (2 / (2 + victimRelativeDecrease))));
         // Update players' ratings
         attackerData.rating = attackerNewRating;
         playerData.rating = victimNewRating;
