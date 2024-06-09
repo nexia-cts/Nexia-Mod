@@ -1,5 +1,7 @@
 package com.nexia.core.gui.duels;
 
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
@@ -8,7 +10,6 @@ import com.nexia.minigames.games.duels.map.DuelsMap;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -54,7 +55,7 @@ public class CustomDuelGUI extends SimpleGui {
             airSlots++;
         }
         for(DuelsMap map : DuelsMap.duelsMaps){
-            this.setSlot(slot, map.item.setHoverName(new TextComponent("§f" + map.id)));
+            this.setSlot(slot, map.item.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text(map.id, ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false))));
             slot++;
         }
     }
@@ -82,7 +83,7 @@ public class CustomDuelGUI extends SimpleGui {
         //this.setSlot(4, HeadFunctions.getPlayerHead(otherp.getScoreboardName(), 1));
 
         ItemStack playerHead = PlayerUtil.getPlayerHead(otherp.getUUID());
-        playerHead.setHoverName(new TextComponent(otherp.getScoreboardName()).withStyle(ChatFormatting.BOLD));
+        playerHead.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text(otherp.getScoreboardName(), ChatFormat.Minecraft.yellow).decoration(ChatFormat.bold, true).decoration(ChatFormat.italic, false)));
 
         this.setSlot(4, playerHead);
 
@@ -96,10 +97,15 @@ public class CustomDuelGUI extends SimpleGui {
             ItemDisplayUtil.removeLore(item, 0);
             ItemDisplayUtil.removeLore(item, 1);
 
-            ItemDisplayUtil.addLore(item, "§eUse §e§l/kiteditor edit §eto edit/create a custom kit!", 0);
+            ItemDisplayUtil.addLore(item,
+                    net.kyori.adventure.text.Component.text("Use ", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false)
+                            .append(net.kyori.adventure.text.Component.text("/kiteditor edit", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false).decoration(ChatFormat.bold, true))
+                            .append(net.kyori.adventure.text.Component.text(" to edit/create a custom kit!", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false))
+                    , 0);
+
             ItemDisplayUtil.addGlint(item);
 
-            item.setHoverName(new TextComponent("§fNo kits!"));
+            item.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("No kits!", ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false)));
 
             this.setSlot(slot, item);
             return;
@@ -119,20 +125,25 @@ public class CustomDuelGUI extends SimpleGui {
             ItemDisplayUtil.removeLore(item, 0);
             ItemDisplayUtil.removeLore(item, 1);
 
+            net.kyori.adventure.text.Component infoMsg = net.kyori.adventure.text.Component.text("INFO: ", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false).decoration(ChatFormat.bold, true)
+                    .append(net.kyori.adventure.text.Component.text("This kit is a ", ChatFormat.Minecraft.yellow)).decoration(ChatFormat.italic, false).decoration(ChatFormat.bold, false)
+                    .append(net.kyori.adventure.text.Component.text("per-custom ", ChatFormat.Minecraft.yellow)).decoration(ChatFormat.italic, false).decoration(ChatFormat.bold, true)
+                    .append(net.kyori.adventure.text.Component.text("kit.", ChatFormat.Minecraft.yellow)).decoration(ChatFormat.italic, false).decoration(ChatFormat.bold, false);
+
             if(inventory.equalsIgnoreCase("vanilla")) {
                 item = new ItemStack(Items.RESPAWN_ANCHOR);
 
-                ItemDisplayUtil.addLore(item, "§e§lINFO: §eThis kit is a §e§lper-custom §ekit.", 0);
+                ItemDisplayUtil.addLore(item, infoMsg, 0);
             }
             else if(inventory.equalsIgnoreCase("smp")) {
                 item = new ItemStack(Items.DIAMOND_CHESTPLATE);
 
-                ItemDisplayUtil.addLore(item, "§e§lINFO: §eThis kit is a §e§lper-custom §ekit.", 0);
+                ItemDisplayUtil.addLore(item, infoMsg, 0);
             }
 
             ItemDisplayUtil.addGlint(item);
 
-            item.setHoverName(new TextComponent("§f" + inventory.toUpperCase().replaceAll("_", " ")));
+            item.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text(inventory.toUpperCase().replaceAll("_", " "), ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false)));
 
             this.setSlot(slot, item);
             slot++;
@@ -145,12 +156,14 @@ public class CustomDuelGUI extends SimpleGui {
             ItemStack itemStack = element.getItemStack();
             Component name = itemStack.getHoverName();
 
+            System.out.println(name.getString());
+
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR && itemStack.getItem() != Items.PLAYER_HEAD && itemStack.getItem() != Items.COMMAND_BLOCK){
-                if(InventoryUtil.getListOfInventories("duels/custom/" + this.player.getStringUUID()).contains(name.getString().toLowerCase().substring(2).replaceAll(" ", "_"))){
-                    this.kit = name.getString().toLowerCase().substring(2).replaceAll(" ", "_");
+                if(InventoryUtil.getListOfInventories("duels/custom/" + this.player.getStringUUID()).contains(name.getString().toLowerCase().replaceAll(" ", "_"))){
+                    this.kit = name.getString().toLowerCase().replaceAll(" ", "_");
                     setMapLayout();
                 } else {
-                    GamemodeHandler.customChallengePlayer(this.player, this.other, this.kit, DuelsMap.identifyMap(name.getString().substring(2)));
+                    GamemodeHandler.customChallengePlayer(this.player, this.other, this.kit, DuelsMap.identifyMap(name.getString()));
                     this.close();
                 }
 
