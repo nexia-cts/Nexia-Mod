@@ -30,39 +30,34 @@ import java.util.List;
 import static com.nexia.core.utilities.time.ServerTime.*;
 
 public class RatingUtil {
-    static ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("ffa", "classic"), new RuntimeWorldConfig()).asWorld();
-    static List<Score> oldScores = null;
+    static ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("ffa", "classic"), new RuntimeWorldConfig()).asWorld();    static List<Score> oldScores = null;
 
     public static void calculateRating(ServerPlayer attacker, ServerPlayer player) {
         SavedPlayerData attackerData = PlayerDataManager.get(attacker).savedData;
         SavedPlayerData playerData = PlayerDataManager.get(player).savedData;
 
-        // int killCount = KillTracker.getKillCount(attacker.getUUID(), player.getUUID());
-        // int victimKillCount = KillTracker.getKillCount(player.getUUID(), attacker.getUUID());
+        int killCount = KillTracker.getKillCount(attacker.getUUID(), player.getUUID());
+        int victimKillCount = KillTracker.getKillCount(player.getUUID(), attacker.getUUID());
 
         double attackerOldRating = attackerData.rating;
         double victimOldRating = playerData.rating;
 
-        // Calculate win probabilities
-        // double attackerWinProbability = attackerOldRating / (attackerOldRating + victimOldRating);
-        // double victimWinProbability = victimOldRating / (attackerOldRating + victimOldRating);
-
-        // Update ratings based on win probabilities and diversity factors
-        double attackerNewRating;
-        double victimNewRating;
+        double attackerRelativeIncrease = attackerData.relative_increase + Math.sqrt(victimOldRating / attackerOldRating) + Math.sqrt((double) (victimKillCount + 1) / (killCount + 1));
         double attackerRelativeDecrease = attackerData.relative_decrease;
         double victimRelativeIncrease = playerData.relative_increase;
+        double victimRelativeDecrease = playerData.relative_decrease + 1 / Math.sqrt(attackerOldRating / victimOldRating) + 1 / Math.sqrt((double) (killCount + 1) / (victimKillCount + 1));
 
-        double attackerRelativeIncrease = attackerData.relative_increase + 1;
+        attackerData.relative_increase = attackerRelativeIncrease;
+        attackerData.relative_decrease = attackerRelativeDecrease;
+        playerData.relative_increase = victimRelativeIncrease;
+        playerData.relative_decrease = victimRelativeDecrease;
 
-        double victimRelativeDecrease = playerData.relative_decrease + 1;
+        double attackerNewRating = (attackerRelativeIncrease + 2) / (attackerRelativeDecrease + 2);
+        double victimNewRating = (victimRelativeIncrease + 2) / (victimRelativeDecrease + 2);
 
-        // Rating
-        attackerNewRating = (attackerRelativeIncrease + 1) / (attackerRelativeDecrease + 1);
-        victimNewRating = (victimRelativeIncrease + 1) / (victimRelativeDecrease + 1);
-        // Update Rating
         attackerData.rating = attackerNewRating;
         playerData.rating = victimNewRating;
+
 
 
         if (attacker.getServer() != null) {
