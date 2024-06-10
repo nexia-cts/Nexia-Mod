@@ -53,9 +53,9 @@ public class RatingUtil {
         double attackerRelativeDecrease = attackerData.relative_decrease;
         double victimRelativeIncrease = playerData.relative_increase;
 
-        double attackerRelativeIncrease = attackerData.relative_increase + Math.sqrt(victimOldRating / attackerOldRating);
+        double attackerRelativeIncrease = attackerData.relative_increase + 1;
 
-        double victimRelativeDecrease = playerData.relative_decrease + (1 / Math.sqrt(attackerOldRating / victimOldRating));
+        double victimRelativeDecrease = playerData.relative_decrease + 1;
 
         // Rating
         attackerNewRating = (attackerRelativeIncrease + 1) / (attackerRelativeDecrease + 1);
