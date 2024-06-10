@@ -37,15 +37,15 @@ public class RatingUtil {
         SavedPlayerData attackerData = PlayerDataManager.get(attacker).savedData;
         SavedPlayerData playerData = PlayerDataManager.get(player).savedData;
 
-        int killCount = KillTracker.getKillCount(attacker.getUUID(), player.getUUID());
-        int victimKillCount = KillTracker.getKillCount(player.getUUID(), attacker.getUUID());
+        // int killCount = KillTracker.getKillCount(attacker.getUUID(), player.getUUID());
+        // int victimKillCount = KillTracker.getKillCount(player.getUUID(), attacker.getUUID());
 
         double attackerOldRating = attackerData.rating;
         double victimOldRating = playerData.rating;
 
         // Calculate win probabilities
-        double attackerWinProbability = attackerOldRating / (attackerOldRating + victimOldRating);
-        double victimWinProbability = victimOldRating / (attackerOldRating + victimOldRating);
+        // double attackerWinProbability = attackerOldRating / (attackerOldRating + victimOldRating);
+        // double victimWinProbability = victimOldRating / (attackerOldRating + victimOldRating);
 
         // Update ratings based on win probabilities and diversity factors
         double attackerNewRating;
@@ -53,15 +53,13 @@ public class RatingUtil {
         double attackerRelativeDecrease = attackerData.relative_decrease;
         double victimRelativeIncrease = playerData.relative_increase;
 
-        double attackerRelativeIncrease;
-        attackerRelativeIncrease = attackerData.relative_increase + Math.sqrt(victimOldRating / attackerOldRating) + Math.sqrt((double) Math.max(1, victimKillCount) / Math.max(1, killCount));
+        double attackerRelativeIncrease = attackerData.relative_increase + Math.sqrt(victimOldRating / attackerOldRating);
 
-        double victimRelativeDecrease;
-        victimRelativeDecrease = playerData.relative_decrease + 1 / Math.sqrt(attackerOldRating / victimOldRating) + 1 / Math.sqrt((double) Math.max(1, killCount) / Math.max(1, victimKillCount));
+        double victimRelativeDecrease = playerData.relative_decrease + (1 / Math.sqrt(attackerOldRating / victimOldRating));
 
         // Rating
-        attackerNewRating = (attackerRelativeIncrease + 2 * (2 / (2 + attackerRelativeIncrease))) / (attackerRelativeDecrease + 2 * (2 / (2 + attackerRelativeDecrease)));
-        victimNewRating = (victimRelativeIncrease + 2 * (2 / (2 + victimRelativeIncrease))) / (victimRelativeDecrease + 2 * (2 / (2 + victimRelativeDecrease)));
+        attackerNewRating = (attackerRelativeIncrease + 1) / (attackerRelativeDecrease + 1);
+        victimNewRating = (victimRelativeIncrease + 1) / (victimRelativeDecrease + 1);
         // Update Rating
         attackerData.rating = attackerNewRating;
         playerData.rating = victimNewRating;
