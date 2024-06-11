@@ -72,7 +72,7 @@ public class KitGUI extends SimpleGui {
             net.minecraft.network.chat.Component name = itemStack.getHoverName();
 
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
-                String modifiedName = name.getString().substring(2).toLowerCase();
+                String modifiedName = name.getString().toLowerCase();
                 giveKit(this.player, modifiedName);
                 this.close();
             }
