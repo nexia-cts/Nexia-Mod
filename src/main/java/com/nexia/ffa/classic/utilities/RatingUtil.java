@@ -36,27 +36,19 @@ public class RatingUtil {
         SavedPlayerData attackerData = PlayerDataManager.get(attacker).savedData;
         SavedPlayerData playerData = PlayerDataManager.get(player).savedData;
 
-        int killCount = KillTracker.getKillCount(attacker.getUUID(), player.getUUID());
-        int victimKillCount = KillTracker.getKillCount(player.getUUID(), attacker.getUUID());
+        double A = attackerData.rating;
+        double B = playerData.rating;
 
-        double attackerOldRating = attackerData.rating;
-        double victimOldRating = playerData.rating;
+        double expected = 1 / (1 + Math.pow(10, (B - A) / 400));
 
-        double attackerRelativeIncrease = attackerData.relative_increase + Math.sqrt(victimOldRating / attackerOldRating) + Math.sqrt((double) (victimKillCount + 1) / (killCount + 1));
-        double attackerRelativeDecrease = attackerData.relative_decrease;
-        double victimRelativeIncrease = playerData.relative_increase;
-        double victimRelativeDecrease = playerData.relative_decrease + 1 / Math.sqrt(attackerOldRating / victimOldRating) + 1 / Math.sqrt((double) (killCount + 1) / (victimKillCount + 1));
+        double ratingChange = (int) (50 * (1 - expected));
 
-        attackerData.relative_increase = attackerRelativeIncrease;
-        attackerData.relative_decrease = attackerRelativeDecrease;
-        playerData.relative_increase = victimRelativeIncrease;
-        playerData.relative_decrease = victimRelativeDecrease;
+        double attackerNewRating = A + ratingChange;
+        double victimNewRating = B - ratingChange;
 
-        double attackerNewRating = (attackerRelativeIncrease + 2) / (attackerRelativeDecrease + 2);
-        double victimNewRating = (victimRelativeIncrease + 2) / (victimRelativeDecrease + 2);
 
-        attackerData.rating = attackerNewRating;
-        playerData.rating = victimNewRating;
+        attackerData.rating = Math.max(100, attackerNewRating);
+        playerData.rating =  Math.max(100, victimNewRating);
 
 
 
@@ -66,8 +58,8 @@ public class RatingUtil {
             if (ratingObjective == null) {
                 ratingObjective = scoreboard.addObjective("Rating", ObjectiveCriteria.DUMMY, new TextComponent("Rating"), ObjectiveCriteria.RenderType.INTEGER);
             }
-            scoreboard.getOrCreatePlayerScore(attacker.getScoreboardName(), ratingObjective).setScore((int) Math.round(attackerNewRating * 100));
-            scoreboard.getOrCreatePlayerScore(player.getScoreboardName(), ratingObjective).setScore((int) Math.round(victimNewRating * 100));
+            scoreboard.getOrCreatePlayerScore(attacker.getScoreboardName(), ratingObjective).setScore((int) Math.round(attackerNewRating));
+            scoreboard.getOrCreatePlayerScore(player.getScoreboardName(), ratingObjective).setScore((int) Math.round(victimNewRating));
         }
 
     }
