@@ -47,7 +47,7 @@ public class RatingUtil {
 
         double expected = 1 / (1 + Math.pow(10, (B - A) / 400));
 
-        double ratingChange = (int) (1000 * (1 - expected)) / (10 + total);
+        double ratingChange = (int) (200 * (1 - expected)) / (10 + total);
 
         double attackerNewRating = A + ratingChange;
         double victimNewRating = B - ratingChange;
