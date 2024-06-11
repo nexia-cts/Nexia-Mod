@@ -155,17 +155,7 @@ public class RatingUtil {
 
             Player player = factoryServer.getPlayer(score.getOwner());
             if (player instanceof ServerPlayer serverPlayer) {
-                if (Permissions.check(serverPlayer, "nexia.prefix.pro")) {
-                    if (Permissions.check(serverPlayer, "nexia.rank")) {
-                        factoryServer.runCommand("/staffprefix set " + serverPlayer.getScoreboardName() + " default");
-                        factoryServer.runCommand("/staffprefix remove " + serverPlayer.getScoreboardName() + " pro");
-                    }
-                    factoryServer.runCommand("/rank " + serverPlayer.getScoreboardName() + " default", 4, false);
-                }
-
-                if (!Permissions.check(serverPlayer, "nexia.prefix.pro")) {
-                    factoryServer.runCommand("/staffprefix add " + serverPlayer.getScoreboardName() + " pro", 4, false);
-                }
+                factoryServer.runCommand("/staffprefix add " + serverPlayer.getScoreboardName() + " pro", 4, false);
             }
 
             i += 1;
@@ -173,20 +163,8 @@ public class RatingUtil {
 
         if (!oldPlayerList.isEmpty()) {
             for (Player player : oldPlayerList) {
-                if (playerList.contains(player)) continue;
-
                 if (player instanceof ServerPlayer serverPlayer) {
-                    if (Permissions.check(serverPlayer, "nexia.prefix.pro")) {
-                        if (Permissions.check(serverPlayer, "nexia.rank")) {
-                            factoryServer.runCommand("/staffprefix set " + serverPlayer.getScoreboardName() + " default");
-                            factoryServer.runCommand("/staffprefix remove " + serverPlayer.getScoreboardName() + " pro");
-                        }
-                        factoryServer.runCommand("/rank " + serverPlayer.getScoreboardName() + " default", 4, false);
-                    }
-
-                    if (!Permissions.check(serverPlayer, "nexia.prefix.pro")) {
-                        factoryServer.runCommand("/staffprefix remove " + serverPlayer.getScoreboardName() + " pro", 4, false);
-                    }
+                    factoryServer.runCommand("/staffprefix remove " + serverPlayer.getScoreboardName() + " pro", 4, false);
                 }
             }
             oldPlayerList = playerList;
