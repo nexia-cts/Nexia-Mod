@@ -46,14 +46,16 @@ public class RatingUtil {
         double attackerNewRating = A + ratingChange;
         double victimNewRating = B - ratingChange;
 
+        attackerData.rating = attackerNewRating;
+        playerData.rating = victimNewRating;
+
         double expectedA = 1 / (1 + Math.pow(10, (0 - attackerNewRating) / 400));
         double expectedB = 1 / (1 + Math.pow(10, (0 - victimNewRating) / 400));
 
         attackerNewRating = expectedA / (1-expectedA);
         victimNewRating = expectedB / (1-expectedB);
 
-        attackerData.rating = attackerNewRating;
-        playerData.rating = victimNewRating;
+
 
         if (attacker.getServer() != null) {
             Scoreboard scoreboard = attacker.getServer().getScoreboard();
