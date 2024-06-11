@@ -178,13 +178,13 @@ public class FfaClassicUtil {
 
             msg = msg.append(Component.text(" (")
                             .color(ChatFormat.chatColor2))
-                    .append(Component.text(String.format("%.2f", RatingUtil.calculateRatingDifference(victimNewRating, victimOldRating)))
+                    .append(Component.text(String.format("%.2f", RatingUtil.calculateRatingDifference(victimNewRating, victimOldRating) * 100))
                             .color(ChatFormat.failColor))
                     .append(Component.text(" / ")
                             .color(ChatFormat.chatColor2))
                     .append(Component.text("+")
                             .color(ChatFormat.greenColor))
-                    .append(Component.text(String.format("%.2f", RatingUtil.calculateRatingDifference(attackerNewRating, attackerOldRating)))
+                    .append(Component.text(String.format("%.2f", RatingUtil.calculateRatingDifference(attackerNewRating, attackerOldRating) * 100))
                             .color(ChatFormat.greenColor))
                     .append(Component.text(")")
                             .color(ChatFormat.chatColor2));
