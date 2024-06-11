@@ -8,6 +8,7 @@ import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.classic.utilities.player.PlayerDataManager;
 import com.nexia.ffa.classic.utilities.player.SavedPlayerData;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -30,7 +31,8 @@ import java.util.List;
 import static com.nexia.core.utilities.time.ServerTime.*;
 
 public class RatingUtil {
-    static ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("ffa", "classic"), new RuntimeWorldConfig()).asWorld();    static List<Score> oldScores = null;
+    static ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("ffa", "classic"), new RuntimeWorldConfig()).asWorld();
+    static List<Player> oldPlayerList = new ArrayList<>();
 
     public static void calculateRating(ServerPlayer attacker, ServerPlayer player) {
         SavedPlayerData attackerData = PlayerDataManager.get(attacker).savedData;
@@ -94,9 +96,7 @@ public class RatingUtil {
             List<Score> playerScores = new java.util.ArrayList<>(scoreboard.getPlayerScores(ratingObjective).stream().toList());
             Collections.reverse(playerScores);
 
-            givePlayersProRank(playerScores, oldScores);
-
-            oldScores = playerScores;
+            givePlayersRank(playerScores);
 
             int i = 0;
             for (Score score : playerScores) {
@@ -129,7 +129,6 @@ public class RatingUtil {
             createArmorStand(level, x, y - 1.25, z, ObjectMappings.convertComponent(Component.text("#8 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[7]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[7]).color(TextColor.fromHexString("#F1BA41"))))));
             createArmorStand(level, x, y - 1.5, z, ObjectMappings.convertComponent(Component.text("#9 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[8]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[8]).color(TextColor.fromHexString("#F1BA41"))))));
             createArmorStand(level, x, y - 1.75, z, ObjectMappings.convertComponent(Component.text("#10 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[9]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[9]).color(TextColor.fromHexString("#F1BA41"))))));
-
         }
     }
 
@@ -147,27 +146,52 @@ public class RatingUtil {
         return (newRating - oldRating);
     }
 
-    private static void givePlayersProRank(List<Score> newScores, List<Score> oldScores) {
-        if (oldScores == null) return;
-        List<String> playerList = new ArrayList<>();
+    private static void givePlayersRank(List<Score> scores) {
+        List<Player> playerList = new ArrayList<>();
 
         int i = 0;
-        for (Score score : newScores) {
+        for (Score score : scores) {
             if (i >= 5) break;
-            playerList.add(score.getOwner());
 
-            // TODO give rank
+            Player player = factoryServer.getPlayer(score.getOwner());
+            if (player instanceof ServerPlayer serverPlayer) {
+                if (Permissions.check(serverPlayer, "nexia.prefix.pro")) {
+                    if (Permissions.check(serverPlayer, "nexia.rank")) {
+                        factoryServer.runCommand("/staffprefix set " + serverPlayer.getScoreboardName() + " default");
+                        factoryServer.runCommand("/staffprefix remove " + serverPlayer.getScoreboardName() + " pro");
+                    }
+                    factoryServer.runCommand("/rank " + serverPlayer.getScoreboardName() + " default", 4, false);
+                }
+
+                if (!Permissions.check(serverPlayer, "nexia.prefix.pro")) {
+                    factoryServer.runCommand("/staffprefix add " + serverPlayer.getScoreboardName() + " pro", 4, false);
+                }
+            }
 
             i += 1;
         }
 
-        int j = 0;
-        for (Score score : oldScores) {
-            if (j >= 5) break;
-            if (!playerList.contains(score.getOwner())) {
-                // TODO remove rank
+        if (!oldPlayerList.isEmpty()) {
+            for (Player player : oldPlayerList) {
+                if (playerList.contains(player)) continue;
+
+                if (player instanceof ServerPlayer serverPlayer) {
+                    if (Permissions.check(serverPlayer, "nexia.prefix.pro")) {
+                        if (Permissions.check(serverPlayer, "nexia.rank")) {
+                            factoryServer.runCommand("/staffprefix set " + serverPlayer.getScoreboardName() + " default");
+                            factoryServer.runCommand("/staffprefix remove " + serverPlayer.getScoreboardName() + " pro");
+                        }
+                        factoryServer.runCommand("/rank " + serverPlayer.getScoreboardName() + " default", 4, false);
+                    }
+
+                    if (!Permissions.check(serverPlayer, "nexia.prefix.pro")) {
+                        factoryServer.runCommand("/staffprefix remove " + serverPlayer.getScoreboardName() + " pro", 4, false);
+                    }
+                }
             }
-            j += 1;
+            oldPlayerList = playerList;
+        } else {
+            oldPlayerList = playerList;
         }
     }
 }
