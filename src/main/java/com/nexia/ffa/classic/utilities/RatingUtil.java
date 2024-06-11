@@ -13,6 +13,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -117,8 +118,8 @@ public class RatingUtil {
             double y = 79.75;
             double z = -5.5;
 
-            createArmorStand(level, x, y + 1.25, z, ObjectMappings.convertComponent(Component.text("LEADERBOARD").color(TextColor.fromHexString("#A201F9")).decorate(TextDecoration.BOLD)));
-            createArmorStand(level, x, y + 1, z, ObjectMappings.convertComponent(Component.text("HIGHEST RATING").color(TextColor.fromHexString("#A201F9")).decorate(TextDecoration.BOLD)));
+            createArmorStand(level, x, y + 1.25, z, ObjectMappings.convertComponent(MiniMessage.get().parse("<bold><gradient:#A201F9:#E401ED>LEADERBOARD</gradient></bold>")));
+            createArmorStand(level, x, y + 1, z, ObjectMappings.convertComponent(MiniMessage.get().parse("<bold><gradient:#A201F9:#E401ED>LEADERBOARD</gradient></bold>")));
             createArmorStand(level, x, y + 0.5, z, ObjectMappings.convertComponent(Component.text("#1 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[0]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[0]).color(TextColor.fromHexString("#F1BA41"))))));
             createArmorStand(level, x, y + 0.25, z, ObjectMappings.convertComponent(Component.text("#2 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[1]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[1]).color(TextColor.fromHexString("#F1BA41"))))));
             createArmorStand(level, x, y, z, ObjectMappings.convertComponent(Component.text("#3 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[2]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[2]).color(TextColor.fromHexString("#F1BA41"))))));
