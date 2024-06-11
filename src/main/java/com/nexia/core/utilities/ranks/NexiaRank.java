@@ -120,6 +120,13 @@ public class NexiaRank {
             new NexiaPlayerTeam("Dev", "VDev", "#4CC9F0", "#4361EE", ChatFormatting.WHITE)
     );
 
+    public static final NexiaRank FEMBOY = new NexiaRank(
+            "Femboy",
+            "femboy",
+            new NexiaPlayerTeam("Femboy", "XBFemboy", "#FA6BC3", "#FDB3EB", ChatFormatting.WHITE)
+    );
+
+
     public static final NexiaRank ADMIN = new NexiaRank(
             "Admin",
             "admin",
