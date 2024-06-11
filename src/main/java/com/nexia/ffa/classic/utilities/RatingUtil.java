@@ -155,7 +155,11 @@ public class RatingUtil {
 
             Player player = factoryServer.getPlayer(score.getOwner());
             if (player instanceof ServerPlayer serverPlayer) {
-                factoryServer.runCommand("/staffprefix add " + serverPlayer.getScoreboardName() + " pro", 4, false);
+                if (Permissions.check(serverPlayer, "nexia.rank")) {
+                    factoryServer.runCommand("/staffprefix add " + serverPlayer.getScoreboardName() + " pro");
+                } else {
+                    factoryServer.runCommand("/rank " + serverPlayer.getScoreboardName() + " pro", 4, false);
+                }
             }
 
             i += 1;
@@ -163,8 +167,14 @@ public class RatingUtil {
 
         if (!oldPlayerList.isEmpty()) {
             for (Player player : oldPlayerList) {
+                if (playerList.contains(player)) continue;
+
                 if (player instanceof ServerPlayer serverPlayer) {
-                    factoryServer.runCommand("/staffprefix remove " + serverPlayer.getScoreboardName() + " pro", 4, false);
+                    if (Permissions.check(serverPlayer, "nexia.rank")) {
+                        factoryServer.runCommand("/staffprefix remove " + serverPlayer.getScoreboardName() + " pro");
+                    } else {
+                        factoryServer.runCommand("/rank " + serverPlayer.getScoreboardName() + " default", 4, false);
+                    }
                 }
             }
             oldPlayerList = playerList;
