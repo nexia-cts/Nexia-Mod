@@ -36,24 +36,28 @@ public class RatingUtil {
         SavedPlayerData attackerData = PlayerDataManager.get(attacker).savedData;
         SavedPlayerData playerData = PlayerDataManager.get(player).savedData;
 
-        double A = attackerData.rating;
-        double B = playerData.rating;
+        double A = attackerData.elo;
+        double B = playerData.elo;
+
+        int killCount = KillTracker.getKillCount(attacker.getUUID(), player.getUUID());
+        int victimKillCount = KillTracker.getKillCount(player.getUUID(), attacker.getUUID());
+        int total = killCount + victimKillCount;
 
         double expected = 1 / (1 + Math.pow(10, (B - A) / 400));
 
-        double ratingChange = (int) (20 * (1 - expected));
+        double ratingChange = (int) (1000 * (1 - expected)) / (10 + total);
 
         double attackerNewRating = A + ratingChange;
         double victimNewRating = B - ratingChange;
 
-        attackerData.rating = attackerNewRating;
-        playerData.rating = victimNewRating;
+        attackerData.elo = attackerNewRating;
+        playerData.elo = victimNewRating;
 
         double expectedA = 1 / (1 + Math.pow(10, (0 - attackerNewRating) / 400));
         double expectedB = 1 / (1 + Math.pow(10, (0 - victimNewRating) / 400));
 
-        attackerNewRating = expectedA / (1-expectedA);
-        victimNewRating = expectedB / (1-expectedB);
+        attackerData.rating = expectedA / (1-expectedA);
+        playerData.rating = expectedB / (1-expectedB);
 
 
 
@@ -63,8 +67,8 @@ public class RatingUtil {
             if (ratingObjective == null) {
                 ratingObjective = scoreboard.addObjective("Rating", ObjectiveCriteria.DUMMY, new TextComponent("Rating"), ObjectiveCriteria.RenderType.INTEGER);
             }
-            scoreboard.getOrCreatePlayerScore(attacker.getScoreboardName(), ratingObjective).setScore((int) Math.round(attackerNewRating * 100));
-            scoreboard.getOrCreatePlayerScore(player.getScoreboardName(), ratingObjective).setScore((int) Math.round(victimNewRating * 100));
+            scoreboard.getOrCreatePlayerScore(attacker.getScoreboardName(), ratingObjective).setScore((int) Math.round(attackerData.rating * 100));
+            scoreboard.getOrCreatePlayerScore(player.getScoreboardName(), ratingObjective).setScore((int) Math.round(playerData.rating * 100));
         }
 
     }
