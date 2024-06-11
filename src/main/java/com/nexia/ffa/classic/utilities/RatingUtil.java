@@ -172,6 +172,7 @@ public class RatingUtil {
 
                 if (player instanceof ServerPlayer serverPlayer) {
                     if (Permissions.check(serverPlayer, "nexia.rank")) {
+                        factoryServer.runCommand("/staffprefix set " + serverPlayer.getScoreboardName() + " default");
                         factoryServer.runCommand("/staffprefix remove " + serverPlayer.getScoreboardName() + " pro");
                     } else {
                         factoryServer.runCommand("/rank " + serverPlayer.getScoreboardName() + " default", 4, false);
