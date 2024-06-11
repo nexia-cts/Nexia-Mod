@@ -140,7 +140,7 @@ public class RatingUtil {
     }
 
     public static double calculateRatingDifference(double newRating, double oldRating) {
-        return (newRating - oldRating) * 100;
+        return (newRating - oldRating);
     }
 
     private static void givePlayersProRank(List<Score> newScores, List<Score> oldScores) {
