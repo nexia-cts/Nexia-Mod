@@ -41,16 +41,19 @@ public class RatingUtil {
 
         double expected = 1 / (1 + Math.pow(10, (B - A) / 400));
 
-        double ratingChange = (int) (50 * (1 - expected));
+        double ratingChange = (int) (20 * (1 - expected));
 
         double attackerNewRating = A + ratingChange;
         double victimNewRating = B - ratingChange;
 
+        double expectedA = 1 / (1 + Math.pow(10, (0 - attackerNewRating) / 400));
+        double expectedB = 1 / (1 + Math.pow(10, (0 - victimNewRating) / 400));
 
-        attackerData.rating = Math.max(100, attackerNewRating);
-        playerData.rating =  Math.max(100, victimNewRating);
+        attackerNewRating = expectedA / (1-expectedA);
+        victimNewRating = expectedB / (1-expectedB);
 
-
+        attackerData.rating = attackerNewRating;
+        playerData.rating = victimNewRating;
 
         if (attacker.getServer() != null) {
             Scoreboard scoreboard = attacker.getServer().getScoreboard();
@@ -58,8 +61,8 @@ public class RatingUtil {
             if (ratingObjective == null) {
                 ratingObjective = scoreboard.addObjective("Rating", ObjectiveCriteria.DUMMY, new TextComponent("Rating"), ObjectiveCriteria.RenderType.INTEGER);
             }
-            scoreboard.getOrCreatePlayerScore(attacker.getScoreboardName(), ratingObjective).setScore((int) Math.round(attackerNewRating));
-            scoreboard.getOrCreatePlayerScore(player.getScoreboardName(), ratingObjective).setScore((int) Math.round(victimNewRating));
+            scoreboard.getOrCreatePlayerScore(attacker.getScoreboardName(), ratingObjective).setScore((int) Math.round(attackerNewRating * 100));
+            scoreboard.getOrCreatePlayerScore(player.getScoreboardName(), ratingObjective).setScore((int) Math.round(victimNewRating * 100));
         }
 
     }
