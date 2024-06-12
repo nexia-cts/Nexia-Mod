@@ -98,11 +98,11 @@ public class StaffPrefixCommand {
                                                                             .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold,false))
                                                             );
                                                         } else {
-                                                            executor.sendSuccess(LegacyChatFormat.format("{b1}You have removed the prefix {b2}{b}{} {b1}from {b2}{}{b1}.", rank, otherPlayer.getRawName()), false);
+                                                            executor.sendSuccess(LegacyChatFormat.format("{b1}You have removed the prefix {b2}{b}{} {b1}from {b2}{}{b1}.", rank.name, otherPlayer.getRawName()), false);
                                                         }
 
 
-                                                        ServerTime.factoryServer.runCommand(String.format("/lp user %s permission unset nexia.prefix.%s", otherPlayer.getRawName(), rank));
+                                                        ServerTime.factoryServer.runCommand(String.format("/lp user %s permission unset nexia.prefix.%s", otherPlayer.getRawName(), rank.id));
                                                     }
                                                 }
                                             }
@@ -120,10 +120,10 @@ public class StaffPrefixCommand {
                                                                             .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold,false))
                                                             );
                                                         } else {
-                                                            executor.sendSuccess(LegacyChatFormat.format("{b1}You have added the prefix {b2}{b}{} {b1}to {b2}{}{b1}.", rank, otherPlayer.getRawName()), false);
+                                                            executor.sendSuccess(LegacyChatFormat.format("{b1}You have added the prefix {b2}{b}{} {b1}to {b2}{}{b1}.", rank.name, otherPlayer.getRawName()), false);
                                                         }
 
-                                                        ServerTime.factoryServer.runCommand(String.format("/lp user %s permission set nexia.prefix.%s true", otherPlayer.getRawName(), rank));
+                                                        ServerTime.factoryServer.runCommand(String.format("/lp user %s permission set nexia.prefix.%s true", otherPlayer.getRawName(), rank.id));
                                                     }
                                                 }
                                             }
