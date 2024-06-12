@@ -6,6 +6,7 @@ import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.classic.utilities.player.PlayerDataManager;
 import com.nexia.ffa.classic.utilities.player.SavedPlayerData;
 import me.lucko.fabric.api.permissions.v0.Permissions;
@@ -47,14 +48,16 @@ public class RatingUtil {
         int total = killCount + victimKillCount;
 
         double expected = 1 / (1 + Math.pow(10, (B - A) / 400));
-
-        double ratingChange = (int) (400 * (1 - expected)) / (10 + total);
+        float health = FfaUtil.calculateHealth(attacker.getHealth());
+        health = (1 + health / 10) / 2;
+        double ratingChange = (int) (400 * (health - expected)) / (10 + total);
 
         double attackerNewRating = A + ratingChange;
         double victimNewRating = B - ratingChange;
 
         attackerData.elo = attackerNewRating;
         playerData.elo = victimNewRating;
+
 
         double expectedA = 1 / (1 + Math.pow(10, (0 - attackerNewRating) / 400));
         double expectedB = 1 / (1 + Math.pow(10, (0 - victimNewRating) / 400));
