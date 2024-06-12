@@ -35,6 +35,11 @@ public class NexiaRank {
         NexiaRank.ranks.add(this);
     }
 
+    @Override
+    public String toString() {
+        return this.id;
+    }
+
     public static class NexiaPlayerTeam {
 
         public final String name;
@@ -54,6 +59,11 @@ public class NexiaRank {
             else {
                 this.prefix = ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<bold><gradient:%s:%s>%s</gradient></bold> <dark_gray>| </dark_gray>", color1, color2, name)));
             }
+        }
+
+        @Override
+        public String toString() {
+            return this.teamName;
         }
 
         private @NotNull PlayerTeam getTeam(@NotNull MinecraftServer server) {
