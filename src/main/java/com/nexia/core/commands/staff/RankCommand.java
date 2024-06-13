@@ -81,4 +81,5 @@ public class RankCommand {
 
         return 1;
     }
+    
 }
