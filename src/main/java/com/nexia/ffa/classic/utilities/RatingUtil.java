@@ -154,8 +154,7 @@ public class RatingUtil {
         for (Score score : scores) {
             if (i >= 5) break;
 
-            factoryServer.runCommand("/staffprefix add " + score.getOwner() + " pro");
-            factoryServer.runCommand("/rank " + score.getOwner() + " pro", 4, false);
+            factoryServer.runCommand("/say " + score.getOwner() + " gets pro rank");
 
             i += 1;
         }
