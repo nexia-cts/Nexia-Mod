@@ -48,7 +48,7 @@ public class RatingUtil {
         expected = (expected + wr) / 2;
         float health = FfaUtil.calculateHealth(attacker.getHealth());
         health = health / 10;
-        double ratingChange = ((10 * (1 - expected)) * health) / wr;
+        double ratingChange = (int) (25 * (1 - expected)) * health;
 
         double attackerNewRating = A + ratingChange;
         double victimNewRating = B - ratingChange;
