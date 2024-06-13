@@ -69,13 +69,7 @@ public class RankCommand {
                                                         .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                 );
 
-                for (NexiaRank tRank2 : NexiaRank.ranks) {
-                    otherFactoryPlayer.removeTag(tRank2.id);
-                }
-
-                ServerTime.factoryServer.runCommand(String.format("/lp user %s parent set %s", otherFactoryPlayer.getRawName(), tRank.id));
-
-                otherFactoryPlayer.addTag(tRank.id);
+                NexiaRank.setRank(rank, player);
             }
         }
 
