@@ -6,9 +6,11 @@ import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.discord.Main;
 import com.nexia.discord.utilities.player.PlayerData;
+import com.nexia.ffa.classic.utilities.RatingUtil;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -17,6 +19,7 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.scores.Score;
 
 import java.util.Objects;
 
@@ -131,6 +134,30 @@ public class PlayerJoinListener {
         }
     }
 
+    private static void checkRatingRank(ServerPlayer player) {
+        int i = 0;
+        boolean isInTopFive = false;
+        for (Score score : RatingUtil.leaderboardRating) {
+            if (i >= 5) break;
+
+            if (player.getScoreboardName() == score.getOwner()) {
+                isInTopFive = true;
+                break;
+            }
+
+            i++;
+        }
+
+        if (!isInTopFive) {
+            if (Permissions.check(player, "nexia.rank")) {
+                NexiaRank.removePrefix(NexiaRank.PRO, player);
+                NexiaRank.removePrefix(NexiaRank.GOD, player);
+            } else {
+                NexiaRank.setRank(NexiaRank.DEFAULT, player);
+            }
+        }
+    }
+
     private static void processJoin(Player player, ServerPlayer minecraftPlayer) {
         if(PlayerDataManager.get(player).clientType.equals(com.nexia.core.utilities.player.PlayerData.ClientType.VIAFABRICPLUS)) return;
 
@@ -148,6 +175,7 @@ public class PlayerJoinListener {
         com.nexia.minigames.games.skywars.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         LobbyUtil.leaveAllGames(minecraftPlayer, true);
         checkBooster(minecraftPlayer);
+        checkRatingRank(minecraftPlayer);
         sendJoinMessage(player);
     }
 }
