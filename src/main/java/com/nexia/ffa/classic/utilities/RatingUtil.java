@@ -172,10 +172,6 @@ public class RatingUtil {
         for (Score oldScore : oldScores) {
             if (i >= 5) break;
 
-            NexiaRank rank;
-            if (i == 0) rank = NexiaRank.GOD;
-            else rank = NexiaRank.PRO;
-
             ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayerByName(oldScore.getOwner());
             if (player == null) {
                 i++;
@@ -183,7 +179,8 @@ public class RatingUtil {
             }
 
             if (Permissions.check(player, "nexia.rank")) {
-                NexiaRank.removePrefix(rank, player);
+                NexiaRank.removePrefix(NexiaRank.GOD, player);
+                NexiaRank.removePrefix(NexiaRank.PRO, player);
             } else {
                 NexiaRank.setRank(NexiaRank.DEFAULT, player);
             }
