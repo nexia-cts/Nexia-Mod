@@ -135,6 +135,8 @@ public class PlayerJoinListener {
     }
 
     private static void checkRatingRank(ServerPlayer player) {
+        if (RatingUtil.leaderboardRating == null) return;
+
         int i = 0;
         boolean isInTopFive = false;
         for (Score score : RatingUtil.leaderboardRating) {
