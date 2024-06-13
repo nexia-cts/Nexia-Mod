@@ -13,7 +13,6 @@ import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -29,8 +28,6 @@ import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static com.nexia.core.utilities.time.ServerTime.*;
 
 public class RatingUtil {
     static ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("ffa", "classic"), new RuntimeWorldConfig()).asWorld();
@@ -66,8 +63,6 @@ public class RatingUtil {
         attackerData.rating = expectedA / (1-expectedA);
         playerData.rating = expectedB / (1-expectedB);
 
-
-
         if (attacker.getServer() != null) {
             Scoreboard scoreboard = attacker.getServer().getScoreboard();
             Objective ratingObjective = scoreboard.getObjective("Rating");
@@ -77,64 +72,61 @@ public class RatingUtil {
             scoreboard.getOrCreatePlayerScore(attacker.getScoreboardName(), ratingObjective).setScore((int) Math.round(attackerData.rating * 100));
             scoreboard.getOrCreatePlayerScore(player.getScoreboardName(), ratingObjective).setScore((int) Math.round(playerData.rating * 100));
         }
-
     }
 
     public static void updateLeaderboard() {
-        if (!factoryServer.getPlayers().isEmpty()) {
-            Player player = (Player) factoryServer.getPlayers().toArray()[0];
-            World world = player.getWorld();
+        Player player = (Player) ServerTime.factoryServer.getPlayers().toArray()[0];
+        World world = player.getWorld();
 
-            for (Entity entity : world.getEntities()) {
-                if (entity.getEntityType() == Minecraft.Entity.ARMOR_STAND) {
-                    entity.kill();
-                }
+        for (Entity entity : world.getEntities()) {
+            if (entity.getEntityType() == Minecraft.Entity.ARMOR_STAND) {
+                entity.kill();
             }
-
-            String[] playerNames = new String[10];
-            int[] scores = new int[10];
-
-            Scoreboard scoreboard = minecraftServer.getScoreboard();
-            Objective ratingObjective = scoreboard.getObjective("Rating");
-
-
-            List<Score> playerScores = new java.util.ArrayList<>(scoreboard.getPlayerScores(ratingObjective).stream().toList());
-            Collections.reverse(playerScores);
-
-            givePlayersRank(playerScores);
-
-            int i = 0;
-            for (Score score : playerScores) {
-                if (i >= 10) break;
-                playerNames[i] = score.getOwner();
-                scores[i] = score.getScore();
-                i++;
-            }
-
-            if (i < 10) {
-                for (int j = i; j < 10; j++) {
-                    playerNames[j] = "N/A";
-                    scores[j] = 0;
-                }
-            }
-
-            double x = 0.5;
-            double y = 79.75;
-            double z = -5.5;
-
-            createArmorStand(level, x, y + 1.25, z, ObjectMappings.convertComponent(MiniMessage.get().parse("<bold><gradient:#A201F9:#E401ED>LEADERBOARD</gradient></bold>")));
-            createArmorStand(level, x, y + 1, z, ObjectMappings.convertComponent(MiniMessage.get().parse("<bold><gradient:#A201F9:#E401ED>HIGHEST RATING</gradient></bold>")));
-            createArmorStand(level, x, y + 0.5, z, ObjectMappings.convertComponent(Component.text("#1 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[0]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[0]).color(TextColor.fromHexString("#F1BA41"))))));
-            createArmorStand(level, x, y + 0.25, z, ObjectMappings.convertComponent(Component.text("#2 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[1]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[1]).color(TextColor.fromHexString("#F1BA41"))))));
-            createArmorStand(level, x, y, z, ObjectMappings.convertComponent(Component.text("#3 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[2]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[2]).color(TextColor.fromHexString("#F1BA41"))))));
-            createArmorStand(level, x, y - 0.25, z, ObjectMappings.convertComponent(Component.text("#4 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[3]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[3]).color(TextColor.fromHexString("#F1BA41"))))));
-            createArmorStand(level, x, y - 0.5, z, ObjectMappings.convertComponent(Component.text("#5 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[4]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[4]).color(TextColor.fromHexString("#F1BA41"))))));
-            createArmorStand(level, x, y - 0.75, z, ObjectMappings.convertComponent(Component.text("#6 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[5]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[5]).color(TextColor.fromHexString("#F1BA41"))))));
-            createArmorStand(level, x, y - 1, z, ObjectMappings.convertComponent(Component.text("#7 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[6]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[6]).color(TextColor.fromHexString("#F1BA41"))))));
-            createArmorStand(level, x, y - 1.25, z, ObjectMappings.convertComponent(Component.text("#8 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[7]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[7]).color(TextColor.fromHexString("#F1BA41"))))));
-            createArmorStand(level, x, y - 1.5, z, ObjectMappings.convertComponent(Component.text("#9 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[8]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[8]).color(TextColor.fromHexString("#F1BA41"))))));
-            createArmorStand(level, x, y - 1.75, z, ObjectMappings.convertComponent(Component.text("#10 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[9]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[9]).color(TextColor.fromHexString("#F1BA41"))))));
         }
+
+        String[] playerNames = new String[10];
+        int[] scores = new int[10];
+
+        Scoreboard scoreboard = ServerTime.minecraftServer.getScoreboard();
+        Objective ratingObjective = scoreboard.getObjective("Rating");
+
+
+        List<Score> playerScores = new java.util.ArrayList<>(scoreboard.getPlayerScores(ratingObjective).stream().toList());
+        Collections.reverse(playerScores);
+
+        givePlayersRank(playerScores);
+
+        int i = 0;
+        for (Score score : playerScores) {
+            if (i >= 10) break;
+            playerNames[i] = score.getOwner();
+            scores[i] = score.getScore();
+            i++;
+        }
+
+        if (i < 10) {
+            for (int j = i; j < 10; j++) {
+                playerNames[j] = "N/A";
+                scores[j] = 0;
+            }
+        }
+
+        double x = 0.5;
+        double y = 79.75;
+        double z = -5.5;
+
+        createArmorStand(level, x, y + 1.25, z, ObjectMappings.convertComponent(MiniMessage.get().parse("<bold><gradient:#A201F9:#E401ED>LEADERBOARD</gradient></bold>")));
+        createArmorStand(level, x, y + 1, z, ObjectMappings.convertComponent(MiniMessage.get().parse("<bold><gradient:#A201F9:#E401ED>HIGHEST RATING</gradient></bold>")));
+        createArmorStand(level, x, y + 0.5, z, ObjectMappings.convertComponent(Component.text("#1 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[0]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[0]).color(TextColor.fromHexString("#F1BA41"))))));
+        createArmorStand(level, x, y + 0.25, z, ObjectMappings.convertComponent(Component.text("#2 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[1]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[1]).color(TextColor.fromHexString("#F1BA41"))))));
+        createArmorStand(level, x, y, z, ObjectMappings.convertComponent(Component.text("#3 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[2]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[2]).color(TextColor.fromHexString("#F1BA41"))))));
+        createArmorStand(level, x, y - 0.25, z, ObjectMappings.convertComponent(Component.text("#4 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[3]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[3]).color(TextColor.fromHexString("#F1BA41"))))));
+        createArmorStand(level, x, y - 0.5, z, ObjectMappings.convertComponent(Component.text("#5 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[4]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[4]).color(TextColor.fromHexString("#F1BA41"))))));
+        createArmorStand(level, x, y - 0.75, z, ObjectMappings.convertComponent(Component.text("#6 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[5]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[5]).color(TextColor.fromHexString("#F1BA41"))))));
+        createArmorStand(level, x, y - 1, z, ObjectMappings.convertComponent(Component.text("#7 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[6]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[6]).color(TextColor.fromHexString("#F1BA41"))))));
+        createArmorStand(level, x, y - 1.25, z, ObjectMappings.convertComponent(Component.text("#8 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[7]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[7]).color(TextColor.fromHexString("#F1BA41"))))));
+        createArmorStand(level, x, y - 1.5, z, ObjectMappings.convertComponent(Component.text("#9 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[8]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[8]).color(TextColor.fromHexString("#F1BA41"))))));
+        createArmorStand(level, x, y - 1.75, z, ObjectMappings.convertComponent(Component.text("#10 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[9]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[9]).color(TextColor.fromHexString("#F1BA41"))))));
     }
 
     private static void createArmorStand(ServerLevel level, double x, double y, double z, net.minecraft.network.chat.Component customName) {
@@ -156,15 +148,15 @@ public class RatingUtil {
         for (Score score : scores) {
             if (i >= 5) break;
 
-            ServerPlayer player = minecraftServer.getPlayerList().getPlayerByName(score.getOwner());
+            ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayerByName(score.getOwner());
             if (player == null) return;
             System.out.println("CHECK FOR " + player.getScoreboardName());
             if (Permissions.check(player, "nexia.rank")) {
                 System.out.println("Player has rank");
-                factoryServer.runCommand("/staffprefix add " + player.getScoreboardName() + " pro", 4, false);
+                ServerTime.factoryServer.runCommand("/staffprefix add " + player.getScoreboardName() + " pro", 4, false);
             } else {
                 System.out.println("Gave player a rank");
-                factoryServer.runCommand("/rank " + player.getScoreboardName() + " pro", 4, false);
+                ServerTime.factoryServer.runCommand("/rank " + player.getScoreboardName() + " pro", 4, false);
             }
 
             i += 1;
