@@ -1,6 +1,5 @@
 package com.nexia.ffa.classic.utilities;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.time.ServerTime;
@@ -23,14 +22,13 @@ import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static com.nexia.ffa.classic.utilities.FfaAreas.ffaWorld;
 
 public class RatingUtil {
-    static List<Player> oldPlayerList = new ArrayList<>();
+    static List<Score> oldLeaderboardRating = null;
 
     public static void calculateRating(ServerPlayer attacker, ServerPlayer player) {
         SavedPlayerData attackerData = PlayerDataManager.get(attacker).savedData;
@@ -90,6 +88,9 @@ public class RatingUtil {
         Collections.reverse(playerScores);
 
         givePlayersRank(playerScores);
+        removePlayersRank(playerScores, oldLeaderboardRating);
+
+        oldLeaderboardRating = playerScores;
 
         int i = 0;
         for (Score score : playerScores) {
@@ -142,23 +143,51 @@ public class RatingUtil {
         int i = 0;
         for (Score score : scores) {
             if (i >= 5) break;
+            
+            NexiaRank rank;
+            if (i == 0) rank = NexiaRank.GOD;
+            else rank = NexiaRank.PRO;
 
             ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayerByName(score.getOwner());
             if (player == null) continue;
 
             if (Permissions.check(player, "nexia.rank")) {
-                // false, in case the player doesn't want to always have their prefix get
-                // changed (could be a setting?)
-                if (i == 0) NexiaRank.addPrefix(NexiaRank.GOD, player, false);                 
-                else NexiaRank.addPrefix(NexiaRank.PRO, player, false);
+                // false, in case the player doesn't want to always have their prefix get changed (could be a setting?)
+                NexiaRank.addPrefix(rank, player, false);                 
             } else {
-                if (i == 0) NexiaRank.setRank(NexiaRank.GOD, player);
-                else NexiaRank.setRank(NexiaRank.PRO, player);
+                NexiaRank.setRank(rank, player);
             }
 
-            i += 1;
+            i++;
         }
-        
-        
+    }
+
+    private static void removePlayersRank(List<Score> newScores, List<Score> oldScores) {
+        int i = 0;
+        for (Score oldScore : oldScores) {
+            if (i >= 5) break;
+
+            int j = 0;
+            for (Score newScore : newScores) {
+                if (j >= 5) break;
+                if (oldScore.getOwner() == newScore.getOwner()) continue;
+                j++;
+            }
+
+            NexiaRank rank;
+            if (i == 0) rank = NexiaRank.GOD;
+            else rank = NexiaRank.PRO;
+
+            ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayerByName(oldScore.getOwner());
+            if (player == null) continue;
+
+            if (Permissions.check(player, "nexia.rank")) {
+                NexiaRank.removePrefix(rank, player);
+            } else {
+                NexiaRank.setRank(NexiaRank.DEFAULT, player);
+            }
+
+            i++;
+        }
     }
 }
