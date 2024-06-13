@@ -41,7 +41,7 @@ public class RatingUtil {
 
         int killCount = KillTracker.getKillCount(attacker.getUUID(), player.getUUID());
         int victimKillCount = KillTracker.getKillCount(player.getUUID(), attacker.getUUID());
-        int lr = (victimKillCount + 1) / (victimKillCount + killCount + 2);
+        double lr = (double) (victimKillCount + 1) / (victimKillCount + killCount + 2);
 
         double expected = 1 / (1 + Math.pow(10, (B - A) / 400));
         float health = FfaUtil.calculateHealth(attacker.getHealth());
