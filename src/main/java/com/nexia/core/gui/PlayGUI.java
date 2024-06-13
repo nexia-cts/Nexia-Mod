@@ -148,7 +148,7 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(skyffa, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld.players().size()), ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false), 4);
 
         ItemStack uhc = new ItemStack(Items.GOLDEN_APPLE, 1);
-        uhc.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("UHC", ChatFormat.goldColor).decoration(ChatFormat.italic, false)));
+        uhc.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("UHC FFA", ChatFormat.goldColor).decoration(ChatFormat.italic, false)));
         ItemDisplayUtil.addGlint(uhc);
         uhc.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
