@@ -34,7 +34,6 @@ import static com.nexia.core.utilities.time.ServerTime.*;
 
 public class RatingUtil {
     static ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("ffa", "classic"), new RuntimeWorldConfig()).asWorld();
-    static List<Player> oldPlayerList = new ArrayList<>();
 
     public static void calculateRating(ServerPlayer attacker, ServerPlayer player) {
         SavedPlayerData attackerData = PlayerDataManager.get(attacker).savedData;
@@ -151,40 +150,14 @@ public class RatingUtil {
     }
 
     private static void givePlayersRank(List<Score> scores) {
-        List<Player> playerList = new ArrayList<>();
-
         int i = 0;
         for (Score score : scores) {
             if (i >= 5) break;
 
-            Player player = factoryServer.getPlayer(score.getOwner());
-            if (player instanceof ServerPlayer serverPlayer) {
-                if (Permissions.check(serverPlayer, "nexia.rank")) {
-                    factoryServer.runCommand("/staffprefix add " + serverPlayer.getScoreboardName() + " pro");
-                } else {
-                    factoryServer.runCommand("/rank " + serverPlayer.getScoreboardName() + " pro", 4, false);
-                }
-            }
+            factoryServer.runCommand("/staffprefix add " + score.getOwner() + " pro");
+            factoryServer.runCommand("/rank " + score.getOwner() + " pro", 4, false);
 
             i += 1;
-        }
-
-        if (!oldPlayerList.isEmpty()) {
-            for (Player player : oldPlayerList) {
-                if (playerList.contains(player)) continue;
-
-                if (player instanceof ServerPlayer serverPlayer) {
-                    if (Permissions.check(serverPlayer, "nexia.rank")) {
-                        factoryServer.runCommand("/staffprefix set " + serverPlayer.getScoreboardName() + " default");
-                        factoryServer.runCommand("/staffprefix remove " + serverPlayer.getScoreboardName() + " pro");
-                    } else {
-                        factoryServer.runCommand("/rank " + serverPlayer.getScoreboardName() + " default", 4, false);
-                    }
-                }
-            }
-            oldPlayerList = playerList;
-        } else {
-            oldPlayerList = playerList;
         }
     }
 }
