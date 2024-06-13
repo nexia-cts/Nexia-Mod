@@ -34,6 +34,7 @@ import static com.nexia.core.utilities.time.ServerTime.*;
 
 public class RatingUtil {
     static ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("ffa", "classic"), new RuntimeWorldConfig()).asWorld();
+    static List<Player> oldPlayerList = new ArrayList<>();
 
     public static void calculateRating(ServerPlayer attacker, ServerPlayer player) {
         SavedPlayerData attackerData = PlayerDataManager.get(attacker).savedData;
@@ -47,9 +48,10 @@ public class RatingUtil {
         int wr = (killCount + 1) / (killCount + victimKillCount + 2);
 
         double expected = 1 / (1 + Math.pow(10, (B - A) / 400));
+        expected = (expected + wr) / 2;
         float health = FfaUtil.calculateHealth(attacker.getHealth());
         health = health / 10;
-        double ratingChange = ((10 * (1 - expected)) * health) / wr;
+        double ratingChange = (int) (25 * (1 - expected)) * health;
 
         double attackerNewRating = A + ratingChange;
         double victimNewRating = B - ratingChange;
