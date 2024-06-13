@@ -154,21 +154,17 @@ public class RatingUtil {
         for (Score score : scores) {
             if (i >= 5) break;
 
-            Player player = factoryServer.getPlayer(score.getOwner());
-            System.out.println("Checking if player " + score.getOwner() + " is server player");
-            if (player instanceof ServerPlayer serverPlayer) {
-                System.out.println("PRE CHECK FOR " + serverPlayer.getScoreboardName());
-                if (Permissions.check(serverPlayer, "nexia.rank")) {
-                    System.out.println("Player has rank");
-                    factoryServer.runCommand("/staffprefix add " + serverPlayer.getScoreboardName() + " pro", 4, false);
-                } else {
-                    System.out.println("Gave player a rank");
-                    factoryServer.runCommand("/rank " + serverPlayer.getScoreboardName() + " pro", 4, false);
-                }
+            ServerPlayer player = (ServerPlayer) factoryServer.getPlayer(score.getOwner());
+            System.out.println("CHECK FOR " + player.getScoreboardName());
+            if (Permissions.check(player, "nexia.rank")) {
+                System.out.println("Player has rank");
+                factoryServer.runCommand("/staffprefix add " + player.getScoreboardName() + " pro", 4, false);
+            } else {
+                System.out.println("Gave player a rank");
+                factoryServer.runCommand("/rank " + player.getScoreboardName() + " pro", 4, false);
             }
 
             i += 1;
-
         }
         
         
