@@ -156,7 +156,7 @@ public class RatingUtil {
         for (Score score : scores) {
             if (i >= 5) break;
 
-            ServerPlayer player = (ServerPlayer) factoryServer.getPlayer(score.getOwner());
+            ServerPlayer player = minecraftServer.getPlayerList().getPlayerByName(score.getOwner());
             System.out.println("CHECK FOR " + player.getScoreboardName());
             if (Permissions.check(player, "nexia.rank")) {
                 System.out.println("Player has rank");
