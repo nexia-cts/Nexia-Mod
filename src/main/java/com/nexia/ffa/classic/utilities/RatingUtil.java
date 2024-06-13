@@ -45,7 +45,7 @@ public class RatingUtil {
 
         int killCount = KillTracker.getKillCount(attacker.getUUID(), player.getUUID());
         int victimKillCount = KillTracker.getKillCount(player.getUUID(), attacker.getUUID());
-        int wr = killCount / (killCount + victimKillCount);
+        int wr = (killCount + 1) / (killCount + victimKillCount + 2);
 
         double expected = 1 / (1 + Math.pow(10, (B - A) / 400));
         expected = (expected + wr) / 2;
