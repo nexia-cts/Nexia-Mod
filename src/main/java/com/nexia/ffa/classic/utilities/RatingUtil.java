@@ -87,8 +87,8 @@ public class RatingUtil {
         List<Score> playerScores = new java.util.ArrayList<>(scoreboard.getPlayerScores(ratingObjective).stream().toList());
         Collections.reverse(playerScores);
 
-        givePlayersRank(playerScores);
         if (oldLeaderboardRating != null) removePlayersRank(playerScores, oldLeaderboardRating);
+        givePlayersRank(playerScores);
 
         oldLeaderboardRating = playerScores;
 
@@ -170,16 +170,6 @@ public class RatingUtil {
         for (Score oldScore : oldScores) {
             if (i >= 5) break;
 
-            int j = 0;
-            for (Score newScore : newScores) {
-                if (j >= 5) break;
-                if (oldScore.getOwner() == newScore.getOwner()) {
-                    i++;
-                    continue;
-                }
-                j++;
-            }
-
             NexiaRank rank;
             if (i == 0) rank = NexiaRank.GOD;
             else rank = NexiaRank.PRO;
@@ -190,10 +180,24 @@ public class RatingUtil {
                 continue;
             }
 
-            if (Permissions.check(player, "nexia.rank")) {
-                NexiaRank.removePrefix(rank, player);
-            } else {
-                NexiaRank.setRank(NexiaRank.DEFAULT, player);
+            int j = 0;
+            boolean isInNewRanking = false;
+            for (Score newScore : newScores) {
+                if (j >= 5) break;
+                if (oldScore.getOwner() == newScore.getOwner()) {
+                    i++;
+                    isInNewRanking = true;
+                    break;
+                }
+                j++;
+            }
+
+            if (!isInNewRanking) {
+                if (Permissions.check(player, "nexia.rank")) {
+                    NexiaRank.removePrefix(rank, player);
+                } else {
+                    NexiaRank.setRank(NexiaRank.DEFAULT, player);
+                }
             }
 
             i++;
