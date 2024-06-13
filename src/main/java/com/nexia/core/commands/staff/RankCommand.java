@@ -8,7 +8,6 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.ranks.NexiaRank;
-import com.nexia.core.utilities.time.ServerTime;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.CommandSourceStack;
@@ -35,49 +34,49 @@ public class RankCommand {
     }
 
     public static int give(CommandContext<CommandSourceStack> context, ServerPlayer player, String rank) {
-        CommandSourceStack executer = context.getSource();
-
+        CommandSourceStack executor = context.getSource();
         Player factoryExecutor = null;
-
         Player otherFactoryPlayer = PlayerUtil.getFactoryPlayer(player);
 
         try {
             factoryExecutor = PlayerUtil.getFactoryPlayer(context.getSource().getPlayerOrException());
         } catch(Exception ignored) { }
 
-        for(NexiaRank tRank : NexiaRank.ranks){
-            if(rank.equalsIgnoreCase(tRank.id)){
-
-                if(factoryExecutor != null){
-                    factoryExecutor.sendMessage(
-                            ChatFormat.nexiaMessage
-                                            .append(Component.text("You have set the rank of ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                                    .append(Component.text(otherFactoryPlayer.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                                                            .append(Component.text(" to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                                                    .append(Component.text(tRank.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true).decoration(ChatFormat.bold, false))
-                                                                            .append(Component.text(".").color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false).decoration(ChatFormat.bold, false))
-                    );
-                } else {
-                    executer.sendSuccess(LegacyChatFormat.format("{b1}You have set the rank of {b2}{} {b1}to: {b2}{b}{}{b1}.", otherFactoryPlayer.getRawName(), tRank.name), false);
-                }
-
-
-                otherFactoryPlayer.sendMessage(
+        NexiaRank nexiaRank = NexiaRank.identifyRank(rank);
+        if(nexiaRank == null) {
+            if(factoryExecutor != null){
+                factoryExecutor.sendMessage(
                         ChatFormat.nexiaMessage
-                                        .append(Component.text("Your rank has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                                .append(Component.text(tRank.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
-                                                        .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                .append(Component.text("Invalid rank!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                 );
-
-                for (NexiaRank tRank2 : NexiaRank.ranks) {
-                    otherFactoryPlayer.removeTag(tRank2.id);
-                }
-
-                ServerTime.factoryServer.runCommand(String.format("/lp user %s parent set %s", otherFactoryPlayer.getRawName(), tRank.id));
-
-                otherFactoryPlayer.addTag(tRank.id);
+            } else {
+                executor.sendSuccess(LegacyChatFormat.format("{b1}Invalid rank!"), false);
             }
+            return 0;
         }
+
+        if(factoryExecutor != null){
+            factoryExecutor.sendMessage(
+                    ChatFormat.nexiaMessage
+                            .append(Component.text("You have set the rank of ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                            .append(Component.text(otherFactoryPlayer.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                            .append(Component.text(" to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                            .append(Component.text(nexiaRank.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true).decoration(ChatFormat.bold, false))
+                            .append(Component.text(".").color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false).decoration(ChatFormat.bold, false))
+            );
+        } else {
+            executor.sendSuccess(LegacyChatFormat.format("{b1}You have set the rank of {b2}{} {b1}to: {b2}{b}{}{b1}.", otherFactoryPlayer.getRawName(), nexiaRank.name), false);
+        }
+
+
+        otherFactoryPlayer.sendMessage(
+                ChatFormat.nexiaMessage
+                        .append(Component.text("Your rank has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                        .append(Component.text(nexiaRank.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                        .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+        );
+
+        NexiaRank.setRank(nexiaRank, player);
 
         return 1;
     }
