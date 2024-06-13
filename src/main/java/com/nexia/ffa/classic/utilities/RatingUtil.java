@@ -1,9 +1,8 @@
 package com.nexia.ffa.classic.utilities;
 
+import com.combatreforged.factory.api.world.World;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
-import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.classic.utilities.player.PlayerDataManager;
@@ -14,6 +13,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -23,12 +23,14 @@ import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
+import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class RatingUtil {
+    static ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("ffa", "classic"), new RuntimeWorldConfig()).asWorld();
     static List<Player> oldPlayerList = new ArrayList<>();
 
     public static void calculateRating(ServerPlayer attacker, ServerPlayer player) {
@@ -72,6 +74,9 @@ public class RatingUtil {
     }
 
     public static void updateLeaderboard() {
+        Player player = (Player) ServerTime.factoryServer.getPlayers().toArray()[0];
+        World world = player.getWorld();
+
         for (Entity entity : FfaAreas.ffaWorld.getAllEntities()) {
             if (entity.getType() == EntityType.ARMOR_STAND) {
                 entity.kill();
@@ -109,18 +114,18 @@ public class RatingUtil {
         double y = 79.75;
         double z = -5.5;
 
-        createArmorStand(FfaAreas.ffaWorld, x, y + 1.25, z, ObjectMappings.convertComponent(MiniMessage.get().parse("<bold><gradient:#A201F9:#E401ED>LEADERBOARD</gradient></bold>")));
-        createArmorStand(FfaAreas.ffaWorld, x, y + 1, z, ObjectMappings.convertComponent(MiniMessage.get().parse("<bold><gradient:#A201F9:#E401ED>HIGHEST RATING</gradient></bold>")));
-        createArmorStand(FfaAreas.ffaWorld, x, y + 0.5, z, ObjectMappings.convertComponent(Component.text("#1 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[0]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[0]).color(TextColor.fromHexString("#F1BA41"))))));
-        createArmorStand(FfaAreas.ffaWorld, x, y + 0.25, z, ObjectMappings.convertComponent(Component.text("#2 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[1]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[1]).color(TextColor.fromHexString("#F1BA41"))))));
-        createArmorStand(FfaAreas.ffaWorld, x, y, z, ObjectMappings.convertComponent(Component.text("#3 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[2]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[2]).color(TextColor.fromHexString("#F1BA41"))))));
-        createArmorStand(FfaAreas.ffaWorld, x, y - 0.25, z, ObjectMappings.convertComponent(Component.text("#4 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[3]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[3]).color(TextColor.fromHexString("#F1BA41"))))));
-        createArmorStand(FfaAreas.ffaWorld, x, y - 0.5, z, ObjectMappings.convertComponent(Component.text("#5 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[4]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[4]).color(TextColor.fromHexString("#F1BA41"))))));
-        createArmorStand(FfaAreas.ffaWorld, x, y - 0.75, z, ObjectMappings.convertComponent(Component.text("#6 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[5]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[5]).color(TextColor.fromHexString("#F1BA41"))))));
-        createArmorStand(FfaAreas.ffaWorld, x, y - 1, z, ObjectMappings.convertComponent(Component.text("#7 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[6]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[6]).color(TextColor.fromHexString("#F1BA41"))))));
-        createArmorStand(FfaAreas.ffaWorld, x, y - 1.25, z, ObjectMappings.convertComponent(Component.text("#8 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[7]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[7]).color(TextColor.fromHexString("#F1BA41"))))));
-        createArmorStand(FfaAreas.ffaWorld, x, y - 1.5, z, ObjectMappings.convertComponent(Component.text("#9 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[8]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[8]).color(TextColor.fromHexString("#F1BA41"))))));
-        createArmorStand(FfaAreas.ffaWorld, x, y - 1.75, z, ObjectMappings.convertComponent(Component.text("#10 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[9]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[9]).color(TextColor.fromHexString("#F1BA41"))))));
+        createArmorStand(level, x, y + 1.25, z, ObjectMappings.convertComponent(MiniMessage.get().parse("<bold><gradient:#A201F9:#E401ED>LEADERBOARD</gradient></bold>")));
+        createArmorStand(level, x, y + 1, z, ObjectMappings.convertComponent(MiniMessage.get().parse("<bold><gradient:#A201F9:#E401ED>HIGHEST RATING</gradient></bold>")));
+        createArmorStand(level, x, y + 0.5, z, ObjectMappings.convertComponent(Component.text("#1 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[0]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[0]).color(TextColor.fromHexString("#F1BA41"))))));
+        createArmorStand(level, x, y + 0.25, z, ObjectMappings.convertComponent(Component.text("#2 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[1]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[1]).color(TextColor.fromHexString("#F1BA41"))))));
+        createArmorStand(level, x, y, z, ObjectMappings.convertComponent(Component.text("#3 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[2]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[2]).color(TextColor.fromHexString("#F1BA41"))))));
+        createArmorStand(level, x, y - 0.25, z, ObjectMappings.convertComponent(Component.text("#4 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[3]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[3]).color(TextColor.fromHexString("#F1BA41"))))));
+        createArmorStand(level, x, y - 0.5, z, ObjectMappings.convertComponent(Component.text("#5 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[4]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[4]).color(TextColor.fromHexString("#F1BA41"))))));
+        createArmorStand(level, x, y - 0.75, z, ObjectMappings.convertComponent(Component.text("#6 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[5]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[5]).color(TextColor.fromHexString("#F1BA41"))))));
+        createArmorStand(level, x, y - 1, z, ObjectMappings.convertComponent(Component.text("#7 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[6]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[6]).color(TextColor.fromHexString("#F1BA41"))))));
+        createArmorStand(level, x, y - 1.25, z, ObjectMappings.convertComponent(Component.text("#8 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[7]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[7]).color(TextColor.fromHexString("#F1BA41"))))));
+        createArmorStand(level, x, y - 1.5, z, ObjectMappings.convertComponent(Component.text("#9 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[8]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[8]).color(TextColor.fromHexString("#F1BA41"))))));
+        createArmorStand(level, x, y - 1.75, z, ObjectMappings.convertComponent(Component.text("#10 ").color(TextColor.fromHexString("#E401ED")).append(Component.text(playerNames[9]).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[9]).color(TextColor.fromHexString("#F1BA41"))))));
     }
 
     private static void createArmorStand(ServerLevel level, double x, double y, double z, net.minecraft.network.chat.Component customName) {
@@ -136,57 +141,6 @@ public class RatingUtil {
     public static double calculateRatingDifference(double newRating, double oldRating) {
         return (newRating - oldRating);
     }
-    
-    public static void givePrefix(String type, String prefix, Player targetPlayer) {
-        switch (type.toLowerCase()) {
-            case "set":
-                for (NexiaRank rank : NexiaRank.ranks)  {
-                    if (prefix.equalsIgnoreCase(rank.id)) {
-                        for (NexiaRank tRank : NexiaRank.ranks) {
-                            targetPlayer.removeTag(tRank.id);
-                        }
-
-                        targetPlayer.addTag(rank.id);
-                    }
-                }
-                break;
-
-            case "remove":
-                for (NexiaRank rank : NexiaRank.ranks) {
-                    if (prefix.equalsIgnoreCase(rank.id)) {
-                        ServerTime.factoryServer.runCommand(String.format("/lp user %s permission unset nexia.prefix.%s",
-                                    targetPlayer.getRawName(), rank.id));
-                    }
-                }
-                break;
-
-            case "add":
-                for (NexiaRank rank : NexiaRank.ranks) {
-                    if (prefix.equalsIgnoreCase(rank.id)) {
-                        ServerTime.factoryServer.runCommand(String.format("/lp user %s permission set nexia.prefix.%s",
-                                    targetPlayer.getRawName(), rank.id));
-                    }
-                }
-                break;
-
-            default:
-                break;
-        }
-    }
-    
-    public static void giveRank(String rank, Player targetPlayer) {
-        for(NexiaRank tRank : NexiaRank.ranks){
-            if(rank.equalsIgnoreCase(tRank.id)){
-                for (NexiaRank tRank2 : NexiaRank.ranks) {
-                    targetPlayer.removeTag(tRank2.id);
-                }
-
-                ServerTime.factoryServer.runCommand(String.format("/lp user %s parent set %s", targetPlayer.getRawName(), tRank.id));
-
-                targetPlayer.addTag(tRank.id);
-            }
-        }
-    }
 
     private static void givePlayersRank(List<Score> scores) {
         int i = 0;
@@ -195,10 +149,13 @@ public class RatingUtil {
 
             ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayerByName(score.getOwner());
             if (player == null) return;
+            System.out.println("CHECK FOR " + player.getScoreboardName());
             if (Permissions.check(player, "nexia.rank")) {
-                givePrefix("add", "pro", PlayerUtil.getFactoryPlayer(player));
+                System.out.println("Player has rank");
+                ServerTime.factoryServer.runCommand("/staffprefix add " + player.getScoreboardName() + " pro", 4, false);
             } else {
-                giveRank("pro", PlayerUtil.getFactoryPlayer(player));
+                System.out.println("Gave player a rank");
+                ServerTime.factoryServer.runCommand("/rank " + player.getScoreboardName() + " pro", 4, false);
             }
 
             i += 1;
