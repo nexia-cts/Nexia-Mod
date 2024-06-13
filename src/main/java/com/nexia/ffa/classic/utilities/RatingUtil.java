@@ -28,6 +28,7 @@ import java.util.List;
 import static com.nexia.ffa.classic.utilities.FfaAreas.ffaWorld;
 
 public class RatingUtil {
+    public static List<Score> leaderboardRating = null;
     static List<Score> oldLeaderboardRating = null;
 
     public static void calculateRating(ServerPlayer attacker, ServerPlayer player) {
@@ -86,8 +87,9 @@ public class RatingUtil {
 
         List<Score> playerScores = new java.util.ArrayList<>(scoreboard.getPlayerScores(ratingObjective).stream().toList());
         Collections.reverse(playerScores);
+        leaderboardRating = playerScores;
 
-        if (oldLeaderboardRating != null) removePlayersRank(playerScores, oldLeaderboardRating);
+        if (oldLeaderboardRating != null) removePlayersRank(oldLeaderboardRating);
         givePlayersRank(playerScores);
 
         oldLeaderboardRating = playerScores;
@@ -165,7 +167,7 @@ public class RatingUtil {
         }
     }
 
-    private static void removePlayersRank(List<Score> newScores, List<Score> oldScores) {
+    private static void removePlayersRank(List<Score> oldScores) {
         int i = 0;
         for (Score oldScore : oldScores) {
             if (i >= 5) break;
@@ -180,24 +182,10 @@ public class RatingUtil {
                 continue;
             }
 
-            int j = 0;
-            boolean isInNewRanking = false;
-            for (Score newScore : newScores) {
-                if (j >= 5) break;
-                if (oldScore.getOwner() == newScore.getOwner()) {
-                    i++;
-                    isInNewRanking = true;
-                    break;
-                }
-                j++;
-            }
-
-            if (!isInNewRanking) {
-                if (Permissions.check(player, "nexia.rank")) {
-                    NexiaRank.removePrefix(rank, player);
-                } else {
-                    NexiaRank.setRank(NexiaRank.DEFAULT, player);
-                }
+            if (Permissions.check(player, "nexia.rank")) {
+                NexiaRank.removePrefix(rank, player);
+            } else {
+                NexiaRank.setRank(NexiaRank.DEFAULT, player);
             }
 
             i++;
