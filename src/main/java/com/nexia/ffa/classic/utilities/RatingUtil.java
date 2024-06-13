@@ -154,6 +154,7 @@ public class RatingUtil {
         for (Score score : scores) {
             if (i >= 5) break;
 
+            System.out.print("HELP MEEEEEEEEE HELP");
             factoryServer.runCommand("/say " + score.getOwner() + " gets pro rank");
 
             i += 1;
