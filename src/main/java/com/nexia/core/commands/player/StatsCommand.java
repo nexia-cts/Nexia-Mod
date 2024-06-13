@@ -60,7 +60,7 @@ public class StatsCommand {
             int deaths = data.deaths;
             int killstreak = data.killstreak;
             int bestKillstreak = data.bestKillstreak;
-            double rating = data.rating;
+            double rating = Math.round(data.rating * 100);
 
             if(executerData.ffaGameMode == FfaGameMode.KITS) {
                 message = ChatFormat.separatorLine("Kit FFA Stats");
@@ -245,7 +245,7 @@ public class StatsCommand {
             int deaths = data.deaths;
             int killstreak = data.killstreak;
             int bestKillstreak = data.bestKillstreak;
-            double rating = data.rating;
+            double rating = Math.round(data.rating * 100);
 
             if(gamemode.equalsIgnoreCase("kit ffa")) {
                 message = ChatFormat.separatorLine("Kit FFA Stats");
