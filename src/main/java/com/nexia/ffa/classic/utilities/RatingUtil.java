@@ -149,7 +149,10 @@ public class RatingUtil {
             else rank = NexiaRank.PRO;
 
             ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayerByName(score.getOwner());
-            if (player == null) continue;
+            if (player == null) {
+                i++;
+                continue;
+            }
 
             if (Permissions.check(player, "nexia.rank")) {
                 // false, in case the player doesn't want to always have their prefix get changed (could be a setting?)
@@ -170,7 +173,10 @@ public class RatingUtil {
             int j = 0;
             for (Score newScore : newScores) {
                 if (j >= 5) break;
-                if (oldScore.getOwner() == newScore.getOwner()) continue;
+                if (oldScore.getOwner() == newScore.getOwner()) {
+                    i++;
+                    continue;
+                }
                 j++;
             }
 
@@ -179,7 +185,10 @@ public class RatingUtil {
             else rank = NexiaRank.PRO;
 
             ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayerByName(oldScore.getOwner());
-            if (player == null) continue;
+            if (player == null) {
+                i++;
+                continue;
+            }
 
             if (Permissions.check(player, "nexia.rank")) {
                 NexiaRank.removePrefix(rank, player);
