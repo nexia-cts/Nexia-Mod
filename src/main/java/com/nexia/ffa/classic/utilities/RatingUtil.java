@@ -147,9 +147,13 @@ public class RatingUtil {
             if (player == null) continue;
 
             if (Permissions.check(player, "nexia.rank")) {
-                NexiaRank.addPrefix(NexiaRank.PRO, player, false); // false, in case the player doesn't want to always have their prefix get changed (could be a setting?)
+                // false, in case the player doesn't want to always have their prefix get
+                // changed (could be a setting?)
+                if (i == 0) NexiaRank.addPrefix(NexiaRank.GOD, player, false);                 
+                else NexiaRank.addPrefix(NexiaRank.PRO, player, false);
             } else {
-                NexiaRank.setRank(NexiaRank.PRO, player);
+                if (i == 0) NexiaRank.setRank(NexiaRank.GOD, player);
+                else NexiaRank.setRank(NexiaRank.PRO, player);
             }
 
             i += 1;
