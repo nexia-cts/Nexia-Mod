@@ -177,6 +177,7 @@ public class DuelGameHandler {
                 .setGameRule(GameRules.RULE_SHOWDEATHMESSAGES, false)
                 .setGameRule(GameRules.RULE_SPAWN_RADIUS, 0)
                 .setGameRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS, false)
+                .setGameRule(GameRules.RULE_DOFIRETICK, false)
                 .setTimeOfDay(6000);
 
 
