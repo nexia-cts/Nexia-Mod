@@ -144,7 +144,7 @@ public class RatingUtil {
             if (i >= 5) break;
 
             ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayerByName(score.getOwner());
-            if (player == null) break;
+            if (player == null) continue;
 
             if (Permissions.check(player, "nexia.rank")) {
                 NexiaRank.addPrefix(NexiaRank.PRO, player, false); // false, in case the player doesn't want to always have their prefix get changed (could be a setting?)
