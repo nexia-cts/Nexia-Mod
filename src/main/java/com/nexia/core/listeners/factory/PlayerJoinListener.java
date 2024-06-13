@@ -24,6 +24,7 @@ import net.minecraft.world.scores.Score;
 import java.util.Objects;
 
 import static com.nexia.discord.Main.jda;
+import static com.nexia.ffa.classic.utilities.RatingUtil.checkRatingRank;
 
 public class PlayerJoinListener {
     public static void registerListener() {
@@ -134,31 +135,7 @@ public class PlayerJoinListener {
         }
     }
 
-    private static void checkRatingRank(ServerPlayer player) {
-        if (RatingUtil.leaderboardRating == null) return;
 
-        int i = 0;
-        boolean isInTopFive = false;
-        for (Score score : RatingUtil.leaderboardRating) {
-            if (i >= 5) break;
-
-            if (player.getScoreboardName() == score.getOwner()) {
-                isInTopFive = true;
-                break;
-            }
-
-            i++;
-        }
-
-        if (!isInTopFive) {
-            if (Permissions.check(player, "nexia.rank")) {
-                NexiaRank.removePrefix(NexiaRank.PRO, player);
-                NexiaRank.removePrefix(NexiaRank.GOD, player);
-            } else {
-                NexiaRank.setRank(NexiaRank.DEFAULT, player);
-            }
-        }
-    }
 
     private static void processJoin(Player player, ServerPlayer minecraftPlayer) {
         if(PlayerDataManager.get(player).clientType.equals(com.nexia.core.utilities.player.PlayerData.ClientType.VIAFABRICPLUS)) return;

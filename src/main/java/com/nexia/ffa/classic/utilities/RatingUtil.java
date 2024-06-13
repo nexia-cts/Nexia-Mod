@@ -157,8 +157,7 @@ public class RatingUtil {
             }
 
             if (Permissions.check(player, "nexia.rank")) {
-                // false, in case the player doesn't want to always have their prefix get changed (could be a setting?)
-                NexiaRank.addPrefix(rank, player, false);                 
+                NexiaRank.addPrefix(rank, player, false);
             } else {
                 NexiaRank.setRank(rank, player);
             }
@@ -172,20 +171,35 @@ public class RatingUtil {
         for (Score oldScore : oldScores) {
             if (i >= 5) break;
 
-            ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayerByName(oldScore.getOwner());
-            if (player == null) {
-                i++;
-                continue;
-            }
+            checkRatingRank(ServerTime.minecraftServer.getPlayerList().getPlayerByName(oldScore.getOwner()));
 
-            if (Permissions.check(player, "nexia.rank")) {
-                NexiaRank.removePrefix(NexiaRank.GOD, player);
-                NexiaRank.removePrefix(NexiaRank.PRO, player);
-            } else {
-                NexiaRank.setRank(NexiaRank.DEFAULT, player);
+            i++;
+        }
+    }
+
+    public static void checkRatingRank(ServerPlayer player) {
+        if (RatingUtil.leaderboardRating == null) return;
+
+        int i = 0;
+        boolean isInTopFive = false;
+        for (Score score : RatingUtil.leaderboardRating) {
+            if (i >= 5) break;
+
+            if (player.getScoreboardName() == score.getOwner()) {
+                isInTopFive = true;
+                break;
             }
 
             i++;
+        }
+
+        if (!isInTopFive) {
+            if (Permissions.check(player, "nexia.rank")) {
+                NexiaRank.removePrefix(NexiaRank.PRO, player);
+                NexiaRank.removePrefix(NexiaRank.GOD, player);
+            } else {
+                NexiaRank.setRank(NexiaRank.DEFAULT, player);
+            }
         }
     }
 }
