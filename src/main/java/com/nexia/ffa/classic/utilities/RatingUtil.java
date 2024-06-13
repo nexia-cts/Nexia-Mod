@@ -48,10 +48,9 @@ public class RatingUtil {
         int wr = (killCount + 1) / (killCount + victimKillCount + 2);
 
         double expected = 1 / (1 + Math.pow(10, (B - A) / 400));
-        expected = (expected + wr) / 2;
         float health = FfaUtil.calculateHealth(attacker.getHealth());
         health = health / 10;
-        double ratingChange = (int) (25 * (1 - expected)) * health;
+        double ratingChange = ((10 * (1 - expected)) * health) / wr;
 
         double attackerNewRating = A + ratingChange;
         double victimNewRating = B - ratingChange;
@@ -63,8 +62,8 @@ public class RatingUtil {
         double expectedA = 1 / (1 + Math.pow(10, (0 - attackerNewRating) / 400));
         double expectedB = 1 / (1 + Math.pow(10, (0 - victimNewRating) / 400));
 
-        attackerData.rating = expectedA / (1-expectedA);
-        playerData.rating = expectedB / (1-expectedB);
+        attackerData.rating = Math.sqrt(expectedA / (1-expectedA));
+        playerData.rating = Math.sqrt(expectedB / (1-expectedB));
 
 
 
