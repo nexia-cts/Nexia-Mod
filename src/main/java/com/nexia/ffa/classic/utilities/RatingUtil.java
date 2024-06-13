@@ -1,9 +1,7 @@
 package com.nexia.ffa.classic.utilities;
 
 import com.combatreforged.factory.api.world.World;
-import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.player.Player;
-import com.combatreforged.factory.api.world.types.Minecraft;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaUtil;
@@ -18,6 +16,8 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
@@ -78,8 +78,8 @@ public class RatingUtil {
         Player player = (Player) ServerTime.factoryServer.getPlayers().toArray()[0];
         World world = player.getWorld();
 
-        for (Entity entity : world.getEntities()) {
-            if (entity.getEntityType() == Minecraft.Entity.ARMOR_STAND) {
+        for (Entity entity : FfaAreas.ffaWorld.getAllEntities()) {
+            if (entity.getType() == EntityType.ARMOR_STAND) {
                 entity.kill();
             }
         }
