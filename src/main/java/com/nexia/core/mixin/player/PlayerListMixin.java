@@ -23,6 +23,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.stats.Stats;
+import net.minecraft.world.level.GameType;
 import org.json.simple.JSONObject;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -57,8 +58,7 @@ public abstract class PlayerListMixin {
             if (key.contains("multiplayer.player.left")) args.set(0, leaveFormat(component, leavePlayer));
             if (key.contains("multiplayer.player.join")) args.set(0, joinFormat(component, joinPlayer));
 
-            assert player != null;
-            if(!PlayerMutes.muted(new NexiaPlayer(player))){
+            if(!PlayerMutes.muted(player)){
                 args.set(0, chatFormat(component));
             }
 
@@ -90,9 +90,9 @@ public abstract class PlayerListMixin {
 
     @Inject(at = @At("RETURN"), method = "respawn")
     private void respawned(ServerPlayer oldPlayer, boolean bl, CallbackInfoReturnable<ServerPlayer> cir) {
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(oldPlayer);
+        ServerPlayer player = PlayerUtil.getFixedPlayer(oldPlayer);
 
-        ServerLevel respawn = ServerTime.minecraftServer.getLevel(nexiaPlayer.unwrap().getRespawnDimension());
+        ServerLevel respawn = ServerTime.minecraftServer.getLevel(player.getRespawnDimension());
 
         if(FfaSkyUtil.isFfaPlayer(nexiaPlayer)) {
             FfaSkyUtil.joinOrRespawn(nexiaPlayer);
@@ -100,16 +100,16 @@ public abstract class PlayerListMixin {
         }
 
         if(respawn != null && LobbyUtil.isLobbyWorld(respawn)) {
-            nexiaPlayer.unwrap().inventory.clearContent();
-            LobbyUtil.giveItems(nexiaPlayer);
-            nexiaPlayer.setGameMode(Minecraft.GameMode.ADVENTURE);
+            player.inventory.clearContent();
+            LobbyUtil.giveItems(player);
+            player.setGameMode(GameType.ADVENTURE);
 
-            nexiaPlayer.runCommand("/hub", 0, false);
+            PlayerUtil.getFactoryPlayer(player).runCommand("/hub");
             return;
         }
 
-        if (BwUtil.isInBedWars(nexiaPlayer)) { BwPlayerEvents.respawned(nexiaPlayer); }
-        if (SkywarsGame.world.equals(respawn) || SkywarsGame.isSkywarsPlayer(nexiaPlayer)) { nexiaPlayer.setGameMode(Minecraft.GameMode.SPECTATOR); }
+        if (BwUtil.isInBedWars(player)) { BwPlayerEvents.respawned(player); }
+        if (SkywarsGame.world.equals(respawn) || SkywarsGame.isSkywarsPlayer(player)) { player.setGameMode(GameType.SPECTATOR); }
     }
 
     @Unique

@@ -4,6 +4,7 @@ import com.combatreforged.factory.api.util.Identifier;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.world.StructureMap;
 import net.minecraft.core.BlockPos;
+import net.notcoded.codelib.players.AccuratePlayer;
 import net.notcoded.codelib.util.world.structure.Rotation;
 
 public class SmpKitRoom extends KitRoom {

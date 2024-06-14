@@ -1,18 +1,22 @@
 package com.nexia.core.listeners.factory;
 
 import com.combatreforged.factory.api.event.player.PlayerHotbarDropItemEvent;
+import com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.misc.EventUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.core.utilities.player.PlayerUtil;
+import net.minecraft.server.level.ServerPlayer;
 
 public class PlayerDropItemListener {
-    public void registerListener(){
+    public static void registerListener(){
         PlayerHotbarDropItemEvent.BACKEND.register(playerDropItemEvent -> {
 
-            NexiaPlayer player = new NexiaPlayer(playerDropItemEvent.getPlayer());
+            Player player = playerDropItemEvent.getPlayer();
+            ServerPlayer minecraftPlayer = PlayerUtil.getMinecraftPlayer(player);
 
-            if (!EventUtil.dropItem(player, playerDropItemEvent.getItemStack())) {
+            if (!EventUtil.dropItem(minecraftPlayer, playerDropItemEvent.getItemStack())) {
                 playerDropItemEvent.setCancelled(true);
-                player.refreshInventory();
+                ItemStackUtil.sendInventoryRefreshPacket(minecraftPlayer);
                 return;
             }
         });

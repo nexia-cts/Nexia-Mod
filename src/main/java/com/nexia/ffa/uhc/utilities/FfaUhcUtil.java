@@ -1,7 +1,6 @@
 package com.nexia.ffa.uhc.utilities;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
-import com.combatreforged.factory.api.world.types.Minecraft;
 import com.google.gson.Gson;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
@@ -25,6 +24,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.ThrownTrident;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -46,7 +46,7 @@ public class FfaUhcUtil {
 
     public static boolean isFfaPlayer(NexiaPlayer player) {
         com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
-        return player.hasTag("ffa_uhc") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.UHC;
+        return player.getTags().contains("ffa_uhc") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.UHC;
     }
 
     public static boolean beforeDamage(NexiaPlayer player, DamageSource damageSource) {
@@ -67,7 +67,7 @@ public class FfaUhcUtil {
         BlfScheduler.delay(5, new BlfRunnable() {
             @Override
             public void run() {
-                player.setHealth(player.unwrap().getMaxHealth());
+                player.heal(player.getMaxHealth());
             }
         });
 
@@ -76,11 +76,11 @@ public class FfaUhcUtil {
 
         if(data.killstreak % 5 == 0) {
             for (ServerPlayer serverPlayer : FfaAreas.ffaWorld.players()) {
-                new NexiaPlayer(serverPlayer).sendMessage(
+                PlayerUtil.getFactoryPlayer(serverPlayer).sendMessage(
                         Component.text("[").color(ChatFormat.lineColor)
                                 .append(Component.text("☠").color(ChatFormat.failColor))
                                 .append(Component.text("] ").color(ChatFormat.lineColor))
-                                .append(Component.text(player.getRawName()).color(ChatFormat.normalColor))
+                                .append(Component.text(player.getScoreboardName()).color(ChatFormat.normalColor))
                                 .append(Component.text(" now has a killstreak of ").color(ChatFormat.chatColor2))
                                 .append(Component.text(data.killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
                                 .append(Component.text("!").color(ChatFormat.chatColor2))
@@ -93,8 +93,8 @@ public class FfaUhcUtil {
         if (ffaWorld == null) return;
         if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
-            NexiaPlayer nexiaPlayer = new NexiaPlayer(minecraftPlayer);
-            if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !FfaAreas.isInFfaSpawn(nexiaPlayer)){
+            if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !FfaAreas.isInFfaSpawn(minecraftPlayer)){
+                Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
                 wasInSpawn.remove(minecraftPlayer.getUUID());
                 saveInventory(nexiaPlayer);
                 nexiaPlayer.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your inventory layout was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
@@ -105,11 +105,11 @@ public class FfaUhcUtil {
     public static void saveInventory(NexiaPlayer player){
         // /config/nexia/ffa/uhc/inventory/savedInventories/uuid.json
 
-        SavableInventory savableInventory = new SavableInventory(player.unwrap().inventory);
+        SavableInventory savableInventory = new SavableInventory(player.inventory);
         String stringInventory = savableInventory.toSave();
 
         try {
-            String file = dataDirectory + "/inventory/savedInventories/" + player.getUUID() + ".json";
+            String file = dataDirectory + "/inventory/savedInventories/" + player.getStringUUID() + ".json";
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(stringInventory);
             fileWriter.close();
@@ -136,7 +136,7 @@ public class FfaUhcUtil {
             Gson gson = new Gson();
             defaultInventory = gson.fromJson(defaultJson, SavableInventory.class);
 
-            String layoutPath = String.format(file + "/savedInventories/%s.json", player.getUUID());
+            String layoutPath = String.format(file + "/savedInventories/%s.json", player.getStringUUID());
             if(new File(layoutPath).exists()) {
                 String layoutJson = Files.readString(Path.of(layoutPath));
                 layout = gson.fromJson(layoutJson, SavableInventory.class);
@@ -152,16 +152,16 @@ public class FfaUhcUtil {
         }
 
         if(layout != null) {
-            InventoryMerger.mergeSafe(player.unwrap(), layout.asPlayerInventory(), defaultInventory.asPlayerInventory());
+            InventoryMerger.mergeSafe(player, layout.asPlayerInventory(), defaultInventory.asPlayerInventory());
         } else {
-            player.unwrap().inventory.replaceWith(defaultInventory.asPlayerInventory());
+            player.inventory.replaceWith(defaultInventory.asPlayerInventory());
         }
 
         player.refreshInventory();
     }
 
-    public static boolean beforeBuild(NexiaPlayer player, BlockPos blockPos) {
-        if (player.unwrap().isCreative()) return true;
+    public static boolean beforeBuild(ServerPlayer player, BlockPos blockPos) {
+        if (player.isCreative()) return true;
         if (wasInSpawn.contains(player.getUUID())) return false;
         return blockPos.getY() < FfaAreas.buildLimitY;
     }
@@ -176,11 +176,11 @@ public class FfaUhcUtil {
 
         if(data.killstreak >= 5) {
             for (ServerPlayer serverPlayer : FfaAreas.ffaWorld.players()) {
-                new NexiaPlayer(serverPlayer).sendMessage(
+                PlayerUtil.getFactoryPlayer(serverPlayer).sendMessage(
                         Component.text("[").color(ChatFormat.lineColor)
                                 .append(Component.text("☠").color(ChatFormat.failColor))
                                 .append(Component.text("] ").color(ChatFormat.lineColor))
-                                .append(Component.text(player.getRawName()).color(ChatFormat.normalColor))
+                                .append(Component.text(player.getScoreboardName()).color(ChatFormat.normalColor))
                                 .append(Component.text(" has lost their killstreak of ").color(ChatFormat.chatColor2))
                                 .append(Component.text(data.killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
                                 .append(Component.text(".").color(ChatFormat.chatColor2))
@@ -214,14 +214,13 @@ public class FfaUhcUtil {
         }
     }
 
-    public static void leaveOrDie(@NotNull NexiaPlayer player, @Nullable DamageSource source, boolean leaving) {
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player.unwrap());
+    public static void leaveOrDie(@NotNull ServerPlayer player, @Nullable DamageSource source, boolean leaving) {
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
 
         if (attacker != null) {
-            NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
-            FfaUhcUtil.clearArrows(nexiaAttacker);
-            FfaUhcUtil.clearTrident(nexiaAttacker);
-            FfaUhcUtil.setInventory(nexiaAttacker);
+            FfaUhcUtil.clearArrows(attacker);
+            FfaUhcUtil.clearTrident(attacker);
+            FfaUhcUtil.setInventory(attacker);
         }
 
         if(!leaving){
@@ -230,23 +229,19 @@ public class FfaUhcUtil {
         }
     }
 
-    public static boolean canGoToSpawn(NexiaPlayer player) {
+    public static boolean canGoToSpawn(ServerPlayer player) {
         if(!FfaUhcUtil.isFfaPlayer(player) || FfaUhcUtil.wasInSpawn.contains(player.getUUID())) return true;
         return !(Math.round(player.getHealth()) < 20);
     }
 
-    public static void setDeathMessage(@NotNull NexiaPlayer minecraftPlayer, @Nullable DamageSource source) {
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(minecraftPlayer.unwrap());
+    public static void setDeathMessage(@NotNull ServerPlayer minecraftPlayer, @Nullable DamageSource source) {
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(minecraftPlayer);
 
         calculateDeath(minecraftPlayer);
 
         Component msg = FfaUtil.returnDeathMessage(minecraftPlayer, source);
 
-        if(attacker != null) {
-            NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
-            if(msg.toString().contains("somehow killed themselves") && !nexiaAttacker.equals(minecraftPlayer)) {
-                Component component = FfaUtil.returnClassicDeathMessage(minecraftPlayer, nexiaAttacker);
-                if(component != null) msg = component;
+        if(attacker != null && msg.toString().contains("somehow killed themselves")  && attacker != minecraftPlayer) {
 
                 calculateKill(nexiaAttacker);
             }
@@ -257,14 +252,16 @@ public class FfaUhcUtil {
         }
     }
 
-    public static void sendToSpawn(NexiaPlayer player) {
-        player.safeReset(true, Minecraft.GameMode.SURVIVAL);
+    public static void sendToSpawn(ServerPlayer player) {
+        player.inventory.clearContent();
         FfaUhcUtil.clearArrows(player);
         FfaUhcUtil.clearTrident(player);
         FfaUhcUtil.setInventory(player);
         FfaUhcUtil.wasInSpawn.add(player.getUUID());
 
-        FfaAreas.spawn.teleportPlayer(FfaAreas.ffaWorld, player.unwrap());
+        player.removeAllEffects();
+        player.setGameMode(GameType.SURVIVAL);
+        FfaAreas.spawn.teleportPlayer(FfaAreas.ffaWorld, player);
 
         if(shouldResetMap) {
             BlfScheduler.delay(30, new BlfRunnable() {

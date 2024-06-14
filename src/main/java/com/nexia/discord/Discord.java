@@ -1,7 +1,7 @@
 package com.nexia.discord;
 
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.time.ServerType;
 import com.nexia.discord.utilities.discord.DiscordData;
@@ -78,7 +78,7 @@ public class Discord extends ListenerAdapter {
             idMinecraft.remove(code);
             if(player != null) {
                 event.getHook().editOriginal("Your account has been linked with " + player.getScoreboardName()).queue();
-                new NexiaPlayer(player).sendMessage(
+                PlayerUtil.getFactoryPlayer(player).sendMessage(
                         ChatFormat.nexiaMessage
                                 .append(Component.text("Your account has been linked with the discord user: ")
                                         .decoration(ChatFormat.bold, false)

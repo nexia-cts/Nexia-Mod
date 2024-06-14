@@ -1,29 +1,35 @@
 package com.nexia.core.commands.player;
 
-import com.combatreforged.factory.api.command.CommandSourceInfo;
-import com.combatreforged.factory.api.command.CommandUtils;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
-import com.nexia.core.utilities.commands.CommandUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.HashMap;
 import java.util.UUID;
 
 public class ShoutCommand {
 
-    private static final HashMap<UUID, Long> cooldownTime = new HashMap<>();
-    
-    public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
-        dispatcher.register(CommandUtils.literal("shout")
-                .requires(commandSourceInfo -> CommandUtil.hasPermission(commandSourceInfo, "nexia.prefix.supporter"))
-                .then(CommandUtils.argument("message", StringArgumentType.greedyString())
+    private static HashMap<UUID, Long> cooldownTime = new HashMap<>();
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
+        dispatcher.register(Commands.literal("shout")
+                        .requires(context -> {
+                            try {
+                                return Permissions.check(context.getPlayerOrException(), "nexia.prefix.supporter");
+                            } catch (Exception ignored) { }
+                            return false;
+                        })
+                .then(Commands.argument("message", StringArgumentType.greedyString())
                         .executes(context -> ShoutCommand.shout(context, StringArgumentType.getString(context, "message")))
                 )
         );
@@ -39,18 +45,18 @@ public class ShoutCommand {
     }
 
 
-    public static int shout(CommandContext<CommandSourceInfo> context, String message) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        NexiaPlayer executor = CommandUtil.getPlayer(context);
+    public static int shout(CommandContext<CommandSourceStack> context, String message) throws CommandSyntaxException {
+        ServerPlayer executor = context.getSource().getPlayerOrException();
 
         if (PlayerMutes.muted(executor)) return 0;
 
+        Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor);
         if(ShoutCommand.cooldownTime.get(executor.getUUID()) == null) ShoutCommand.cooldownTime.put(executor.getUUID(), System.currentTimeMillis());
         long longTime = ShoutCommand.cooldownTime.get(executor.getUUID());
 
         if(longTime - System.currentTimeMillis() > 0) {
             String time = ShoutCommand.timeToText(longTime - System.currentTimeMillis());
-            executor.sendMessage(ChatFormat.nexiaMessage.append(
+            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("You are still on cooldown, you have ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                             .append(Component.text(time).color(ChatFormat.brandColor1).decoration(ChatFormat.bold, true))
                             .append(Component.text(" left!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
@@ -58,7 +64,7 @@ public class ShoutCommand {
             return 0;
         }
 
-        Component cmessage = Component.text(executor.getRawName()).color(ChatFormat.brandColor1).decoration(ChatFormat.bold, true)
+        Component cmessage = Component.text(factoryExecutor.getRawName()).color(ChatFormat.brandColor1).decoration(ChatFormat.bold, true)
                 .append(Component.text( " shouts: " + message).color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                 );
 

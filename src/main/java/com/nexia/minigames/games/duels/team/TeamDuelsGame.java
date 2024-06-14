@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.duels.team;
 
-import com.combatreforged.factory.api.world.types.Minecraft;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -24,6 +24,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.level.GameType;
+import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -84,23 +86,23 @@ public class TeamDuelsGame { // implements Runnable{
 
         if (this.team1 == null)
             return "Team 1 is not set [NULL]";
-        if (this.team1.getLeader() == null || this.team1.getLeader().unwrap() == null)
+        if (this.team1.getLeader() == null || this.team1.getLeader().get() == null)
             return "Team 1 Leader is not set [NULL]";
 
         if (this.team2 == null)
             return "Team 2 is not set [NULL]";
-        if (this.team2.getLeader() == null || this.team2.getLeader().unwrap() == null)
+        if (this.team2.getLeader() == null || this.team2.getLeader().get() == null)
             return "Team 2 Leader is not set [NULL]";
 
         if (this.isEnding) {
             if (this.winner == null)
                 return "Winner Team is not set [NULL]";
-            if (this.winner.getLeader() == null || this.winner.getLeader().unwrap() == null)
+            if (this.winner.getLeader() == null || this.winner.getLeader().get() == null)
                 return "Winner Team Leader is not set [NULL]";
 
             if (this.loser == null)
                 return "Loser Team is not set [NULL]";
-            if (this.loser.getLeader() == null || this.loser.getLeader().unwrap() == null)
+            if (this.loser.getLeader() == null || this.loser.getLeader().get() == null)
                 return "Loser Team Leader is not set [NULL]";
         }
 
@@ -144,24 +146,25 @@ public class TeamDuelsGame { // implements Runnable{
             data.inviteOptions.reset();
             data.inDuel = true;
 
-            player.setGameMode(Minecraft.GameMode.ADVENTURE);
+            serverPlayer.setGameMode(GameType.ADVENTURE);
+            selectedMap.p1Pos.teleportPlayer(duelLevel, serverPlayer);
 
             player.sendMessage(ChatFormat.nexiaMessage
                     .append(Component.text("Your opponent: ").color(ChatFormat.normalColor)
                             .decoration(ChatFormat.bold, false)
-                            .append(Component.text(team2.getLeader().getRawName() + "'s Team")
+                            .append(Component.text(team2.getLeader().get().getScoreboardName() + "'s Team")
                                     .color(ChatFormat.brandColor2))));
 
             DuelGameHandler.loadInventory(player, stringGameMode);
 
             if (!gameMode.hasSaturation) {
-                player.addTag(LobbyUtil.NO_SATURATION_TAG);
+                factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
             }
 
-            player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-            player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
+            factoryPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+            factoryPlayer.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
-            player.reset(true, Minecraft.GameMode.ADVENTURE);
+            PlayerUtil.resetHealthStatus(factoryPlayer);
         }
 
         for (NexiaPlayer player : team2.all) {
@@ -174,24 +177,25 @@ public class TeamDuelsGame { // implements Runnable{
             data.inviteOptions.reset();
             data.inDuel = true;
 
-            selectedMap.p2Pos.teleportPlayer(duelLevel, player.unwrap());
+            serverPlayer.setGameMode(GameType.ADVENTURE);
+            selectedMap.p2Pos.teleportPlayer(duelLevel, serverPlayer);
 
             player.sendMessage(ChatFormat.nexiaMessage
                     .append(Component.text("Your opponent: ").color(ChatFormat.normalColor)
                             .decoration(ChatFormat.bold, false)
-                            .append(Component.text(team1.getLeader().getRawName() + "'s Team")
+                            .append(Component.text(team1.getLeader().get().getScoreboardName() + "'s Team")
                                     .color(ChatFormat.brandColor2))));
 
             DuelGameHandler.loadInventory(player, stringGameMode);
 
             if (!gameMode.hasSaturation) {
-                player.addTag(LobbyUtil.NO_SATURATION_TAG);
+                factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
             }
 
-            player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-            player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
+            factoryPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+            factoryPlayer.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
-            player.reset(true, Minecraft.GameMode.ADVENTURE);
+            PlayerUtil.resetHealthStatus(factoryPlayer);
         }
 
         game.uuid = gameUUID;
@@ -216,7 +220,7 @@ public class TeamDuelsGame { // implements Runnable{
             }
 
             for (ServerPlayer player : this.level.players()) {
-                NexiaPlayer factoryPlayer = new NexiaPlayer(player);
+                Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
                 factoryPlayer.sendMessage(error);
                 factoryPlayer.sendMessage(errormsg);
             }
@@ -240,19 +244,19 @@ public class TeamDuelsGame { // implements Runnable{
                 DuelsTeam winnerTeam = this.winner;
                 DuelsTeam loserTeam = this.loser;
 
-                for (NexiaPlayer spectator : this.spectators) {
-                    spectator.runCommand("/hub", 0, false);
+                for (AccuratePlayer spectator : this.spectators) {
+                    PlayerUtil.getFactoryPlayer(spectator.get()).runCommand("/hub", 0, false);
                 }
 
                 this.isEnding = false;
 
-                for (NexiaPlayer player : loserTeam.all) {
-                    PlayerDataManager.get(player).gameOptions = null;
-                    player.runCommand("/hub", 0, false);
+                for (AccuratePlayer player : loserTeam.all) {
+                    PlayerDataManager.get(player.get()).gameOptions = null;
+                    PlayerUtil.getFactoryPlayer(player.get()).runCommand("/hub", 0, false);
                 }
-                for (NexiaPlayer player : winnerTeam.all) {
-                    PlayerDataManager.get(player).gameOptions = null;
-                    player.runCommand("/hub", 0, false);
+                for (AccuratePlayer player : winnerTeam.all) {
+                    PlayerDataManager.get(player.get()).gameOptions = null;
+                    PlayerUtil.getFactoryPlayer(player.get()).runCommand("/hub", 0, false);
                 }
 
                 DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
@@ -266,28 +270,28 @@ public class TeamDuelsGame { // implements Runnable{
 
             this.currentStartTime--;
 
-            for (NexiaPlayer player : this.team1.alive) {
-                this.map.p1Pos.teleportPlayer(this.level, player.unwrap());
+            for (AccuratePlayer player : this.team1.alive) {
+                this.map.p1Pos.teleportPlayer(this.level, player.get());
             }
-            for (NexiaPlayer player : this.team2.alive) {
-                this.map.p2Pos.teleportPlayer(this.level, player.unwrap());
+            for (AccuratePlayer player : this.team2.alive) {
+                this.map.p2Pos.teleportPlayer(this.level, player.get());
             }
 
             if (this.startTime - this.currentStartTime >= this.startTime) {
 
-                for (NexiaPlayer player : this.team1.alive) {
-                    player.sendSound(new EntityPos(player.unwrap()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS,
+                for (AccuratePlayer player : this.team1.alive) {
+                    PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS,
                             10, 2);
-                    player.setGameMode(this.gameMode.gameMode);
-                    player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-                    player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
+                    player.get().setGameMode(this.gameMode.gameMode);
+                    player.get().removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                    player.get().removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
                 }
-                for (NexiaPlayer player : this.team2.alive) {
-                    player.sendSound(new EntityPos(player.unwrap()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS,
+                for (AccuratePlayer player : this.team2.alive) {
+                    PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS,
                             10, 2);
-                    player.setGameMode(this.gameMode.gameMode);
-                    player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-                    player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
+                    player.get().setGameMode(this.gameMode.gameMode);
+                    player.get().removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                    player.get().removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
                 }
                 this.hasStarted = true;
                 return;
@@ -295,14 +299,14 @@ public class TeamDuelsGame { // implements Runnable{
 
             Title title = getTitle();
 
-            for (NexiaPlayer player : this.team1.alive) {
-                player.sendTitle(title);
-                player.sendSound(new EntityPos(player.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10,
+            for (AccuratePlayer player : this.team1.alive) {
+                PlayerUtil.getFactoryPlayer(player.get()).sendTitle(title);
+                PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10,
                         1);
             }
-            for (NexiaPlayer player : this.team2.alive) {
-                player.sendTitle(title);
-                player.sendSound(new EntityPos(player.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10,
+            for (AccuratePlayer player : this.team2.alive) {
+                PlayerUtil.getFactoryPlayer(player.get()).sendTitle(title);
+                PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10,
                         1);
             }
         }
@@ -351,27 +355,28 @@ public class TeamDuelsGame { // implements Runnable{
         Component titleWin = titleLose;
         Component subtitleWin = win;
 
-        if ((winnerTeam == null || winnerTeam.getLeader() == null || winnerTeam.getLeader() == null)) {
-            for (NexiaPlayer player : loserTeam.all) {
-                player.sendTitle(Title.title(titleWin, subtitleWin));
-                player.sendMessage(win);
+        if ((winnerTeam == null || winnerTeam.getLeader() == null || winnerTeam.getLeader().get() == null)) {
+            for (AccuratePlayer player : loserTeam.all) {
+                Player factoryPlayer = PlayerUtil.getFactoryPlayer(player.get());
+                factoryPlayer.sendTitle(Title.title(titleWin, subtitleWin));
+                factoryPlayer.sendMessage(win);
             }
             return;
         }
 
-        win = Component.text(winnerTeam.getLeader().getRawName() + "'s Team").color(ChatFormat.brandColor2)
+        win = Component.text(winnerTeam.getLeader().get().getScoreboardName() + "'s Team").color(ChatFormat.brandColor2)
                 .append(Component.text(" has won the duel!").color(ChatFormat.normalColor));
 
         titleLose = Component.text("You lost!").color(ChatFormat.brandColor2);
         subtitleLose = Component.text("You have lost against ")
                 .color(ChatFormat.normalColor)
-                .append(Component.text(winnerTeam.getLeader().getRawName() + "'s Team")
+                .append(Component.text(winnerTeam.getLeader().get().getScoreboardName() + "'s Team")
                         .color(ChatFormat.brandColor2));
 
         titleWin = Component.text("You won!").color(ChatFormat.brandColor2);
         subtitleWin = Component.text("You have won against ")
                 .color(ChatFormat.normalColor)
-                .append(Component.text(loserTeam.getLeader().getRawName() + "'s Team")
+                .append(Component.text(loserTeam.getLeader().get().getScoreboardName() + "'s Team")
                         .color(ChatFormat.brandColor2));
 
         for (NexiaPlayer player : loserTeam.all) {
@@ -393,13 +398,13 @@ public class TeamDuelsGame { // implements Runnable{
 
         if (victimTeam == null || this.isEnding) return;
 
-        victim.unwrap().destroyVanishingCursedItems();
-        victim.unwrap().inventory.dropAll();
-        victimTeam.alive.remove(victim);
+        victim.destroyVanishingCursedItems();
+        victim.inventory.dropAll();
+        victimTeam.alive.remove(AccuratePlayer.create(victim));
 
         boolean isVictimTeamDead = victimTeam.alive.isEmpty();
 
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim.unwrap());
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim);
 
         if (attacker != null) {
             PlayerData attackerData = PlayerDataManager.get(attacker.getUUID());

@@ -39,10 +39,7 @@ public class ForceGameEndCommand {
             case "oitc" -> OitcGame.endGame(null);
             case "skywars" -> SkywarsGame.winNearestCenter();
             case "bedwars" -> BwGame.endBedwars();
-            default -> {
-                context.getSource().sendFailure(new TextComponent("Invalid game!"));
-                return 0;
-            }
+            default -> context.getSource().sendFailure(new TextComponent("Invalid game!"));
         }
 
         context.getSource().sendSuccess(new TextComponent("Game ended (if valid)."), false);

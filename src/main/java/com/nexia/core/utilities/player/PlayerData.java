@@ -6,6 +6,7 @@ import com.nexia.core.utilities.player.anticheat.Punishment;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.ffa.FfaGameMode;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 
 import java.time.LocalDateTime;
@@ -24,7 +25,7 @@ public class PlayerData {
 
     public LocalDateTime combatTagEnd;
 
-    public NexiaPlayer lastMessageSender;
+    public ServerPlayer lastMessageSender;
 
     public ClientType clientType;
 

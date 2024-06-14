@@ -1,21 +1,21 @@
 package com.nexia.core.commands.player;
 
-import com.combatreforged.factory.api.command.CommandSourceInfo;
-import com.combatreforged.factory.api.command.CommandUtils;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.http.DiscordWebhook;
-import com.nexia.core.utilities.commands.CommandUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.discord.Main;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.awt.*;
@@ -41,22 +41,22 @@ public class ReportCommand {
             return false;
         }
     }
-    public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
-        dispatcher.register(CommandUtils.literal("report")
-                .then(CommandUtils.argument("player", EntityArgument.player())
-                        .then(CommandUtils.argument("reason", StringArgumentType.greedyString())
-                                .executes(context -> ReportCommand.report(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())), StringArgumentType.getString(context, "reason")))
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
+        dispatcher.register(Commands.literal("report")
+                .then(Commands.argument("player", EntityArgument.player())
+                        .then(Commands.argument("reason", StringArgumentType.greedyString())
+                                .executes(context -> ReportCommand.report(context, EntityArgument.getPlayer(context, "player"), StringArgumentType.getString(context, "reason")))
                         )
                 )
         );
     }
 
 
-    public static int report(CommandContext<CommandSourceInfo> context, ServerPlayer player, String reason) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        NexiaPlayer executor = CommandUtil.getPlayer(context);
+    public static int report(CommandContext<CommandSourceStack> context, ServerPlayer player, String reason) throws CommandSyntaxException {
+        ServerPlayer mcExecutor = context.getSource().getPlayerOrException();
+        Player executor = PlayerUtil.getFactoryPlayer(mcExecutor);
 
-        if(PlayerDataManager.get(executor).savedData.isReportBanned()) {
+        if(PlayerDataManager.get(mcExecutor).savedData.isReportBanned()) {
             executor.sendMessage(
                     ChatFormat.nexiaMessage
                             .append(Component.text("You are report banned!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false)
@@ -66,7 +66,7 @@ public class ReportCommand {
             return 1;
         }
 
-        if(executor.getUUID().equals(player.getUUID())){
+        if(mcExecutor.equals(player)){
             executor.sendMessage(
                     ChatFormat.nexiaMessage
                             .append(Component.text("You cannot report yourself!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
@@ -98,7 +98,7 @@ public class ReportCommand {
                 .append(Component.text(reason).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false));
 
         for (ServerPlayer staffPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()){
-            if(Permissions.check(staffPlayer, "nexia.staff.report", 1)) ServerTime.factoryServer.getPlayer(staffPlayer.getUUID()).sendMessage(staffReportMessage);
+            if(Permissions.check(staffPlayer, "nexia.staff.report", 1)) PlayerUtil.getFactoryPlayer(staffPlayer).sendMessage(staffReportMessage);
         }
 
         return 1;

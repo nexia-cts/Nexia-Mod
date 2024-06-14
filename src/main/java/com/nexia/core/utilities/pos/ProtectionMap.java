@@ -1,9 +1,10 @@
 package com.nexia.core.utilities.pos;
 
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.google.gson.Gson;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.core.utilities.player.PlayerUtil;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -58,7 +59,7 @@ public class ProtectionMap {
             }
         }
 
-        new NexiaPlayer(player).sendMessage(ChatFormat.nexiaMessage
+        PlayerUtil.getFactoryPlayer(player).sendMessage(ChatFormat.nexiaMessage
                 .append(Component.text("Map created successfully with ").color(ChatFormat.normalColor)
                         .append(Component.text(blockCount).color(ChatFormat.brandColor2)
                                 .append(Component.text(" protected blocks.").color(ChatFormat.normalColor))
@@ -67,7 +68,7 @@ public class ProtectionMap {
     }
 
     private void exportMap(ServerPlayer mcPlayer, String filePath) {
-        NexiaPlayer player = new NexiaPlayer(mcPlayer);
+        Player player = PlayerUtil.getFactoryPlayer(mcPlayer);
         try {
             Gson gson = new Gson();
             String json = gson.toJson(this.map);
@@ -117,9 +118,9 @@ public class ProtectionMap {
     public boolean canBuiltAt(BlockPos mapCorner1, BlockPos buildPos, ServerPlayer mcPlayer, boolean sendMessage) {
         sendMessage = sendMessage && mcPlayer != null;
 
-        NexiaPlayer player = null;
+        Player player = null;
         if(sendMessage){
-            player = new NexiaPlayer(mcPlayer);
+            player = PlayerUtil.getFactoryPlayer(mcPlayer);
         }
 
         BlockPos mapPos = buildPos.subtract(mapCorner1);

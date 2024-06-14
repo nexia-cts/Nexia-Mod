@@ -1,20 +1,22 @@
 package com.nexia.core.commands.player;
 
-import com.combatreforged.factory.api.command.CommandSourceInfo;
-import com.combatreforged.factory.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.player.PlayerUtil;
 import net.kyori.adventure.text.Component;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 
 public class RulesCommand {
 
-    public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
-        dispatcher.register(CommandUtils.literal("rules").executes(RulesCommand::run));
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
+        dispatcher.register(Commands.literal("rules").executes(RulesCommand::run));
     }
 
-    public static int run(CommandContext<CommandSourceInfo> context) {
+    public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 
         /*
         Apparently this just doesn't work.....
@@ -50,7 +52,7 @@ public class RulesCommand {
 
         message = message.append(Component.text("\n").append(ChatFormat.separatorLine(null)));
 
-        context.getSource().sendMessage(message);
+        PlayerUtil.getFactoryPlayer(context.getSource().getPlayerOrException()).sendMessage(message);
 
         return 1;
     }

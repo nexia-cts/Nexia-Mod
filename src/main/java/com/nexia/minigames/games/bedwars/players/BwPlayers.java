@@ -1,6 +1,5 @@
 package com.nexia.minigames.games.bedwars.players;
 
-import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -15,10 +14,12 @@ import com.nexia.minigames.games.bedwars.util.BwScoreboard;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Blocks;
 
@@ -38,14 +39,14 @@ public class BwPlayers {
     public static void joinQueue(NexiaPlayer player) {
         setInBedWars(player);
 
-        BwAreas.queueSpawn.teleportPlayer(BwAreas.bedWarsWorld, player.unwrap());
-        player.unwrap().setRespawnPosition(BwAreas.bedWarsWorld.dimension(),
+        BwAreas.queueSpawn.teleportPlayer(BwAreas.bedWarsWorld, player);
+        player.setRespawnPosition(BwAreas.bedWarsWorld.dimension(),
                 BwAreas.queueSpawn.toBlockPos(), BwAreas.queueSpawn.yaw, true, false);
-
-        player.reset(true, Minecraft.GameMode.ADVENTURE);
+        PlayerUtil.resetHealthStatus(PlayerUtil.getFactoryPlayer(player));
+        player.setGameMode(GameType.ADVENTURE);
 
         //player.setInvulnerable(true);
-        player.unwrap().addTag(LobbyUtil.NO_DAMAGE_TAG);
+        player.addTag(LobbyUtil.NO_DAMAGE_TAG);
 
         BwGame.queueList.add(player);
         if (!BwGame.isQueueCountdownActive && BwGame.queueList.size() >= BwGame.requiredPlayers) {
@@ -64,11 +65,8 @@ public class BwPlayers {
         BwTeam team = BwTeam.getPlayerTeam(player);
 
         if (team != null) {
-            Component eliminationMessage = Component.text(team.textColor + player.getRawName()).append(Component.text(" has been eliminated", ChatFormat.systemColor));
-
-            for(NexiaPlayer nexiaPlayers : getPlayers()) {
-                nexiaPlayers.sendMessage(eliminationMessage);
-            }
+            String eliminationMessage = team.textColor + player.getScoreboardName() + " \2477has been eliminated";
+            PlayerUtil.broadcast(getPlayers(), eliminationMessage);
 
             com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.get(player).savedData.loss++;
             team.players.remove(player);
@@ -80,7 +78,7 @@ public class BwPlayers {
             }
         }
 
-        player.unwrap().getEnderChestInventory().clearContent();
+        player.getEnderChestInventory().clearContent();
         BwScoreboard.updateScoreboard();
 
         if (becomeSpectator) {
@@ -97,24 +95,25 @@ public class BwPlayers {
     public static void becomeSpectator(NexiaPlayer player) {
         setInBedWars(player);
 
-        player.setGameMode(Minecraft.GameMode.SPECTATOR);
-        BwAreas.spectatorSpawn.teleportPlayer(BwAreas.bedWarsWorld, player.unwrap());
-        player.unwrap().setRespawnPosition(BwAreas.bedWarsWorld.dimension(),
+        player.setGameMode(GameType.SPECTATOR);
+        BwAreas.spectatorSpawn.teleportPlayer(BwAreas.bedWarsWorld, player);
+        player.setRespawnPosition(BwAreas.bedWarsWorld.dimension(),
                 BwAreas.spectatorSpawn.toBlockPos(), BwAreas.spectatorSpawn.yaw, true, false);
 
         BwGame.spectatorList.add(player);
         player.addTag(LobbyUtil.NO_RANK_DISPLAY_TAG);
         ServerScoreboard scoreboard = ServerTime.minecraftServer.getScoreboard();
-        scoreboard.addPlayerToTeam(player.getRawName(), BwGame.spectatorTeam);
+        scoreboard.addPlayerToTeam(player.getScoreboardName(), BwGame.spectatorTeam);
 
         BwScoreboard.sendBedWarsScoreboard(player);
         BwScoreboard.sendLines(player);
     }
 
-    public static void sendToSpawn(NexiaPlayer player) {
-        player.safeReset(true, Minecraft.GameMode.SURVIVAL);
+    public static void sendToSpawn(ServerPlayer player) {
+        PlayerUtil.resetHealthStatus(PlayerUtil.getFactoryPlayer(player));
+        player.setGameMode(GameType.SURVIVAL);
         giveSpawnItems(player);
-        player.unwrap().setInvulnerable(true);
+        player.setInvulnerable(true);
         BwGame.invulnerabilityList.put(player, BwGame.invulnerabilityTime * 20);
 
         EntityPos respawnPos = BwAreas.bedWarsCenter;
@@ -122,23 +121,23 @@ public class BwPlayers {
         if (team != null && team.spawn != null) {
             respawnPos = team.spawn;
         }
-        player.unwrap().setRespawnPosition(BwAreas.bedWarsWorld.dimension(), respawnPos.toBlockPos(), respawnPos.yaw, true, false);
-        player.unwrap().teleportTo(BwAreas.bedWarsWorld, respawnPos.x, respawnPos.y, respawnPos.z, respawnPos.yaw, respawnPos.pitch);
+        player.setRespawnPosition(BwAreas.bedWarsWorld.dimension(), respawnPos.toBlockPos(), respawnPos.yaw, true, false);
+        player.teleportTo(BwAreas.bedWarsWorld, respawnPos.x, respawnPos.y, respawnPos.z, respawnPos.yaw, respawnPos.pitch);
     }
 
     private static void giveSpawnItems(NexiaPlayer player) {
         ItemStack sword = new ItemStack(Items.STONE_SWORD);
         sword.getOrCreateTag().putInt("Unbreakable", 1);
-        player.unwrap().inventory.add(sword);
+        player.inventory.add(sword);
 
-        if (player.unwrap().inventory.getItem(36).isEmpty()) {
-            player.unwrap().inventory.setItem(36, getArmorItem(Items.LEATHER_BOOTS, player));
+        if (player.inventory.getItem(36).isEmpty()) {
+            player.inventory.setItem(36, getArmorItem(Items.LEATHER_BOOTS, player));
         }
-        if (player.unwrap().inventory.getItem(37).isEmpty()) {
-            player.unwrap().inventory.setItem(37, getArmorItem(Items.LEATHER_LEGGINGS, player));
+        if (player.inventory.getItem(37).isEmpty()) {
+            player.inventory.setItem(37, getArmorItem(Items.LEATHER_LEGGINGS, player));
         }
-        player.unwrap().inventory.setItem(38, getArmorItem(Items.LEATHER_CHESTPLATE, player));
-        player.unwrap().inventory.setItem(39, getArmorItem(Items.LEATHER_HELMET, player));
+        player.inventory.setItem(38, getArmorItem(Items.LEATHER_CHESTPLATE, player));
+        player.inventory.setItem(39, getArmorItem(Items.LEATHER_HELMET, player));
     }
 
     private static ItemStack getArmorItem(Item item, NexiaPlayer player) {

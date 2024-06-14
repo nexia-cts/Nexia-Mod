@@ -1,15 +1,13 @@
 package com.nexia.core.commands.player;
 
-import com.combatreforged.factory.api.command.CommandSourceInfo;
-import com.combatreforged.factory.api.command.CommandUtils;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.commands.CommandUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.ffa.FfaUtil;
@@ -19,49 +17,47 @@ import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.server.level.ServerPlayer;
+import net.notcoded.codelib.players.AccuratePlayer;
 
 public class SpectateCommand {
-    public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
-        dispatcher.register(CommandUtils.literal("spectate")
-                .requires(commandSourceInfo -> {
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
+        dispatcher.register(Commands.literal("spectate")
+                .requires(commandSourceStack -> {
                     try {
-                        if(!CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
-                        NexiaPlayer player = CommandUtil.getPlayer(commandSourceInfo);
-
-                        assert player != null;
-                        com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
-                        PlayerData playerData1 = PlayerDataManager.get(player);
+                        com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException());
+                        PlayerData playerData1 = PlayerDataManager.get(commandSourceStack.getPlayerOrException());
                         return (playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY) || (playerData1.gameMode == PlayerGameMode.FFA);
                     } catch (Exception ignored) {
                     }
                     return false;
                 })
                         .executes(SpectateCommand::gameModeSpectate)
-                .then(CommandUtils.argument("player", EntityArgument.player())
-                        .executes(context -> SpectateCommand.spectate(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()))))
+                .then(Commands.argument("player", EntityArgument.player())
+                        .executes(context -> SpectateCommand.spectate(context, EntityArgument.getPlayer(context, "player")))
                 )
         );
     }
 
-    public static int gameModeSpectate(CommandContext<CommandSourceInfo> context) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        NexiaPlayer executor = CommandUtil.getPlayer(context);
+    public static int gameModeSpectate(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer executor = context.getSource().getPlayerOrException();
+        Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor);
 
         if(PlayerDataManager.get(executor).gameMode != PlayerGameMode.FFA) {
-            executor.sendMessage(ChatFormat.nexiaMessage.append(
+            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("This can only be used in FFA!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
             ));
-            executor.sendMessage(ChatFormat.nexiaMessage.append(
+            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("If you are in duels then you do /spectate <player>.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
             ));
             return 0;
         }
 
-        if(!Permissions.check(executor.unwrap(), "nexia.prefix.supporter")) {
-            executor.sendMessage(ChatFormat.nexiaMessage.append(
+        if(!Permissions.check(executor, "nexia.prefix.supporter")) {
+            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("This feature is only available for").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                             .append(Component.text("Supporters")
                                     .color(ChatFormat.brandColor1)
@@ -76,34 +72,33 @@ public class SpectateCommand {
             );
         }
 
-        if(LobbyUtil.checkGameModeBan(executor, "ffa")) {
+        if(LobbyUtil.checkGameModeBan(factoryExecutor, executor, "ffa")) {
             return 0;
         }
 
-        if(Math.round(executor.getHealth()) < 20) {
-            executor.sendMessage(ChatFormat.nexiaMessage.append(
+        if(Math.round(factoryExecutor.getHealth()) < 20) {
+            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("You must be fully healed to go into spectator!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
             );
             return 0;
         }
 
-        executor.setGameMode(Minecraft.GameMode.SPECTATOR);
+        factoryExecutor.setGameMode(Minecraft.GameMode.SPECTATOR);
 
         return 1;
     }
 
-    public static int spectate(CommandContext<CommandSourceInfo> context, ServerPlayer player) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        NexiaPlayer nexiaExecutor = new NexiaPlayer(CommandUtil.getPlayer(context));
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
+    public static int spectate(CommandContext<CommandSourceStack> context, ServerPlayer player) throws CommandSyntaxException {
+        ServerPlayer executor = context.getSource().getPlayerOrException();
+        Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor);
 
-        if(PlayerDataManager.get(nexiaPlayer).gameMode == PlayerGameMode.LOBBY) {
-            GamemodeHandler.spectatePlayer(nexiaExecutor, nexiaPlayer);
+        if(PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) {
+            GamemodeHandler.spectatePlayer(AccuratePlayer.create(executor), AccuratePlayer.create(player));
             return 1;
         }
 
-        if(!Permissions.check(nexiaExecutor.unwrap(), "nexia.prefix.supporter")) {
-            nexiaExecutor.sendMessage(ChatFormat.nexiaMessage.append(
+        if(!Permissions.check(executor, "nexia.prefix.supporter")) {
+            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                             Component.text("This feature is only available for").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                                     .append(Component.text("Supporters")
                                             .color(ChatFormat.brandColor1)
@@ -140,15 +135,15 @@ public class SpectateCommand {
 
         // Check if player is in combat (or full health), then put them in spectator.
 
-        if(Math.round(nexiaExecutor.getHealth()) < 20) {
-            nexiaExecutor.sendMessage(ChatFormat.nexiaMessage.append(
+        if(Math.round(factoryExecutor.getHealth()) < 20) {
+            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("You must be fully healed to go into spectator!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
             );
             return 0;
         }
 
-        nexiaExecutor.setGameMode(Minecraft.GameMode.SPECTATOR);
-        nexiaExecutor.teleport(nexiaPlayer.getLocation());
+        factoryExecutor.setGameMode(Minecraft.GameMode.SPECTATOR);
+        executor.teleportTo(player.getLevel(), player.getX(), player.getY(), player.getZ(), 0, 0);
 
         return 1;
     }
