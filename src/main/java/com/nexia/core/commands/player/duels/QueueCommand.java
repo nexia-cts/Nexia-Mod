@@ -24,6 +24,7 @@ public class QueueCommand {
                         if(!CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
                         NexiaPlayer player = CommandUtil.getPlayer(commandSourceInfo);
 
+                        assert player != null;
                         com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
                         PlayerData playerData1 = PlayerDataManager.get(player);
                         return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
@@ -31,7 +32,7 @@ public class QueueCommand {
                     return false;
                 })
                 .executes(context -> {
-                    if(!CommandUtil.failIfNoPlayerInCommand(context)) return 0;
+                    if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
                     NexiaPlayer player = new NexiaPlayer(CommandUtil.getPlayer(context));
 
                     QueueGUI.openQueueGUI(player.unwrap());
@@ -44,7 +45,7 @@ public class QueueCommand {
     }
 
     public static int queue(CommandContext<CommandSourceInfo> context, String gameMode) throws CommandSyntaxException {
-        if(!CommandUtil.failIfNoPlayerInCommand(context)) return 0;
+        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
         NexiaPlayer player = new NexiaPlayer(CommandUtil.getPlayer(context));
 
         GamemodeHandler.joinQueue(player, gameMode, false);
