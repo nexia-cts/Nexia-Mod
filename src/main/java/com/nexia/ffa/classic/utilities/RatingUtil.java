@@ -89,8 +89,8 @@ public class RatingUtil {
         Collections.reverse(playerScores);
         leaderboardRating = playerScores;
 
-        if (oldLeaderboardRating != null) removePlayersRank(oldLeaderboardRating);
-        givePlayersRank(playerScores);
+        //if (oldLeaderboardRating != null) removePlayersRank(oldLeaderboardRating);
+        //givePlayersRank(playerScores);
 
         oldLeaderboardRating = playerScores;
 
