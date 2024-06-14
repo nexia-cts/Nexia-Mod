@@ -51,7 +51,7 @@ public class Main implements ModInitializer, FactoryPlugin {
 		ListenerHelper.registerListeners();
 		Main.logger.info("Registered listeners.");
 		Main.logger.info("Registering factory commands...");
-		CommandLoader.registerMetisCommands();
+		CommandLoader.registerFactoryCommands();
 		Main.logger.info("Registered factory commands.");
 	}
 }

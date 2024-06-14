@@ -17,7 +17,7 @@ import net.fabricmc.fabric.api.event.Event;
 
 public class CommandLoader {
 
-    public static void registerMetisCommands() {
+    public static void registerFactoryCommands() {
         CommandDispatcher<CommandSourceInfo> commandDispatcher = ServerTime.factoryServer.getCommandDispatcher();
 
         SprintFixCommand.register(commandDispatcher);
@@ -37,6 +37,7 @@ public class CommandLoader {
         GamemodeBanCommand.register(commandDispatcher);
         UnGamemodeBanCommand.register(commandDispatcher);
         DeclineDuelCommand.register(commandDispatcher);
+        AcceptDuelCommand.register(commandDispatcher);
         StaffPrefixCommand.register(commandDispatcher);
         KitEditorCommand.register(commandDispatcher);
         KitLayoutCommand.register(commandDispatcher);
@@ -66,7 +67,6 @@ public class CommandLoader {
 
     public static void registerCommands() {
         Event<CommandRegistrationCallback> callbackEvent = CommandRegistrationCallback.EVENT;
-
 
         callbackEvent.register(ForceGameEndCommand::register);
         callbackEvent.register(ProtectionMapCommand::register);
