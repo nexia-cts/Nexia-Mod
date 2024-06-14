@@ -93,6 +93,7 @@ public class DuelGameHandler {
 
     public static void leave(ServerPlayer player, boolean leaveTeam) {
         PlayerData data = PlayerDataManager.get(player);
+        data.gameMode = DuelGameMode.LOBBY;
         if (data.gameOptions != null && data.gameOptions.duelsGame != null) {
             data.gameOptions.duelsGame.death(player, player.getLastDamageSource());
         }
@@ -117,7 +118,6 @@ public class DuelGameHandler {
         data.inDuel = false;
         data.inviteOptions.reset();
         removeQueue(player, null, true);
-        data.gameMode = DuelGameMode.LOBBY;
         data.editingLayout = "";
         data.editingKit = "";
         data.kitRoom = null;

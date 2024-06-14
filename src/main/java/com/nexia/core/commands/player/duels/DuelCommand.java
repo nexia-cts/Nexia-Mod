@@ -44,7 +44,7 @@ public class DuelCommand {
                 })
                 .then(CommandUtils.argument("player", EntityArgument.player())
                         .executes(context -> {
-                            if(!CommandUtil.failIfNoPlayerInCommand(context)) return 0;
+                            if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
                             NexiaPlayer player = new NexiaPlayer(CommandUtil.getPlayer(context));
 
                             DuelGUI.openDuelGui(player.unwrap(), context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())));
