@@ -93,3 +93,4 @@ bin/
 # fabric
 
 run/
+.factorypath

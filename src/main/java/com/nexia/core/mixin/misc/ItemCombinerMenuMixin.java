@@ -1,6 +1,6 @@
 package com.nexia.core.mixin.misc;
 
-import com.combatreforged.metis.builder.mixin_interfaces.LevelAccessOwner;
+import com.combatreforged.factory.builder.mixin_interfaces.LevelAccessOwner;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.ItemCombinerMenu;
 import org.spongepowered.asm.mixin.Mixin;

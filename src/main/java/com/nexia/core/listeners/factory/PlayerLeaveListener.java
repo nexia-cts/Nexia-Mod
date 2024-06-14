@@ -1,6 +1,6 @@
 package com.nexia.core.listeners.factory;
 
-import com.combatreforged.metis.api.event.player.PlayerDisconnectEvent;
+import com.combatreforged.factory.api.event.player.PlayerDisconnectEvent;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;

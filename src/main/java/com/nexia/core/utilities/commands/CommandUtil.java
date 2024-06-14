@@ -1,7 +1,7 @@
 package com.nexia.core.utilities.commands;
 
-import com.combatreforged.metis.api.command.CommandSourceInfo;
-import com.combatreforged.metis.api.world.entity.player.Player;
+import com.combatreforged.factory.api.command.CommandSourceInfo;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.mojang.brigadier.context.CommandContext;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;

@@ -1,7 +1,7 @@
 package com.nexia.core.commands.staff;
 
-import com.combatreforged.metis.api.command.CommandSourceInfo;
-import com.combatreforged.metis.api.command.CommandUtils;
+import com.combatreforged.factory.api.command.CommandSourceInfo;
+import com.combatreforged.factory.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -60,7 +60,7 @@ public class RankCommand {
                     otherFactoryPlayer.removeTag(tRank2.id);
                 }
 
-                ServerTime.metisServer.runCommand(String.format("/lp user %s parent set %s", otherFactoryPlayer.getRawName(), tRank.id));
+                ServerTime.factoryServer.runCommand(String.format("/lp user %s parent set %s", otherFactoryPlayer.getRawName(), tRank.id));
 
                 otherFactoryPlayer.addTag(tRank.id);
             }

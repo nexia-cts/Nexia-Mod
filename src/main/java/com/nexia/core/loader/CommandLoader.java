@@ -1,6 +1,6 @@
 package com.nexia.core.loader;
 
-import com.combatreforged.metis.api.command.CommandSourceInfo;
+import com.combatreforged.factory.api.command.CommandSourceInfo;
 import com.mojang.brigadier.CommandDispatcher;
 import com.nexia.core.commands.player.*;
 import com.nexia.core.commands.player.duels.*;
@@ -18,7 +18,7 @@ import net.fabricmc.fabric.api.event.Event;
 public class CommandLoader {
 
     public static void registerMetisCommands() {
-        CommandDispatcher<CommandSourceInfo> commandDispatcher = ServerTime.metisServer.getCommandDispatcher();
+        CommandDispatcher<CommandSourceInfo> commandDispatcher = ServerTime.factoryServer.getCommandDispatcher();
 
         SprintFixCommand.register(commandDispatcher);
         DiscordCommand.register(commandDispatcher);

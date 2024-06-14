@@ -1,7 +1,7 @@
 package com.nexia.core.listeners.factory;
 
-import com.combatreforged.metis.api.event.player.PlayerJoinEvent;
-import com.combatreforged.metis.api.world.entity.player.Player;
+import com.combatreforged.factory.api.event.player.PlayerJoinEvent;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;
@@ -65,7 +65,7 @@ public class PlayerJoinListener {
                                 .append(Component.text("Players online: ").color(ChatFormat.normalColor))
                                         .append(Component.text(ServerTime.minecraftServer.getPlayerCount()).color(ChatFormat.brandColor2))
                                                 .append(Component.text("/").color(ChatFormat.lineColor))
-                                                        .append(Component.text(ServerTime.metisServer.getMaxPlayerCount()).color(ChatFormat.brandColor2))
+                                                        .append(Component.text(ServerTime.factoryServer.getMaxPlayerCount()).color(ChatFormat.brandColor2))
         );
         player.sendMessage(
                 Component.text(" » ").color(ChatFormat.brandColor2)
@@ -97,11 +97,11 @@ public class PlayerJoinListener {
         if(discordUser == null) {
             if(player.hasPermission("nexia.prefix.supporter")) {
                 if(player.hasPermission("nexia.rank")) {
-                    ServerTime.metisServer.runCommand("/staffprefix set " + player.getRawName() + " default");
-                    ServerTime.metisServer.runCommand("/staffprefix remove " + player.getRawName() + " supporter");
+                    ServerTime.factoryServer.runCommand("/staffprefix set " + player.getRawName() + " default");
+                    ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getRawName() + " supporter");
                     return;
                 }
-                ServerTime.metisServer.runCommand("/rank " + player.getRawName() + " default", 4, false);
+                ServerTime.factoryServer.runCommand("/rank " + player.getRawName() + " default", 4, false);
             }
             return;
         }
@@ -112,17 +112,17 @@ public class PlayerJoinListener {
 
         if(hasRole && !hasSupporterPrefix) {
             if(player.hasPermission("nexia.rank")) {
-                ServerTime.metisServer.runCommand("/staffprefix add " + player.getRawName() + " supporter", 4, false);
+                ServerTime.factoryServer.runCommand("/staffprefix add " + player.getRawName() + " supporter", 4, false);
                 return;
             }
-            ServerTime.metisServer.runCommand("/rank " + player.getRawName() + " supporter", 4, false);
+            ServerTime.factoryServer.runCommand("/rank " + player.getRawName() + " supporter", 4, false);
         } else if(!hasRole && hasSupporterPrefix) {
             if(player.hasPermission("nexia.rank")) {
-                ServerTime.metisServer.runCommand("/staffprefix remove " + player.getRawName() + " supporter", 4, false);
-                ServerTime.metisServer.runCommand("/staffprefix set " + player.getRawName() + " default", 4, false);
+                ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getRawName() + " supporter", 4, false);
+                ServerTime.factoryServer.runCommand("/staffprefix set " + player.getRawName() + " default", 4, false);
                 return;
             }
-            ServerTime.metisServer.runCommand("/rank " + player.getRawName() + " default", 4, false);
+            ServerTime.factoryServer.runCommand("/rank " + player.getRawName() + " default", 4, false);
         }
     }
 
