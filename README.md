@@ -4,7 +4,7 @@
 <br>
 
 # Nexia
-using **Metis API**
+using **Factory API**
 
 The mod for the Nexia CTS server.
 
