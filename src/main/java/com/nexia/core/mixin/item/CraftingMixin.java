@@ -1,6 +1,6 @@
 package com.nexia.core.mixin.item;
 
-import com.nexia.core.utilities.item.ItemStackUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,15 +19,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CraftingMenu.class)
 public class CraftingMixin {
-
-    // Set crafter to player
     @Unique
     private static ServerPlayer crafter;
-
     @Inject(method = "slotChangedCraftingGrid", at = @At("HEAD"))
     private static void craft(int i, Level level, Player player, CraftingContainer craftingContainer, ResultContainer resultContainer, CallbackInfo ci) {
-        if (player instanceof ServerPlayer serverPlayer) {
-            crafter = serverPlayer;
+        if (player instanceof ServerPlayer) {
+            crafter = (ServerPlayer) player;
         }
     }
 
@@ -37,8 +34,8 @@ public class CraftingMixin {
         if (crafter == null) return itemStack;
         NexiaPlayer nexiaPlayer = new NexiaPlayer(crafter);
 
-        if (BwUtil.isInBedWars(crafter) || FfaUtil.isFfaPlayer(crafter)) {
-            ItemStackUtil.sendInventoryRefreshPacket(crafter);
+        if (BwUtil.isInBedWars(nexiaPlayer) || FfaUtil.isFfaPlayer(nexiaPlayer)) {
+            nexiaPlayer.refreshInventory();
             return ItemStack.EMPTY;
         }
 
@@ -50,9 +47,7 @@ public class CraftingMixin {
         if (crafter == null) return itemStack;
         NexiaPlayer nexiaPlayer = new NexiaPlayer(crafter);
 
-        if (BwUtil.isInBedWars(crafter) || FfaUtil.isFfaPlayer(crafter)) {
-            return ItemStack.EMPTY;
-        }
+        if (BwUtil.isInBedWars(nexiaPlayer) || FfaUtil.isFfaPlayer(nexiaPlayer)) return ItemStack.EMPTY;
 
         return itemStack;
     }

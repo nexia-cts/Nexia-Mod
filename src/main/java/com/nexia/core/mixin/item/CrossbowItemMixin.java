@@ -1,7 +1,7 @@
 package com.nexia.core.mixin.item;
 
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.item.ItemStackUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,7 +26,7 @@ public class CrossbowItemMixin {
                     (com.nexia.core.utilities.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(PlayerGameMode.LOBBY) && com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(DuelGameMode.LOBBY))
             ) {
                 ci.cancel();
-                ItemStackUtil.sendInventoryRefreshPacket((ServerPlayer) player);
+                nexiaPlayer.refreshInventory();
             }
         }
     }

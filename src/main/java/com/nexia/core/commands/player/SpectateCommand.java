@@ -12,7 +12,6 @@ import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
-import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
@@ -119,22 +118,22 @@ public class SpectateCommand {
             );
         }
 
-        if(LobbyUtil.checkGameModeBan(factoryExecutor, executor, "ffa")) {
+        if(LobbyUtil.checkGameModeBan(nexiaExecutor, "ffa")) {
             return 0;
         }
 
-        if(PlayerDataManager.get(executor).gameMode != PlayerGameMode.FFA) {
-            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
+        if(PlayerDataManager.get(nexiaExecutor).gameMode != PlayerGameMode.FFA) {
+            nexiaExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("This can only be used in FFA!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
             ));
-            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
+            nexiaExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("If you are in duels then you do /spectate <player>.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
             ));
             return 0;
         }
 
-        if(!FfaUtil.isFfaPlayer(player)) {
-            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
+        if(!FfaUtil.isFfaPlayer(nexiaPlayer)) {
+            nexiaExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("That player is not in FFA!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
             ));
         }

@@ -1,7 +1,7 @@
 package com.nexia.core.mixin.item;
 
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.item.ItemStackUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.KitRoom;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,7 +26,7 @@ public class ExperienceBottleItemMixin {
 
         if((com.nexia.core.utilities.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(PlayerGameMode.LOBBY) && com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(DuelGameMode.LOBBY) && !KitRoom.isInKitRoom(nexiaPlayer))) {
             cir.setReturnValue(new InteractionResultHolder<>(InteractionResult.FAIL, player.getItemInHand(interactionHand)));
-            ItemStackUtil.sendInventoryRefreshPacket((ServerPlayer) player);
+            nexiaPlayer.refreshInventory();
         }
     }
 }

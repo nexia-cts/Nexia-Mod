@@ -1,7 +1,7 @@
 package com.nexia.ffa.sky.utilities;
 
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.pos.PositionUtil;
 import com.nexia.core.utilities.pos.ProtectionBlock;
@@ -65,9 +65,9 @@ public class FfaAreas {
         return defaultY;
     }
 
-    public static boolean canBuild(ServerPlayer player, BlockPos blockPos) {
+    public static boolean canBuild(NexiaPlayer player, BlockPos blockPos) {
         if (protectionMap == null) {
-            PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("Something went wrong, please inform the admins").color(ChatFormat.failColor));
+            player.sendMessage(Component.text("Something went wrong, please inform the admins").color(ChatFormat.failColor));
             return false;
         }
 

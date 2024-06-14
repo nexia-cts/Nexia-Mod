@@ -14,7 +14,6 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -26,25 +25,6 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class BanHandler {
-
-    private static boolean sendWebhook(ServerPlayer player, Punishment.Type punishment){
-        DiscordWebhook webhook = new DiscordWebhook(Main.config.punishmentWebhook);
-        webhook.addEmbed(new DiscordWebhook.EmbedObject()
-                .setAuthor((player.getScoreboardName()), null, null)
-                .setDescription("Please take action immediately.")
-                .setColor(Color.RED)
-
-                .addField("Server: ", ServerTime.serverType.type.toUpperCase(), false)
-                .addField("Punishment:", punishment.name(), false)
-                .setThumbnail("https://mc-heads.net/avatar/" + player.getScoreboardName() + "/64")
-        );
-        try {
-            webhook.execute();
-            return true;
-        } catch (Exception ignored) {
-            return false;
-        }
-    }
 
     static final String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/tempbans";
 
@@ -183,10 +163,5 @@ public class BanHandler {
                 .append(Component.text(unBanned.getName(), ChatFormat.brandColor2))
                 .append(Component.text(".", ChatFormat.systemColor))
         );
-    }
-
-    public static void handlePunishment(ServerPlayer player, Punishment.Type punishment) {
-        sendWebhook(player, punishment);
-        player.connection.disconnect(LegacyChatFormat.format("{f}Stop cheating.\nIf you think this is a false detection, please contact the mods."));
     }
 }

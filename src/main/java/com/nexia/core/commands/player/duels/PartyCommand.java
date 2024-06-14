@@ -10,7 +10,6 @@ import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
-import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.team.DuelsTeam;
 import net.kyori.adventure.text.Component;
@@ -89,7 +88,7 @@ public class PartyCommand {
         com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(executor);
 
         if(data.duelOptions.duelsTeam == null) {
-            PlayerUtil.getFactoryPlayer(executor).sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
+            executor.sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
             return 1;
         }
 

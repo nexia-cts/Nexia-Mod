@@ -1,25 +1,22 @@
 package com.nexia.core.utilities.ranks;
 
-import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
-import com.nexia.core.utilities.chat.ChatFormat;
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.time.ServerTime;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.scores.PlayerTeam;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
 public class NexiaRank {
-
     public static ArrayList<NexiaRank> ranks = new ArrayList<>();
 
-    public String name;
+    public final String name;
 
     public final String id;
 
@@ -27,24 +24,19 @@ public class NexiaRank {
 
     public final NexiaPlayerTeam team;
 
-    NexiaRank(String name, String id, NexiaPlayerTeam team) {
+    private NexiaRank(String name, String id, NexiaPlayerTeam team) throws CommandSyntaxException {
         this.name = name;
         this.id = id;
         this.team = team;
 
         this.groupID = "group." + id;
 
-        NexiaRank.ranks.add(this);
+        ranks.add(this);
     }
 
-    @Override
-    public String toString() {
-        return this.id;
-    }
 
-    public static class NexiaPlayerTeam {
 
-        public final String name;
+    public class NexiaPlayerTeam {
 
         public final String teamName;
 
@@ -52,24 +44,16 @@ public class NexiaRank {
 
         public final ChatFormatting color;
 
-        public NexiaPlayerTeam(String name, String teamName, String color1, String color2, ChatFormatting color) {
-            this.name = name;
+        private NexiaPlayerTeam(String teamName, Component prefix, ChatFormatting color) {
             this.teamName = teamName;
+            this.prefix = prefix;
             this.color = color;
 
-            if(color1 == null || color2 == null) this.prefix = new TextComponent("");
-            else {
-                this.prefix = ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<bold><gradient:%s:%s>%s</gradient></bold> <dark_gray>| </dark_gray>", color1, color2, name)));
-            }
+            getTeam();
         }
 
-        @Override
-        public String toString() {
-            return this.teamName;
-        }
-
-        private @NotNull PlayerTeam getTeam(@NotNull MinecraftServer server) {
-            ServerScoreboard scoreboard = server.getScoreboard();
+        private @NotNull PlayerTeam getTeam() {
+            ServerScoreboard scoreboard = ServerTime.minecraftServer.getScoreboard();
             PlayerTeam playerTeam = scoreboard.getPlayerTeam(teamName);
 
             if (scoreboard.getPlayerTeam(this.teamName) == null) {
@@ -84,116 +68,45 @@ public class NexiaRank {
         }
     }
 
-    public static final NexiaRank DEFAULT = new NexiaRank(
+    public NexiaRank DEFAULT = new NexiaRank(
             "Player",
             "default",
-            new NexiaPlayerTeam("Player", "ZPlayer", null, null, ChatFormatting.GRAY)
+            new NexiaPlayerTeam("ZPlayer", new TextComponent(""), ChatFormatting.GRAY)
     );
 
-    public static final NexiaRank PRO = new NexiaRank(
-            "Pro",
-            "pro",
-            new NexiaPlayerTeam("Pro", "ZAPro", "#A201F9", "#E401ED", ChatFormatting.WHITE)
-    );
-
-    public static final NexiaRank GOD = new NexiaRank(
-            "God",
-            "god",
-            new NexiaPlayerTeam("God", "XYGod", "#ffb347", "#ffcc33", ChatFormatting.WHITE)
-    );
-
-    public static final NexiaRank SUPPORTER = new NexiaRank(
+    public NexiaRank SUPPORTER = new NexiaRank(
             "Nexia",
-            "nexia",
-            new NexiaPlayerTeam("Nexia", "XASupporter", ChatFormat.brandColor1.asHexString(), ChatFormat.brandColor2.asHexString(), ChatFormatting.WHITE)
+            "supporter",
+            new NexiaPlayerTeam("XASupporter", ComponentArgument.textComponent().parse(new StringReader("[{\"text\":\"N\",\"color\":\"#A600FF\",\"bold\":true},{\"text\":\"e\",\"color\":\"#BC00FB\",\"bold\":true},{\"text\":\"x\",\"color\":\"#D300F7\",\"bold\":true},{\"text\":\"i\",\"color\":\"#EA00F3\"},{\"text\":\"a\",\"color\":\"#FF00EF\"},{\"text\":\" | \",\"color\":\"dark_gray\",\"bold\":false}]")), ChatFormatting.WHITE)
     );
 
-    public static final NexiaRank MEDIA = new NexiaRank(
+    public NexiaRank MEDIA = new NexiaRank(
             "Media",
             "media",
-            new NexiaPlayerTeam("Media", "WZMedia", "#fc00c8", "#fc0000", ChatFormatting.WHITE)
+            new NexiaPlayerTeam("WZMedia", ComponentArgument.textComponent().parse(new StringReader("[{\"text\":\"M\",\"color\":\"#fc00c8\",\"bold\":true},{\"text\":\"e\",\"color\":\"#e8008a\",\"bold\":true},{\"text\":\"d\",\"color\":\"#fc0064\",\"bold\":true},{\"text\":\"i\",\"color\":\"#fc0032\"},{\"text\":\"a\",\"color\":\"#fc0000\"},{\"text\":\" | \",\"color\":\"dark_gray\",\"bold\":false}]")), ChatFormatting.WHITE)
     );
 
-    public static final NexiaRank BUILDER = new NexiaRank(
+    public NexiaRank BUILDER = new NexiaRank(
             "Builder",
             "builder",
-            new NexiaPlayerTeam("Builder", "WBuilder", "#01E7FE", "#014E56", ChatFormatting.WHITE)
+            new NexiaPlayerTeam("WBuilder", ComponentArgument.textComponent().parse(new StringReader("[{\"text\":\"B\",\"color\":\"#01E7FE\",\"bold\":true},{\"text\":\"u\",\"color\":\"#01D6EB\",\"bold\":true},{\"text\":\"i\",\"color\":\"#02D1E6\",\"bold\":true},{\"text\":\"l\",\"color\":\"#02BFD2\",\"bold\":true},{\"text\":\"d\",\"color\":\"#03A1AF\",\"bold\":true},{\"text\":\"e\",\"color\":\"#02737E\",\"bold\":true},{\"text\":\"r\",\"color\":\"#014E56\"},{\"text\":\" | \",\"color\":\"dark_gray\",\"bold\":false}]")), ChatFormatting.WHITE)
     );
 
-    public static final NexiaRank MOD = new NexiaRank(
+    public NexiaRank MOD = new NexiaRank(
             "Mod",
             "mod",
-            new NexiaPlayerTeam("Mod", "VZMod", "#FFAA00", "#C18000", ChatFormatting.WHITE)
+            new NexiaPlayerTeam("VZMod", ComponentArgument.textComponent().parse(new StringReader("[{\"text\":\"M\",\"color\":\"#FFAA00\",\"bold\":true},{\"text\":\"o\",\"color\":\"#D48D00\",\"bold\":true},{\"text\":\"d\",\"color\":\"#C18000\",\"bold\":true},{\"text\":\" | \",\"color\":\"dark_gray\",\"bold\":false}]")), ChatFormatting.WHITE)
     );
 
-    public static final NexiaRank DEV = new NexiaRank(
+    public NexiaRank DEV = new NexiaRank(
             "Dev",
             "dev",
-            new NexiaPlayerTeam("Dev", "VDev", "#4CC9F0", "#4361EE", ChatFormatting.WHITE)
+            new NexiaPlayerTeam("VDev", ComponentArgument.textComponent().parse(new StringReader("[{\"text\":\"D\",\"color\":\"#4CC9F0\",\"bold\":true},{\"text\":\"e\",\"color\":\"#4895EF\",\"bold\":true},{\"text\":\"v\",\"color\":\"#4361EE\",\"bold\":true},{\"text\":\" | \",\"color\":\"dark_gray\",\"bold\":false}]\n")), ChatFormatting.WHITE)
     );
 
-    public static final NexiaRank FEMBOY = new NexiaRank(
-            "Femboy",
-            "femboy",
-            new NexiaPlayerTeam("Femboy", "XBFemboy", "#FA6BC3", "#FDB3EB", ChatFormatting.WHITE)
-    );
-
-
-    public static final NexiaRank ADMIN = new NexiaRank(
+    public NexiaRank ADMIN = new NexiaRank(
             "Admin",
             "admin",
-            new NexiaPlayerTeam("Admin", "VAdmin", "#BD2020", "#FD6C46", ChatFormatting.WHITE)
+            new NexiaPlayerTeam("VAdmin", ComponentArgument.textComponent().parse(new StringReader("[{\"text\":\"A\",\"color\":\"#BD2020\",\"bold\":true},{\"text\":\"d\",\"color\":\"#CD332A\",\"bold\":true},{\"text\":\"m\",\"color\":\"#DD4633\",\"bold\":true},{\"text\":\"i\",\"color\":\"#ED593D\",\"bold\":true},{\"text\":\"n\",\"color\":\"#FD6C46\",\"bold\":true},{\"text\":\" | \",\"color\":\"dark_gray\",\"bold\":false}]")), ChatFormatting.WHITE)
     );
-
-    public static void setupRanks(MinecraftServer server) {
-        NexiaRank.ranks.forEach(rank -> rank.team.getTeam(server));
-    }
-
-    public static NexiaRank identifyRank(@NotNull String rank) {
-        if(rank.isBlank()) return null;
-
-        for(NexiaRank nexiaRank : NexiaRank.ranks) {
-            if(nexiaRank.id.equalsIgnoreCase(rank)) return nexiaRank;
-        }
-        return null;
-
-
-    }
-
-    public static void setRank(NexiaRank rank, ServerPlayer player) {
-        for (NexiaRank rank1 : NexiaRank.ranks) {
-            player.removeTag(rank1.id);
-        }
-
-        ServerTime.factoryServer.runCommand(String.format("/lp user %s parent set %s", player.getScoreboardName(), rank.id));
-        player.addTag(rank.id);
-    }
-
-    public static void setPrefix(NexiaRank rank, ServerPlayer player) {
-        for (NexiaRank rank1 : NexiaRank.ranks) {
-            player.removeTag(rank1.id);
-        }
-
-        player.addTag(rank.id);
-    }
-
-    public static void removePrefix(NexiaRank rank, ServerPlayer player) {
-        if(player.getTags().contains(rank.id)) {
-            setPrefix(NexiaRank.DEFAULT, player);
-        }
-
-        ServerTime.factoryServer.runCommand(String.format("/lp user %s permission unset nexia.prefix.%s",
-                player.getScoreboardName(), rank.id)
-        );
-    }
-
-    public static void addPrefix(NexiaRank rank, ServerPlayer player, boolean setPrefix) {
-        if(setPrefix) {
-            setPrefix(rank, player);
-        }
-
-        ServerTime.factoryServer.runCommand(String.format("/lp user %s permission set nexia.prefix.%s",
-                player.getScoreboardName(), rank.id)
-        );
-    }
 }

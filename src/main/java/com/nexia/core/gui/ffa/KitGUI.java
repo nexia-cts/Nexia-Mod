@@ -16,7 +16,6 @@ import net.minecraft.world.item.Items;
 
 public class KitGUI extends SimpleGui {
     static final TextComponent title = new TextComponent("Kits Menu");
-
     public KitGUI(MenuType<?> type, ServerPlayer player, boolean includePlayer) {
         super(type, player, includePlayer);
     }
@@ -48,7 +47,7 @@ public class KitGUI extends SimpleGui {
 
             ItemStack item = ffaKits.item;
 
-            item.setHoverName(ObjectMappings.convertComponent(Component.text(StringUtil.capitalize(ffaKits.id.replaceAll("_", " ")), ChatFormat.Minecraft.white)));
+            item.setHoverName(new TextComponent("§f" + StringUtil.capitalize(ffaKits.id.replaceAll("_", " "))));
 
             this.setSlot(slot, item);
 
@@ -70,7 +69,7 @@ public class KitGUI extends SimpleGui {
             net.minecraft.network.chat.Component name = itemStack.getHoverName();
 
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
-                String modifiedName = name.getString().toLowerCase();
+                String modifiedName = name.getString().substring(2).toLowerCase();
                 giveKit(this.player, modifiedName);
                 this.close();
             }

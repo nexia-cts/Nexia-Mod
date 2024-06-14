@@ -1,9 +1,13 @@
 package com.nexia.minigames.games.bedwars.upgrades;
 
+import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.minigames.games.bedwars.BwGame;
 import com.nexia.minigames.games.bedwars.players.BwTeam;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -17,7 +21,7 @@ public class BwApplyTraps {
     public static void trapSecond() {
         // Loop all bedwars players
         for (BwTeam attackerTeam : BwTeam.allTeams.values()) {
-            for (ServerPlayer attacker : attackerTeam.players) {
+            for (NexiaPlayer attacker : attackerTeam.players) {
                 if (BwGame.respawningList.containsKey(attacker)) continue;
 
                 // Loop all bedwars bases
@@ -52,7 +56,9 @@ public class BwApplyTraps {
 
     private static void alarmDefenders(BwTeam defenderTeam) {
         PlayerUtil.broadcastSound(defenderTeam.players, SoundEvents.ENDERMAN_TELEPORT, SoundSource.MASTER, 0.8f, 1.0f);
-        PlayerUtil.broadcastTitle(defenderTeam.players, "\247cTrap Triggered!", "");
+        for(NexiaPlayer player : defenderTeam.players) {
+            player.sendTitle(Title.title(Component.text("Trap triggered!", ChatFormat.failColor), Component.text("")));
+        }
     }
 
     private static void alarmTrap(ServerPlayer attacker) {

@@ -8,7 +8,6 @@ import com.nexia.core.utilities.player.GamemodeBanHandler;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.classic.utilities.FfaAreas;
@@ -17,8 +16,6 @@ import com.nexia.ffa.kits.utilities.FfaKitsUtil;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
-import com.nexia.minigames.games.bedwars.util.BwScoreboard;
-import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.football.FootballGameMode;
@@ -28,11 +25,10 @@ import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.minigames.games.skywars.SkywarsGameMode;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
-import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -40,8 +36,6 @@ import org.json.simple.JSONObject;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
 
 import static com.nexia.core.utilities.player.BanHandler.getBanTime;
 
@@ -90,7 +84,8 @@ public class LobbyUtil {
             "in_kitroom",
             NO_RANK_DISPLAY_TAG,
             NO_SATURATION_TAG,
-            NO_FALL_DAMAGE_TAG
+            NO_FALL_DAMAGE_TAG,
+            NO_DAMAGE_TAG
     };
 
     public static void returnToLobby(NexiaPlayer player, boolean tp) {
@@ -109,158 +104,63 @@ public class LobbyUtil {
                 player.setAbleToFly(true);
             }
 
-            FfaUtil.leaveOrDie(minecraftPlayer, minecraftPlayer.getLastDamageSource(), true);
-        }
-        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.LOBBY) {
-            DuelGameHandler.leave(minecraftPlayer, false);
-        }
-        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.OITC) {
-            OitcGame.leave(minecraftPlayer);
-        }
-        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.SKYWARS) {
-            SkywarsGame.leave(minecraftPlayer);
-        }
-        else if (PlayerDataManager.get(minecraftPlayer).gameMode == PlayerGameMode.FOOTBALL) {
-            FootballGame.leave(minecraftPlayer);
+            LobbyUtil.giveItems(player);
         }
 
-        PlayerUtil.sendBossbar(SkywarsGame.BOSSBAR, minecraftPlayer, true);
-        BwScoreboard.removeScoreboardFor(minecraftPlayer);
-        minecraftPlayer.setGlowing(false);
-        minecraftPlayer.setGameMode(GameType.ADVENTURE);
 
-        for(String tag : LobbyUtil.removedTags) {
-            if(player.hasTag(tag)) player.removeTag(tag);
-        }
 
-        returnToLobby(minecraftPlayer, tp);
+        PlayerDataManager.get(player).gameMode = PlayerGameMode.LOBBY;
     }
 
-    public static void returnToLobby(ServerPlayer minecraftPlayer, boolean tp) {
-        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+    public static void giveItems(NexiaPlayer player) {
+        ItemStack compass = new ItemStack(Items.COMPASS);
+        compass.setHoverName(new TextComponent("§eGamemode Selector"));
+        ItemDisplayUtil.addGlint(compass);
+        ItemDisplayUtil.addLore(compass, "§eRight click §7to open the menu.", 0);
 
-        if((FfaClassicUtil.isFfaPlayer(minecraftPlayer) && !FfaClassicUtil.canGoToSpawn(minecraftPlayer)) ||
-                (FfaKitsUtil.isFfaPlayer(minecraftPlayer)) && !FfaKitsUtil.canGoToSpawn(minecraftPlayer) ||
-                (FfaSkyUtil.isFfaPlayer(minecraftPlayer) && !FfaSkyUtil.canGoToSpawn(minecraftPlayer) ||
-                        (FfaUhcUtil.isFfaPlayer(minecraftPlayer) && !FfaUhcUtil.canGoToSpawn(minecraftPlayer)))) {
+        ItemStack nameTag = new ItemStack(Items.NAME_TAG);
+        nameTag.setHoverName(new TextComponent("§ePrefix Selector"));
+        ItemDisplayUtil.addGlint(nameTag);
+        ItemDisplayUtil.addLore(nameTag, "§eRight click §7to open the menu.", 0);
 
-            player.sendMessage(Component.text("You must be fully healed to go to spawn!").color(ChatFormat.failColor));
-            return;
+        ItemStack queueSword = new ItemStack(Items.IRON_SWORD);
+        queueSword.setHoverName(new TextComponent("§eDuel Sword"));
+        ItemDisplayUtil.addGlint(queueSword);
+        ItemDisplayUtil.addLore(queueSword, "§eRight click §7to queue menu.", 0);
+        ItemDisplayUtil.addLore(queueSword, "§eHit a player §7to duel them.", 1);
+
+        ItemStack teamSword = new ItemStack(Items.IRON_AXE);
+        teamSword.setHoverName(new TextComponent("§eTeam Axe"));
+        ItemDisplayUtil.addGlint(teamSword);
+        ItemDisplayUtil.addLore(teamSword, "§eRight click §7to list the team.", 0);
+        ItemDisplayUtil.addLore(teamSword, "§eHit a player §7to invite them to your team.", 1);
+
+        ItemStack customDuelSword = new ItemStack(Items.DIAMOND_SWORD);
+        customDuelSword.setHoverName(new TextComponent("§eCustom Duel Sword"));
+        ItemDisplayUtil.addGlint(customDuelSword);
+        ItemDisplayUtil.addLore(customDuelSword, "§eHit a player §7to duel them in your custom kit.", 0);
+
+        if(Permissions.check(player.unwrap(), "nexia.prefix.supporter")) {
+            ItemStack elytra = new ItemStack(Items.ELYTRA);
+            elytra.setHoverName(new TextComponent("§5§lSupporter Elytra"));
+            ItemDisplayUtil.addGlint(elytra);
+            elytra.getOrCreateTag().putBoolean("Unbreakable", true);
+            ItemDisplayUtil.addLore(elytra, "§7Thanks for supporting the server!", 0);
+            elytra.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
+            player.unwrap().setItemSlot(EquipmentSlot.CHEST, elytra);
         }
 
-        for(String tag : LobbyUtil.removedTags) {
-            if(player.hasTag(tag)) player.removeTag(tag);
-        }
 
-        minecraftPlayer.setInvulnerable(false);
+        player.unwrap().setSlot(0, customDuelSword); // 1st slot
+        player.unwrap().setSlot(4, compass); //middle slot
+        player.unwrap().setSlot(3, nameTag); //left
+        player.unwrap().setSlot(5, queueSword); //right
+        player.unwrap().setSlot(8, teamSword); // like right right not right
 
-        minecraftPlayer.abilities.mayfly = false;
-        minecraftPlayer.abilities.flying = false;
-        Objects.requireNonNull(minecraftPlayer.getAttribute(Attributes.KNOCKBACK_RESISTANCE)).setBaseValue(0.0);
-        minecraftPlayer.onUpdateAbilities();
-        minecraftPlayer.setGlowing(false);
-
-        PlayerUtil.resetHealthStatus(player);
-        minecraftPlayer.setGameMode(GameType.ADVENTURE);
-
-        player.getInventory().clear();
-        minecraftPlayer.inventory.setCarried(ItemStack.EMPTY);
-        minecraftPlayer.getEnderChestInventory().clearContent();
-        minecraftPlayer.setExperiencePoints(0);
-        minecraftPlayer.setExperienceLevels(0);
-
-        // Duels shit
-        player.addTag("duels");
-        DuelGameHandler.leave(minecraftPlayer, false);
-
-        if (tp) {
-            minecraftPlayer.setRespawnPosition(lobbyWorld.dimension(), lobbySpawn.toBlockPos(), lobbySpawn.yaw, true, false);
-            minecraftPlayer.teleportTo(lobbyWorld, lobbySpawn.x, lobbySpawn.y, lobbySpawn.z, lobbySpawn.pitch, lobbySpawn.yaw);
-
-            if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter")) {
-                minecraftPlayer.abilities.mayfly = true;
-                minecraftPlayer.onUpdateAbilities();
-            }
-
-            LobbyUtil.giveItems(minecraftPlayer);
-        }
-
-        minecraftPlayer.connection.send(new ClientboundStopSoundPacket());
-
-        PlayerDataManager.get(minecraftPlayer).gameMode = PlayerGameMode.LOBBY;
-        player.removeTag(LobbyUtil.NO_RANK_DISPLAY_TAG);
-        player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
-        player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-        ServerTime.minecraftServer.getPlayerList().sendPlayerPermissionLevel(minecraftPlayer);
+        player.refreshInventory();
     }
 
-    public static void giveItems(ServerPlayer minecraftPlayer) {
-
-        Player factoryPlayer = PlayerUtil.getFactoryPlayer(minecraftPlayer);
-
-        NBTObject hideAttrubtesNBTObject = NBTObject.create();
-        hideAttrubtesNBTObject.set("HideFlags", NBTValue.of(39));
-
-        NBTObject unbreakableNBTObject = hideAttrubtesNBTObject.copy();
-        unbreakableNBTObject.set("Unbreakable", NBTValue.of(1));
-
-
-        com.combatreforged.factory.api.world.item.ItemStack compass = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.COMPASS);
-        compass.setItemNBT(hideAttrubtesNBTObject.copy());
-        compass.setLore(Component.text("Right click to open the gamemode selector menu.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
-        compass.setDisplayName(Component.text("Gamemode Selector", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
-
-
-        com.combatreforged.factory.api.world.item.ItemStack nameTag = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.NAME_TAG);
-        nameTag.setItemNBT(hideAttrubtesNBTObject.copy());
-        nameTag.setLore(Component.text("Right click to open the prefix selector menu.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
-        nameTag.setDisplayName(Component.text("Prefix Selector", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
-
-
-        com.combatreforged.factory.api.world.item.ItemStack queueSword = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.IRON_SWORD);
-        queueSword.setItemNBT(hideAttrubtesNBTObject.copy());
-        queueSword.setLore(new ArrayList<>(Arrays.asList(
-                Component.text("Right click to open the queue menu.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false),
-                Component.text("Hit a player to duel them.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false)
-        )));
-        queueSword.setDisplayName(Component.text("Duel Sword", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
-
-
-        com.combatreforged.factory.api.world.item.ItemStack teamSword = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.IRON_AXE);
-        teamSword.setItemNBT(hideAttrubtesNBTObject.copy());
-        teamSword.setLore(new ArrayList<>(Arrays.asList(
-                Component.text("Right click to list the team you're in.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false),
-                Component.text("Hit a player to invite them to your team.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false)
-        )));
-        teamSword.setDisplayName(Component.text("Team Axe", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
-
-
-        com.combatreforged.factory.api.world.item.ItemStack customDuelSword = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.DIAMOND_SWORD);
-        customDuelSword.setItemNBT(hideAttrubtesNBTObject.copy());
-        customDuelSword.setLore(Component.text("Hit a player to duel them in your custom kit.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
-        customDuelSword.setDisplayName(Component.text("Custom Duel Sword", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
-
-        if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter")) {
-
-            com.combatreforged.factory.api.world.item.ItemStack elytra = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.ELYTRA);
-            elytra.setItemNBT(unbreakableNBTObject.copy());
-            elytra.setLore(Component.text("Thanks for supporting the server!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
-            elytra.setDisplayName(Component.text("Supporter Elytra", ChatFormat.brandColor2).decorate(ChatFormat.bold).decoration(ChatFormat.italic, false));
-
-            factoryPlayer.getInventory().setItemStack(38, elytra);
-        }
-
-
-        factoryPlayer.getInventory().setItemStack(0, customDuelSword); // 1st slot
-        factoryPlayer.getInventory().setItemStack(4, compass); // middle slot
-        factoryPlayer.getInventory().setItemStack(3, nameTag); // left
-        factoryPlayer.getInventory().setItemStack(5, queueSword); // right
-        factoryPlayer.getInventory().setItemStack(8, teamSword); // like right right not right
-
-        ItemStackUtil.sendInventoryRefreshPacket(minecraftPlayer);
-    }
-
-    public static boolean checkGameModeBan(Player factoryPlayer, ServerPlayer player, String game) {
+    public static boolean checkGameModeBan(NexiaPlayer player, String game) {
         ArrayList<PlayerGameMode> bannedGameModes = GamemodeBanHandler.getBannedGameModes(player);
         if(bannedGameModes.isEmpty()) {
             return false;
@@ -277,7 +177,7 @@ public class LobbyUtil {
                         GamemodeBanHandler.removeBanFromList(player.getUUID(), gameMode);
                         return false;
                     } else {
-                        factoryPlayer.sendMessage(
+                        player.sendMessage(
                                 ChatFormat.nexiaMessage
                                         .append(Component.text("You are gamemode (" + gameMode.name + ") banned for ").decoration(ChatFormat.bold, false))
                                         .append(Component.text(BanHandler.banTimeToText(banTime)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
@@ -287,13 +187,13 @@ public class LobbyUtil {
                         return true;
                     }
                 } else {
-                    factoryPlayer.sendMessage(
+                    player.sendMessage(
                             ChatFormat.nexiaMessage
                                     .append(Component.text("You are gamemode (" + gameMode.name + ") banned!"))
                     );
                 }
 
-                factoryPlayer.runCommand("/hub");
+                LobbyUtil.returnToLobby(player, true);
 
                 return true;
             }
@@ -302,22 +202,16 @@ public class LobbyUtil {
         return false;
     }
 
-    public static void sendGame(ServerPlayer minecraftPlayer, String game, boolean message, boolean tp){
-        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+    public static void sendGame(NexiaPlayer player, String game, boolean message, boolean tp) {
 
-        if(checkGameModeBan(player, minecraftPlayer, game)) {
+        if(checkGameModeBan(player, game)) {
             return;
         }
 
-        minecraftPlayer.setInvulnerable(false);
-
-        minecraftPlayer.abilities.mayfly = false;
-        minecraftPlayer.onUpdateAbilities();
-
-        if((game.equalsIgnoreCase("classic ffa") && !FfaClassicUtil.canGoToSpawn(minecraftPlayer)) ||
-                (game.equalsIgnoreCase("kits ffa") && !FfaKitsUtil.canGoToSpawn(minecraftPlayer) ||
-                        (game.equalsIgnoreCase("sky ffa") && !FfaSkyUtil.canGoToSpawn(minecraftPlayer) ||
-                                (game.equalsIgnoreCase("uhc ffa") && !FfaUhcUtil.canGoToSpawn(minecraftPlayer))))) {
+        if((game.equalsIgnoreCase("classic ffa") && !FfaClassicUtil.canGoToSpawn(player)) ||
+                (game.equalsIgnoreCase("kits ffa") && !FfaKitsUtil.canGoToSpawn(player) ||
+                        (game.equalsIgnoreCase("sky ffa") && !FfaSkyUtil.canGoToSpawn(player) ||
+                                (game.equalsIgnoreCase("uhc ffa") && !FfaUhcUtil.canGoToSpawn(player))))) {
 
             player.sendMessage(Component.text("You must be fully healed to go to spawn!").color(ChatFormat.failColor));
             return;
@@ -349,8 +243,8 @@ public class LobbyUtil {
                 player.unwrap().setRespawnPosition(FfaAreas.ffaWorld.dimension(), FfaAreas.spawn.toBlockPos(), FfaAreas.spawn.yaw, true, false);
             }
 
-            FfaClassicUtil.clearThrownTridents(minecraftPlayer);
-            FfaClassicUtil.setInventory(minecraftPlayer);
+            FfaClassicUtil.clearThrownTridents(player);
+            FfaClassicUtil.setInventory(player);
         }
 
         if(game.equalsIgnoreCase("sky ffa")){
@@ -362,7 +256,7 @@ public class LobbyUtil {
                 player.unwrap().setRespawnPosition(com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld.dimension(), com.nexia.ffa.sky.utilities.FfaAreas.spawn.toBlockPos(), com.nexia.ffa.sky.utilities.FfaAreas.spawn.yaw, true, false);
             }
 
-            FfaSkyUtil.joinOrRespawn(minecraftPlayer);
+            FfaSkyUtil.joinOrRespawn(player);
         }
 
         if(game.equalsIgnoreCase("uhc ffa")){
@@ -374,8 +268,8 @@ public class LobbyUtil {
                 player.unwrap().setRespawnPosition(com.nexia.ffa.uhc.utilities.FfaAreas.ffaWorld.dimension(), com.nexia.ffa.uhc.utilities.FfaAreas.spawn.toBlockPos(), com.nexia.ffa.uhc.utilities.FfaAreas.spawn.yaw, true, false);
             }
 
-            FfaUhcUtil.clearArrows(minecraftPlayer);
-            FfaUhcUtil.clearTrident(minecraftPlayer);
+            FfaUhcUtil.clearArrows(player);
+            FfaUhcUtil.clearTrident(player);
         }
 
         if(game.equalsIgnoreCase("kits ffa")){
@@ -387,18 +281,19 @@ public class LobbyUtil {
                 player.unwrap().setRespawnPosition(com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld.dimension(), com.nexia.ffa.kits.utilities.FfaAreas.spawn.toBlockPos(), com.nexia.ffa.kits.utilities.FfaAreas.spawn.yaw, true, false);
             }
 
-            FfaKitsUtil.clearThrownTridents(minecraftPlayer);
-            FfaKitsUtil.clearArrows(minecraftPlayer);
-            FfaKitsUtil.clearSpectralArrows(minecraftPlayer);
+            FfaKitsUtil.clearThrownTridents(player);
+            FfaKitsUtil.clearArrows(player);
+            FfaKitsUtil.clearSpectralArrows(player);
         }
 
         if(game.equalsIgnoreCase("bedwars")){
             if(message){ player.sendActionBarMessage(Component.text("You have joined §b\uD83E\uDE93 §c§lBedwars §e⚡"));}
-            BwPlayerEvents.tryToJoin(minecraftPlayer, false);
+            BwPlayerEvents.tryToJoin(player, false);
         }
 
         if(game.equalsIgnoreCase("duels")){
-            LobbyUtil.leaveAllGames(minecraftPlayer, tp);
+            LobbyUtil.returnToLobby(player, tp);
+
             if(message){
                 player.sendActionBarMessage(Component.text("You have joined §f☯ §c§lDuels §7\uD83E\uDE93"));
                 player.sendMessage(
@@ -414,9 +309,9 @@ public class LobbyUtil {
             PlayerDataManager.get(player).gameMode = PlayerGameMode.OITC;
             OitcGame.death(player, player.unwrap().getLastDamageSource());
 
-            com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(minecraftPlayer).gameMode = OitcGameMode.LOBBY;
+            com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(player).gameMode = OitcGameMode.LOBBY;
 
-            OitcGame.joinQueue(minecraftPlayer);
+            OitcGame.joinQueue(player);
 
             if(message){player.sendActionBarMessage(Component.text("You have joined §7\uD83D\uDDE1 §f§lOITC §7\uD83C\uDFF9"));}
         }
@@ -426,7 +321,7 @@ public class LobbyUtil {
             PlayerDataManager.get(player).gameMode = PlayerGameMode.FOOTBALL;
             com.nexia.minigames.games.football.util.player.PlayerDataManager.get(player).gameMode = FootballGameMode.LOBBY;
 
-            FootballGame.joinQueue(minecraftPlayer);
+            FootballGame.joinQueue(player);
 
             if(message){player.sendActionBarMessage(Component.text("You have joined §7○ §7§lFootball §7\uD83D\uDDE1"));}
         }
@@ -437,9 +332,9 @@ public class LobbyUtil {
             PlayerDataManager.get(player).gameMode = PlayerGameMode.SKYWARS;
             SkywarsGame.death(player, player.unwrap().getLastDamageSource());
 
-            com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(minecraftPlayer).gameMode = SkywarsGameMode.LOBBY;
+            com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(player).gameMode = SkywarsGameMode.LOBBY;
 
-            SkywarsGame.joinQueue(minecraftPlayer);
+            SkywarsGame.joinQueue(player);
 
             if(message){player.sendActionBarMessage(Component.text("You have joined §7☐ §aSkywars §7\uD83D\uDDE1"));}
         }

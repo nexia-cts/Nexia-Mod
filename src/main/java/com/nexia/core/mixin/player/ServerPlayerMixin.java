@@ -6,6 +6,7 @@ import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.duels.CustomDuelGUI;
 import com.nexia.core.gui.duels.DuelGUI;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
@@ -15,6 +16,8 @@ import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
+import net.blumbo.blfscheduler.BlfRunnable;
+import net.blumbo.blfscheduler.BlfScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -36,7 +39,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -53,7 +55,7 @@ public abstract class ServerPlayerMixin extends Player {
 
     @Shadow public abstract void attack(Entity entity);
 
-    @Unique boolean punished = false;
+    private boolean firstJoin = true;
 
     public ServerPlayerMixin(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
         super(level, blockPos, f, gameProfile);
@@ -103,15 +105,17 @@ public abstract class ServerPlayerMixin extends Player {
             return;
         }
 
-        if(level.equals(FootballGame.world) && FootballGame.isFootballPlayer(attacker) && entity instanceof ArmorStand) {
+        if(level.equals(FootballGame.world) && FootballGame.isFootballPlayer(nexiaAttacker) && entity instanceof ArmorStand) {
 
             if(!this.getItemInHand(InteractionHand.MAIN_HAND).getItem().equals(Items.NETHERITE_SWORD)) {
-                PlayerUtil.sendSound(attacker, SoundEvents.PLAYER_ATTACK_NODAMAGE, SoundSource.PLAYERS, 100, 1);
+                nexiaAttacker.sendSound(SoundEvents.PLAYER_ATTACK_NODAMAGE, SoundSource.PLAYERS, 100, 1);
+
+
                 ci.cancel();
                 return;
             }
             if(attacker.getCooldowns().isOnCooldown(Items.NETHERITE_SWORD)) {
-                PlayerUtil.sendSound(attacker, SoundEvents.PLAYER_ATTACK_NODAMAGE, SoundSource.PLAYERS, 100, 1);
+                nexiaAttacker.sendSound(SoundEvents.PLAYER_ATTACK_NODAMAGE, SoundSource.PLAYERS, 100, 1);
                 ci.cancel();
                 return;
             }
@@ -128,23 +132,23 @@ public abstract class ServerPlayerMixin extends Player {
         PlayerGameMode gameMode = PlayerDataManager.get(nexiaPlayer).gameMode;
         PlayerData duelsData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer);
 
-        if (FfaUtil.isFfaPlayer(player)) {
-            FfaUtil.leaveOrDie(player, damageSource, false);
+        if (FfaUtil.isFfaPlayer(nexiaPlayer)) {
+            FfaUtil.leaveOrDie(nexiaPlayer, damageSource, false);
         }
         else if (BwAreas.isBedWarsWorld(getLevel())) {
-            BwPlayerEvents.death(player);
+            BwPlayerEvents.death(nexiaPlayer );
         }
         else if(gameMode == PlayerGameMode.OITC){
-            OitcGame.death(player, damageSource);
+            OitcGame.death(nexiaPlayer, damageSource);
         }
         else if(gameMode == PlayerGameMode.SKYWARS) {
-            SkywarsGame.death(player, damageSource);
+            SkywarsGame.death(nexiaPlayer, damageSource);
         }
         else if(gameMode == PlayerGameMode.LOBBY && duelsData.gameOptions != null) {
-            if(duelsData.gameOptions.duelsGame != null) duelsData.gameOptions.duelsGame.death(player, damageSource);
-            if(duelsData.gameOptions.teamDuelsGame != null) duelsData.gameOptions.teamDuelsGame.death(player, damageSource);
-            if(duelsData.gameOptions.customDuelsGame != null) duelsData.gameOptions.customDuelsGame.death(player, damageSource);
-            if(duelsData.gameOptions.customTeamDuelsGame != null) duelsData.gameOptions.customTeamDuelsGame.death(player, damageSource);
+            if(duelsData.gameOptions.duelsGame != null) duelsData.gameOptions.duelsGame.death(nexiaPlayer, damageSource);
+            if(duelsData.gameOptions.teamDuelsGame != null) duelsData.gameOptions.teamDuelsGame.death(nexiaPlayer, damageSource);
+            if(duelsData.gameOptions.customDuelsGame != null) duelsData.gameOptions.customDuelsGame.death(nexiaPlayer, damageSource);
+            if(duelsData.gameOptions.customTeamDuelsGame != null) duelsData.gameOptions.customTeamDuelsGame.death(nexiaPlayer, damageSource);
         }
 
     }
@@ -162,8 +166,6 @@ public abstract class ServerPlayerMixin extends Player {
     }
     @Inject(method = "tick", at = @At("HEAD"))
     private void detect(CallbackInfo ci){
-        ServerPlayer player = (ServerPlayer) (Object) this;
-
         if(!DetectCommand.enabled) return;
         DetectCommand.detect(new NexiaPlayer((ServerPlayer) (Object) this));
     }

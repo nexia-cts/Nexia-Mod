@@ -35,21 +35,6 @@ public class Main implements ModInitializer, FactoryPlugin {
 		CommandLoader.registerCommands();
 		logger.info("Registered commands.");
 
-		// annoying ahh
-		/*
-		PlayerDetectionEvent.REACH.register((player, entity) -> {
-			Punishment punishment = PlayerDataManager.get(player).punishment;
-			punishment.reachOffences++;
-			punishment.check((ServerPlayer) player);
-		});
-
-		PlayerDetectionEvent.NO_SWING.register((player, entity) -> {
-			Punishment punishment = PlayerDataManager.get(player).punishment;
-			punishment.noSwingOffences++;
-			punishment.check((ServerPlayer) player);
-		});
-		 */
-
 		networkingHandler = new NetworkingHandler();
 	}
 

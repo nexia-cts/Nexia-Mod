@@ -1,17 +1,19 @@
 package com.nexia.minigames.games.bedwars.upgrades;
 
 import com.nexia.core.utilities.item.ItemStackUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.minigames.games.bedwars.players.BwTeam;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.core.NonNullList;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.item.enchantment.Enchantments;
+
+import java.util.Objects;
 
 public class BwApplyUpgrades {
 

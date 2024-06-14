@@ -21,7 +21,7 @@ public class DuelGameMode {
 
     public ItemStack item;
 
-    public ArrayList<ServerPlayer> queue;
+    public ArrayList<NexiaPlayer> queue;
 
     public static ArrayList<ItemStack> duelsItems = new ArrayList<>();
 

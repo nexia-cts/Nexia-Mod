@@ -6,7 +6,6 @@ public class SavedPlayerData {
     public int killstreak;
     public int bestKillstreak;
     public int deaths;
-
     public SavedPlayerData() {
         this.kills = 0;
         this.killstreak = 0;

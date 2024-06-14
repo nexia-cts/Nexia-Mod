@@ -1,7 +1,9 @@
 package com.nexia.core.mixin.block;
 
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.KitRoom;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.ChestBlock;

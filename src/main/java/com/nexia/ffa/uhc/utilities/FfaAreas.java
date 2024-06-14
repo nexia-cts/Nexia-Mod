@@ -4,8 +4,9 @@ import com.combatreforged.factory.api.util.Identifier;
 import com.combatreforged.factory.api.world.entity.Entity;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.pos.BlockVec3;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
+import com.nexia.core.utilities.pos.PositionUtil;
 import com.nexia.core.utilities.world.StructureMap;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.ffa.Main;
@@ -13,7 +14,6 @@ import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.notcoded.codelib.util.world.structure.Rotation;
 

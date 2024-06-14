@@ -1,8 +1,10 @@
 package com.nexia.core.mixin.entity;
 
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.KitRoom;
 import com.nexia.minigames.games.football.FootballGame;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -55,7 +57,7 @@ public abstract class ArmorStandMixin extends LivingEntity {
         NexiaPlayer nexiaPlayer = new NexiaPlayer((ServerPlayer) player);
 
         // Disable interacting with armor stands
-        if ((FfaUtil.isFfaPlayer(player) || FootballGame.isFootballPlayer(player) || KitRoom.isInKitRoom(player)) && !player.isCreative()) {
+        if ((FfaUtil.isFfaPlayer(nexiaPlayer) || FootballGame.isFootballPlayer(nexiaPlayer) || KitRoom.isInKitRoom(nexiaPlayer)) && !player.isCreative()) {
             cir.setReturnValue(InteractionResult.FAIL);
         }
     }

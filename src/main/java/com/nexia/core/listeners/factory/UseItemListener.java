@@ -3,6 +3,7 @@ package com.nexia.core.listeners.factory;
 import com.combatreforged.factory.api.event.player.PlayerUseItemEvent;
 import com.combatreforged.factory.api.world.item.ItemStack;
 import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
 

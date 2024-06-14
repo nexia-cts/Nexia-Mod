@@ -1,7 +1,7 @@
 package com.nexia.core.gui.duels;
 
-import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import eu.pb4.sgui.api.ClickType;
@@ -85,7 +85,8 @@ public class QueueGUI extends SimpleGui {
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
                 if(name.getString().substring(4).equalsIgnoreCase("Leave ALL Queues")) {
                     //PlayerUtil.getFactoryPlayer(player).runCommand("/queue LEAVE", 0, false);
-                    LobbyUtil.leaveAllGames(this.player, true);
+                    GamemodeHandler.removeQueue(nexiaPlayer, null, false);
+
                     this.close();
                     return super.click(index, clickType, action);
                 }
@@ -93,11 +94,11 @@ public class QueueGUI extends SimpleGui {
                 String modifiedName = name.getString().substring(2).replaceAll(" ", "_");
                 DuelGameMode gameMode = GamemodeHandler.identifyGamemode(modifiedName);
 
-                if(gameMode != null && GamemodeHandler.isInQueue(player, gameMode)) {
-                    GamemodeHandler.removeQueue(this.player, modifiedName, false);
+                if(gameMode != null && GamemodeHandler.isInQueue(nexiaPlayer, gameMode)) {
+                    GamemodeHandler.removeQueue(nexiaPlayer, modifiedName, false);
                     this.close();
                 } else {
-                    GamemodeHandler.joinQueue(this.player, modifiedName, false);
+                    GamemodeHandler.joinQueue(nexiaPlayer, modifiedName, false);
                     this.close();
                 }
             }

@@ -1,5 +1,6 @@
 package com.nexia.minigames.games.bedwars.util;
 
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -26,8 +27,7 @@ public class BwPlayerTracker {
     }
 
     // Update all tracker compasses
-    public static void trackCompass(ServerPlayer player) {
-
+    public static void trackCompass(NexiaPlayer player) {
         if (!BwUtil.isBedWarsPlayer(player)) return;
 
         Inventory inventory = player.unwrap().inventory;

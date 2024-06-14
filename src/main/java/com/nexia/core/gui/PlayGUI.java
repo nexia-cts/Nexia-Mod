@@ -1,9 +1,8 @@
 package com.nexia.core.gui;
 
-import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.classic.utilities.FfaAreas;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
@@ -42,63 +41,61 @@ public class PlayGUI extends SimpleGui {
         players = players + com.nexia.ffa.uhc.utilities.FfaAreas.ffaWorld.players().size();
 
         ItemStack ffa = new ItemStack(Items.NETHERITE_SWORD, 1);
-        ffa.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("FFA", ChatFormat.Minecraft.aqua).decoration(ChatFormat.italic, false)));
+        ffa.setHoverName(new TextComponent("§3FFA"));
         ItemDisplayUtil.addGlint(ffa);
         ffa.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         ItemDisplayUtil.addLore(ffa, "§5", 0);
-        ItemDisplayUtil.addLore(ffa, net.kyori.adventure.text.Component.text("Fight players in a huge landscape", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 1);
-        ItemDisplayUtil.addLore(ffa, net.kyori.adventure.text.Component.text("and be the best player.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
+        ItemDisplayUtil.addLore(ffa, "§7Fight players in a huge landscape", 1);
+        ItemDisplayUtil.addLore(ffa, "§7be the best player.", 2);
         ItemDisplayUtil.addLore(ffa, "§f", 3);
-        ItemDisplayUtil.addLore(ffa, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", players), ChatFormat.Minecraft.aqua).decoration(ChatFormat.italic, false), 4);
-
+        ItemDisplayUtil.addLore(ffa, "§3◆ There are " + players + " people playing this gamemode.", 4);
 
         ItemStack other = new ItemStack(Items.DRAGON_BREATH, 1);
-        other.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Other Games", ChatFormat.Minecraft.dark_purple).decoration(ChatFormat.italic, false)));
+        other.setHoverName(new TextComponent("§5Other Games"));
         other.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
-        ItemDisplayUtil.addLore(other, net.kyori.adventure.text.Component.text("Discover other games.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 0);
+        ItemDisplayUtil.addLore(other, "§7Discover other games.", 0);
 
         ItemStack bedwars = new ItemStack(Items.RED_BED, 1);
-        bedwars.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("BedWars", ChatFormat.Minecraft.red).decoration(ChatFormat.italic, false)));
+        bedwars.setHoverName(new TextComponent("§cBedwars"));
         ItemDisplayUtil.addGlint(bedwars);
         bedwars.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         ItemDisplayUtil.addLore(bedwars, "§5", 0);
-        ItemDisplayUtil.addLore(bedwars, net.kyori.adventure.text.Component.text("Protect your bed and", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 1);
-        ItemDisplayUtil.addLore(bedwars, net.kyori.adventure.text.Component.text("destroy other opponent's beds, and", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
-        ItemDisplayUtil.addLore(bedwars, net.kyori.adventure.text.Component.text("kill your opponents to win!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 3);
+        ItemDisplayUtil.addLore(bedwars, "§7Protect your bed and", 1);
+        ItemDisplayUtil.addLore(bedwars, "§7destroy other's beds, kill your", 2);
+        ItemDisplayUtil.addLore(bedwars, "§7opponents to win!", 3);
         ItemDisplayUtil.addLore(bedwars, "§f", 4);
-        ItemDisplayUtil.addLore(bedwars, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", BwAreas.bedWarsWorld.players().size()), ChatFormat.Minecraft.red).decoration(ChatFormat.italic, false), 5);
-
+        ItemDisplayUtil.addLore(bedwars, "§c◆ There are " + BwAreas.bedWarsWorld.players().size() + " people playing this gamemode.", 5);
 
         ItemStack skywars = new ItemStack(Items.GRASS_BLOCK, 1);
-        skywars.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("SkyWars", ChatFormat.Minecraft.green).decoration(ChatFormat.italic, false)));
+        skywars.setHoverName(new TextComponent("§aSkywars"));
         skywars.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         ItemDisplayUtil.addLore(skywars, "§5", 0);
-        ItemDisplayUtil.addLore(skywars, net.kyori.adventure.text.Component.text("Battle against others on", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 1);
-        ItemDisplayUtil.addLore(skywars, net.kyori.adventure.text.Component.text("sky islands and be the", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
-        ItemDisplayUtil.addLore(skywars, net.kyori.adventure.text.Component.text("last one standing to win!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 3);
+        ItemDisplayUtil.addLore(skywars, "§7Battle against others on", 1);
+        ItemDisplayUtil.addLore(skywars, "§7sky islands and be the", 2);
+        ItemDisplayUtil.addLore(skywars, "§7last one standing to win!", 3);
         ItemDisplayUtil.addLore(skywars, "§f", 4);
-        ItemDisplayUtil.addLore(skywars, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", SkywarsGame.world.players().size()), ChatFormat.Minecraft.green).decoration(ChatFormat.italic, false), 5);
+        ItemDisplayUtil.addLore(skywars, "§a◆ There are " + SkywarsGame.world.players().size() + " people playing this gamemode.", 5);
 
         ItemStack duels = new ItemStack(Items.NETHERITE_AXE, 1);
-        duels.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Duels", ChatFormat.Minecraft.blue).decoration(ChatFormat.italic, false)));
+        duels.setHoverName(new TextComponent("§9Duels"));
         ItemDisplayUtil.addGlint(duels);
         duels.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         int duelsPlayers = 0;
         for(ServerPlayer serverPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()) {
-            DuelGameMode gameMode = PlayerDataManager.get(serverPlayer).gameMode;
+            DuelGameMode gameMode = PlayerDataManager.get(serverPlayer.getUUID()).gameMode;
             if(gameMode != null && (gameMode != DuelGameMode.LOBBY && gameMode != DuelGameMode.SPECTATING)) duelsPlayers++;
         }
 
         ItemDisplayUtil.addLore(duels, "§5", 0);
-        ItemDisplayUtil.addLore(duels, net.kyori.adventure.text.Component.text("Duel against other people", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 1);
-        ItemDisplayUtil.addLore(duels, net.kyori.adventure.text.Component.text("or play against people in teams", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
-        ItemDisplayUtil.addLore(duels, net.kyori.adventure.text.Component.text("with team duels!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 3);
+        ItemDisplayUtil.addLore(duels, "§7Duel against other people", 1);
+        ItemDisplayUtil.addLore(duels, "§7or play against people in teams", 2);
+        ItemDisplayUtil.addLore(duels, "§7with team duels!", 3);
         ItemDisplayUtil.addLore(duels, "§f", 4);
-        ItemDisplayUtil.addLore(duels, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", (LobbyUtil.lobbyWorld.players().size() + duelsPlayers)), ChatFormat.Minecraft.blue).decoration(ChatFormat.italic, false), 5);
+        ItemDisplayUtil.addLore(duels, "§9◆ There are " + (LobbyUtil.lobbyWorld.players().size() + duelsPlayers) + " people playing this gamemode.", 5);
 
 
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
@@ -114,49 +111,56 @@ public class PlayGUI extends SimpleGui {
 
     public void setFFALayout(){
         ItemStack classic = new ItemStack(Items.DIAMOND_SWORD, 1);
-        classic.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Classic FFA", ChatFormat.Minecraft.aqua).decoration(ChatFormat.italic, false)));
+        classic.setHoverName(new TextComponent("§bClassic FFA"));
         ItemDisplayUtil.addGlint(classic);
         classic.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         ItemDisplayUtil.addLore(classic, "§b", 0);
-        ItemDisplayUtil.addLore(classic, net.kyori.adventure.text.Component.text("The classic snapshot", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 1);
-        ItemDisplayUtil.addLore(classic, net.kyori.adventure.text.Component.text("Free For All gamemode.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
+        ItemDisplayUtil.addLore(classic, "§7The classic snapshot", 1);
+        ItemDisplayUtil.addLore(classic, "§7Free For All gamemode.", 2);
         ItemDisplayUtil.addLore(classic, "§f", 3);
-        ItemDisplayUtil.addLore(classic, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", FfaAreas.ffaWorld.players().size()), ChatFormat.Minecraft.aqua).decoration(ChatFormat.italic, false), 4);
+        ItemDisplayUtil.addLore(classic, "§b◆ There are " + FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
 
         ItemStack kit = new ItemStack(Items.CROSSBOW, 1);
-        kit.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Kit FFA", ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false)));
+        kit.setHoverName(new TextComponent("§fKit FFA"));
         ItemDisplayUtil.addGlint(kit);
         kit.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         ItemDisplayUtil.addLore(kit, "§5", 0);
-        ItemDisplayUtil.addLore(kit, net.kyori.adventure.text.Component.text("Fight against players", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 1);
-        ItemDisplayUtil.addLore(kit, net.kyori.adventure.text.Component.text("with various kits!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
+        ItemDisplayUtil.addLore(kit, "§7Fight against players", 1);
+        ItemDisplayUtil.addLore(kit, "§7with various kits!", 2);
         ItemDisplayUtil.addLore(kit, "§f", 3);
-        ItemDisplayUtil.addLore(kit, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld.players().size()), ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false), 4);
+        ItemDisplayUtil.addLore(kit, "§f◆ There are " + com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
 
-        ItemStack skyffa = new ItemStack(Items.POTION, 1);
-        skyffa.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Sky FFA", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false)));
-        skyffa.getOrCreateTag().putInt("CustomPotionColor", 16771584);
-        ItemDisplayUtil.addGlint(skyffa);
-        skyffa.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
-        ItemDisplayUtil.addLore(skyffa, "§5", 0);
-        ItemDisplayUtil.addLore(skyffa, net.kyori.adventure.text.Component.text("Fight people on sky islands", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 1);
-        ItemDisplayUtil.addLore(skyffa, net.kyori.adventure.text.Component.text("and drink Piss Juice™ to survive!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
-        ItemDisplayUtil.addLore(skyffa, "§5", 3);
-        ItemDisplayUtil.addLore(skyffa, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld.players().size()), ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false), 4);
+
+        ItemStack pot = new ItemStack(Items.POTION, 1);
+        pot.setHoverName(new TextComponent("§eSky FFA"));
+        pot.getOrCreateTag().putInt("CustomPotionColor", 16771584);
+        ItemDisplayUtil.addGlint(pot);
+        pot.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
+
+        ItemDisplayUtil.addLore(pot, "§5", 0);
+        ItemDisplayUtil.addLore(pot, "§7Fight people on sky islands", 1);
+        ItemDisplayUtil.addLore(pot, "§7and drink Piss Juice™ to survive!", 2);
+        ItemDisplayUtil.addLore(pot, "§5", 3);
+        ItemDisplayUtil.addLore(pot, "§e◆ There are " + com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
+
+
 
         ItemStack uhc = new ItemStack(Items.GOLDEN_APPLE, 1);
-        uhc.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("UHC FFA", ChatFormat.goldColor).decoration(ChatFormat.italic, false)));
+        uhc.setHoverName(new TextComponent("§6UHC FFA"));
         ItemDisplayUtil.addGlint(uhc);
         uhc.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         ItemDisplayUtil.addLore(uhc, "§5", 0);
-        ItemDisplayUtil.addLore(uhc, net.kyori.adventure.text.Component.text("A FFA to practice PvP", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 1);
-        ItemDisplayUtil.addLore(uhc, net.kyori.adventure.text.Component.text("for the UHC gamemode.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
+        ItemDisplayUtil.addLore(uhc, "§7An FFA to practice pvp", 1);
+        ItemDisplayUtil.addLore(uhc, "§7for the UHC gamemode.", 2);
         ItemDisplayUtil.addLore(uhc, "§f", 3);
-        ItemDisplayUtil.addLore(uhc, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", com.nexia.ffa.uhc.utilities.FfaAreas.ffaWorld.players().size()), ChatFormat.goldColor).decoration(ChatFormat.italic, false), 4);
+        ItemDisplayUtil.addLore(uhc, "§6◆ There are " + com.nexia.ffa.uhc.utilities.FfaAreas.ffaWorld.players().size() + " people playing this gamemode.", 4);
+
+
+
 
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
@@ -164,7 +168,7 @@ public class PlayGUI extends SimpleGui {
         fillEmptySlots(emptySlot);
         this.setSlot(1, classic);
         this.setSlot(3, uhc);
-        this.setSlot(5, skyffa);
+        this.setSlot(5, pot);
         this.setSlot(7, kit);
     }
 
@@ -175,37 +179,36 @@ public class PlayGUI extends SimpleGui {
         unknown.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         ItemStack back = new ItemStack(Items.DRAGON_BREATH, 1);
-        back.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Back", ChatFormat.Minecraft.dark_purple).decoration(ChatFormat.italic, false)));
+        back.setHoverName(new TextComponent("§5Back"));
         back.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
-        ItemDisplayUtil.addLore(back, net.kyori.adventure.text.Component.text("Go back to the main menu.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 0);
+        ItemDisplayUtil.addLore(back, "§7Go back to the main menu.", 0);
 
         ItemStack oitc = new ItemStack(Items.BOW, 1);
-        oitc.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("OITC", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false)));
+        oitc.setHoverName(new TextComponent("§eOITC"));
         ItemDisplayUtil.addGlint(oitc);
         oitc.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         ItemDisplayUtil.addLore(oitc, "§5", 0);
-        ItemDisplayUtil.addLore(oitc, net.kyori.adventure.text.Component.text("One in the chamber.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 1);
-        ItemDisplayUtil.addLore(oitc, net.kyori.adventure.text.Component.text("Try to kill as many people as possible", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
-        ItemDisplayUtil.addLore(oitc, net.kyori.adventure.text.Component.text("to achieve victory!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 3);
+        ItemDisplayUtil.addLore(oitc, "§7One in the chamber.", 1);
+        ItemDisplayUtil.addLore(oitc, "§7Try to kill as many people as possible", 2);
+        ItemDisplayUtil.addLore(oitc, "§7to achieve victory!", 3);
         ItemDisplayUtil.addLore(oitc, "§f", 4);
-        ItemDisplayUtil.addLore(oitc, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", OitcGame.world.players().size()), ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false), 5);
-
+        ItemDisplayUtil.addLore(oitc, "§e◆ There are " + OitcGame.world.players().size() + " people playing this gamemode.", 5);
 
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));
 
         ItemStack football = new ItemStack(Items.ARMOR_STAND, 1);
-        football.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Football", ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false)));
+        football.setHoverName(new TextComponent("§fFootball"));
         ItemDisplayUtil.addGlint(football);
         football.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         ItemDisplayUtil.addLore(football, "§f", 0);
-        ItemDisplayUtil.addLore(football, net.kyori.adventure.text.Component.text("Also known as soccer.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 1);
-        ItemDisplayUtil.addLore(football, net.kyori.adventure.text.Component.text("You kick a ball into a goal", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
-        ItemDisplayUtil.addLore(football, net.kyori.adventure.text.Component.text("to achieve victory!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 3);
+        ItemDisplayUtil.addLore(football, "§7Also known as soccer.", 1);
+        ItemDisplayUtil.addLore(football, "§7You kick a ball into a goal", 2);
+        ItemDisplayUtil.addLore(football, "§7to achieve victory!", 3);
         ItemDisplayUtil.addLore(football, "§f", 4);
-        ItemDisplayUtil.addLore(football, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", FootballGame.world.players().size()), ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false), 5);
+        ItemDisplayUtil.addLore(football, "§f◆ There are " + FootballGame.world.players().size() + " people playing this gamemode.", 5);
 
         fillEmptySlots(emptySlot);
 
@@ -224,60 +227,60 @@ public class PlayGUI extends SimpleGui {
 
             NexiaPlayer nexiaPlayer = new NexiaPlayer(this.player);
 
-            if(name.getString().equalsIgnoreCase("Classic FFA")){
+            if(name.getString().equalsIgnoreCase("§bClassic FFA")){
                 LobbyUtil.sendGame(nexiaPlayer, "classic ffa", true, true);
                 this.close();
             }
 
-            if(name.getString().contains("Kit FFA")){
+            if(name.getString().equalsIgnoreCase("§fKit FFA")){
                 LobbyUtil.sendGame(nexiaPlayer, "kits ffa", true, true);
                 this.close();
             }
 
-            if(name.getString().contains("Sky FFA")){
+            if(name.getString().equalsIgnoreCase("§eSky FFA")){
                 LobbyUtil.sendGame(nexiaPlayer, "sky ffa", true, true);
                 this.close();
             }
 
-            if(name.getString().contains("UHC FFA")){
+            if(name.getString().equalsIgnoreCase("§6UHC FFA")){
                 LobbyUtil.sendGame(nexiaPlayer, "uhc ffa", true, true);
                 this.close();
             }
 
-            if(name.getString().contains("FFA")){
+            if(name.getString().equalsIgnoreCase("§3FFA")){
                 this.setFFALayout();
             }
 
-            if(name.getString().contains("BedWars")){
+            if(name.getString().equalsIgnoreCase("§cBedwars")){
                 LobbyUtil.sendGame(nexiaPlayer, "bedwars", true, true);
                 this.close();
             }
 
-            if(name.getString().contains("SkyWars")){
+            if(name.getString().equalsIgnoreCase("§aSkywars")){
                 LobbyUtil.sendGame(nexiaPlayer, "skywars", true, true);
                 this.close();
             }
 
-            if(name.getString().contains("OITC")){
+            if(name.getString().equalsIgnoreCase("§eOITC")){
                 LobbyUtil.sendGame(nexiaPlayer, "oitc", true, true);
                 this.close();
             }
 
-            if(name.getString().contains("Football")){
+            if(name.getString().equalsIgnoreCase("§fFootball")){
                 LobbyUtil.sendGame(nexiaPlayer, "football", true, true);
                 this.close();
             }
 
-            if(name.getString().contains("Duels")){
+            if(name.getString().equalsIgnoreCase("§9Duels")){
                 LobbyUtil.sendGame(nexiaPlayer, "duels", true, true);
                 this.close();
             }
 
-            if(name.getString().contains("Other Games")){
+            if(name.getString().toLowerCase().equalsIgnoreCase("§5Other Games")){
                 this.setOtherGamesLayout();
             }
 
-            if(name.getString().contains("Back")){
+            if(name.getString().toLowerCase().equalsIgnoreCase("§5Back")){
                 this.setMainLayout();
             }
 

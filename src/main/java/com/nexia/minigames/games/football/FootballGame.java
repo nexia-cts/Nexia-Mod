@@ -1,11 +1,11 @@
 package com.nexia.minigames.games.football;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
-import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.DuelGameHandler;
@@ -43,9 +43,9 @@ import java.util.ArrayList;
 import java.util.function.Predicate;
 
 public class FootballGame {
-    public static ArrayList<AccuratePlayer> players = new ArrayList<>();
+    public static ArrayList<NexiaPlayer> players = new ArrayList<>();
 
-    public static ArrayList<AccuratePlayer> spectator = new ArrayList<>();
+    public static ArrayList<NexiaPlayer> spectator = new ArrayList<>();
 
     public static ServerLevel world = null;
 
@@ -60,7 +60,7 @@ public class FootballGame {
 
     public static int queueTime = 15;
 
-    public static ArrayList<AccuratePlayer> queue = new ArrayList<>();
+    public static ArrayList<NexiaPlayer> queue = new ArrayList<>();
 
     public static boolean isStarted = false;
 
@@ -73,16 +73,13 @@ public class FootballGame {
     private static int endTime = 5;
 
 
-    public static void leave(ServerPlayer minecraftPlayer) {
-        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
-        AccuratePlayer accuratePlayer = AccuratePlayer.create(minecraftPlayer);
+    public static void leave(NexiaPlayer player) {
+        PlayerData data = PlayerDataManager.get(player);
+        FootballGame.spectator.remove(player);
+        FootballGame.queue.remove(player);
+        FootballGame.players.remove(player);
 
-        PlayerData data = PlayerDataManager.get(minecraftPlayer);
-        FootballGame.spectator.remove(accuratePlayer);
-        FootballGame.queue.remove(accuratePlayer);
-        FootballGame.players.remove(accuratePlayer);
-
-        if(data.gameMode.equals(FootballGameMode.PLAYING) && (winnerTeam == null || !winnerTeam.players.contains(accuratePlayer))) data.savedData.loss++;
+        if(data.gameMode.equals(FootballGameMode.PLAYING) && (winnerTeam == null || !winnerTeam.players.contains(player))) data.savedData.loss++;
         data.team = null;
 
         player.removeTag("in_football_game");
@@ -104,7 +101,7 @@ public class FootballGame {
                 // r * 65536 + g * 256 + b;
 
                 if(winnerTeam != null) {
-                    ServerPlayer randomPlayer = winnerTeam.players.get(RandomUtil.randomInt(winnerTeam.players.size())).get();
+                    NexiaPlayer randomPlayer = winnerTeam.players.get(RandomUtil.randomInt(winnerTeam.players.size()));
                     if(randomPlayer != null) DuelGameHandler.winnerRockets(randomPlayer, FootballGame.world, color);
                 }
 
@@ -147,7 +144,7 @@ public class FootballGame {
                         player.sendSound(new EntityPos(player.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
                     }
 
-                    fPlayer.sendActionBarMessage(
+                    player.sendActionBarMessage(
                             Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
                                     .append(Component.text(FootballGame.map.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                                     .append(Component.text(" (" + FootballGame.queue.size() + ")").color(TextColor.fromHexString("#b3b3b3")))
@@ -157,7 +154,7 @@ public class FootballGame {
                     );
 
                     if(FootballGame.queueTime <= 5 || FootballGame.queueTime == 10 || FootballGame.queueTime == 15) {
-                        fPlayer.sendMessage(Component.text("The game will start in ").color(TextColor.fromHexString("#b3b3b3"))
+                        player.sendMessage(Component.text("The game will start in ").color(TextColor.fromHexString("#b3b3b3"))
                                 .append(Component.text(FootballGame.queueTime).color(ChatFormat.brandColor1))
                                 .append(Component.text(" seconds.").color(TextColor.fromHexString("#b3b3b3")))
                         );
@@ -194,8 +191,8 @@ public class FootballGame {
             entity.setDeltaMovement(0, 0, 0);
             entity.moveTo(0, 80, 0, 0, 0);
 
-            for(ServerPlayer player : FootballGame.getViewers()) {
-                PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(Component.text("Team " + teamID).color(ChatFormat.brandColor2), Component.text("has scored a goal!").color(ChatFormat.normalColor)));
+            for(NexiaPlayer player : FootballGame.getViewers()) {
+                player.sendTitle(Title.title(Component.text("Team " + teamID).color(ChatFormat.brandColor2), Component.text("has scored a goal!").color(ChatFormat.normalColor)));
             }
 
             for(NexiaPlayer player : FootballGame.team1.players) {
@@ -224,13 +221,12 @@ public class FootballGame {
         return Title.title(Component.text(queueTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
     }
 
-    public static void joinQueue(ServerPlayer player) {
+    public static void joinQueue(NexiaPlayer player) {
         com.nexia.minigames.games.football.util.player.PlayerData data = PlayerDataManager.get(player);
         data.team = null;
-        AccuratePlayer accuratePlayer = AccuratePlayer.create(player);
-        accuratePlayer.get().setHealth(accuratePlayer.get().getMaxHealth());
+
         if(FootballGame.isStarted){
-            FootballGame.spectator.add(accuratePlayer);
+            FootballGame.spectator.add(player);
             PlayerDataManager.get(player).gameMode = FootballGameMode.SPECTATOR;
             player.setGameMode(Minecraft.GameMode.SPECTATOR);
         } else {
@@ -263,27 +259,27 @@ public class FootballGame {
         int teamID = 1;
         if(winnerTeam == FootballGame.team2) teamID = 2;
 
-        for(AccuratePlayer accuratePlayer : winnerTeam.players) {
-            PlayerUtil.getFactoryPlayer(accuratePlayer.get()).sendTitle(Title.title(Component.text("You won!").color(ChatFormat.greenColor), Component.text("")));
-            PlayerDataManager.get(accuratePlayer.get()).savedData.wins++;
+        for(NexiaPlayer player : winnerTeam.players) {
+            player.sendTitle(Title.title(Component.text("You won!").color(ChatFormat.greenColor), Component.text("")));
+            PlayerDataManager.get(player).savedData.wins++;
         }
 
-        for(ServerPlayer player : FootballGame.getViewers()){
-            PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(Component.text("Team " + teamID).color(ChatFormat.brandColor2), Component.text("has won the game! (" + winnerTeam.goals + " goals)").color(ChatFormat.normalColor)));
+        for(NexiaPlayer player : FootballGame.getViewers()){
+            player.sendTitle(Title.title(Component.text("Team " + teamID).color(ChatFormat.brandColor2), Component.text("has won the game! (" + winnerTeam.goals + " goals)").color(ChatFormat.normalColor)));
         }
     }
 
     public static void updateInfo() {
 
         String[] timer = TickUtil.minuteTimeStamp(FootballGame.gameTime * 20);
-        for(ServerPlayer player : FootballGame.getViewers()) {
+        for(NexiaPlayer player : FootballGame.getViewers()) {
             if(player == null) return;
             FootballTeam playerTeam = PlayerDataManager.get(player).team;
             if(playerTeam == null) playerTeam = FootballGame.team1; // maybe cuz spectator
             FootballTeam otherTeam = FootballGame.team1;
             if(playerTeam.equals(FootballGame.team1)) otherTeam = FootballGame.team2;
 
-            PlayerUtil.getFactoryPlayer(player).sendActionBarMessage(
+            player.sendActionBarMessage(
                     Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
                             .append(Component.text(FootballGame.map.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
@@ -340,7 +336,7 @@ public class FootballGame {
         return armorStand;
     }
 
-    private static FootballTeam assignPlayer(AccuratePlayer player) {
+    private static FootballTeam assignPlayer(NexiaPlayer player) {
         int players = FootballGame.players.size();
         int random = RandomUtil.randomInt(1, 2);
 
@@ -396,7 +392,7 @@ public class FootballGame {
                 //NexiaPlayer.inventory.setItem(1, kicking);
                 player.unwrap().inventory.setItem(0, kicking);
 
-                PlayerData data = PlayerDataManager.get(serverPlayer);
+                PlayerData data = PlayerDataManager.get(player);
                 data.gameMode = FootballGameMode.PLAYING;
 
                 player.addTag("in_football_game");
@@ -510,10 +506,10 @@ public class FootballGame {
         resetAll();
     }
 
-    public static ArrayList<ServerPlayer> getViewers() {
-        ArrayList<ServerPlayer> viewers = new ArrayList<>();
-        FootballGame.players.forEach(player -> viewers.add(player.get()));
-        FootballGame.spectator.forEach(player -> viewers.add(player.get()));
+    public static ArrayList<NexiaPlayer> getViewers() {
+        ArrayList<NexiaPlayer> viewers = new ArrayList<>();
+        viewers.addAll(FootballGame.players);
+        viewers.addAll(FootballGame.spectator);
         return viewers;
     }
 }

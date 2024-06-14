@@ -1,12 +1,12 @@
 package com.nexia.minigames.games.skywars;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
@@ -19,7 +19,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -30,7 +29,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.notcoded.codelib.util.TickUtil;
@@ -44,9 +42,9 @@ import java.util.UUID;
 import static com.nexia.core.utilities.world.WorldUtil.getChunkGenerator;
 
 public class SkywarsGame {
-    public static ArrayList<AccuratePlayer> alive = new ArrayList<>();
+    public static ArrayList<NexiaPlayer> alive = new ArrayList<>();
 
-    public static ArrayList<AccuratePlayer> spectator = new ArrayList<>();
+    public static ArrayList<NexiaPlayer> spectator = new ArrayList<>();
 
     public static ServerLevel world = null;
 
@@ -54,8 +52,8 @@ public class SkywarsGame {
 
     public static RuntimeWorldConfig config = new RuntimeWorldConfig()
             .setDimensionType(DimensionType.OVERWORLD_LOCATION)
-            .setGenerator(getChunkGenerator(Biomes.PLAINS))
-            .setDifficulty(Difficulty.HARD)
+            .setGenerator(getChunkGenerator())
+            .setDifficulty(Difficulty.EASY)
             .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
             .setGameRule(GameRules.RULE_MOBGRIEFING, true)
             .setGameRule(GameRules.RULE_WEATHER_CYCLE, false)
@@ -76,14 +74,14 @@ public class SkywarsGame {
     public static int gameEnd = 360;
     public static int queueTime = 15;
 
-    public static ArrayList<AccuratePlayer> queue = new ArrayList<>();
+    public static ArrayList<NexiaPlayer> queue = new ArrayList<>();
 
     public static boolean isStarted = false;
 
     public static boolean isEnding = false;
     public static boolean isGlowingActive = false;
 
-    private static AccuratePlayer winner = null;
+    private static NexiaPlayer winner = null;
 
     public static final String SKYWARS_TAG = "skywars";
 
@@ -94,15 +92,14 @@ public class SkywarsGame {
     public static void leave(NexiaPlayer player) {
         SkywarsGame.death(player, player.unwrap().getLastDamageSource());
 
-        PlayerData data = PlayerDataManager.get(minecraftPlayer);
-        SkywarsGame.spectator.remove(accuratePlayer);
+        PlayerData data = PlayerDataManager.get(player);
+        SkywarsGame.spectator.remove(player);
 
-        if(!SkywarsGame.isStarted && SkywarsGame.queue.contains(accuratePlayer)) {
+        if(!SkywarsGame.isStarted && SkywarsGame.queue.contains(player)) {
             SkywarsGame.map = SkywarsMap.calculateMap(SkywarsGame.queue.size(), true);
         }
-        SkywarsGame.queue.remove(accuratePlayer);
-
-        SkywarsGame.alive.remove(accuratePlayer);
+        SkywarsGame.queue.remove(player);
+        SkywarsGame.alive.remove(player);
 
         data.kills = 0;
 
@@ -151,15 +148,13 @@ public class SkywarsGame {
 
         } else {
             if(SkywarsGame.queue.size() >= 2) {
-                for(AccuratePlayer player : SkywarsGame.queue){
-                    Player fPlayer = PlayerUtil.getFactoryPlayer(player.get());
-
+                for(NexiaPlayer player : SkywarsGame.queue){
                     if(SkywarsGame.queueTime <= 5) {
                         player.sendTitle(getTitle());
                         player.sendSound(new EntityPos(player.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
                     }
 
-                    fPlayer.sendActionBarMessage(
+                    player.sendActionBarMessage(
                             Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
                                     .append(Component.text(StringUtil.capitalize(SkywarsGame.map.id)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                                     .append(Component.text(" (" + SkywarsGame.queue.size() + "/" + SkywarsMap.maxJoinablePlayers + ")").color(TextColor.fromHexString("#b3b3b3")))
@@ -171,8 +166,11 @@ public class SkywarsGame {
                     );
                 }
                 if(SkywarsGame.queueTime <= 5 || SkywarsGame.queueTime == 10 || SkywarsGame.queueTime == 15) {
-                    for(AccuratePlayer queuePlayers : SkywarsGame.queue) {
-                        queuePlayers.get().sendMessage(LegacyChatFormat.format("§7The game will start in §5{} §7seconds.", SkywarsGame.queueTime), Util.NIL_UUID);
+                    for(NexiaPlayer queuePlayers : SkywarsGame.queue) {
+                        queuePlayers.sendMessage(Component.text("The game will start in ", ChatFormat.systemColor)
+                                .append(Component.text(SkywarsGame.queueTime, ChatFormat.brandColor2))
+                                .append(Component.text(" seconds.", ChatFormat.systemColor))
+                        );
                     }
                 }
 
@@ -198,13 +196,13 @@ public class SkywarsGame {
         return Title.title(Component.text(SkywarsGame.queueTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
     }
 
-    public static void joinQueue(ServerPlayer player) {
+    public static void joinQueue(NexiaPlayer player) {
         PlayerData data = PlayerDataManager.get(player);
         data.kills = 0;
         player.reset(true, Minecraft.GameMode.ADVENTURE);
 
         if(SkywarsGame.isStarted || SkywarsGame.queue.size() >= SkywarsMap.maxJoinablePlayers){
-            SkywarsGame.spectator.add(AccuratePlayer.create(player));
+            SkywarsGame.spectator.add(player);
             PlayerDataManager.get(player).gameMode = SkywarsGameMode.SPECTATOR;
             PlayerUtil.sendBossbar(SkywarsGame.BOSSBAR, player, false);
             player.setGameMode(Minecraft.GameMode.SPECTATOR);
@@ -246,8 +244,8 @@ public class SkywarsGame {
 
         if(SkywarsGame.queue.size() > SkywarsGame.map.maxPlayers) {
             while(SkywarsGame.queue.size() > SkywarsGame.map.maxPlayers) {
-                AccuratePlayer accuratePlayer = SkywarsGame.queue.get(RandomUtil.randomInt(SkywarsGame.queue.size()));
-                SkywarsGame.queue.remove(accuratePlayer);
+                NexiaPlayer player = SkywarsGame.queue.get(RandomUtil.randomInt(SkywarsGame.queue.size()));
+                SkywarsGame.queue.remove(player);
                 //LobbyUtil.returnToLobby(accuratePlayer.get(), true);
                 player.runCommand("/hub", 0, false);
             }
@@ -266,9 +264,8 @@ public class SkywarsGame {
 
         ArrayList<EntityPos> positions = new ArrayList<>(SkywarsGame.map.positions);
 
-        for (AccuratePlayer player : SkywarsGame.alive) {
+        for (NexiaPlayer player : SkywarsGame.alive) {
             EntityPos pos = positions.get(RandomUtil.randomInt(positions.size()));
-            ServerPlayer serverPlayer = player.get();
 
             PlayerDataManager.get(player).gameMode = SkywarsGameMode.PLAYING;
             player.addTag(SKYWARS_TAG);
@@ -311,8 +308,7 @@ public class SkywarsGame {
 
         SkywarsGame.isEnding = true;
 
-        SkywarsGame.winner = accuratePlayer;
-        ServerPlayer player = accuratePlayer.get();
+        SkywarsGame.winner = player;
 
         PlayerDataManager.get(player).savedData.wins++;
 
@@ -329,8 +325,8 @@ public class SkywarsGame {
     public static void updateInfo() {
         CustomBossEvent bossbar = SkywarsGame.BOSSBAR;
 
-        for(ServerPlayer player : SkywarsGame.getViewers()) {
-            PlayerUtil.getFactoryPlayer(player).sendActionBarMessage(
+        for(NexiaPlayer player : SkywarsGame.getViewers()) {
+            player.sendActionBarMessage(
                     Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
                             .append(Component.text(StringUtil.capitalize(SkywarsGame.map.id)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
@@ -373,7 +369,7 @@ public class SkywarsGame {
                             .append(Component.text(" All players have received glowing.").color(TextColor.fromHexString("#FFE588")))
             );
 
-            fPlayer.sendTitle(
+            player.sendTitle(
                     Title.title(Component.text("⚠").color(ChatFormat.failColor),
                             Component.text(" All players have received glowing.").color(TextColor.fromHexString("#FFE588")))
             );
@@ -387,12 +383,12 @@ public class SkywarsGame {
                     Component.text("[").color(ChatFormat.lineColor)
                             .append(Component.text("⚠").color(ChatFormat.failColor))
                             .append(Component.text("]").color(ChatFormat.lineColor))
-                            .append(Component.text(" In 1 minute, the closest player to center will win. (0, 80, 0)").color(TextColor.fromHexString("#FFE588")))
+                            .append(Component.text(" In 1 minute, the closest player to center will win.").color(TextColor.fromHexString("#FFE588")))
             );
 
-            fPlayer.sendTitle(
+            player.sendTitle(
                     Title.title(Component.text("⚠").color(ChatFormat.failColor),
-                            Component.text(" In 1 minute, the closest player to center will win. (0, 80, 0)").color(TextColor.fromHexString("#FFE588")))
+                            Component.text(" In 1 minute, the closest player to center will win.").color(TextColor.fromHexString("#FFE588")))
             );
         }
     }
@@ -409,8 +405,7 @@ public class SkywarsGame {
         return com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.SKYWARS || player.hasTag("skywars");
     }
 
-    public static void death(ServerPlayer victim, DamageSource source){
-        AccuratePlayer accurateVictim = AccuratePlayer.create(victim);
+    public static void death(NexiaPlayer victim, DamageSource source){
         PlayerData victimData = PlayerDataManager.get(victim);
         if(SkywarsGame.isStarted && SkywarsGame.alive.contains(victim) && victimData.gameMode == SkywarsGameMode.PLAYING) {
             ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim.unwrap());
@@ -425,14 +420,16 @@ public class SkywarsGame {
             victim.unwrap().destroyVanishingCursedItems();
             victim.unwrap().inventory.dropAll();
 
-            if(SkywarsGame.winner != accurateVictim) victimData.savedData.losses++;
-            SkywarsGame.alive.remove(accurateVictim);
-            SkywarsGame.spectator.add(accurateVictim);
+            if(SkywarsGame.winner != victim) victimData.savedData.losses++;
+            SkywarsGame.alive.remove(victim);
+            SkywarsGame.spectator.add(victim);
             PlayerDataManager.get(victim).gameMode = SkywarsGameMode.SPECTATOR;
 
             Component message = Component.text(victim.unwrap().getCombatTracker().getDeathMessage().getString(), ChatFormat.systemColor);
 
-            PlayerUtil.broadcast(SkywarsGame.getViewers(), message);
+            for(NexiaPlayer nexiaPlayer : SkywarsGame.getViewers()) {
+                nexiaPlayer.sendMessage(message);
+            }
 
             if(SkywarsGame.alive.size() == 1 && !SkywarsGame.isEnding) {
                 SkywarsGame.endGame(SkywarsGame.alive.getFirst());
@@ -444,15 +441,9 @@ public class SkywarsGame {
         SkywarsGame.resetAll();
     }
 
-    public static ArrayList<ServerPlayer> getViewers() {
-        ArrayList<ServerPlayer> viewers = new ArrayList<>();
-        SkywarsGame.alive.forEach(accuratePlayer -> viewers.add(accuratePlayer.get()));
-        SkywarsGame.spectator.forEach(accuratePlayer -> viewers.add(accuratePlayer.get()));
-        return viewers;
-    }
-
-    public static ArrayList<AccuratePlayer> getAccurateViewers() {
-        ArrayList<AccuratePlayer> viewers = new ArrayList<>(SkywarsGame.alive);
+    public static ArrayList<NexiaPlayer> getViewers() {
+        ArrayList<NexiaPlayer> viewers = new ArrayList<>();
+        viewers.addAll(SkywarsGame.alive);
         viewers.addAll(SkywarsGame.spectator);
         return viewers;
     }

@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.bedwars.custom;
 
-import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.minigames.games.bedwars.BwGame;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.server.level.ServerPlayer;
@@ -34,7 +34,7 @@ public class BwTrident extends ThrownTrident {
             if (!BwGame.gameTridents.containsKey(nexiaPlayer)) {
                 BwGame.gameTridents.put(nexiaPlayer, new ArrayList<>());
             }
-            BwGame.gameTridents.get(this.owner).add(this);
+            BwGame.gameTridents.get(nexiaPlayer).add(this);
         }
     }
 
@@ -57,5 +57,4 @@ public class BwTrident extends ThrownTrident {
     public void outOfWorld() {
         this.noPhysics = true;
     }
-
 }

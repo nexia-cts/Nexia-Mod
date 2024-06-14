@@ -5,7 +5,6 @@ import com.combatreforged.factory.api.FactoryServer;
 import com.combatreforged.factory.api.scheduler.TaskScheduler;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
-import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.ffa.classic.utilities.FfaAreas;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
@@ -52,8 +51,6 @@ public class ServerTime {
 
         serverType = ServerType.returnServer();
         fantasy = Fantasy.get(minecraftServer);
-
-        NexiaRank.setupRanks(server);
 
         LobbyUtil.setLobbyWorld(minecraftServer);
         WorldUtil.setVoidWorld(minecraftServer);

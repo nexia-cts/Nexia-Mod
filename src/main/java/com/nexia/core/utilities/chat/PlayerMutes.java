@@ -20,7 +20,7 @@ public class PlayerMutes {
             return;
         }
 
-        SavedPlayerData mutedData = PlayerDataManager.get(muted).savedData;
+        SavedPlayerData mutedData = PlayerDataManager.get(muted.getUUID()).savedData;
         LocalDateTime currentMuteTime = mutedData.getMuteEnd();
 
         if (LocalDateTime.now().isBefore(currentMuteTime)) {

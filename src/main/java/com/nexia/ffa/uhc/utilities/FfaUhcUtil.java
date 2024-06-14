@@ -3,10 +3,10 @@ package com.nexia.ffa.uhc.utilities;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.google.gson.Gson;
+import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.chat.LegacyChatFormat;
-import com.nexia.core.utilities.item.ItemStackUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
@@ -18,7 +18,6 @@ import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.blumbo.blfscheduler.BlfRunnable;
 import net.blumbo.blfscheduler.BlfScheduler;
 import net.kyori.adventure.text.Component;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -45,12 +44,19 @@ public class FfaUhcUtil {
 
     public static ArrayList<UUID> wasInSpawn = new ArrayList<>();
 
-    public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
+    public static boolean isFfaPlayer(NexiaPlayer player) {
         com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
         return player.hasTag("ffa_uhc") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.UHC;
     }
 
-    public static void calculateKill(ServerPlayer player){
+    public static boolean beforeDamage(NexiaPlayer player, DamageSource damageSource) {
+        if (damageSource == DamageSource.OUT_OF_WORLD) return true;
+
+        return !isInFfaSpawn(player);
+    }
+
+
+    public static void calculateKill(NexiaPlayer player){
         SavedPlayerData data = PlayerDataManager.get(player).savedData;
         data.killstreak++;
         if(data.killstreak > data.bestKillstreak){
@@ -90,13 +96,13 @@ public class FfaUhcUtil {
             NexiaPlayer nexiaPlayer = new NexiaPlayer(minecraftPlayer);
             if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !FfaAreas.isInFfaSpawn(nexiaPlayer)){
                 wasInSpawn.remove(minecraftPlayer.getUUID());
-                saveInventory(minecraftPlayer);
-                player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your inventory layout was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
+                saveInventory(nexiaPlayer);
+                nexiaPlayer.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your inventory layout was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
             }
         }
     }
 
-    public static void saveInventory(ServerPlayer player){
+    public static void saveInventory(NexiaPlayer player){
         // /config/nexia/ffa/uhc/inventory/savedInventories/uuid.json
 
         SavableInventory savableInventory = new SavableInventory(player.unwrap().inventory);
@@ -108,18 +114,16 @@ public class FfaUhcUtil {
             fileWriter.write(stringInventory);
             fileWriter.close();
         } catch (Exception var6) {
-            ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
-            player.sendMessage(LegacyChatFormat.format("{f}Failed to save UHC FFA inventory. Please try again or contact a developer."), Util.NIL_UUID);
+            LobbyUtil.returnToLobby(player, true);
+            player.sendMessage(Component.text("Failed to set UHC FFA inventory. Please try again or contact a developer.", ChatFormat.failColor));
             return;
         }
     }
 
-    public static void setInventory(ServerPlayer player){
+    public static void setInventory(NexiaPlayer player){
 
         // /config/nexia/ffa/uhc/inventory/savedInventories/uuid.json
         // /config/nexia/ffa/uhc/inventory/default.json
-
-        if (!isFfaPlayer(player)) return;
 
         SavableInventory defaultInventory = null;
         SavableInventory layout = null;
@@ -140,8 +144,8 @@ public class FfaUhcUtil {
         }
 
         if(defaultInventory == null) {
-            ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
-            player.sendMessage(LegacyChatFormat.format("{f}Failed to set UHC FFA inventory. Please try again or contact a developer."), Util.NIL_UUID);
+            LobbyUtil.returnToLobby(player, true);
+            player.sendMessage(Component.text("Failed to set UHC FFA inventory. Please try again or contact a developer.", ChatFormat.failColor));
             return;
         }
 
@@ -151,7 +155,7 @@ public class FfaUhcUtil {
             player.unwrap().inventory.replaceWith(defaultInventory.asPlayerInventory());
         }
 
-        ItemStackUtil.sendInventoryRefreshPacket(player);
+        player.refreshInventory();
     }
 
     public static boolean beforeBuild(NexiaPlayer player, BlockPos blockPos) {
@@ -160,14 +164,8 @@ public class FfaUhcUtil {
         return blockPos.getY() < FfaAreas.buildLimitY;
     }
 
-    public static boolean beforeDamage(ServerPlayer player, DamageSource damageSource) {
-        if (damageSource == DamageSource.OUT_OF_WORLD) return true;
 
-        return !isInFfaSpawn(player);
-    }
-
-
-    public static void calculateDeath(ServerPlayer player){
+    public static void calculateDeath(NexiaPlayer player){
         SavedPlayerData data = PlayerDataManager.get(player).savedData;
         data.deaths++;
         if(data.killstreak > data.bestKillstreak){
@@ -190,7 +188,7 @@ public class FfaUhcUtil {
         data.killstreak = 0;
     }
 
-    public static void clearArrows(ServerPlayer player) {
+    public static void clearArrows(NexiaPlayer player) {
         BlockPos c1 = ffaCorner1.offset(-10, -ffaCorner1.getY(), -10);
         BlockPos c2 = ffaCorner2.offset(10, 319 - ffaCorner2.getY(), 10);
         AABB aabb = new AABB(c1, c2);
@@ -202,7 +200,7 @@ public class FfaUhcUtil {
         }
     }
 
-    public static void clearTrident(ServerPlayer player) {
+    public static void clearTrident(NexiaPlayer player) {
         BlockPos c1 = ffaCorner1.offset(-10, -ffaCorner1.getY(), -10);
         BlockPos c2 = ffaCorner2.offset(10, 319 - ffaCorner2.getY(), 10);
         AABB aabb = new AABB(c1, c2);
@@ -248,10 +246,8 @@ public class FfaUhcUtil {
                 Component component = FfaUtil.returnClassicDeathMessage(minecraftPlayer, nexiaAttacker);
                 if(component != null) msg = component;
 
-            Component component = FfaUtil.returnClassicDeathMessage(minecraftPlayer, attacker);
-            if(component != null) msg = component;
-
-            calculateKill(attacker);
+                calculateKill(nexiaAttacker);
+            }
         }
 
         for (Player player : ServerTime.factoryServer.getPlayers()) {
