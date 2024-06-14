@@ -1,9 +1,9 @@
 package com.nexia.minigames.games.bedwars.players;
 
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.bedwars.BwGame;
@@ -11,14 +11,14 @@ import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.upgrades.BwTrap;
 import com.nexia.minigames.games.bedwars.upgrades.BwUpgrade;
 import com.nexia.minigames.games.bedwars.util.BwScoreboard;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.title.Title;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -34,7 +34,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Team;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -52,7 +51,7 @@ public class BwTeam {
     public BlockPos bedLocation = null;
     public EntityPos spawn = null;
     public EntityPos genLocation = null;
-    public ArrayList<NexiaPlayer> players = new ArrayList<>();
+    public ArrayList<ServerPlayer> players = new ArrayList<>();
 
     public HashMap<String, BwUpgrade> upgrades = BwUpgrade.newUpgradeSet();
     public HashMap<String, BwTrap> traps = BwTrap.newTrapSet();
@@ -82,7 +81,6 @@ public class BwTeam {
         playerTeam.setPlayerPrefix(new TextComponent(textColor  + "\247lBW " ));
 
         playerTeam.setDeathMessageVisibility(Team.Visibility.HIDE_FOR_OTHER_TEAMS);
-
         return playerTeam;
     }
 
@@ -124,14 +122,14 @@ public class BwTeam {
         return aliveTeams;
     }
 
-    public static void spreadIntoTeams(ArrayList<NexiaPlayer> queueList) {
+    public static void spreadIntoTeams(ArrayList<ServerPlayer> queueList) {
         ServerScoreboard scoreboard = ServerTime.minecraftServer.getScoreboard();
         Random random = BwAreas.bedWarsWorld.getRandom();
 
         ArrayList<BwTeam> availableTeams = new ArrayList<>(teamsInOrder);
 
         while (!queueList.isEmpty() && !availableTeams.isEmpty()) {
-            NexiaPlayer player = queueList.getFirst();
+            ServerPlayer player = queueList.get(0);
 
             BwTeam team = availableTeams.get(random.nextInt(availableTeams.size()));
             team.players.add(player);
@@ -147,7 +145,7 @@ public class BwTeam {
         queueList.clear();
     }
 
-    public static BwTeam getPlayerTeam(NexiaPlayer player) {
+    public static BwTeam getPlayerTeam(ServerPlayer player) {
         for (BwTeam team : allTeams.values()) {
             if (team.players.contains(player)) {
                 return team;
@@ -156,7 +154,7 @@ public class BwTeam {
         return null;
     }
 
-    public static boolean fixTeamPlayer(NexiaPlayer player) {
+    public static boolean fixTeamPlayer(ServerPlayer player) {
         for (BwTeam team : allTeams.values()) {
             for (int i = 0; i < team.players.size(); i++) {
                 if (team.players.get(i).getUUID().equals(player.getUUID())) {
@@ -168,7 +166,7 @@ public class BwTeam {
         return false;
     }
 
-    public static String getPlayerTeamColor(NexiaPlayer player) {
+    public static String getPlayerTeamColor(ServerPlayer player) {
         BwTeam team = getPlayerTeam(player);
         if (team == null) return null;
 
@@ -235,17 +233,20 @@ public class BwTeam {
 
     // ----- UTILITIES -------------------------------------------------------------------------------
 
-    public static void reloadPlayerTeamColors() {
+    public static void reloadPlayerTeamColors(ServerPlayer player) {
+        MinecraftServer server = player.getServer();
+
         for (BwTeam team : teamsInOrder) {
-            ServerTime.factoryServer.runCommand(String.format("team modify %s color %s", team.scoreboardTeam.getName(), team.textColorName), 4, false);
+        server.getCommands().performCommand(player.createCommandSourceStack(),
+                "team modify " + team.scoreboardTeam.getName() + " color " + team.textColorName);
         }
     }
 
-    public static void winnerRockets(ArrayList<NexiaPlayer> winners, Integer winnerColor) {
+    public static void winnerRockets(ArrayList<ServerPlayer> winners, Integer winnerColor) {
         if (winners.isEmpty() || winnerColor == null) return;
 
         ArrayList<EntityPos> positions = new ArrayList<>();
-        for (NexiaPlayer player : winners) {
+        for (ServerPlayer player : winners) {
             Random random = BwAreas.bedWarsWorld.getRandom();
             positions.add(new EntityPos(player.unwrap()).add(random.nextInt(9) - 4, 2, random.nextInt(9) - 4));
         }
@@ -263,7 +264,7 @@ public class BwTeam {
         }
     }
 
-    public void announceBedBreak(NexiaPlayer breaker, BlockPos blockPos) {
+    public void announceBedBreak(ServerPlayer breaker, BlockPos blockPos) {
         String breakerColor = "";
         BwTeam breakerTeam = getPlayerTeam(breaker);
         if (breakerTeam != null) breakerColor = breakerTeam.textColor;
@@ -281,7 +282,7 @@ public class BwTeam {
 
         BwScoreboard.updateScoreboard();
 
-        for (NexiaPlayer player : BwPlayers.getViewers()) {
+        for (ServerPlayer player : BwPlayers.getViewers()) {
             float volume;
             if (players.contains(player)) {
                 volume = 0.04f;
@@ -290,7 +291,7 @@ public class BwTeam {
                 distance = Math.min(distance, 20f);
                 volume = 0.03f - (distance * 0.001f);
             }
-            player.sendSound(SoundEvents.ENDER_DRAGON_AMBIENT, SoundSource.MASTER, volume, 1f);
+            PlayerUtil.sendSound(player, SoundEvents.ENDER_DRAGON_AMBIENT, SoundSource.MASTER, volume, 1f);
         }
     }
 

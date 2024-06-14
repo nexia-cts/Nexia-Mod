@@ -1,13 +1,12 @@
 package com.nexia.minigames.games.duels.custom.kitroom.kitrooms;
 
 import com.combatreforged.factory.api.util.Identifier;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.world.StructureMap;
 import net.minecraft.core.BlockPos;
 import net.notcoded.codelib.util.world.structure.Rotation;
 
 public class SmpKitRoom extends KitRoom {
-    public SmpKitRoom(NexiaPlayer player) {
+    public SmpKitRoom(AccuratePlayer player) {
         super(player);
 
         this.setKitRoom(

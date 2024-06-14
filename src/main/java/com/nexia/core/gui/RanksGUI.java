@@ -31,19 +31,20 @@ public class RanksGUI extends SimpleGui {
     }
     private void setMainLayout(){
         ItemStack supporter = new ItemStack(Items.DRAGON_BREATH, 1);
-        supporter.setHoverName(new TextComponent("§5Supporter"));
+        supporter.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Supporter", ChatFormat.brandColor2).decoration(ChatFormat.italic, false).decoration(ChatFormat.bold, true)));
         ItemDisplayUtil.addGlint(supporter);
         supporter.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
-        ItemDisplayUtil.addLore(supporter, "§7How to get it:", 0);
+        ItemDisplayUtil.addLore(supporter, net.kyori.adventure.text.Component.text("How to get it:", ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false), 0);
         ItemDisplayUtil.addLore(supporter, "§1", 1);
-        ItemDisplayUtil.addLore(supporter, "§cPatreon - Buy it from our patreon.", 2);
-        ItemDisplayUtil.addLore(supporter, "§chttps://www.patreon.com/Nexia", 3);
-        ItemDisplayUtil.addLore(supporter, "§f§lOR", 4);
-        ItemDisplayUtil.addLore(supporter, "§dBoosting - Boost the discord server.", 5);
-        ItemDisplayUtil.addLore(supporter, "§d" + Main.config.discordLink, 6);
+        ItemDisplayUtil.addLore(supporter, net.kyori.adventure.text.Component.text("Patreon - Buy it from our patreon.", TextColor.fromHexString("#f96b59")).decoration(ChatFormat.italic, false), 2);
+        ItemDisplayUtil.addLore(supporter, net.kyori.adventure.text.Component.text("https://www.patreon.com/Nexia", TextColor.fromHexString("#f96b59")).decoration(ChatFormat.italic, false), 3);
+        ItemDisplayUtil.addLore(supporter, net.kyori.adventure.text.Component.text("OR", ChatFormat.Minecraft.white).decoration(ChatFormat.bold, true).decoration(ChatFormat.italic, false), 4);
+        ItemDisplayUtil.addLore(supporter, net.kyori.adventure.text.Component.text("Boosting - Boost the discord server.", TextColor.fromHexString("#8c00ff")).decoration(ChatFormat.italic, false), 5);
+        ItemDisplayUtil.addLore(supporter, net.kyori.adventure.text.Component.text(Main.config.discordLink, TextColor.fromHexString("#8c00ff")).decoration(ChatFormat.italic, false), 6);
         ItemDisplayUtil.addLore(supporter, "§3", 7);
-        ItemDisplayUtil.addLore(supporter, "§dPrice: §5§l5.00$", 8);
+        ItemDisplayUtil.addLore(supporter, net.kyori.adventure.text.Component.text("Price: ", TextColor.fromHexString("#8c00ff")).decoration(ChatFormat.italic, false)
+                        .append(net.kyori.adventure.text.Component.text("5.00$", ChatFormat.brandColor1).decoration(ChatFormat.bold, true).decoration(ChatFormat.italic, false)), 8);
 
         ItemStack purple = new ItemStack(Items.PURPLE_STAINED_GLASS_PANE, 1);
         purple.setHoverName(new TextComponent(""));
@@ -85,7 +86,8 @@ public class RanksGUI extends SimpleGui {
 
             NexiaPlayer nexiaPlayer = new NexiaPlayer(this.player);
 
-            if(name.getString().equalsIgnoreCase("§5Supporter")){
+            if(name.getString().contains("Supporter")){
+                // Insert supporter thing here (link to discord and patreon)
                 nexiaPlayer.sendMessage(ChatFormat.nexiaMessage.append(
                                 net.kyori.adventure.text.Component.text("In order to get the ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                                         .append(net.kyori.adventure.text.Component.text("Supporter").color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))

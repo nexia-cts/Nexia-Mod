@@ -1,7 +1,7 @@
 package com.nexia.core.mixin.item;
 
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.ffa.uhc.utilities.FfaAreas;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
@@ -52,7 +52,7 @@ public class BucketItemMixin extends Item {
         NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
         if((FfaAreas.isFfaWorld(level) && !FfaUhcUtil.beforeBuild(nexiaPlayer, blockPos3)) || (!player.isCreative() && PlayerDataManager.get(nexiaPlayer).gameMode.equals(PlayerGameMode.LOBBY) && com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(DuelGameMode.LOBBY))) {
             cir.setReturnValue(new InteractionResultHolder<>(InteractionResult.FAIL, player.getItemInHand(interactionHand)));
-            nexiaPlayer.refreshInventory();
+            ItemStackUtil.sendInventoryRefreshPacket(serverPlayer);
         }
     }
 }

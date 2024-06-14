@@ -1,6 +1,6 @@
 package com.nexia.core.mixin.item;
 
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaAreas;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
@@ -30,27 +30,24 @@ public abstract class BlockItemMixin {
         BlockPos blockPos = context.getClickedPos();
         ServerLevel level = player.getLevel();
 
-        if (BwAreas.isBedWarsWorld(player.getLevel()) && !BwPlayerEvents.beforePlace(nexiaPlayer, context)) {
+        if (BwAreas.isBedWarsWorld(player.getLevel()) && !BwPlayerEvents.beforePlace(player, context)) {
             cir.setReturnValue(InteractionResult.PASS);
-            nexiaPlayer.refreshInventory();
             return;
         }
 
         if (player.getLevel().equals(FootballGame.world) && !player.isCreative()) {
             cir.setReturnValue(InteractionResult.PASS);
-            nexiaPlayer.refreshInventory();
             return;
         }
 
-        if (FfaAreas.isFfaWorld(level) && !FfaUhcUtil.beforeBuild(nexiaPlayer, blockPos)) {
+        if (FfaAreas.isFfaWorld(level) && !FfaUhcUtil.beforeBuild(player, blockPos)) {
             cir.setReturnValue(InteractionResult.PASS);
-            nexiaPlayer.refreshInventory();
+            ItemStackUtil.sendInventoryRefreshPacket(player);
             return;
         }
 
-        if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(level) && !FfaSkyUtil.beforeBuild(nexiaPlayer, blockPos)) {
+        if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(level) && !FfaSkyUtil.beforeBuild(player, blockPos)) {
             cir.setReturnValue(InteractionResult.PASS);
-            nexiaPlayer.refreshInventory();
             return;
         }
     }
@@ -64,7 +61,7 @@ public abstract class BlockItemMixin {
         BlockPos blockPos = context.getClickedPos();
 
         if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(player.getLevel())) {
-            FfaSkyUtil.afterPlace(nexiaPlayer, blockPos, context.getHand());
+            FfaSkyUtil.afterPlace(player, blockPos, context.getHand());
         }
     }
 }

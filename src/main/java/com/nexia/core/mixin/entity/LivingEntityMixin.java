@@ -33,7 +33,7 @@ public abstract class LivingEntityMixin {
     @ModifyArg(method = "hurt", index = 1, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;actuallyHurt(Lnet/minecraft/world/damagesource/DamageSource;F)V"))
     protected float hurt(DamageSource damageSource, float value) {
         if((Object) this instanceof ServerPlayer player) {
-            if(PlayerDataManager.get(player.getUUID()).gameMode == PlayerGameMode.LOBBY) {
+            if(PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) {
                 return value;
             }
         }
@@ -63,7 +63,7 @@ public abstract class LivingEntityMixin {
             instance.hasImpulse = true;
             Vec3 vec3 = instance.getDeltaMovement();
             Vec3 vec32 = (new Vec3(d, 0.0, e)).normalize().scale(f);
-            instance.setDeltaMovement(vec3.x / 2.0 - vec32.x, instance.isOnGround() ? Math.min(0.4, (double)f * 0.75) : Math.min(0.4, vec3.y + (double)f * 0.5), vec3.z / 2.0 - vec32.z);
+            instance.setDeltaMovement(vec3.x / 2.5 - vec32.x, instance.isOnGround() ? Math.min(0.4, (double)f * 0.75) : Math.min(0.4, vec3.y + (double)f * 0.5),vec3.z / 2.5 - vec32.z);
         }
     }
 

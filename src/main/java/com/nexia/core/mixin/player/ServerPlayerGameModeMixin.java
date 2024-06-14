@@ -1,7 +1,6 @@
 package com.nexia.core.mixin.player;
 
 import com.nexia.core.utilities.item.BlockUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaAreas;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
@@ -38,9 +37,9 @@ public class ServerPlayerGameModeMixin {
 
         if (BwAreas.isBedWarsWorld(level) && !BwPlayerEvents.beforeBreakBlock(nexiaPlayer, blockPos)) {
             cir.setReturnValue(false);
-        }  else if (FfaAreas.isFfaWorld(level) && !FfaUhcUtil.beforeBuild(nexiaPlayer, blockPos)) {
+        }  else if (FfaAreas.isFfaWorld(level) && !FfaUhcUtil.beforeBuild(player, blockPos)) {
             cir.setReturnValue(false);
-        } else if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(level) && !FfaSkyUtil.beforeBuild(nexiaPlayer, blockPos)) {
+        } else if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(level) && !FfaSkyUtil.beforeBuild(player, blockPos)) {
             cir.setReturnValue(false);
         } else if(level.equals(FootballGame.world) && !player.isCreative()) {
             cir.setReturnValue(false);

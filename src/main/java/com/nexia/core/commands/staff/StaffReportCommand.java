@@ -29,7 +29,7 @@ public class StaffReportCommand {
                                     ServerPlayer mcOtherPlayer = context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()));
                                     NexiaPlayer otherPlayer = new NexiaPlayer(mcOtherPlayer);
 
-                                    PlayerData data = PlayerDataManager.get(mcOtherPlayer.getUUID());
+                                    PlayerData data = PlayerDataManager.get(mcOtherPlayer);
 
                                     if(type.equalsIgnoreCase("ban")) {
                                         if(data.savedData.isReportBanned()) {

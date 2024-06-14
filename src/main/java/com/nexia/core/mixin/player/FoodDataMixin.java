@@ -1,7 +1,6 @@
 package com.nexia.core.mixin.player;
 
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
@@ -36,11 +35,11 @@ public abstract class FoodDataMixin {
         if (!(player instanceof ServerPlayer serverPlayer)) return 1f;
         NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
 
-        if (BwAreas.isBedWarsWorld(serverPlayer.level) || FfaSkyUtil.isFfaPlayer(nexiaPlayer)) {
+        if (BwAreas.isBedWarsWorld(serverPlayer.level) || FfaSkyUtil.isFfaPlayer(serverPlayer)) {
             return 0.5f;
         }
 
-        if(FfaUhcUtil.isFfaPlayer(nexiaPlayer)) {
+        if(FfaUhcUtil.isFfaPlayer(serverPlayer)) {
             return 0.0f;
         }
 
@@ -54,16 +53,16 @@ public abstract class FoodDataMixin {
 
         FoodData data = (FoodData)(Object)this;
 
-        if (BwUtil.isInBedWars(nexiaPlayer)) {
+        if (BwUtil.isInBedWars(serverPlayer)) {
             BwPlayerEvents.afterHungerTick((FoodData)(Object)this);
             BwPlayerEvents.afterHungerTick(data);
         }
 
-        if(SkywarsGame.isSkywarsPlayer(nexiaPlayer)) return;
+        if(SkywarsGame.isSkywarsPlayer(serverPlayer)) return;
 
         // Duels
-        DuelGameMode duelGameMode = PlayerDataManager.get(nexiaPlayer).gameMode;
-        PlayerGameMode gameMode = com.nexia.core.utilities.player.PlayerDataManager.get(nexiaPlayer).gameMode;
+        DuelGameMode duelGameMode = PlayerDataManager.get(player).gameMode;
+        PlayerGameMode gameMode = com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode;
         if(gameMode.equals(PlayerGameMode.LOBBY) && (duelGameMode != null && !duelGameMode.hasSaturation)) return;
 
         data.setFoodLevel(20);

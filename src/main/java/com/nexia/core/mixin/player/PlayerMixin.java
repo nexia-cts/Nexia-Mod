@@ -1,9 +1,10 @@
 package com.nexia.core.mixin.player;
 
+import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.misc.EventUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
@@ -80,7 +81,7 @@ public abstract class PlayerMixin extends LivingEntity {
                 || (com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(nexiaPlayer))
                 || (com.nexia.core.utilities.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(PlayerGameMode.LOBBY) && PlayerDataManager.get(nexiaPlayer).gameMode.equals(DuelGameMode.LOBBY))) {
             cir.setReturnValue(false);
-            nexiaPlayer.refreshInventory();
+            ItemStackUtil.sendInventoryRefreshPacket(player);
         }
     }
 
@@ -89,22 +90,22 @@ public abstract class PlayerMixin extends LivingEntity {
         if (!((Object) this instanceof ServerPlayer player)) return;
         NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
-        if (FfaSkyUtil.isFfaPlayer(nexiaPlayer) && !FfaSkyUtil.beforeDamage(nexiaPlayer, damageSource)) {
+        if (FfaSkyUtil.isFfaPlayer(player) && !FfaSkyUtil.beforeDamage(player, damageSource)) {
             cir.setReturnValue(false);
             return;
         }
 
-        if (FfaClassicUtil.isFfaPlayer(nexiaPlayer) && !FfaClassicUtil.beforeDamage(nexiaPlayer, damageSource)) {
+        if (FfaUhcUtil.isFfaPlayer(player) && !FfaUhcUtil.beforeDamage(player, damageSource)) {
             cir.setReturnValue(false);
             return;
         }
 
-        if (FfaKitsUtil.isFfaPlayer(nexiaPlayer) && !FfaKitsUtil.beforeDamage(nexiaPlayer, damageSource)) {
+        if (FfaKitsUtil.isFfaPlayer(player) && !FfaKitsUtil.beforeDamage(player, damageSource)) {
             cir.setReturnValue(false);
             return;
         }
 
-        if (FfaUhcUtil.isFfaPlayer(nexiaPlayer) && !FfaUhcUtil.beforeDamage(nexiaPlayer, damageSource)) {
+        if (FfaClassicUtil.isFfaPlayer(player) && !FfaClassicUtil.beforeDamage(player, damageSource)) {
             cir.setReturnValue(false);
             return;
         }
@@ -178,9 +179,9 @@ public abstract class PlayerMixin extends LivingEntity {
 
         ItemStack dropped = inventory.getItem(inventory.selected);
 
-        if (!EventUtil.dropItem(nexiaPlayer, dropped)) {
+        if (!EventUtil.dropItem(player, dropped)) {
             cir.setReturnValue(false);
-            nexiaPlayer.refreshInventory();
+            ItemStackUtil.sendInventoryRefreshPacket(player);
             return;
         }
 
@@ -195,6 +196,7 @@ public abstract class PlayerMixin extends LivingEntity {
         if (BwUtil.isBedWarsPlayer(nexiaPlayer)) {
             BwUtil.setAttackSpeed(player);
         }
+
     }
 
 

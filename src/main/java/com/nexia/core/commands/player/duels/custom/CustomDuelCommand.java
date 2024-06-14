@@ -9,7 +9,6 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.duels.CustomDuelGUI;
 import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.core.utilities.item.InventoryUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.minigames.games.duels.DuelGameMode;

@@ -4,7 +4,6 @@ import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
@@ -14,7 +13,6 @@ import com.nexia.minigames.games.bedwars.custom.BwExplosiveSlime;
 import com.nexia.minigames.games.bedwars.players.BwPlayers;
 import com.nexia.minigames.games.bedwars.players.BwTeam;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundUpdateAttributesPacket;
@@ -102,6 +100,10 @@ public class BwUtil {
 
         playerTeam.setDisplayName(new TextComponent(teamName));
         playerTeam.setPlayerPrefix(new TextComponent("\2477\247lBW " ));
+
+        server.getCommands().performCommand(server.createCommandSourceStack(),
+                "team modify " + teamName + " color gray");
+
         playerTeam.setColor(ChatFormatting.GRAY);
         playerTeam.setDeathMessageVisibility(Team.Visibility.NEVER);
 
@@ -286,6 +288,7 @@ public class BwUtil {
     public static void setAttackSpeed(ServerPlayer player) {
         UUID hasteUuid = UUID.fromString("AF8B6E3F-3328-4C0A-AA36-5BA2BB9DBEF3");
         AttributeInstance attackSpeed = player.getAttribute(Attributes.ATTACK_SPEED);
+        assert attackSpeed != null;
         AttributeModifier modifier = attackSpeed.getModifier(hasteUuid);
 
         if (modifier != null) {
@@ -333,7 +336,7 @@ public class BwUtil {
         }
     }
 
-    public static void announceDeath(NexiaPlayer player) {
+    public static void announceDeath(ServerPlayer player) {
         String mainColor = LegacyChatFormat.chatColor2;
         String message = player.unwrap().getCombatTracker().getDeathMessage().getString();
 
@@ -349,7 +352,7 @@ public class BwUtil {
         }
     }
 
-    public static String replaceDisplayName(String message, String mainColor, NexiaPlayer player) {
+    public static String replaceDisplayName(String message, String mainColor, ServerPlayer player) {
         if (player == null) return message;
 
         BwTeam team = BwTeam.getPlayerTeam(player);
@@ -377,14 +380,14 @@ public class BwUtil {
         return item == Items.IRON_INGOT || item == Items.GOLD_INGOT || item == Items.DIAMOND || item == Items.EMERALD;
     }
 
-    public static boolean isInBedWars(NexiaPlayer player) {
+    public static boolean isInBedWars(ServerPlayer player) {
         return PlayerDataManager.get(player).gameMode == PlayerGameMode.BEDWARS;
     }
 
-    public static boolean isBedWarsPlayer(NexiaPlayer player) {
+    public static boolean isBedWarsPlayer(ServerPlayer player) {
         if (!isInBedWars(player)) return false;
-        for (NexiaPlayer nexiaPlayer : BwPlayers.getPlayers()) {
-            if (player.equals(nexiaPlayer)) return true;
+        for (ServerPlayer serverPlayer : BwPlayers.getPlayers()) {
+            if (serverPlayer.getUUID().equals(player.getUUID())) return true;
         }
         return false;
     }

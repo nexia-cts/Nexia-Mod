@@ -2,7 +2,6 @@ package com.nexia.minigames.games.bedwars.util;
 
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.time.TickUtil;
 import com.nexia.minigames.games.bedwars.BwGame;
@@ -31,12 +30,12 @@ public class BwScoreboard {
     public static final int timerLine = 1;
 
     private static final Scoreboard scoreboard = new Scoreboard();
-    private static final Objective objective = new Objective(
+    public static final Objective objective = new Objective(
             scoreboard, objectiveName, ObjectiveCriteria.DUMMY,
             title, ObjectiveCriteria.RenderType.INTEGER);
 
     public static void setUpScoreboard() {
-        for (NexiaPlayer player : BwPlayers.getPlayers()) {
+        for (ServerPlayer player : BwPlayers.getPlayers()) {
             sendBedWarsScoreboard(player);
         }
         updateScoreboard();
@@ -111,7 +110,7 @@ public class BwScoreboard {
         }
     }
 
-    public static void sendLines(NexiaPlayer player) {
+    public static void sendLines(ServerPlayer player) {
         for (Score score : scoreboard.getPlayerScores(objective)) {
             player.unwrap().connection.send(new ClientboundSetScorePacket(
                     ServerScoreboard.Method.CHANGE, objectiveName, score.getOwner(), score.getScore()));

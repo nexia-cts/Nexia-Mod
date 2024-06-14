@@ -4,7 +4,6 @@ import com.combatreforged.factory.api.event.player.PlayerJoinEvent;
 import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.discord.Main;
@@ -19,6 +18,7 @@ import net.kyori.adventure.text.format.TextColor;
 import java.util.Objects;
 
 import static com.nexia.discord.Main.jda;
+import static com.nexia.ffa.classic.utilities.RatingUtil.checkRatingRank;
 
 public class PlayerJoinListener {
     public void registerListener() {
@@ -98,11 +98,11 @@ public class PlayerJoinListener {
         if(discordUser == null) {
             if(player.hasPermission("nexia.prefix.supporter")) {
                 if(player.hasPermission("nexia.rank")) {
-                    ServerTime.factoryServer.runCommand("/staffprefix set " + player.getRawName() + " default");
-                    ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getRawName() + " supporter");
+                    NexiaRank.setPrefix(NexiaRank.DEFAULT, player);
+                    NexiaRank.removePrefix(NexiaRank.SUPPORTER, player);
                     return;
                 }
-                ServerTime.factoryServer.runCommand("/rank " + player.getRawName() + " default", 4, false);
+                NexiaRank.setRank(NexiaRank.DEFAULT, player);
             }
             return;
         }
@@ -113,17 +113,17 @@ public class PlayerJoinListener {
 
         if(hasRole && !hasSupporterPrefix) {
             if(player.hasPermission("nexia.rank")) {
-                ServerTime.factoryServer.runCommand("/staffprefix add " + player.getRawName() + " supporter", 4, false);
+                NexiaRank.addPrefix(NexiaRank.SUPPORTER, player, true);
                 return;
             }
             ServerTime.factoryServer.runCommand("/rank " + player.getRawName() + " supporter", 4, false);
         } else if(!hasRole && hasSupporterPrefix) {
             if(player.hasPermission("nexia.rank")) {
-                ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getRawName() + " supporter", 4, false);
-                ServerTime.factoryServer.runCommand("/staffprefix set " + player.getRawName() + " default", 4, false);
+                NexiaRank.removePrefix(NexiaRank.SUPPORTER, player);
+                NexiaRank.setPrefix(NexiaRank.DEFAULT, player)
                 return;
             }
-            ServerTime.factoryServer.runCommand("/rank " + player.getRawName() + " default", 4, false);
+            NexiaRank.setRank(NexiaRank.DEFAULT, player);
         }
     }
 
@@ -145,6 +145,7 @@ public class PlayerJoinListener {
         LobbyUtil.returnToLobby(player, true);
 
         checkBooster(player);
+        //checkRatingRank(minecraftPlayer);
         sendJoinMessage(player);
     }
 }

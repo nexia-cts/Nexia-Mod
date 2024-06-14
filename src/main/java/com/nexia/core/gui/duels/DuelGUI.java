@@ -2,7 +2,6 @@ package com.nexia.core.gui.duels;
 
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
@@ -10,7 +9,6 @@ import com.nexia.minigames.games.duels.map.DuelsMap;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -54,9 +52,10 @@ public class DuelGUI extends SimpleGui {
             airSlots++;
         }
         for(DuelsMap map : DuelsMap.duelsMaps){
-            if(gameMode.gameMode == Minecraft.GameMode.ADVENTURE && !map.isAdventureSupported) return;
-            this.setSlot(slot, map.item.setHoverName(new TextComponent("§f" + map.id)));
-            slot++;
+            if(gameMode.gameMode == GameType.ADVENTURE && map.isAdventureSupported) {
+                this.setSlot(slot, map.item.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text(map.id, ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false))));
+                slot++;
+            }
         }
     }
 
@@ -83,7 +82,7 @@ public class DuelGUI extends SimpleGui {
         //this.setSlot(4, HeadFunctions.getPlayerHead(otherp.getScoreboardName(), 1));
 
         ItemStack playerHead = PlayerUtil.getPlayerHead(otherp.getUUID());
-        playerHead.setHoverName(new TextComponent(otherp.getScoreboardName()).withStyle(ChatFormatting.BOLD));
+        playerHead.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text(otherp.getScoreboardName(), ChatFormat.Minecraft.yellow).decoration(ChatFormat.bold, true).decoration(ChatFormat.italic, false)));
 
         this.setSlot(4, playerHead);
 
@@ -96,7 +95,7 @@ public class DuelGUI extends SimpleGui {
             if(slot == 26) {
                 slot = 28;
             }
-            item = DuelGameMode.duelsItems.get(i1).setHoverName(new TextComponent("§f" + duel.toUpperCase().replaceAll("_", " ")));
+            item = DuelGameMode.duelsItems.get(i1).setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text(duel.toUpperCase().replaceAll("_", " "), ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false)));
             ItemDisplayUtil.removeLore(item, 0);
             ItemDisplayUtil.removeLore(item, 1);
 
@@ -113,8 +112,8 @@ public class DuelGUI extends SimpleGui {
             Component name = itemStack.getHoverName();
 
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR && itemStack.getItem() != Items.PLAYER_HEAD){
-                if(DuelGameMode.stringDuelGameModes.contains(name.getString().substring(2).replaceAll(" ", "_"))){
-                    this.kit = name.getString().substring(2).replaceAll(" ", "_");
+                if(DuelGameMode.stringDuelGameModes.contains(name.getString().replaceAll(" ", "_"))){
+                    this.kit = name.getString().replaceAll(" ", "_");
                     setMapLayout(GamemodeHandler.identifyGamemode(this.kit));
                 } else {
                     GamemodeHandler.challengePlayer(new NexiaPlayer(this.player), new NexiaPlayer(this.other), this.kit, DuelsMap.identifyMap(name.getString().substring(2)));

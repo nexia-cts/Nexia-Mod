@@ -6,7 +6,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;

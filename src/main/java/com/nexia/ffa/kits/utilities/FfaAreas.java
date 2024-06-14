@@ -1,12 +1,12 @@
 package com.nexia.ffa.kits.utilities;
 
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.core.utilities.pos.PositionUtil;
 import com.nexia.ffa.Main;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 public class FfaAreas {

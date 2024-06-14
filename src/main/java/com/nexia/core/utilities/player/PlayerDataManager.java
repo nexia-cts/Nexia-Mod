@@ -1,5 +1,6 @@
 package com.nexia.core.utilities.player;
 
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.google.gson.Gson;
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -31,6 +32,17 @@ public class PlayerDataManager {
         removePlayerData(player.getUUID());
     }
 
+    public static void addPlayerData(Player player) {
+        addPlayerData(player.getUUID());
+    }
+
+    public static void removePlayerData(net.minecraft.world.entity.player.Player player) {
+        removePlayerData(player.getUUID());
+    }
+
+    public static void removePlayerData(Player player) {
+        removePlayerData(player.getUUID());
+    }
 
     public static PlayerData get(UUID uuid) {
         if (!allPlayerData.containsKey(uuid)) {
@@ -85,4 +97,6 @@ public class PlayerDataManager {
         new File(playerDataDirectory).mkdirs();
         return playerDataDirectory;
     }
+
+
 }

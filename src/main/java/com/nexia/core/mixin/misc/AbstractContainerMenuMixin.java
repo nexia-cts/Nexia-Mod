@@ -1,7 +1,6 @@
 package com.nexia.core.mixin.misc;
 
 import com.nexia.core.utilities.misc.EventUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -19,7 +18,7 @@ public class AbstractContainerMenuMixin {
         if (!(player instanceof ServerPlayer serverPlayer)) return;
         NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
 
-        if (!EventUtil.dropItem(nexiaPlayer, player.inventory.getCarried())) {
+        if (!EventUtil.dropItem(serverPlayer, player.inventory.getCarried())) {
             if (player.inventory.add(player.inventory.getCarried())) {
                 player.inventory.setCarried(ItemStack.EMPTY);
             }

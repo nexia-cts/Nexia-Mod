@@ -2,13 +2,13 @@ package com.nexia.ffa.sky.utilities;
 
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.google.gson.Gson;
-import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.sky.SkyFfaBlocks;
 import com.nexia.ffa.sky.utilities.player.PlayerDataManager;
@@ -17,6 +17,7 @@ import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -45,7 +46,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -63,7 +63,7 @@ public class FfaSkyUtil {
     public static int woolId = 0;
     public static final HashMap<Integer, ItemStack> killRewards = new HashMap<>();
 
-    public static boolean isFfaPlayer(NexiaPlayer player) {
+    public static boolean isFfaPlayer(net.minecraft.world.entity.player.Player player) {
         PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
         return player.hasTag("ffa_sky") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.SKY;
     }
@@ -76,13 +76,13 @@ public class FfaSkyUtil {
             if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !isInFfaSpawn(player)){
                 wasInSpawn.remove(minecraftPlayer.getUUID());
                 minecraftPlayer.getCooldowns().addCooldown(Items.ENDER_PEARL, 10);
-                saveInventory(player);
+                saveInventory(minecraftPlayer);
                 player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your inventory layout was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
             }
         }
     }
 
-    public static void saveInventory(NexiaPlayer player){
+    public static void saveInventory(ServerPlayer player){
         // /config/nexia/ffa/sky/inventory/savedInventories/uuid.json
 
         Inventory inventory = player.unwrap().inventory;
@@ -108,8 +108,8 @@ public class FfaSkyUtil {
             fileWriter.write(stringInventory);
             fileWriter.close();
         } catch (Exception var6) {
-            LobbyUtil.returnToLobby(player, true);
-            player.sendMessage(Component.text("Failed to set Sky FFA inventory. Please try again or contact a developer.").color(ChatFormat.systemColor));
+            ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
+            player.sendMessage(LegacyChatFormat.format("{f}Failed to save Sky FFA inventory. Please try again or contact a developer."), Util.NIL_UUID);
             return;
         }
 
@@ -120,10 +120,12 @@ public class FfaSkyUtil {
         }
     }
 
-    public static void setInventory(NexiaPlayer player){
+    public static void setInventory(ServerPlayer player){
 
         // /config/nexia/ffa/sky/inventory/savedInventories/uuid.json
         // /config/nexia/ffa/sky/inventory/default.json
+
+        if (!isFfaPlayer(player)) return;
 
         SavableInventory defaultInventory = null;
         SavableInventory layout = null;
@@ -144,8 +146,8 @@ public class FfaSkyUtil {
         }
 
         if(defaultInventory == null) {
-            LobbyUtil.returnToLobby(player, true);
-            player.sendMessage(Component.text("Failed to set Sky FFA inventory. Please try again or contact a developer.").color(ChatFormat.systemColor));
+            ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
+            player.sendMessage(LegacyChatFormat.format("{f}Failed to set Sky FFA inventory. Please try again or contact a developer."), Util.NIL_UUID);
             return;
         }
         
@@ -163,7 +165,7 @@ public class FfaSkyUtil {
             }
         }
 
-        player.refreshInventory();
+        ItemStackUtil.sendInventoryRefreshPacket(player);
     }
 
     public static void joinOrRespawn(NexiaPlayer player) {
@@ -182,7 +184,7 @@ public class FfaSkyUtil {
         return itemStack;
     }
 
-    public static void clearEnderpearls(NexiaPlayer player) {
+    public static void clearEnderpearls(ServerPlayer player) {
         BlockPos c1 = ffaCorner1.offset(-10, -ffaCorner1.getY(), -10);
         BlockPos c2 = ffaCorner2.offset(10, 319 - ffaCorner2.getY(), 10);
         AABB aabb = new AABB(c1, c2);
@@ -195,7 +197,7 @@ public class FfaSkyUtil {
     }
 
 
-    public static void leaveOrDie(@NotNull NexiaPlayer player, @Nullable DamageSource source, boolean leaving) {
+    public static void leaveOrDie(@NotNull ServerPlayer player, @Nullable DamageSource source, boolean leaving) {
 
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player.unwrap());
 
@@ -204,14 +206,13 @@ public class FfaSkyUtil {
             if(!nexiaPlayer.equals(player)) {
                 SavedPlayerData data = PlayerDataManager.get(nexiaPlayer).savedData;
 
-                data.killstreak++;
-                if(data.killstreak > data.bestKillstreak){
-                    data.bestKillstreak = data.killstreak;
-                }
-                data.kills++;
-                FfaSkyUtil.killHeal(nexiaPlayer);
-                FfaSkyUtil.giveKillLoot(nexiaPlayer, player);
+            data.killstreak++;
+            if(data.killstreak > data.bestKillstreak){
+                data.bestKillstreak = data.killstreak;
             }
+            data.kills++;
+            FfaSkyUtil.killHeal(attacker);
+            FfaSkyUtil.giveKillLoot(attacker, player);
         }
 
         FfaSkyUtil.clearEnderpearls(player);
@@ -229,7 +230,7 @@ public class FfaSkyUtil {
         }
     }
 
-    public static void clearArrows(NexiaPlayer player) {
+    public static void clearArrows(ServerPlayer player) {
         BlockPos c1 = ffaCorner1.offset(-10, -ffaCorner1.getY(), -10);
         BlockPos c2 = ffaCorner2.offset(10, 319 - ffaCorner2.getY(), 10);
         AABB aabb = new AABB(c1, c2);
@@ -241,29 +242,26 @@ public class FfaSkyUtil {
         }
     }
 
-    public static void giveKillLoot(NexiaPlayer attacker, NexiaPlayer player) {
+    public static void giveKillLoot(ServerPlayer attacker, ServerPlayer player) {
         if(!FfaSkyUtil.isFfaPlayer(attacker)) return;
         HashMap<Integer, ItemStack> availableRewards = (HashMap<Integer, ItemStack>) killRewards.clone();
         ArrayList<ItemStack> givenRewards = new ArrayList<>();
 
-
         for (int i = 0; i < Math.min(2, availableRewards.size()); i++) {
             // Pick reward
-            int randomIndex = new Random().nextInt(availableRewards.size());
+            int randomIndex = attacker.getRandom().nextInt(availableRewards.size());
             int killRewardIndex = (Integer)availableRewards.keySet().toArray()[randomIndex];
             ItemStack reward = availableRewards.get(killRewardIndex);
             availableRewards.remove(killRewardIndex);
 
             // Give reward
-            if (attacker.unwrap().inventory.contains(reward)) {
-                attacker.unwrap().inventory.add(reward.copy());
-            }
+            attacker.unwrap().inventory.add(reward.copy());
             givenRewards.add(reward.copy());
         }
 
         // Inform player about given rewards
         
-        attacker.sendMessage(Component.text("[").color(ChatFormat.arrowColor)
+        PlayerUtil.getFactoryPlayer(attacker).sendMessage(Component.text("[").color(ChatFormat.arrowColor)
                 .append(Component.text("☠").color(ChatFormat.brandColor1))
                 .append(Component.text("] ").color(ChatFormat.arrowColor))
                 .append(Component.text(player.getRawName()).color(ChatFormat.brandColor2))
@@ -272,16 +270,16 @@ public class FfaSkyUtil {
         for (ItemStack givenReward : givenRewards) {
             String itemName = LegacyChatFormat.removeColors(givenReward.getHoverName().getString());
             if (givenReward.getCount() > 1) itemName += "s";
-            attacker.sendMessage(Component.text("[").color(ChatFormat.arrowColor)
+            PlayerUtil.getFactoryPlayer(attacker).sendMessage(Component.text("[").color(ChatFormat.arrowColor)
                     .append(Component.text("+" + givenReward.getCount()).color(ChatFormat.brandColor1))
                     .append(Component.text("] ").color(ChatFormat.arrowColor))
                     .append(Component.text(itemName).color(ChatFormat.brandColor2))
             );
         }
-        attacker.sendSound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.MASTER, 0.75f, 1f);
+        PlayerUtil.sendSound(attacker, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.MASTER, 0.75f, 1f);
     }
 
-    public static void killHeal(NexiaPlayer player) {
+    public static void killHeal(ServerPlayer player) {
         if(!FfaSkyUtil.isFfaPlayer(player)) return;
         int minHeal = 4;
         int maxHeal = 11;
@@ -302,7 +300,8 @@ public class FfaSkyUtil {
         return !(Math.round(player.getHealth()) < 20);
     }
 
-    public static void sendToSpawn(NexiaPlayer player) {
+    public static void sendToSpawn(ServerPlayer player) {
+        player.inventory.clearContent();
         FfaSkyUtil.clearArrows(player);
         FfaSkyUtil.clearEnderpearls(player);
         FfaSkyUtil.wasInSpawn.add(player.getUUID());
@@ -334,7 +333,7 @@ public class FfaSkyUtil {
         return canBuild(player, blockPos);
     }
 
-    public static boolean beforeDamage(NexiaPlayer player, DamageSource damageSource) {
+    public static boolean beforeDamage(ServerPlayer player, DamageSource damageSource) {
         if (damageSource == DamageSource.OUT_OF_WORLD) return true;
 
         return !isInFfaSpawn(player);
@@ -348,6 +347,12 @@ public class FfaSkyUtil {
             }
             SkyFfaBlocks.placeBlock(blockPos);
         }
+    }
+
+    private static ItemStack shears() {
+        ItemStack shears = new ItemStack(Items.SHEARS);
+        shears.enchant(Enchantments.DIGGING_EFFICIENCY, 4);
+        return shears;
     }
 
     static {

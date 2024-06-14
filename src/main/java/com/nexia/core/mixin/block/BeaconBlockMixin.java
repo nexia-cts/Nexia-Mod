@@ -1,7 +1,6 @@
 package com.nexia.core.mixin.block;
 
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.ffa.FfaUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,7 +23,7 @@ public class BeaconBlockMixin {
         if(!(player instanceof ServerPlayer serverPlayer)) return;
         NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
 
-        if((FfaUtil.isFfaPlayer(nexiaPlayer) || LobbyUtil.isLobbyWorld(player.level)) && !player.isCreative()) {
+        if((FfaUtil.isFfaPlayer(player) || LobbyUtil.isLobbyWorld(player.level)) && !player.isCreative()) {
             cir.setReturnValue(InteractionResult.FAIL);
         }
     }

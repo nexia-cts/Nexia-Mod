@@ -2,6 +2,7 @@ package com.nexia.core.utilities.player;
 
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.core.utilities.player.anticheat.Punishment;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.ffa.FfaGameMode;
 import net.minecraft.resources.ResourceKey;
@@ -27,6 +28,8 @@ public class PlayerData {
 
     public ClientType clientType;
 
+    public Punishment punishment;
+
     public PlayerData(SavedPlayerData savedData) {
         this.savedData = savedData;
 
@@ -40,6 +43,8 @@ public class PlayerData {
         this.lastMessageSender = null;
 
         this.clientType = null;
+
+        this.punishment = new Punishment();
     }
 
     public enum ClientType {

@@ -7,23 +7,25 @@ import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.minigames.games.duels.custom.CustomDuelsGame;
 import com.nexia.minigames.games.duels.custom.team.CustomTeamDuelsGame;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import com.nexia.core.utilities.world.WorldUtil;
 import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.dimension.DimensionType;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
@@ -35,8 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static com.nexia.core.utilities.world.WorldUtil.getChunkGenerator;
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
+import static com.nexia.core.utilities.world.WorldUtil.getChunkGenerator;
 
 public class DuelGameHandler {
 
@@ -47,7 +49,7 @@ public class DuelGameHandler {
     public static List<CustomDuelsGame> customDuelsGames = new ArrayList<>();
     public static List<CustomTeamDuelsGame> customTeamDuelsGames = new ArrayList<>();
 
-    public static boolean validCustomKit(NexiaPlayer player, String kitID) {
+    public static boolean validCustomKit(ServerPlayer player, String kitID) {
         if(kitID.trim().isEmpty()) return false;
 
         File file = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getUUID(), kitID + ".txt");
@@ -85,10 +87,10 @@ public class DuelGameHandler {
             InventoryUtil.loadInventory(player, "duels", gameMode.toLowerCase());
         }
 
-        player.refreshInventory();
+        ItemStackUtil.sendInventoryRefreshPacket(player);
     }
 
-    public static void leave(NexiaPlayer player, boolean leaveTeam) {
+    public static void leave(ServerPlayer player, boolean leaveTeam) {
         PlayerData data = PlayerDataManager.get(player);
         data.gameMode = DuelGameMode.LOBBY;
         if (data.gameOptions != null && data.gameOptions.duelsGame != null) {
@@ -105,7 +107,7 @@ public class DuelGameHandler {
         }
 
         if (data.gameMode == DuelGameMode.SPECTATING) {
-            GamemodeHandler.unspectatePlayer(player, data.duelOptions.spectatingPlayer, false);
+            GamemodeHandler.unspectatePlayer(AccuratePlayer.create(player), data.duelOptions.spectatingPlayer, false);
         }
 
         if(data.kitRoom != null) {
@@ -120,7 +122,7 @@ public class DuelGameHandler {
         data.kitRoom = null;
         if (leaveTeam) {
             if (data.duelOptions.duelsTeam != null) {
-                data.duelOptions.duelsTeam.leaveTeam(player, true);
+                data.duelOptions.duelsTeam.leaveTeam(AccuratePlayer.create(player), true);
             }
             data.duelOptions.duelsTeam = null;
         }
@@ -130,7 +132,7 @@ public class DuelGameHandler {
         if(Main.config.debugMode) Main.logger.info(String.format("[DEBUG]: Player %s left Duels.", player.getRawName()));
     }
 
-    public static void winnerRockets(@NotNull NexiaPlayer winner, @NotNull ServerLevel level,
+    public static void winnerRockets(@NotNull ServerPlayer winner, @NotNull ServerLevel level,
             @NotNull Integer winnerColor) {
 
         Random random = level.getRandom();
@@ -162,7 +164,7 @@ public class DuelGameHandler {
     public static ServerLevel createWorld(String uuid, boolean doRegeneration) {
         RuntimeWorldConfig config = new RuntimeWorldConfig()
                 .setDimensionType(DimensionType.OVERWORLD_LOCATION)
-                .setGenerator(getChunkGenerator())
+                .setGenerator(getChunkGenerator(Biomes.PLAINS))
                 .setDifficulty(Difficulty.HARD)
                 .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
                 .setGameRule(GameRules.RULE_MOBGRIEFING, false)
@@ -174,6 +176,7 @@ public class DuelGameHandler {
                 .setGameRule(GameRules.RULE_SHOWDEATHMESSAGES, false)
                 .setGameRule(GameRules.RULE_SPAWN_RADIUS, 0)
                 .setGameRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS, false)
+                .setGameRule(GameRules.RULE_DOFIRETICK, false)
                 .setTimeOfDay(6000);
 
 

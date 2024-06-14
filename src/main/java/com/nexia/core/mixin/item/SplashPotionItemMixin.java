@@ -1,7 +1,7 @@
 package com.nexia.core.mixin.item;
 
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,7 +25,7 @@ public class SplashPotionItemMixin {
 
         if((FfaKitsUtil.isFfaPlayer(nexiaPlayer) && FfaKitsUtil.wasInSpawn.contains(player.getUUID())) || (com.nexia.core.utilities.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(PlayerGameMode.LOBBY) && com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(DuelGameMode.LOBBY))) {
             cir.setReturnValue(new InteractionResultHolder<>(InteractionResult.FAIL, player.getItemInHand(interactionHand)));
-            nexiaPlayer.refreshInventory();
+            ItemStackUtil.sendInventoryRefreshPacket((ServerPlayer) player);
         }
     }
 }

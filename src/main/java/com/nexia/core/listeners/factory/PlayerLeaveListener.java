@@ -2,7 +2,6 @@ package com.nexia.core.listeners.factory;
 
 import com.combatreforged.factory.api.event.player.PlayerDisconnectEvent;
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.FfaUtil;

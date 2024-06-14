@@ -1,9 +1,7 @@
 package com.nexia.core.mixin.entity;
 
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.KitRoom;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -29,7 +27,7 @@ public abstract class ItemFrameMixin extends Entity {
         NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
 
         // Disable interacting with item frames
-        if ((FfaUtil.isFfaPlayer(nexiaPlayer) || KitRoom.isInKitRoom(nexiaPlayer)) && !player.isCreative()) {
+        if ((FfaUtil.isFfaPlayer(player) || KitRoom.isInKitRoom(player)) && !player.isCreative()) {
             cir.setReturnValue(InteractionResult.FAIL);
             return;
         }
