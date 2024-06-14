@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.bedwars.players;
 
-import com.combatreforged.metis.api.world.types.Minecraft;
+import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;

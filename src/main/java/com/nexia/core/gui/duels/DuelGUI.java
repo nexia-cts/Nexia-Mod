@@ -1,6 +1,6 @@
 package com.nexia.core.gui.duels;
 
-import com.combatreforged.metis.api.world.types.Minecraft;
+import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;

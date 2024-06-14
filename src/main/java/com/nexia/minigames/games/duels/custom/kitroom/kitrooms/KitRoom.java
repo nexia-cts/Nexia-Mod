@@ -1,7 +1,7 @@
 package com.nexia.minigames.games.duels.custom.kitroom.kitrooms;
 
-import com.combatreforged.metis.api.util.Identifier;
-import com.combatreforged.metis.api.world.types.Minecraft;
+import com.combatreforged.factory.api.util.Identifier;
+import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;

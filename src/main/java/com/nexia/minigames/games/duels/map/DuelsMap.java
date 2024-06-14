@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.duels.map;
 
-import com.combatreforged.metis.api.util.Identifier;
+import com.combatreforged.factory.api.util.Identifier;
 import com.nexia.core.utilities.world.StructureMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;

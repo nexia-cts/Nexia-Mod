@@ -1,6 +1,6 @@
 package com.nexia.core.listeners.factory;
 
-import com.combatreforged.metis.api.event.player.PlayerHotbarDropItemEvent;
+import com.combatreforged.factory.api.event.player.PlayerHotbarDropItemEvent;
 import com.nexia.core.utilities.misc.EventUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 

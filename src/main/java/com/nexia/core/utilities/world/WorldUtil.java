@@ -1,7 +1,7 @@
 package com.nexia.core.utilities.world;
 
-import com.combatreforged.metis.api.util.Identifier;
-import com.combatreforged.metis.api.world.World;
+import com.combatreforged.factory.api.util.Identifier;
+import com.combatreforged.factory.api.world.World;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.skywars.SkywarsGame;
@@ -41,7 +41,7 @@ public class WorldUtil {
     }
 
     public static World getWorld(@NotNull Level level) {
-        return ServerTime.metisServer.getWorld(WorldUtil.getIdentifierWorldName(level));
+        return ServerTime.factoryServer.getWorld(WorldUtil.getIdentifierWorldName(level));
     }
 
     public static String getWorldName(@NotNull Level level) {
@@ -64,12 +64,12 @@ public class WorldUtil {
                     ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(identifier.getNamespace(), identifier.getId())).location(),
                     new RuntimeWorldConfig());
             FileUtils.forceDeleteOnExit(new File("/world/dimensions/" + identifier.getNamespace(), identifier.getId()));
-            ServerTime.metisServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getId(), false);
+            ServerTime.factoryServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getId(), false);
         } catch (Exception e) {
             Main.logger.error("Error occurred while deleting world: {}:{}", identifier.getNamespace(), identifier.getId());
 
             try {
-                ServerTime.metisServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getId(), false);
+                ServerTime.factoryServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getId(), false);
             } catch (Exception ignored2) {
                 if(Main.config.debugMode) e.printStackTrace();
             }

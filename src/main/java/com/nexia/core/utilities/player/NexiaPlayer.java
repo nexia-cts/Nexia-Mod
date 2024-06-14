@@ -1,10 +1,10 @@
 package com.nexia.core.utilities.player;
 
-import com.combatreforged.metis.api.world.effect.StatusEffectInstance;
-import com.combatreforged.metis.api.world.entity.player.Player;
-import com.combatreforged.metis.api.world.item.ItemStack;
-import com.combatreforged.metis.api.world.types.Minecraft;
-import com.combatreforged.metis.builder.implementation.world.entity.player.WrappedPlayer;
+import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
+import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.item.ItemStack;
+import com.combatreforged.factory.api.world.types.Minecraft;
+import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.item.ItemStackUtil;

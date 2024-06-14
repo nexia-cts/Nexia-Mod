@@ -1,8 +1,8 @@
 package com.nexia.core;
 
-import com.combatreforged.metis.api.MetisAPI;
-import com.combatreforged.metis.api.MetisServer;
-import com.combatreforged.metis.api.entrypoint.MetisPlugin;
+import com.combatreforged.factory.api.FactoryAPI;
+import com.combatreforged.factory.api.FactoryServer;
+import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
 import com.nexia.core.config.ModConfig;
 import com.nexia.core.listeners.ListenerHelper;
 import com.nexia.core.loader.CommandLoader;
@@ -16,7 +16,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Main implements ModInitializer, MetisPlugin {
+public class Main implements ModInitializer, FactoryPlugin {
 	public static ModConfig config;
 
 	public static final String MOD_NAME = "Nexia";
@@ -40,18 +40,18 @@ public class Main implements ModInitializer, MetisPlugin {
 
 	@Override
 	@SuppressWarnings("FutureReturnValueIgnored")
-	public void onMetisLoad(MetisAPI api, MetisServer server) {
-		Main.logger.info("Loading Metis API...");
+	public void onFactoryLoad(FactoryAPI api, FactoryServer server) {
+		Main.logger.info("Loading Factory API...");
 
-		ServerTime.metisServer = server;
-		ServerTime.metisAPI = api;
+		ServerTime.factoryServer = server;
+		ServerTime.factoryAPI = api;
 		ServerTime.scheduler = api.getScheduler();
 
 		Main.logger.info("Registering listeners...");
 		ListenerHelper.registerListeners();
 		Main.logger.info("Registered listeners.");
-		Main.logger.info("Registering metis commands...");
+		Main.logger.info("Registering factory commands...");
 		CommandLoader.registerMetisCommands();
-		Main.logger.info("Registered metis commands.");
+		Main.logger.info("Registered factory commands.");
 	}
 }

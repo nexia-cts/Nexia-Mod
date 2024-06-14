@@ -1,7 +1,7 @@
 package com.nexia.core.commands.staff;
 
-import com.combatreforged.metis.api.command.CommandSourceInfo;
-import com.combatreforged.metis.api.command.CommandUtils;
+import com.combatreforged.factory.api.command.CommandSourceInfo;
+import com.combatreforged.factory.api.command.CommandUtils;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;

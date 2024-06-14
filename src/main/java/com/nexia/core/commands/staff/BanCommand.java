@@ -1,7 +1,7 @@
 package com.nexia.core.commands.staff;
 
-import com.combatreforged.metis.api.command.CommandSourceInfo;
-import com.combatreforged.metis.api.command.CommandUtils;
+import com.combatreforged.factory.api.command.CommandSourceInfo;
+import com.combatreforged.factory.api.command.CommandUtils;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -55,12 +55,12 @@ public class BanCommand {
 
                 if (serverPlayer != null) {
                     serverPlayer.connection.disconnect(new TextComponent("§c§lYou have been banned.\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + com.nexia.discord.Main.config.discordLink));
-                    nexiaPlayer.disconnect(Component.text("You have been banned.", ChatFormat.failColor)
+                    /*nexiaPlayer.disconnect(Component.text("You have been banned.", ChatFormat.failColor)
                             .append(Component.text("\nReason: ", ChatFormat.systemColor))
                             .append(Component.text(reason, ChatFormat.brandColor2))
                             .append(Component.text("\nYou can appeal your ban at ", ChatFormat.systemColor))
                             .append(Component.text(com.nexia.discord.Main.config.discordLink, ChatFormat.brandColor2))
-                    );
+                    );*/
                 }
             }
         }

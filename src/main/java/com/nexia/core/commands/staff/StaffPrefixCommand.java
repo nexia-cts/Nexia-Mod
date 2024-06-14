@@ -1,7 +1,7 @@
 package com.nexia.core.commands.staff;
 
-import com.combatreforged.metis.api.command.CommandSourceInfo;
-import com.combatreforged.metis.api.command.CommandUtils;
+import com.combatreforged.factory.api.command.CommandSourceInfo;
+import com.combatreforged.factory.api.command.CommandUtils;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -82,7 +82,7 @@ public class StaffPrefixCommand {
                                                         );
 
 
-                                                        ServerTime.metisServer.runCommand(String.format("/lp user %s permission unset %s", otherPlayer.getRawName(), rank.groupID));
+                                                        ServerTime.factoryServer.runCommand(String.format("/lp user %s permission unset %s", otherPlayer.getRawName(), rank.groupID));
                                                     }
                                                 }
                                             }
@@ -99,7 +99,7 @@ public class StaffPrefixCommand {
                                                                         .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold,false))
                                                         );
 
-                                                        ServerTime.metisServer.runCommand(String.format("/lp user %s permission set %s true", otherPlayer.getRawName(), rank.groupID));
+                                                        ServerTime.factoryServer.runCommand(String.format("/lp user %s permission set %s true", otherPlayer.getRawName(), rank.groupID));
                                                     }
                                                 }
                                             }

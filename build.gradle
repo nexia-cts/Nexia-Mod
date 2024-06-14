@@ -37,8 +37,6 @@ base {
 repositories {
 	flatDir { dirs("libraries") }
 
-	mavenCentral()
-
 	maven { url 'https://github.com/not-coded/notcoded-maven/raw/fabric/' }
 	maven { url 'https://maven.nucleoid.xyz' }
 	//maven { url "https://maven.rizecookey.net/" }
@@ -48,6 +46,7 @@ repositories {
 	maven { url "https://maven.terraformersmc.com/releases/" }
 	maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
 	maven { url 'https://github.com/ricksouth/serilum-forge-maven/raw/maven/' }
+	maven { url 'https://repo.minebench.de/' }
 }
 
 dependencies {
@@ -56,8 +55,9 @@ dependencies {
 	mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	modImplementation("com.combatreforged.metis:metis-api:${project.metis_version}-full")
-	modImplementation("com.combatreforged.metis:metis-builder:${project.metis_version}-${project.minecraft_version}-full")
+
+	modImplementation("com.combatreforged.factory:factory-api:${project.factory_version}-full")
+	modImplementation("com.combatreforged.factory:factory-builder:${project.factory_version}-1.16_combat-6")
 
 	include(implementation("com.google.code.gson:gson:${project.gson_version}"))
 

@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.football;
 
-import com.combatreforged.metis.api.world.types.Minecraft;
+import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;

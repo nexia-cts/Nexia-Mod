@@ -1,6 +1,6 @@
 package com.nexia.core.mixin.player;
 
-import com.combatreforged.metis.api.world.types.Minecraft;
+import com.combatreforged.factory.api.world.types.Minecraft;
 import com.mojang.authlib.GameProfile;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.PlayerMutes;

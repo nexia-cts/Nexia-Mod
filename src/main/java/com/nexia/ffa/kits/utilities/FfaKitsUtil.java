@@ -1,7 +1,7 @@
 package com.nexia.ffa.kits.utilities;
 
-import com.combatreforged.metis.api.world.entity.player.Player;
-import com.combatreforged.metis.api.world.types.Minecraft;
+import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.ffa.KitGUI;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -216,7 +216,7 @@ public class FfaKitsUtil {
             }
         }
 
-        for (Player factoryPlayer : ServerTime.metisServer.getPlayers()) {
+        for (Player factoryPlayer : ServerTime.factoryServer.getPlayers()) {
             if (factoryPlayer.hasTag("ffa_kits")) player.sendMessage(msg);
         }
     }

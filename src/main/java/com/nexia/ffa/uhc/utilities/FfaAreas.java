@@ -1,8 +1,8 @@
 package com.nexia.ffa.uhc.utilities;
 
-import com.combatreforged.metis.api.util.Identifier;
-import com.combatreforged.metis.api.world.entity.Entity;
-import com.combatreforged.metis.api.world.entity.player.Player;
+import com.combatreforged.factory.api.util.Identifier;
+import com.combatreforged.factory.api.world.entity.Entity;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;

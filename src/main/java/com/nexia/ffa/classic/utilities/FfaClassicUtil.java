@@ -1,6 +1,6 @@
 package com.nexia.ffa.classic.utilities;
 
-import com.combatreforged.metis.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.google.gson.Gson;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
@@ -169,7 +169,7 @@ public class FfaClassicUtil {
             }
         }
 
-        for (Player fPlayer : ServerTime.metisServer.getPlayers()) {
+        for (Player fPlayer : ServerTime.factoryServer.getPlayers()) {
             if (fPlayer.hasTag("ffa_classic")) player.sendMessage(msg);
         }
     }

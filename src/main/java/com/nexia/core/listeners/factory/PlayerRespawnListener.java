@@ -1,8 +1,8 @@
 package com.nexia.core.listeners.factory;
 
-import com.combatreforged.metis.api.event.player.PlayerRespawnEvent;
-import com.combatreforged.metis.api.world.types.Minecraft;
-import com.combatreforged.metis.api.world.util.Location;
+import com.combatreforged.factory.api.event.player.PlayerRespawnEvent;
+import com.combatreforged.factory.api.world.types.Minecraft;
+import com.combatreforged.factory.api.world.util.Location;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.player.NexiaPlayer;
