@@ -12,7 +12,6 @@ import com.nexia.core.utilities.time.ServerTime;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.UserBanList;
 import net.minecraft.server.players.UserBanListEntry;
@@ -54,13 +53,12 @@ public class BanCommand {
 
 
                 if (serverPlayer != null) {
-                    serverPlayer.connection.disconnect(new TextComponent("§c§lYou have been banned.\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + com.nexia.discord.Main.config.discordLink));
-                    /*nexiaPlayer.disconnect(Component.text("You have been banned.", ChatFormat.failColor)
+                    nexiaPlayer.disconnect(Component.text("You have been banned.", ChatFormat.failColor)
                             .append(Component.text("\nReason: ", ChatFormat.systemColor))
                             .append(Component.text(reason, ChatFormat.brandColor2))
                             .append(Component.text("\nYou can appeal your ban at ", ChatFormat.systemColor))
                             .append(Component.text(com.nexia.discord.Main.config.discordLink, ChatFormat.brandColor2))
-                    );*/
+                    );
                 }
             }
         }
