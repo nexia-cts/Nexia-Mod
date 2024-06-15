@@ -1,7 +1,7 @@
 package com.nexia.core.commands.player;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
-import com.combatreforged.factory.api.world.types.Minecraft;
+import com.nexia.nexus.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.types.Minecraft;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -45,20 +45,20 @@ public class SpectateCommand {
 
     public static int gameModeSpectate(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer executor = context.getSource().getPlayerOrException();
-        Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor);
+        Player nexusExecutor = PlayerUtil.getNexusPlayer(executor);
 
         if(PlayerDataManager.get(executor).gameMode != PlayerGameMode.FFA) {
-            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
+            nexusExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("This can only be used in FFA!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
             ));
-            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
+            nexusExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("If you are in duels then you do /spectate <player>.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
             ));
             return 0;
         }
 
         if(!Permissions.check(executor, "nexia.prefix.supporter")) {
-            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
+            nexusExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("This feature is only available for").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                             .append(Component.text("Supporters")
                                     .color(ChatFormat.brandColor1)
@@ -73,25 +73,25 @@ public class SpectateCommand {
             );
         }
 
-        if(LobbyUtil.checkGameModeBan(factoryExecutor, executor, "ffa")) {
+        if(LobbyUtil.checkGameModeBan(nexusExecutor, executor, "ffa")) {
             return 0;
         }
 
-        if(Math.round(factoryExecutor.getHealth()) < 20) {
-            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
+        if(Math.round(nexusExecutor.getHealth()) < 20) {
+            nexusExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("You must be fully healed to go into spectator!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
             );
             return 0;
         }
 
-        factoryExecutor.setGameMode(Minecraft.GameMode.SPECTATOR);
+        nexusExecutor.setGameMode(Minecraft.GameMode.SPECTATOR);
 
         return 1;
     }
 
     public static int spectate(CommandContext<CommandSourceStack> context, ServerPlayer player) throws CommandSyntaxException {
         ServerPlayer executor = context.getSource().getPlayerOrException();
-        Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor);
+        Player nexusExecutor = PlayerUtil.getNexusPlayer(executor);
 
         if(PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) {
             GamemodeHandler.spectatePlayer(AccuratePlayer.create(executor), AccuratePlayer.create(player));
@@ -99,7 +99,7 @@ public class SpectateCommand {
         }
 
         if(!Permissions.check(executor, "nexia.prefix.supporter")) {
-            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
+            nexusExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                             Component.text("This feature is only available for").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                                     .append(Component.text("Supporters")
                                             .color(ChatFormat.brandColor1)
@@ -114,36 +114,36 @@ public class SpectateCommand {
             );
         }
 
-        if(LobbyUtil.checkGameModeBan(factoryExecutor, executor, "ffa")) {
+        if(LobbyUtil.checkGameModeBan(nexusExecutor, executor, "ffa")) {
             return 0;
         }
 
         if(PlayerDataManager.get(executor).gameMode != PlayerGameMode.FFA) {
-            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
+            nexusExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("This can only be used in FFA!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
             ));
-            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
+            nexusExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("If you are in duels then you do /spectate <player>.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
             ));
             return 0;
         }
 
         if(!FfaUtil.isFfaPlayer(player)) {
-            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
+            nexusExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("That player is not in FFA!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
             ));
         }
 
         // Check if player is in combat (or full health), then put them in spectator.
 
-        if(Math.round(factoryExecutor.getHealth()) < 20) {
-            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
+        if(Math.round(nexusExecutor.getHealth()) < 20) {
+            nexusExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("You must be fully healed to go into spectator!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
             );
             return 0;
         }
 
-        factoryExecutor.setGameMode(Minecraft.GameMode.SPECTATOR);
+        nexusExecutor.setGameMode(Minecraft.GameMode.SPECTATOR);
         executor.teleportTo(player.getLevel(), player.getX(), player.getY(), player.getZ(), 0, 0);
 
         return 1;

@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.bedwars.areas;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.BlockVec3;
@@ -88,22 +88,22 @@ public class BwAreas {
         BlockPos mapPos = blockPos.subtract(bedWarsCorner1);
         sendMessage = sendMessage && player != null;
 
-        Player factoryPlayer = null;
+        Player nexusPlayer = null;
 
         if(player != null) {
-            factoryPlayer = PlayerUtil.getFactoryPlayer(player);
+            nexusPlayer = PlayerUtil.getNexusPlayer(player);
         }
 
         if (protectionMap == null) {
             if (sendMessage) {
-                factoryPlayer.sendMessage(Component.text("An error occurred, please inform the admins.").color(ChatFormat.failColor));
+                nexusPlayer.sendMessage(Component.text("An error occurred, please inform the admins.").color(ChatFormat.failColor));
             }
             return false;
         }
 
         if ((player != null && !isBedWarsWorld(player.getLevel())) || !isInsideBorder(mapPos, protectionMap.map)) {
             if (sendMessage) {
-                factoryPlayer.sendMessage(Component.text("You have reached the built limit.").color(ChatFormat.failColor));
+                nexusPlayer.sendMessage(Component.text("You have reached the built limit.").color(ChatFormat.failColor));
             }
             return false;
         }

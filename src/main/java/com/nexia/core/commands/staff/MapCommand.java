@@ -1,6 +1,6 @@
 package com.nexia.core.commands.staff;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.entity.player.Player;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -53,7 +53,7 @@ public class MapCommand {
 
         try {
             mcPlayer = context.getSource().getPlayerOrException();
-            player = PlayerUtil.getFactoryPlayer(mcPlayer);
+            player = PlayerUtil.getNexusPlayer(mcPlayer);
         } catch (Exception ignored) { }
 
 

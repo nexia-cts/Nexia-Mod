@@ -1,6 +1,6 @@
 package com.nexia.ffa.uhc.utilities;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.entity.player.Player;
 import com.google.gson.Gson;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -70,7 +70,7 @@ public class FfaUhcUtil {
 
         if(data.killstreak % 5 == 0) {
             for (ServerPlayer serverPlayer : FfaAreas.ffaWorld.players()) {
-                PlayerUtil.getFactoryPlayer(serverPlayer).sendMessage(
+                PlayerUtil.getNexusPlayer(serverPlayer).sendMessage(
                         Component.text("[").color(ChatFormat.lineColor)
                                 .append(Component.text("☠").color(ChatFormat.failColor))
                                 .append(Component.text("] ").color(ChatFormat.lineColor))
@@ -88,7 +88,7 @@ public class FfaUhcUtil {
         if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
             if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !FfaAreas.isInFfaSpawn(minecraftPlayer)){
-                Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+                Player player = PlayerUtil.getNexusPlayer(minecraftPlayer);
                 wasInSpawn.remove(minecraftPlayer.getUUID());
                 saveInventory(minecraftPlayer);
                 player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your inventory layout was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
@@ -176,7 +176,7 @@ public class FfaUhcUtil {
 
         if(data.killstreak >= 5) {
             for (ServerPlayer serverPlayer : FfaAreas.ffaWorld.players()) {
-                PlayerUtil.getFactoryPlayer(serverPlayer).sendMessage(
+                PlayerUtil.getNexusPlayer(serverPlayer).sendMessage(
                         Component.text("[").color(ChatFormat.lineColor)
                                 .append(Component.text("☠").color(ChatFormat.failColor))
                                 .append(Component.text("] ").color(ChatFormat.lineColor))
@@ -249,7 +249,7 @@ public class FfaUhcUtil {
             calculateKill(attacker);
         }
 
-        for (Player player : ServerTime.factoryServer.getPlayers()) {
+        for (Player player : ServerTime.nexusServer.getPlayers()) {
             if (player.hasTag("ffa_uhc")) player.sendMessage(msg);
         }
     }

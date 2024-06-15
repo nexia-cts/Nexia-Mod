@@ -78,7 +78,7 @@ public class Discord extends ListenerAdapter {
             idMinecraft.remove(code);
             if(player != null) {
                 event.getHook().editOriginal("Your account has been linked with " + player.getScoreboardName()).queue();
-                PlayerUtil.getFactoryPlayer(player).sendMessage(
+                PlayerUtil.getNexusPlayer(player).sendMessage(
                         ChatFormat.nexiaMessage
                                 .append(Component.text("Your account has been linked with the discord user: ")
                                         .decoration(ChatFormat.bold, false)

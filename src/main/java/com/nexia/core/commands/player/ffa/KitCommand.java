@@ -22,7 +22,7 @@ public class KitCommand {
                 .executes(context -> {
                     ServerPlayer player = context.getSource().getPlayerOrException();
                     if(!FfaKitsUtil.canGoToSpawn(player)) {
-                        PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You must be fully healed to change kits!").color(ChatFormat.failColor));
+                        PlayerUtil.getNexusPlayer(player).sendMessage(Component.text("You must be fully healed to change kits!").color(ChatFormat.failColor));
                         return 1;
                     }
                     LobbyUtil.sendGame(player, "kits ffa", false, true);
@@ -34,7 +34,7 @@ public class KitCommand {
                         .executes(context -> {
                             ServerPlayer player = context.getSource().getPlayerOrException();
                             if(!FfaKitsUtil.canGoToSpawn(player)) {
-                                PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You must be fully healed to change kits!").color(ChatFormat.failColor));
+                                PlayerUtil.getNexusPlayer(player).sendMessage(Component.text("You must be fully healed to change kits!").color(ChatFormat.failColor));
                                 return 1;
                             }
 

@@ -1,6 +1,6 @@
 package com.nexia.core.commands.staff;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.entity.player.Player;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -32,12 +32,12 @@ public class StaffReportCommand {
 
                                     String type = StringArgumentType.getString(context, "type");
                                     ServerPlayer mcOtherPlayer = EntityArgument.getPlayer(context, "player");
-                                    Player otherPlayer = PlayerUtil.getFactoryPlayer(mcOtherPlayer);
+                                    Player otherPlayer = PlayerUtil.getNexusPlayer(mcOtherPlayer);
 
-                                    Player factoryExecutor = null;
+                                    Player nexusExecutor = null;
 
                                     try {
-                                        factoryExecutor = PlayerUtil.getFactoryPlayer(executor.getPlayerOrException());
+                                        nexusExecutor = PlayerUtil.getNexusPlayer(executor.getPlayerOrException());
                                     } catch (Exception ignored) { }
 
 
@@ -45,16 +45,16 @@ public class StaffReportCommand {
 
                                     if(type.equalsIgnoreCase("ban")) {
                                         if(data.savedData.isReportBanned()) {
-                                            if(factoryExecutor != null) {
-                                                factoryExecutor.sendMessage(Component.text("That player is already report banned!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false));
+                                            if(nexusExecutor != null) {
+                                                nexusExecutor.sendMessage(Component.text("That player is already report banned!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false));
                                             } else {
                                                 executor.sendFailure(new TextComponent("That player is already report banned!"));
                                             }
                                             return 0;
                                         }
                                         data.savedData.setReportBanned(true);
-                                        if(factoryExecutor != null) {
-                                            factoryExecutor.sendMessage(
+                                        if(nexusExecutor != null) {
+                                            nexusExecutor.sendMessage(
                                                     ChatFormat.nexiaMessage
                                                             .append(Component.text("You have report banned ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                                                                     .append(Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor1).decoration(ChatFormat.bold, true))
@@ -69,16 +69,16 @@ public class StaffReportCommand {
 
                                     if(type.equalsIgnoreCase("unban") || type.equalsIgnoreCase("pardon")) {
                                         if(!data.savedData.isReportBanned()) {
-                                            if(factoryExecutor != null) {
-                                                factoryExecutor.sendMessage(Component.text("That player is not report banned!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false));
+                                            if(nexusExecutor != null) {
+                                                nexusExecutor.sendMessage(Component.text("That player is not report banned!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false));
                                             } else {
                                                 executor.sendFailure(new TextComponent("That player is not report banned!"));
                                             }
                                             return 0;
                                         }
                                         data.savedData.setReportBanned(false);
-                                        if(factoryExecutor != null) {
-                                            factoryExecutor.sendMessage(
+                                        if(nexusExecutor != null) {
+                                            nexusExecutor.sendMessage(
                                                     ChatFormat.nexiaMessage
                                                             .append(Component.text("You have report unbanned ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                                                                     .append(Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor1).decoration(ChatFormat.bold, true))
@@ -91,8 +91,8 @@ public class StaffReportCommand {
                                         return Command.SINGLE_SUCCESS;
                                     }
 
-                                    if(factoryExecutor != null) {
-                                        factoryExecutor.sendMessage(Component.text("Invalid argument").color(ChatFormat.failColor).decoration(ChatFormat.bold, false));
+                                    if(nexusExecutor != null) {
+                                        nexusExecutor.sendMessage(Component.text("Invalid argument").color(ChatFormat.failColor).decoration(ChatFormat.bold, false));
                                     } else {
                                         executor.sendFailure(new TextComponent("Invalid argument!"));
                                     }

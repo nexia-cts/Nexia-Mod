@@ -128,7 +128,7 @@ public class BwShop extends SimpleGui {
     }
 
     public static void sendFail(ServerPlayer player, String text) {
-        PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text(text).color(ChatFormat.failColor));
+        PlayerUtil.getNexusPlayer(player).sendMessage(Component.text(text).color(ChatFormat.failColor));
         playPurchaseSound(player, true);
     }
 

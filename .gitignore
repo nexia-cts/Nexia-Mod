@@ -93,4 +93,4 @@ bin/
 # fabric
 
 run/
-.factorypath
+.nexuspath

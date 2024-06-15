@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.football;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -76,7 +76,7 @@ public class FootballGame {
 
 
     public static void leave(ServerPlayer minecraftPlayer) {
-        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+        Player player = PlayerUtil.getNexusPlayer(minecraftPlayer);
         AccuratePlayer accuratePlayer = AccuratePlayer.create(minecraftPlayer);
 
         PlayerData data = PlayerDataManager.get(minecraftPlayer);
@@ -117,7 +117,7 @@ public class FootballGame {
 
                 if(FootballGame.endTime <= 0) {
                     for(ServerPlayer player : FootballGame.getViewers()){
-                        PlayerUtil.getFactoryPlayer(player).runCommand("/hub", 0, false);
+                        PlayerUtil.getNexusPlayer(player).runCommand("/hub", 0, false);
                     }
 
                     FootballGame.resetAll();
@@ -146,12 +146,12 @@ public class FootballGame {
             if(FootballGame.queue.size() >= 2) {
                 for(AccuratePlayer player : FootballGame.queue){
                     if(player.get() == null) return;
-                    Player fPlayer = PlayerUtil.getFactoryPlayer(player.get());
+                    Player fPlayer = PlayerUtil.getNexusPlayer(player.get());
 
                     if(FootballGame.queueTime <= 5) {
                         Title title = getTitle(FootballGame.queueTime);
 
-                        PlayerUtil.getFactoryPlayer(player.get()).sendTitle(title);
+                        PlayerUtil.getNexusPlayer(player.get()).sendTitle(title);
                         PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
                     }
 
@@ -203,7 +203,7 @@ public class FootballGame {
             entity.moveTo(0, 80, 0, 0, 0);
 
             for(ServerPlayer player : FootballGame.getViewers()) {
-                PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(Component.text("Team " + teamID).color(ChatFormat.brandColor2), Component.text("has scored a goal!").color(ChatFormat.normalColor)));
+                PlayerUtil.getNexusPlayer(player).sendTitle(Title.title(Component.text("Team " + teamID).color(ChatFormat.brandColor2), Component.text("has scored a goal!").color(ChatFormat.normalColor)));
             }
 
             for(AccuratePlayer player : FootballGame.team1.players) {
@@ -260,7 +260,7 @@ public class FootballGame {
                     .append(Component.text("!").color(ChatFormat.normalColor)
                     );
             for(ServerPlayer player : FootballGame.getViewers()){
-                if(player != null && PlayerUtil.getFactoryPlayer(player) != null) PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(msg, Component.text("")));
+                if(player != null && PlayerUtil.getNexusPlayer(player) != null) PlayerUtil.getNexusPlayer(player).sendTitle(Title.title(msg, Component.text("")));
             }
 
             return;
@@ -272,12 +272,12 @@ public class FootballGame {
         if(winnerTeam == FootballGame.team2) teamID = 2;
 
         for(AccuratePlayer accuratePlayer : winnerTeam.players) {
-            PlayerUtil.getFactoryPlayer(accuratePlayer.get()).sendTitle(Title.title(Component.text("You won!").color(ChatFormat.greenColor), Component.text("")));
+            PlayerUtil.getNexusPlayer(accuratePlayer.get()).sendTitle(Title.title(Component.text("You won!").color(ChatFormat.greenColor), Component.text("")));
             PlayerDataManager.get(accuratePlayer.get()).savedData.wins++;
         }
 
         for(ServerPlayer player : FootballGame.getViewers()){
-            PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(Component.text("Team " + teamID).color(ChatFormat.brandColor2), Component.text("has won the game! (" + winnerTeam.goals + " goals)").color(ChatFormat.normalColor)));
+            PlayerUtil.getNexusPlayer(player).sendTitle(Title.title(Component.text("Team " + teamID).color(ChatFormat.brandColor2), Component.text("has won the game! (" + winnerTeam.goals + " goals)").color(ChatFormat.normalColor)));
         }
     }
 
@@ -291,7 +291,7 @@ public class FootballGame {
             FootballTeam otherTeam = FootballGame.team1;
             if(playerTeam.equals(FootballGame.team1)) otherTeam = FootballGame.team2;
 
-            PlayerUtil.getFactoryPlayer(player).sendActionBarMessage(
+            PlayerUtil.getNexusPlayer(player).sendActionBarMessage(
                     Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
                             .append(Component.text(FootballGame.map.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
