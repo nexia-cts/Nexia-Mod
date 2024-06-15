@@ -18,8 +18,6 @@ import com.nexia.minigames.games.duels.util.DuelOptions;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,7 +28,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -132,20 +129,17 @@ public class CustomDuelsGame { //implements Runnable{
 
         selectedMap.structureMap.pasteMap(duelLevel);
 
+        selectedMap.p1Pos.teleportPlayer(duelLevel, p1.unwrap());
+        selectedMap.p2Pos.teleportPlayer(duelLevel, p2.unwrap());
+
         p1.reset(true, Minecraft.GameMode.ADVENTURE);
         p2.reset(true, Minecraft.GameMode.ADVENTURE);
 
-
-        selectedMap.p2Pos.teleportPlayer(duelLevel, p2.unwrap());
         playerData.inviteOptions.reset();
         playerData.inDuel = true;
-        removeQueue(p2, null, true);
         playerData.duelOptions.spectatingPlayer = null;
 
-        selectedMap.p1Pos.teleportPlayer(duelLevel, p1.unwrap());
-
         invitorData.inDuel = true;
-        removeQueue(p2, null, true);
         invitorData.duelOptions.spectatingPlayer = null;
 
         removeQueue(p1, null, true);
@@ -216,8 +210,6 @@ public class CustomDuelsGame { //implements Runnable{
                 PlayerData victimData = PlayerDataManager.get(victim);
                 PlayerData attackerData = PlayerDataManager.get(attacker);
 
-                attacker.safeReset(false, Minecraft.GameMode.SURVIVAL);
-
                 for(NexiaPlayer spectator : this.spectators) {
                     spectator.runCommand("/hub", 0, false);
                 }
@@ -280,16 +272,7 @@ public class CustomDuelsGame { //implements Runnable{
                 return;
             }
 
-            Title title;
-            TextColor color = NamedTextColor.GREEN;
-
-            if(this.currentStartTime <= 3 && this.currentStartTime > 1) {
-                color = NamedTextColor.YELLOW;
-            } else if(this.currentStartTime <= 1) {
-                color = NamedTextColor.RED;
-            }
-
-            title = Title.title(Component.text(this.currentStartTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
+            Title title = DuelGameHandler.getTitle(this.currentStartTime);
 
             p1.sendTitle(title);
             p2.sendTitle(title);

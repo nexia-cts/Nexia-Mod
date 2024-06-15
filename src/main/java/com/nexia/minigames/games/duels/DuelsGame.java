@@ -15,8 +15,6 @@ import com.nexia.minigames.games.duels.util.DuelOptions;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,7 +24,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -104,6 +101,9 @@ public class DuelsGame {
 
         selectedMap.structureMap.pasteMap(duelLevel);
 
+        selectedMap.p1Pos.teleportPlayer(duelLevel, p1.unwrap());
+        selectedMap.p2Pos.teleportPlayer(duelLevel, p2.unwrap());
+        
         if(!gameMode.hasSaturation) {
             p1.addTag(LobbyUtil.NO_SATURATION_TAG);
             p2.addTag(LobbyUtil.NO_SATURATION_TAG);
@@ -111,13 +111,11 @@ public class DuelsGame {
 
         p1.reset(true, Minecraft.GameMode.ADVENTURE);
         p2.reset(true, Minecraft.GameMode.ADVENTURE);
-
-        selectedMap.p2Pos.teleportPlayer(duelLevel, p1.unwrap());
+       
         playerData.inviteOptions.reset();
         playerData.inDuel = true;
         playerData.duelOptions.spectatingPlayer = null;
-
-        selectedMap.p1Pos.teleportPlayer(duelLevel, p1.unwrap());
+        
         invitorData.inviteOptions.reset();
         invitorData.inDuel = true;
         invitorData.duelOptions.spectatingPlayer = null;
@@ -164,8 +162,6 @@ public class DuelsGame {
 
                 PlayerData victimData = PlayerDataManager.get(victim);
                 PlayerData attackerData = PlayerDataManager.get(attacker);
-
-                attacker.safeReset(false, this.gameMode.gameMode);
 
                 for(NexiaPlayer spectator : this.spectators) {
                     spectator.runCommand("/hub", 0, false);
@@ -230,16 +226,7 @@ public class DuelsGame {
                 return;
             }
 
-            Title title;
-            TextColor color = NamedTextColor.GREEN;
-
-            if(this.currentStartTime <= 3 && this.currentStartTime > 1) {
-                color = NamedTextColor.YELLOW;
-            } else if(this.currentStartTime <= 1) {
-                color = NamedTextColor.RED;
-            }
-
-            title = Title.title(Component.text(this.currentStartTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
+            Title title = DuelGameHandler.getTitle(this.currentStartTime);
 
             this.p1.sendTitle(title);
             this.p2.sendTitle(title);

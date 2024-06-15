@@ -17,8 +17,6 @@ import com.nexia.minigames.games.duels.util.DuelOptions;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,10 +27,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.UUID;
+
+import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 
 public class CustomTeamDuelsGame { // implements Runnable{
     public DuelsTeam team1;
@@ -179,12 +178,13 @@ public class CustomTeamDuelsGame { // implements Runnable{
             ServerPlayer serverPlayer = player.unwrap();
             PlayerData data = PlayerDataManager.get(player);
 
-            DuelGameHandler.leave(player, false);
-
             data.gameMode = DuelGameMode.CLASSIC;
             data.gameOptions = new DuelOptions.GameOptions(game, team2);
             data.inviteOptions.reset();
+            data.duelOptions.spectatingPlayer = null;
             data.inDuel = true;
+
+            removeQueue(player, null, true);
 
             selectedMap.p1Pos.teleportPlayer(duelLevel, serverPlayer);
 
@@ -207,12 +207,13 @@ public class CustomTeamDuelsGame { // implements Runnable{
             ServerPlayer serverPlayer = player.unwrap();
             PlayerData data = PlayerDataManager.get(player);
 
-            DuelGameHandler.leave(player, false);
-
             data.gameMode = DuelGameMode.CLASSIC;
             data.gameOptions = new DuelOptions.GameOptions(game, team1);
             data.inviteOptions.reset();
+            data.duelOptions.spectatingPlayer = null;
             data.inDuel = true;
+
+            removeQueue(player, null, true);
 
             selectedMap.p2Pos.teleportPlayer(duelLevel, serverPlayer);
 
@@ -336,7 +337,7 @@ public class CustomTeamDuelsGame { // implements Runnable{
                 return;
             }
 
-            Title title = getTitle();
+            Title title = DuelGameHandler.getTitle(this.currentStartTime);
 
             for (NexiaPlayer player : this.team1.alive) {
                 player.sendTitle(title);
@@ -349,22 +350,6 @@ public class CustomTeamDuelsGame { // implements Runnable{
                         1);
             }
         }
-    }
-
-    @NotNull
-    private Title getTitle() {
-        Title title;
-        TextColor color = NamedTextColor.GREEN;
-
-        if (this.currentStartTime <= 3 && this.currentStartTime > 1) {
-            color = NamedTextColor.YELLOW;
-        } else if (this.currentStartTime <= 1) {
-            color = NamedTextColor.RED;
-        }
-
-        title = Title.title(Component.text(this.currentStartTime).color(color), Component.text(""),
-                Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
-        return title;
     }
 
     public void endGame(@NotNull DuelsTeam loserTeam, @Nullable DuelsTeam winnerTeam, boolean wait) {

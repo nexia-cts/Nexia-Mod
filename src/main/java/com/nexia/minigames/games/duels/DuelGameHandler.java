@@ -3,6 +3,7 @@ package com.nexia.minigames.games.duels;
 import com.combatreforged.factory.api.util.Identifier;
 import com.google.gson.Gson;
 import com.nexia.core.Main;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
@@ -16,6 +17,9 @@ import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.title.Title;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -31,6 +35,7 @@ import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -52,6 +57,20 @@ public class DuelGameHandler {
 
         File file = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getUUID(), kitID + ".txt");
         return file.exists();
+    }
+
+    public static @NotNull Title getTitle(int currentStartTime) {
+        Title title;
+        TextColor color = ChatFormat.Minecraft.green;
+
+        if(currentStartTime <= 3 && currentStartTime > 1) {
+            color = ChatFormat.Minecraft.yellow;
+        } else if(currentStartTime <= 1) {
+            color = ChatFormat.Minecraft.red;
+        }
+
+        title = Title.title(Component.text(currentStartTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
+        return title;
     }
 
     public static void loadInventory(NexiaPlayer player, String gameMode) {
