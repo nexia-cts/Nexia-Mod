@@ -103,7 +103,7 @@ public abstract class PlayerListMixin {
             LobbyUtil.giveItems(player);
             player.setGameMode(GameType.ADVENTURE);
 
-            PlayerUtil.getNexusPlayer(player).runCommand("/hub");
+            PlayerUtil.getFactoryPlayer(player).runCommand("/hub");
             return;
         }
 

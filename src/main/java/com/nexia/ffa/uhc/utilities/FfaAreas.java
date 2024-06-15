@@ -1,7 +1,7 @@
 package com.nexia.ffa.uhc.utilities;
 
-import com.nexia.nexus.api.util.Identifier;
-import com.nexia.nexus.api.world.entity.Entity;
+import com.combatreforged.factory.api.util.Identifier;
+import com.combatreforged.factory.api.world.entity.Entity;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
@@ -49,7 +49,7 @@ public class FfaAreas {
 
         if(announce){
             for(Entity entity : WorldUtil.getWorld(ffaWorld).getEntities()) {
-                if(entity instanceof com.nexia.nexus.api.world.entity.player.Player player && player.hasTag("ffa_uhc")) player.sendMessage(Component.text("[!] Map has been reloaded!").color(ChatFormat.lineTitleColor));
+                if(entity instanceof com.combatreforged.factory.api.world.entity.player.Player player && player.hasTag("ffa_uhc")) player.sendMessage(Component.text("[!] Map has been reloaded!").color(ChatFormat.lineTitleColor));
             }
         }
     }

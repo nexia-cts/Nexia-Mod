@@ -33,7 +33,7 @@ public class EventUtil {
         return true;
     }
 
-    public static boolean dropItem(ServerPlayer player, com.nexia.nexus.api.world.item.ItemStack itemStack) {
+    public static boolean dropItem(ServerPlayer player, com.combatreforged.factory.api.world.item.ItemStack itemStack) {
 
         if(FfaUtil.isFfaPlayer(player)) return false;
         if(LobbyUtil.isLobbyWorld(player.level)) return false;

@@ -20,7 +20,7 @@ public class DiscordCommand {
     }
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        PlayerUtil.getNexusPlayer(context.getSource().getPlayerOrException()).sendMessage(
+        PlayerUtil.getFactoryPlayer(context.getSource().getPlayerOrException()).sendMessage(
                 ChatFormat.nexiaMessage
                                 .append(Component.text("Link to discord: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                                         .append(Component.text(com.nexia.discord.Main.config.discordLink).color(ChatFormat.brandColor2)

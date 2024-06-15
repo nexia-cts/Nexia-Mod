@@ -113,7 +113,7 @@ public class GamemodeBanHandler {
 
         ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
 
-        PlayerUtil.getNexusPlayer(player).sendMessage(
+        PlayerUtil.getFactoryPlayer(player).sendMessage(
                 ChatFormat.nexiaMessage
                         .append(Component.text("You have been gamemode (" + gameMode.name + ") banned for ").decoration(ChatFormat.bold, false))
                         .append(Component.text(BanHandler.banTimeToText(banTime)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
