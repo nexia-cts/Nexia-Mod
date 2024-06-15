@@ -6,25 +6,23 @@ import com.nexia.core.Main;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import net.minecraft.core.Registry;
-import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
-import xyz.nucleoid.fantasy.util.VoidChunkGenerator;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class WorldUtil {
+
     private static final String templateWorldName = "template:void";
 
     public static boolean isTemplateVoidWorld(Level level) {
@@ -82,13 +80,12 @@ public class WorldUtil {
         worldHandle.delete();
     }
 
-    public static ChunkGenerator getChunkGenerator(@NotNull ResourceKey<Biome> biome) {
-        try {
-            return new VoidChunkGenerator(BuiltinRegistries.BIOME, biome);
-        } catch (Exception exception) {
-            if (templateWorld == null || templateWorld.getChunkSource().getGenerator() == null) return ServerTime.minecraftServer.overworld().getChunkSource().getGenerator();
-            return templateWorld.getChunkSource().getGenerator();
-        }
+    public static ChunkGenerator getChunkGenerator() {
+        // return new VoidChunkGenerator(BuiltinRegistries.BIOME, Biomes.PLAINS)
+        // doesnt work ^^ extremely buggy
+
+        if(templateWorld == null || templateWorld.getChunkSource().getGenerator() == null) return ServerTime.minecraftServer.overworld().getChunkSource().getGenerator();
+        return templateWorld.getChunkSource().getGenerator();
     }
 
     public static void deleteTempWorlds() {

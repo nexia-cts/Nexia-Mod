@@ -1,6 +1,7 @@
 package com.nexia.core.mixin.block;
 
 import com.nexia.core.games.util.LobbyUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
@@ -25,9 +26,10 @@ public class AnvilBlockMixin {
     @Inject(method = "use", cancellable = true, at = @At("HEAD"))
     private void use(BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult, CallbackInfoReturnable<InteractionResult> cir) {
         if (!(player instanceof ServerPlayer serverPlayer)) return;
-        PlayerData playerData = PlayerDataManager.get(serverPlayer);
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
+        PlayerData playerData = PlayerDataManager.get(nexiaPlayer);
 
-        if (BwUtil.isInBedWars(serverPlayer) || (playerData.gameOptions != null && (playerData.gameOptions.duelsGame != null || playerData.gameOptions.teamDuelsGame != null || playerData.gameOptions.customDuelsGame != null || playerData.gameOptions.customTeamDuelsGame != null)) || LobbyUtil.isLobbyWorld(serverPlayer.getLevel()) || (FfaUtil.isFfaPlayer(player) && !serverPlayer.isCreative())) {
+        if (BwUtil.isInBedWars(nexiaPlayer) || (playerData.gameOptions != null && (playerData.gameOptions.duelsGame != null || playerData.gameOptions.teamDuelsGame != null || playerData.gameOptions.customDuelsGame != null || playerData.gameOptions.customTeamDuelsGame != null)) || LobbyUtil.isLobbyWorld(serverPlayer.getLevel()) || (FfaUtil.isFfaPlayer(nexiaPlayer) && !serverPlayer.isCreative())) {
             cir.setReturnValue(InteractionResult.FAIL);
             return;
         }
