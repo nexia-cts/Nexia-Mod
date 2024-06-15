@@ -1,7 +1,7 @@
 package com.nexia.core.gui;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
-import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
+import com.nexia.nexus.api.world.entity.player.Player;
+import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
@@ -86,11 +86,11 @@ public class RanksGUI extends SimpleGui {
             ItemStack itemStack = element.getItemStack();
             Component name = itemStack.getHoverName();
 
-            Player factoryPlayer = PlayerUtil.getFactoryPlayer(this.player);
+            Player nexusPlayer = PlayerUtil.getNexusPlayer(this.player);
 
             if(name.getString().contains("Supporter")){
                 // Insert supporter thing here (link to discord and patreon)
-                factoryPlayer.sendMessage(ChatFormat.nexiaMessage.append(
+                nexusPlayer.sendMessage(ChatFormat.nexiaMessage.append(
                                 net.kyori.adventure.text.Component.text("In order to get the ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                                         .append(net.kyori.adventure.text.Component.text("Supporter").color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                                         .append(net.kyori.adventure.text.Component.text(" rank, you need to either ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))

@@ -46,7 +46,7 @@ public class DetectCommand {
         });
         if(nearestPosition.get() != null) {
             Vec3 nearestPos = nearestPosition.get();
-            ServerTime.factoryServer.runCommand("/player " + botName + " look at " + nearestPos.x + " " + nearestPos.y + " " + nearestPos.z, 4, false);
+            ServerTime.nexusServer.runCommand("/player " + botName + " look at " + nearestPos.x + " " + nearestPos.y + " " + nearestPos.z, 4, false);
         }
     }
 }

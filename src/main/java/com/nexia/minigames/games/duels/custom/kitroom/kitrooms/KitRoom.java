@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.duels.custom.kitroom.kitrooms;
 
-import com.combatreforged.factory.api.util.Identifier;
+import com.nexia.nexus.api.util.Identifier;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;

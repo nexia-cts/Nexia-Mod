@@ -1,6 +1,6 @@
 package com.nexia.core.commands.player;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.entity.player.Player;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -37,7 +37,7 @@ public class StatsCommand {
 
         ServerPlayer mcPlayer = context.getSource().getPlayerOrException();
         PlayerData executerData = com.nexia.core.utilities.player.PlayerDataManager.get(mcPlayer);
-        Player player = PlayerUtil.getFactoryPlayer(mcPlayer);
+        Player player = PlayerUtil.getNexusPlayer(mcPlayer);
 
 
         Component start = Component.text("  »").color(NamedTextColor.GRAY);
@@ -224,7 +224,7 @@ public class StatsCommand {
 
     public static int other(CommandContext<CommandSourceStack> context, ServerPlayer otherPlayer, String gamemode) throws CommandSyntaxException {
         ServerPlayer mcPlayer = context.getSource().getPlayerOrException();
-        Player player = PlayerUtil.getFactoryPlayer(mcPlayer);
+        Player player = PlayerUtil.getNexusPlayer(mcPlayer);
 
         Component start = Component.text("  »").color(NamedTextColor.GRAY);
 

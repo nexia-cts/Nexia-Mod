@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.oitc;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -78,7 +78,7 @@ public class OitcGame {
 
     public static void leave(ServerPlayer minecraftPlayer) {
         OitcGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
-        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+        Player player = PlayerUtil.getNexusPlayer(minecraftPlayer);
         AccuratePlayer accuratePlayer = AccuratePlayer.create(minecraftPlayer);
 
         PlayerData data = PlayerDataManager.get(minecraftPlayer);
@@ -121,7 +121,7 @@ public class OitcGame {
 
                 if(OitcGame.endTime <= 0) {
                     for(ServerPlayer player : OitcGame.getViewers()){
-                        PlayerUtil.getFactoryPlayer(player).runCommand("/hub", 0, false);
+                        PlayerUtil.getNexusPlayer(player).runCommand("/hub", 0, false);
                     }
 
                     OitcGame.resetAll();
@@ -144,14 +144,14 @@ public class OitcGame {
 
                         Title title = getTitle(newInt);
 
-                        PlayerUtil.getFactoryPlayer(player.get()).sendTitle(title);
+                        PlayerUtil.getNexusPlayer(player.get()).sendTitle(title);
                         PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
 
 
                         if(newInt <= 1){
                             spawnInRandomPos(player.get());
                             OitcGame.deathPlayers.remove(player);
-                            //ServerTime.factoryServer.runCommand("/gamemode adventure " + player.get().getScoreboardName(), 4, false);
+                            //ServerTime.nexusServer.runCommand("/gamemode adventure " + player.get().getScoreboardName(), 4, false);
                             player.get().setGameMode(GameType.ADVENTURE);
                             BlfScheduler.delay(5, new BlfRunnable() {
                                 @Override
@@ -187,12 +187,12 @@ public class OitcGame {
         } else {
             if(OitcGame.queue.size() >= 2) {
                 for(AccuratePlayer player : OitcGame.queue){
-                    Player fPlayer = PlayerUtil.getFactoryPlayer(player.get());
+                    Player fPlayer = PlayerUtil.getNexusPlayer(player.get());
 
                     if(OitcGame.queueTime <= 5) {
                         Title title = getTitle(OitcGame.queueTime);
 
-                        PlayerUtil.getFactoryPlayer(player.get()).sendTitle(title);
+                        PlayerUtil.getNexusPlayer(player.get()).sendTitle(title);
                         PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
                     }
 
@@ -260,19 +260,19 @@ public class OitcGame {
         PlayerData data = PlayerDataManager.get(serverPlayer);
         OitcGame.winner = AccuratePlayer.create(serverPlayer);
 
-        PlayerUtil.getFactoryPlayer(serverPlayer).sendTitle(Title.title(Component.text("You won!").color(ChatFormat.greenColor), Component.text("")));
+        PlayerUtil.getNexusPlayer(serverPlayer).sendTitle(Title.title(Component.text("You won!").color(ChatFormat.greenColor), Component.text("")));
 
         data.savedData.wins++;
 
         for(ServerPlayer player : OitcGame.getViewers()){
-            PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(Component.text(serverPlayer.getScoreboardName()).color(ChatFormat.brandColor2), Component.text("has won the game! (" + data.kills + " kills)").color(ChatFormat.normalColor)));
+            PlayerUtil.getNexusPlayer(player).sendTitle(Title.title(Component.text(serverPlayer.getScoreboardName()).color(ChatFormat.brandColor2), Component.text("has won the game! (" + data.kills + " kills)").color(ChatFormat.normalColor)));
         }
     }
 
     public static void updateInfo() {
         String[] timer = TickUtil.minuteTimeStamp(OitcGame.gameTime * 20);
         for(ServerPlayer player : OitcGame.getViewers()) {
-            PlayerUtil.getFactoryPlayer(player).sendActionBarMessage(
+            PlayerUtil.getNexusPlayer(player).sendActionBarMessage(
                     Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
                             .append(Component.text(OitcGame.map.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))

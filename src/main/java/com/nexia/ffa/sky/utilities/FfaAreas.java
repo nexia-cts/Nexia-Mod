@@ -67,7 +67,7 @@ public class FfaAreas {
 
     public static boolean canBuild(ServerPlayer player, BlockPos blockPos) {
         if (protectionMap == null) {
-            PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("Something went wrong, please inform the admins").color(ChatFormat.failColor));
+            PlayerUtil.getNexusPlayer(player).sendMessage(Component.text("Something went wrong, please inform the admins").color(ChatFormat.failColor));
             return false;
         }
 
