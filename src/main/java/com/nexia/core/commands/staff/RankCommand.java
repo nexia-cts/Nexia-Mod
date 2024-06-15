@@ -34,7 +34,7 @@ public class RankCommand {
     }
 
     public static int give(CommandContext<CommandSourceInfo> context, ServerPlayer player, String rank) {
-        NexiaPlayer otherFactoryPlayer = new NexiaPlayer(player);
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
         NexiaRank nexiaRank = NexiaRank.identifyRank(rank);
         if (nexiaRank == null) {
@@ -45,14 +45,14 @@ public class RankCommand {
             return 0;
         }
 
-        otherFactoryPlayer.sendMessage(
+        nexiaPlayer.sendMessage(
                 ChatFormat.nexiaMessage
                         .append(Component.text("Your rank has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                         .append(Component.text(nexiaRank.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                         .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
         );
 
-        NexiaRank.setRank(nexiaRank, player);
+        NexiaRank.setRank(nexiaRank, nexiaPlayer);
 
         return 1;
     }

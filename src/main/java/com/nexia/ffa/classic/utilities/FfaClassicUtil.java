@@ -186,8 +186,8 @@ public class FfaClassicUtil {
                             .color(ChatFormat.greenColor))
                     .append(Component.text(")")
                             .color(ChatFormat.chatColor2));
-        Component msg = FfaUtil.returnDeathMessage(player, source);
         */
+        Component msg = FfaUtil.returnDeathMessage(player, source);
 
         if(attacker != null) {
             NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);

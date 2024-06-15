@@ -2,6 +2,7 @@ package com.nexia.core.utilities.ranks;
 
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.ChatFormatting;
@@ -9,7 +10,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.scores.PlayerTeam;
 import org.jetbrains.annotations.NotNull;
 
@@ -160,16 +160,16 @@ public class NexiaRank {
 
     }
 
-    public static void setRank(NexiaRank rank, ServerPlayer player) {
+    public static void setRank(NexiaRank rank, NexiaPlayer player) {
         for (NexiaRank rank1 : NexiaRank.ranks) {
             player.removeTag(rank1.id);
         }
 
-        ServerTime.factoryServer.runCommand(String.format("/lp user %s parent set %s", player.getScoreboardName(), rank.id));
+        ServerTime.factoryServer.runCommand(String.format("/lp user %s parent set %s", player.getRawName(), rank.id));
         player.addTag(rank.id);
     }
 
-    public static void setPrefix(NexiaRank rank, ServerPlayer player) {
+    public static void setPrefix(NexiaRank rank, NexiaPlayer player) {
         for (NexiaRank rank1 : NexiaRank.ranks) {
             player.removeTag(rank1.id);
         }
@@ -177,23 +177,23 @@ public class NexiaRank {
         player.addTag(rank.id);
     }
 
-    public static void removePrefix(NexiaRank rank, ServerPlayer player) {
+    public static void removePrefix(NexiaRank rank, NexiaPlayer player) {
         if(player.getTags().contains(rank.id)) {
             setPrefix(NexiaRank.DEFAULT, player);
         }
 
         ServerTime.factoryServer.runCommand(String.format("/lp user %s permission unset nexia.prefix.%s",
-                player.getScoreboardName(), rank.id)
+                player.getRawName(), rank.id)
         );
     }
 
-    public static void addPrefix(NexiaRank rank, ServerPlayer player, boolean setPrefix) {
+    public static void addPrefix(NexiaRank rank, NexiaPlayer player, boolean setPrefix) {
         if(setPrefix) {
             setPrefix(rank, player);
         }
 
         ServerTime.factoryServer.runCommand(String.format("/lp user %s permission set nexia.prefix.%s",
-                player.getScoreboardName(), rank.id)
+                player.getRawName(), rank.id)
         );
     }
 }

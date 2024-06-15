@@ -6,6 +6,7 @@ import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.discord.Main;
 import com.nexia.discord.utilities.player.PlayerData;
@@ -19,7 +20,6 @@ import net.kyori.adventure.text.format.TextColor;
 import java.util.Objects;
 
 import static com.nexia.discord.Main.jda;
-import static com.nexia.ffa.classic.utilities.RatingUtil.checkRatingRank;
 
 public class PlayerJoinListener {
     public void registerListener() {
@@ -124,7 +124,7 @@ public class PlayerJoinListener {
                 NexiaRank.setPrefix(NexiaRank.DEFAULT, player);
                 return;
             }
-            NexiaRank.setRank(NexiaRank.DEFAULT, player)
+            NexiaRank.setRank(NexiaRank.DEFAULT, player);
         }
     }
 

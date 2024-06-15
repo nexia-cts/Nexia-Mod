@@ -9,7 +9,6 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.ranks.NexiaRank;
-import com.nexia.core.utilities.time.ServerTime;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -63,7 +62,7 @@ public class StaffPrefixCommand {
                                                                 .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                                 );
 
-                                                NexiaRank.setPrefix(rank, mcOtherPlayer);
+                                                NexiaRank.setPrefix(rank, otherPlayer);
                                             }
 
                                             if(type.equalsIgnoreCase("remove")){
@@ -76,7 +75,7 @@ public class StaffPrefixCommand {
                                                                 .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold,false))
                                                 );
 
-                                                NexiaRank.removePrefix(rank, mcOtherPlayer);
+                                                NexiaRank.removePrefix(rank, otherPlayer);
                                             }
 
                                             if(type.equalsIgnoreCase("add")){
@@ -88,7 +87,7 @@ public class StaffPrefixCommand {
                                                                 .append(Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                                                                 .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold,false))
                                                 );
-                                                NexiaRank.addPrefix(rank, mcOtherPlayer, false);
+                                                NexiaRank.addPrefix(rank, otherPlayer, false);
                                             }
 
                                             return Command.SINGLE_SUCCESS;

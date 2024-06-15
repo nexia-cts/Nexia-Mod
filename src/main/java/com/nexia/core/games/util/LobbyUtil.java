@@ -1,8 +1,9 @@
 package com.nexia.core.games.util;
 
+import com.combatreforged.factory.api.world.nbt.NBTObject;
+import com.combatreforged.factory.api.world.nbt.NBTValue;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.player.BanHandler;
 import com.nexia.core.utilities.player.GamemodeBanHandler;
 import com.nexia.core.utilities.player.NexiaPlayer;
@@ -25,17 +26,14 @@ import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.minigames.games.skywars.SkywarsGameMode;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import org.json.simple.JSONObject;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static com.nexia.core.utilities.player.BanHandler.getBanTime;
 
@@ -156,7 +154,7 @@ public class LobbyUtil {
         customDuelSword.setLore(Component.text("Hit a player to duel them in your custom kit.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
         customDuelSword.setDisplayName(Component.text("Custom Duel Sword", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
 
-        if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter")) {
+        if(player.hasPermission("nexia.prefix.supporter")) {
 
             com.combatreforged.factory.api.world.item.ItemStack elytra = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.ELYTRA);
             elytra.setItemNBT(unbreakableNBTObject.copy());

@@ -1,6 +1,8 @@
 package com.nexia.core.gui.duels;
 
 import com.combatreforged.factory.api.world.types.Minecraft;
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
@@ -53,7 +55,7 @@ public class DuelGUI extends SimpleGui {
             airSlots++;
         }
         for(DuelsMap map : DuelsMap.duelsMaps){
-            if(gameMode.gameMode == GameType.ADVENTURE && map.isAdventureSupported) {
+            if(gameMode.gameMode.equals(Minecraft.GameMode.ADVENTURE) && map.isAdventureSupported) {
                 this.setSlot(slot, map.item.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text(map.id, ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false))));
                 slot++;
             }

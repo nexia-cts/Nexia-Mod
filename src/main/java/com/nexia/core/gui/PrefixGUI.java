@@ -1,6 +1,8 @@
 package com.nexia.core.gui;
 
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.ranks.NexiaRank;
 import eu.pb4.sgui.api.ClickType;
