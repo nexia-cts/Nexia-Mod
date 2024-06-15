@@ -1,9 +1,9 @@
 package com.nexia.minigames.games.bedwars.players;
 
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.utilities.chat.LegacyChatFormat;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
-import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.bedwars.BwGame;
@@ -11,14 +11,14 @@ import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.upgrades.BwTrap;
 import com.nexia.minigames.games.bedwars.upgrades.BwUpgrade;
 import com.nexia.minigames.games.bedwars.util.BwScoreboard;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -34,6 +34,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Team;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -51,7 +52,7 @@ public class BwTeam {
     public BlockPos bedLocation = null;
     public EntityPos spawn = null;
     public EntityPos genLocation = null;
-    public ArrayList<ServerPlayer> players = new ArrayList<>();
+    public ArrayList<NexiaPlayer> players = new ArrayList<>();
 
     public HashMap<String, BwUpgrade> upgrades = BwUpgrade.newUpgradeSet();
     public HashMap<String, BwTrap> traps = BwTrap.newTrapSet();
@@ -122,21 +123,21 @@ public class BwTeam {
         return aliveTeams;
     }
 
-    public static void spreadIntoTeams(ArrayList<ServerPlayer> queueList) {
+    public static void spreadIntoTeams(ArrayList<NexiaPlayer> queueList) {
         ServerScoreboard scoreboard = ServerTime.minecraftServer.getScoreboard();
         Random random = BwAreas.bedWarsWorld.getRandom();
 
         ArrayList<BwTeam> availableTeams = new ArrayList<>(teamsInOrder);
 
         while (!queueList.isEmpty() && !availableTeams.isEmpty()) {
-            ServerPlayer player = queueList.get(0);
+            NexiaPlayer player = queueList.getFirst();
 
             BwTeam team = availableTeams.get(random.nextInt(availableTeams.size()));
             team.players.add(player);
             availableTeams.remove(team);
 
             player.addTag(LobbyUtil.NO_RANK_DISPLAY_TAG);
-            scoreboard.addPlayerToTeam(player.getScoreboardName(), team.scoreboardTeam);
+            scoreboard.addPlayerToTeam(player.getRawName(), team.scoreboardTeam);
 
 
             queueList.remove(player);
@@ -145,7 +146,7 @@ public class BwTeam {
         queueList.clear();
     }
 
-    public static BwTeam getPlayerTeam(ServerPlayer player) {
+    public static BwTeam getPlayerTeam(NexiaPlayer player) {
         for (BwTeam team : allTeams.values()) {
             if (team.players.contains(player)) {
                 return team;
@@ -154,11 +155,11 @@ public class BwTeam {
         return null;
     }
 
-    public static boolean fixTeamPlayer(ServerPlayer player) {
+    public static boolean fixTeamPlayer(NexiaPlayer player) {
         for (BwTeam team : allTeams.values()) {
             for (int i = 0; i < team.players.size(); i++) {
                 if (team.players.get(i).getUUID().equals(player.getUUID())) {
-                    team.players.set(i, PlayerUtil.getFixedPlayer(player));
+                    team.players.set(i, player);
                     return true;
                 }
             }
@@ -166,7 +167,7 @@ public class BwTeam {
         return false;
     }
 
-    public static String getPlayerTeamColor(ServerPlayer player) {
+    public static String getPlayerTeamColor(NexiaPlayer player) {
         BwTeam team = getPlayerTeam(player);
         if (team == null) return null;
 
@@ -233,22 +234,19 @@ public class BwTeam {
 
     // ----- UTILITIES -------------------------------------------------------------------------------
 
-    public static void reloadPlayerTeamColors(ServerPlayer player) {
-        MinecraftServer server = player.getServer();
-
+    public static void reloadPlayerTeamColors() {
         for (BwTeam team : teamsInOrder) {
-        server.getCommands().performCommand(player.createCommandSourceStack(),
-                "team modify " + team.scoreboardTeam.getName() + " color " + team.textColorName);
+            ServerTime.factoryServer.runCommand(String.format("team modify %s color %s", team.scoreboardTeam.getName(), team.textColorName), 4, false);
         }
     }
 
-    public static void winnerRockets(ArrayList<ServerPlayer> winners, Integer winnerColor) {
+    public static void winnerRockets(ArrayList<NexiaPlayer> winners, Integer winnerColor) {
         if (winners.isEmpty() || winnerColor == null) return;
 
         ArrayList<EntityPos> positions = new ArrayList<>();
-        for (ServerPlayer player : winners) {
+        for (NexiaPlayer player : winners) {
             Random random = BwAreas.bedWarsWorld.getRandom();
-            positions.add(new EntityPos(player).add(random.nextInt(9) - 4, 2, random.nextInt(9) - 4));
+            positions.add(new EntityPos(player.unwrap()).add(random.nextInt(9) - 4, 2, random.nextInt(9) - 4));
         }
         positions.add(BwAreas.bedWarsCenter.c().add(0.5, 2, 0.5));
 
@@ -264,27 +262,34 @@ public class BwTeam {
         }
     }
 
-    public void announceBedBreak(ServerPlayer breaker, BlockPos blockPos) {
+    public void announceBedBreak(NexiaPlayer breaker, BlockPos blockPos) {
         String breakerColor = "";
         BwTeam breakerTeam = getPlayerTeam(breaker);
         if (breakerTeam != null) breakerColor = breakerTeam.textColor;
 
-        PlayerUtil.broadcast(BwPlayers.getViewers(), textColor + displayName + " bed" +
-                LegacyChatFormat.chatColor2 + " has been destroyed by " + breakerColor + breaker.getScoreboardName());
-        PlayerUtil.broadcastTitle(players, "\247cBed Destroyed", "");
+        for(NexiaPlayer viewer : BwPlayers.getViewers()) {
+            viewer.sendMessage(Component.text(String.format("%s%s bed", textColor, displayName))
+                    .append(Component.text(" has been destroyed by ").color(ChatFormat.brandColor2))
+                    .append(Component.text(breakerColor + breaker.getRawName()))
+            );
+        }
+
+        for(NexiaPlayer player : players) {
+            player.sendTitle(Title.title(Component.text("Bed Destroyed").color(ChatFormat.failColor), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0))));
+        }
 
         BwScoreboard.updateScoreboard();
 
-        for (ServerPlayer player : BwPlayers.getViewers()) {
+        for (NexiaPlayer player : BwPlayers.getViewers()) {
             float volume;
             if (players.contains(player)) {
                 volume = 0.04f;
             } else {
-                float distance = (float) new EntityPos(player).distance(new EntityPos(blockPos));
+                float distance = (float) new EntityPos(player.unwrap()).distance(new EntityPos(blockPos));
                 distance = Math.min(distance, 20f);
                 volume = 0.03f - (distance * 0.001f);
             }
-            PlayerUtil.sendSound(player, SoundEvents.ENDER_DRAGON_AMBIENT, SoundSource.MASTER, volume, 1f);
+            player.sendSound(SoundEvents.ENDER_DRAGON_AMBIENT, SoundSource.MASTER, volume, 1f);
         }
     }
 
