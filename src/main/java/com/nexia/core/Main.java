@@ -1,8 +1,8 @@
 package com.nexia.core;
 
-import com.nexia.nexus.api.NexusAPI;
-import com.nexia.nexus.api.NexusServer;
-import com.nexia.nexus.api.entrypoint.NexusPlugin;
+import com.combatreforged.factory.api.FactoryAPI;
+import com.combatreforged.factory.api.FactoryServer;
+import com.combatreforged.factory.api.entrypoint.FactoryPlugin;
 import com.nexia.core.config.ModConfig;
 import com.nexia.core.listeners.ListenerHelper;
 import com.nexia.core.loader.CommandLoader;
@@ -16,7 +16,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Main implements ModInitializer, NexusPlugin {
+public class Main implements ModInitializer, FactoryPlugin {
 	public static ModConfig config;
 
 	public static final String MOD_NAME = "Nexia";
@@ -56,11 +56,11 @@ public class Main implements ModInitializer, NexusPlugin {
 
 	@Override
 	@SuppressWarnings("FutureReturnValueIgnored")
-	public void onNexusLoad(NexusAPI api, NexusServer server) {
-		Main.logger.info("Loading nexus version...");
+	public void onFactoryLoad(FactoryAPI api, FactoryServer server) {
+		Main.logger.info("Loading factory version...");
 
-		ServerTime.nexusServer = server;
-		ServerTime.nexusAPI = api;
+		ServerTime.factoryServer = server;
+		ServerTime.factoryAPI = api;
 		ServerTime.scheduler = api.getScheduler();
 
 		Main.logger.info("Registering listeners....");

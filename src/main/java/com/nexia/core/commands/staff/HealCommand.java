@@ -28,7 +28,7 @@ public class HealCommand {
         executer.heal(executer.getMaxHealth());
 
 
-        PlayerUtil.getNexusPlayer(executer).sendMessage(
+        PlayerUtil.getFactoryPlayer(executer).sendMessage(
                 ChatFormat.nexiaMessage
                                 .append(Component.text("You have been healed.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
         );
@@ -48,7 +48,7 @@ public class HealCommand {
 
 
         if(player != null){
-            PlayerUtil.getNexusPlayer(player).sendMessage(
+            PlayerUtil.getFactoryPlayer(player).sendMessage(
                     ChatFormat.nexiaMessage
                                     .append(Component.text("You have healed ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                             .append(Component.text(otherPlayer.getScoreboardName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
@@ -59,7 +59,7 @@ public class HealCommand {
         }
 
 
-        PlayerUtil.getNexusPlayer(otherPlayer).sendMessage(
+        PlayerUtil.getFactoryPlayer(otherPlayer).sendMessage(
                 ChatFormat.nexiaMessage
                         .append(Component.text("You have been healed.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
         );

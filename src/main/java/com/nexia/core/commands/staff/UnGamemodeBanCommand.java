@@ -1,6 +1,6 @@
 package com.nexia.core.commands.staff;
 
-import com.nexia.nexus.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -43,7 +43,7 @@ public class UnGamemodeBanCommand {
         } catch (Exception ignored){ }
 
         if(mcExecutor != null) {
-            executor = PlayerUtil.getNexusPlayer(mcExecutor);
+            executor = PlayerUtil.getFactoryPlayer(mcExecutor);
         }
 
         PlayerGameMode gameMode = PlayerGameMode.identifyGamemode(StringArgumentType.getString(context, "gamemode"));

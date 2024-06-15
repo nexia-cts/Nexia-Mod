@@ -1,8 +1,8 @@
 package com.nexia.core.utilities.pos;
 
-import com.nexia.nexus.api.world.World;
-import com.nexia.nexus.api.world.entity.player.Player;
-import com.nexia.nexus.api.world.util.Location;
+import com.combatreforged.factory.api.world.World;
+import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.util.Location;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;

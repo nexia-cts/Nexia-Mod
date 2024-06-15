@@ -1,10 +1,10 @@
 package com.nexia.core.listeners;
 
-import com.nexia.core.listeners.nexus.*;
+import com.nexia.core.listeners.factory.*;
 
 public class ListenerHelper {
     public static void registerListeners() {
-        // nexus Listeners
+        // Factory Listeners
         PlayerJoinListener.registerListener();
         PlayerLeaveListener.registerListener();
         UseItemListener.registerListener();

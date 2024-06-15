@@ -1,6 +1,6 @@
 package com.nexia.ffa.classic.utilities;
 
-import com.nexia.nexus.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.google.gson.Gson;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -64,7 +64,7 @@ public class FfaClassicUtil {
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
             if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !FfaAreas.isInFfaSpawn(minecraftPlayer)){
                 wasInSpawn.remove(minecraftPlayer.getUUID());
-                Player player = PlayerUtil.getNexusPlayer(minecraftPlayer);
+                Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
                 saveInventory(minecraftPlayer);
                 player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your inventory layout was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
             }
@@ -114,7 +114,7 @@ public class FfaClassicUtil {
         if(data.killstreak % 5 == 0){
             for(ServerPlayer serverPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()){
                 if(FfaClassicUtil.isFfaPlayer(serverPlayer)) {
-                    PlayerUtil.getNexusPlayer(serverPlayer).sendMessage(
+                    PlayerUtil.getFactoryPlayer(serverPlayer).sendMessage(
                             Component.text("[").color(ChatFormat.lineColor)
                                     .append(Component.text("☠").color(ChatFormat.failColor))
                                     .append(Component.text("] ").color(ChatFormat.lineColor))
@@ -141,7 +141,7 @@ public class FfaClassicUtil {
         if(data.killstreak >= 5) {
             for (ServerPlayer serverPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()) {
                 if (FfaClassicUtil.isFfaPlayer(serverPlayer)) {
-                    PlayerUtil.getNexusPlayer(serverPlayer).sendMessage(
+                    PlayerUtil.getFactoryPlayer(serverPlayer).sendMessage(
                             Component.text("[").color(ChatFormat.lineColor)
                                     .append(Component.text("☠").color(ChatFormat.failColor))
                                     .append(Component.text("] ").color(ChatFormat.lineColor))
@@ -190,7 +190,7 @@ public class FfaClassicUtil {
                             .color(ChatFormat.chatColor2));
         }
 
-        for (Player player : ServerTime.nexusServer.getPlayers()) {
+        for (Player player : ServerTime.factoryServer.getPlayers()) {
             if (player.hasTag("ffa_classic")) player.sendMessage(msg);
         }
     }

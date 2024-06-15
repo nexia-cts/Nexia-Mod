@@ -80,14 +80,14 @@ public class MessageCommand {
     private static void sendMessage(ServerPlayer sender, ServerPlayer receiver, String message) {
         if (PlayerMutes.muted(sender) || sender == receiver) return;
 
-        PlayerUtil.getNexusPlayer(sender).sendMessage(
+        PlayerUtil.getFactoryPlayer(sender).sendMessage(
                 Component.text(String.format("To %s", receiver.getScoreboardName())).color(ChatFormat.brandColor2)
                                 .append(Component.text(" » ").color(ChatFormat.arrowColor)
                                                 .append(Component.text(message).color(ChatFormat.brandColor2))
 
         ));
 
-        PlayerUtil.getNexusPlayer(receiver).sendMessage(
+        PlayerUtil.getFactoryPlayer(receiver).sendMessage(
                 Component.text(String.format("From %s", sender.getScoreboardName())).color(ChatFormat.brandColor2)
                         .append(Component.text(" » ").color(ChatFormat.arrowColor)
                                 .append(Component.text(message).color(ChatFormat.brandColor2))

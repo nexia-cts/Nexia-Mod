@@ -1,7 +1,7 @@
 package com.nexia.core.utilities.item;
 
-import com.nexia.nexus.api.world.nbt.NBTList;
-import com.nexia.nexus.api.world.nbt.NBTObject;
+import com.combatreforged.factory.api.world.nbt.NBTList;
+import com.combatreforged.factory.api.world.nbt.NBTObject;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.nbt.CompoundTag;
@@ -77,7 +77,7 @@ public class ItemDisplayUtil {
         } catch (Exception ignored) {}
     }
 
-    public static void addGlint(com.nexia.nexus.api.world.item.ItemStack itemStack) {
+    public static void addGlint(com.combatreforged.factory.api.world.item.ItemStack itemStack) {
         try {
             System.out.println(itemStack.getEnchantments());
             if (itemStack.getEnchantments().isEmpty()) {

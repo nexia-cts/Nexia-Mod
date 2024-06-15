@@ -12,9 +12,7 @@
     "Shinkume",
     "betterclient",
     "infinityy",
-    "r6653116",
-    "SurgeFlame",
-    "NotCoded"
+    "r6653116"
   ],
   "contact": {
     "homepage": "https://nexia.dev",
@@ -33,7 +31,7 @@
       "com.nexia.minigames.Main",
       "com.nexia.discord.Main"
     ],
-    "nexus": [
+    "factory": [
       "com.nexia.core.Main"
     ]
   },
@@ -45,7 +43,7 @@
     "fabricloader": ">=0.7.4",
     "minecraft": ["1.16.3-combat.8.c", "1.16.2-1.16.combat-6"],
     "fabric": "*",
-    "nexus-api": "*",
+    "factory-api": "*",
     "fantasy": ">=0.4.2",
     "collective-fabric": ">=1.16.5-5.50",
     "java": ">=21"
