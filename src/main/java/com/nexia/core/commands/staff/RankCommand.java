@@ -36,7 +36,7 @@ public class RankCommand {
     public static int give(CommandContext<CommandSourceStack> context, ServerPlayer player, String rank) {
         CommandSourceStack executor = context.getSource();
         Player nexusExecutor = null;
-        Player otherNexusPlayer = PlayerUtil.getNexusPlayer(player);
+        Player othernexusPlayer = PlayerUtil.getNexusPlayer(player);
 
         try {
             nexusExecutor = PlayerUtil.getNexusPlayer(context.getSource().getPlayerOrException());
@@ -59,17 +59,17 @@ public class RankCommand {
             nexusExecutor.sendMessage(
                     ChatFormat.nexiaMessage
                             .append(Component.text("You have set the rank of ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                            .append(Component.text(otherNexusPlayer.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                            .append(Component.text(othernexusPlayer.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                             .append(Component.text(" to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                             .append(Component.text(nexiaRank.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true).decoration(ChatFormat.bold, false))
                             .append(Component.text(".").color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false).decoration(ChatFormat.bold, false))
             );
         } else {
-            executor.sendSuccess(LegacyChatFormat.format("{b1}You have set the rank of {b2}{} {b1}to: {b2}{b}{}{b1}.", otherNexusPlayer.getRawName(), nexiaRank.name), false);
+            executor.sendSuccess(LegacyChatFormat.format("{b1}You have set the rank of {b2}{} {b1}to: {b2}{b}{}{b1}.", othernexusPlayer.getRawName(), nexiaRank.name), false);
         }
 
 
-        otherNexusPlayer.sendMessage(
+        othernexusPlayer.sendMessage(
                 ChatFormat.nexiaMessage
                         .append(Component.text("Your rank has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                         .append(Component.text(nexiaRank.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
