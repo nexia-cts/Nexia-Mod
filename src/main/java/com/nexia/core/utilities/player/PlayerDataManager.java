@@ -1,6 +1,6 @@
 package com.nexia.core.utilities.player;
 
-import com.nexia.nexus.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.google.gson.Gson;
 import net.fabricmc.loader.api.FabricLoader;
 

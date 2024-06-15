@@ -79,7 +79,7 @@ public class PartyCommand {
         com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(executor);
 
         if(data.duelOptions.duelsTeam == null) {
-            PlayerUtil.getNexusPlayer(executor).sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
+            PlayerUtil.getFactoryPlayer(executor).sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
             return 1;
         }
 
@@ -103,7 +103,7 @@ public class PartyCommand {
         com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(executor);
 
         if(data.duelOptions.duelsTeam == null) {
-            PlayerUtil.getNexusPlayer(executor).sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
+            PlayerUtil.getFactoryPlayer(executor).sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
             return 1;
         }
 
@@ -117,7 +117,7 @@ public class PartyCommand {
         com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(executor);
 
         if(data.duelOptions.duelsTeam == null) {
-            PlayerUtil.getNexusPlayer(executor).sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
+            PlayerUtil.getFactoryPlayer(executor).sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
             return 1;
         }
 
@@ -131,7 +131,7 @@ public class PartyCommand {
         com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
 
         if(data.duelOptions.duelsTeam == null) {
-            PlayerUtil.getNexusPlayer(player).sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
+            PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
             return 1;
         }
 
@@ -144,7 +144,7 @@ public class PartyCommand {
         com.nexia.minigames.games.duels.util.player.PlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
 
         if(data.duelOptions.duelsTeam == null) {
-            PlayerUtil.getNexusPlayer(player).sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
+            PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
             return 1;
         }
 

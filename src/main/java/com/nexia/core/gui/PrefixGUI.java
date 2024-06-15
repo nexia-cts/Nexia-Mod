@@ -1,7 +1,7 @@
 package com.nexia.core.gui;
 
-import com.nexia.nexus.api.world.entity.player.Player;
-import com.nexia.nexus.builder.implementation.util.ObjectMappings;
+import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
@@ -84,7 +84,7 @@ public class PrefixGUI extends SimpleGui {
 
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
 
-                Player player = PlayerUtil.getNexusPlayer(this.player);
+                Player player = PlayerUtil.getFactoryPlayer(this.player);
 
                 player.sendMessage(
                         ChatFormat.nexiaMessage

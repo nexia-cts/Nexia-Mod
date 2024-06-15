@@ -1,6 +1,6 @@
 package com.nexia.core.commands.staff;
 
-import com.nexia.nexus.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -37,21 +37,21 @@ public class StaffPrefixCommand {
 
                                             String type = StringArgumentType.getString(context, "type");
                                             ServerPlayer mcOtherPlayer = EntityArgument.getPlayer(context, "player");
-                                            Player otherPlayer = PlayerUtil.getNexusPlayer(mcOtherPlayer);
+                                            Player otherPlayer = PlayerUtil.getFactoryPlayer(mcOtherPlayer);
                                             NexiaRank rank = NexiaRank.identifyRank(StringArgumentType.getString(context, "prefix"));
 
                                             ServerPlayer mcExecutor;
-                                            Player nexusExecutor = null;
+                                            Player factoryExecutor = null;
 
                                             try {
                                                 mcExecutor = executor.getPlayerOrException();
-                                                nexusExecutor = PlayerUtil.getNexusPlayer(mcExecutor);
+                                                factoryExecutor = PlayerUtil.getFactoryPlayer(mcExecutor);
                                             } catch(Exception ignored){ }
 
 
                                             if(rank == null) {
-                                                if(nexusExecutor != null){
-                                                    nexusExecutor.sendMessage(
+                                                if(factoryExecutor != null){
+                                                    factoryExecutor.sendMessage(
                                                             ChatFormat.nexiaMessage
                                                                     .append(Component.text("Invalid rank!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                                     );
@@ -62,8 +62,8 @@ public class StaffPrefixCommand {
                                             }
 
                                             if(type.equalsIgnoreCase("set")){
-                                                if(nexusExecutor != null){
-                                                    nexusExecutor.sendMessage(
+                                                if(factoryExecutor != null){
+                                                    factoryExecutor.sendMessage(
                                                             ChatFormat.nexiaMessage
                                                                     .append(Component.text("You have set the prefix of ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                                                     .append(Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor2))
@@ -86,8 +86,8 @@ public class StaffPrefixCommand {
                                             }
 
                                             if(type.equalsIgnoreCase("remove")){
-                                                if(nexusExecutor != null){
-                                                    nexusExecutor.sendMessage(
+                                                if(factoryExecutor != null){
+                                                    factoryExecutor.sendMessage(
                                                             ChatFormat.nexiaMessage
                                                                     .append(Component.text("You have removed the prefix ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                                                     .append(Component.text(rank.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true).decoration(ChatFormat.bold, false))
@@ -103,8 +103,8 @@ public class StaffPrefixCommand {
                                             }
 
                                             if(type.equalsIgnoreCase("add")){
-                                                if(nexusExecutor != null){
-                                                    nexusExecutor.sendMessage(
+                                                if(factoryExecutor != null){
+                                                    factoryExecutor.sendMessage(
                                                             ChatFormat.nexiaMessage
                                                                     .append(Component.text("You have added the prefix ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                                                     .append(Component.text(rank.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))

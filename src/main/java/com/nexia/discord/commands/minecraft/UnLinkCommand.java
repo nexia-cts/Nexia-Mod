@@ -1,6 +1,6 @@
 package com.nexia.discord.commands.minecraft;
 
-import com.nexia.nexus.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
@@ -37,7 +37,7 @@ public class UnLinkCommand {
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        Player nexusPlayer = PlayerUtil.getNexusPlayer(player);
+        Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
 
         PlayerData data = PlayerDataManager.get(player.getUUID());
 
@@ -56,7 +56,7 @@ public class UnLinkCommand {
 
         data.savedData.discordID = 0;
 
-        nexusPlayer.sendMessage(
+        factoryPlayer.sendMessage(
                 ChatFormat.nexiaMessage
                         .append(Component.text("You have successfully unlinked your discord account.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
 
