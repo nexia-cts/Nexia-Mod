@@ -15,4 +15,7 @@ public class ModConfig implements ConfigData {
 
     @Comment("Webhook used for /report.")
     public String reportWebhook = "";
+
+    @Comment("Webhook used for when a player gets banned/punished.")
+    public String punishmentWebhook = "";
 }

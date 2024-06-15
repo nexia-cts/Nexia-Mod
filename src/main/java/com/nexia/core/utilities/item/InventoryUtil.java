@@ -1,8 +1,10 @@
 package com.nexia.core.utilities.item;
 
 import com.natamus.collective_fabric.functions.PlayerFunctions;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -16,6 +18,14 @@ import java.util.ArrayList;
 public class InventoryUtil {
 
     public final static String dirpath = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/inventories";
+
+    public static void sendHandItemPacket(ServerPlayer player, InteractionHand hand) {
+        if (hand == InteractionHand.MAIN_HAND) {
+            sendInvSlotPacket(player, player.inventory.selected);
+        } else if (hand == InteractionHand.OFF_HAND) {
+            sendInvSlotPacket(player, 40);
+        }
+    }
 
     public static boolean writeGearStringToFile(String addedPath, String filename, String gearString) {
         File dir = new File(dirpath + File.separator + addedPath);
@@ -77,10 +87,28 @@ public class InventoryUtil {
         return list;
     }
 
-    public static boolean loadInventory(@NotNull NexiaPlayer player, @NotNull String type, @NotNull String inventoryName) {
+    public static void sendInvSlotPacket(ServerPlayer player, int slot) {
+        int packetSlot;
+
+        if (slot < 9) {
+            packetSlot = 36 + slot;
+        } else if (slot < 36) {
+            packetSlot = slot;
+        } else if (slot < 40) {
+            packetSlot = 44 - slot;
+        } else if (slot == 40) {
+            packetSlot = 45;
+        } else {
+            return;
+        }
+
+        player.connection.send(new ClientboundContainerSetSlotPacket(0, packetSlot, player.inventory.getItem(slot)));
+    }
+
+    public static boolean loadInventory(@NotNull ServerPlayer player, @NotNull String type, @NotNull String inventoryName) {
         if(type.trim().isEmpty() || inventoryName.trim().isEmpty()) return false;
 
-        PlayerFunctions.setPlayerGearFromString(player.unwrap(), getGearStringFromFile(type, inventoryName));
+        PlayerFunctions.setPlayerGearFromString(player, getGearStringFromFile(type, inventoryName));
         return true;
     }
 
