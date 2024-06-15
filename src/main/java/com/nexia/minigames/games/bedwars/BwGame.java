@@ -97,10 +97,10 @@ public class BwGame {
             int timeLeft = respawningList.get(player);
 
             if (timeLeft % 20 == 0) {
-                player.sendTitle(Title.title(Component.text("You died!").color(ChatFormat.failColor),
-                        Component.text("Respawning in ").color(ChatFormat.brandColor1)
+                player.sendTitle(Title.title(Component.text("You died!").color(ChatFormat.Minecraft.red),
+                        Component.text("Respawning in ").color(ChatFormat.Minecraft.gray)
                                 .append(Component.text(timeLeft / 20).color(ChatFormat.brandColor2))
-                                .append(Component.text("...").color(ChatFormat.brandColor1)),
+                                .append(Component.text("...").color(ChatFormat.Minecraft.gray)),
                         Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0))
                 ));
 
@@ -145,9 +145,9 @@ public class BwGame {
             startBedWars();
         } else if (announcedQueueSeconds.contains(queueCountdown)) {
             for(NexiaPlayer player : queueList) {
-                player.sendMessage(Component.text("The game will start in ").color(ChatFormat.systemColor)
+                player.sendMessage(Component.text("The game will start in ").color(ChatFormat.Minecraft.gray)
                         .append(Component.text(queueCountdown).color(ChatFormat.brandColor2)
-                                .append(Component.text( "seconds.").color(ChatFormat.systemColor)))
+                                .append(Component.text( " seconds.").color(ChatFormat.Minecraft.gray)))
                 );
             }
         }
@@ -182,9 +182,9 @@ public class BwGame {
             for (Integer warningTime : gameEndWarningTimes) {
                 if (secondsLeft == warningTime) {
                     for(NexiaPlayer player : BwPlayers.getViewers()) {
-                        player.sendMessage(Component.text("The game will end in ").color(ChatFormat.systemColor)
-                                .append(Component.text(secondsLeft).color(ChatFormat.failColor))
-                                .append(Component.text(" seconds.").color(ChatFormat.systemColor))
+                        player.sendMessage(Component.text("The game will end in ").color(ChatFormat.Minecraft.gray)
+                                .append(Component.text(secondsLeft).color(ChatFormat.Minecraft.red))
+                                .append(Component.text(" seconds.").color(ChatFormat.Minecraft.gray))
                         );
                     }
 
@@ -237,12 +237,12 @@ public class BwGame {
                 player.getInventory().clear();
                 BwPlayers.sendToSpawn(player);
 
-                player.sendMessage(Component.text("The game has started. ", ChatFormat.systemColor)
+                player.sendMessage(Component.text("The game has started. ", ChatFormat.Minecraft.gray)
                         .append(Component.text("Good luck!", ChatFormat.brandColor2))
                 );
 
                 player.sendTitle(Title.title(
-                        Component.text("You're", ChatFormat.normalColor)
+                        Component.text("You're ", ChatFormat.normalColor)
                                 .append(Component.text(team.textColor + team.displayName))
                                 .append(Component.text("!", ChatFormat.normalColor)),
 
@@ -266,8 +266,8 @@ public class BwGame {
 
         ArrayList<BwTeam> aliveTeams = BwTeam.getAliveTeams();
         if (aliveTeams.size() == 1) {
-            winners = aliveTeams.get(0).players;
-            winnerColor = aliveTeams.get(0).armorColor;
+            winners = aliveTeams.getFirst().players;
+            winnerColor = aliveTeams.getFirst().armorColor;
         } else {
             winners = new ArrayList<>();
             winnerColor = null;
@@ -303,7 +303,7 @@ public class BwGame {
                 }
             }
 
-            Component subtitle = Component.text(whoWon).append(Component.text(" has won the game!", ChatFormat.systemColor));
+            Component subtitle = Component.text(whoWon).append(Component.text(" has won the game!", ChatFormat.Minecraft.gray));
 
             for(NexiaPlayer player : winnerTeam.players) {
                 player.sendTitle(Title.title(victoryTitle, subtitle, time));
@@ -318,9 +318,9 @@ public class BwGame {
             }
 
         } else {
-            Component subtitle = Component.text("The game ended in a ", ChatFormat.systemColor)
+            Component subtitle = Component.text("The game ended in a ", ChatFormat.Minecraft.gray)
                     .append(Component.text("draw", ChatFormat.goldColor))
-                    .append(Component.text("!", ChatFormat.systemColor));
+                    .append(Component.text("!", ChatFormat.Minecraft.gray));
 
 
             for(NexiaPlayer player : BwPlayers.getViewers()) {
@@ -362,11 +362,14 @@ public class BwGame {
 
         BwAreas.spawnQueueBuild();
 
-        for (NexiaPlayer player : spectatorList) {
-            if (player == null || player.unwrap() == null) continue;
-            LobbyUtil.returnToLobby(player, true);
-            BwScoreboard.removeScoreboardFor(player);
-        }
+        try {
+            for (NexiaPlayer player : spectatorList) {
+                if (player == null || player.unwrap() == null) continue;
+                LobbyUtil.returnToLobby(player, true);
+                BwScoreboard.removeScoreboardFor(player);
+            }
+        } catch (Exception ignored) { }
+
         spectatorList.clear();
     }
 

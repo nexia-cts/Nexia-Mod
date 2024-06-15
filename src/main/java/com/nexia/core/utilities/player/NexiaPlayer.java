@@ -18,6 +18,8 @@ import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.blumbo.blfscheduler.BlfRunnable;
+import net.blumbo.blfscheduler.BlfScheduler;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
@@ -56,6 +58,12 @@ public class NexiaPlayer extends WrappedPlayer {
         this.unwrap().connection.send(new ClientboundStopSoundPacket());
 
         this.setGameMode(gameMode);
+        BlfScheduler.delay(5, new BlfRunnable() {
+            @Override
+            public void run() {
+                setGameMode(gameMode);
+            }
+        });
 
         if (heal) {
             this.setHealth(this.unwrap().getMaxHealth());
@@ -79,6 +87,13 @@ public class NexiaPlayer extends WrappedPlayer {
         this.unwrap().setGlowing(false);
 
         this.setGameMode(gameMode);
+        BlfScheduler.delay(5, new BlfRunnable() {
+            @Override
+            public void run() {
+                setGameMode(gameMode);
+            }
+        });
+
 
         if (heal) {
             this.setHealth(this.unwrap().getMaxHealth());

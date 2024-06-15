@@ -1,6 +1,7 @@
 package com.nexia.minigames.games.bedwars.players;
 
 import com.combatreforged.factory.api.world.types.Minecraft;
+import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
@@ -53,11 +54,14 @@ public class BwPlayerEvents {
 
     public static void tryToJoin(NexiaPlayer player, boolean throughEvent) {
         if (BwUtil.isInBedWars(player)) {
-            player.sendMessage(Component.text("You are already in the game.").color(ChatFormat.failColor));
+            //player.sendMessage(Component.text("You are already in the game.").color(ChatFormat.failColor));
+            LobbyUtil.returnToLobby(player, false);
+            tryToJoin(player, throughEvent);
             return;
         }
         if (BwGame.queueList.size() >= BwGame.maxPlayerCount) {
             player.sendMessage(Component.text("The game is full.").color(ChatFormat.failColor));
+            LobbyUtil.returnToLobby(player, false);
             return;
         }
         if (BwGame.isGameActive) {
@@ -92,7 +96,7 @@ public class BwPlayerEvents {
         if (attacker != null) {
             PlayerDataManager.get(player).combatTagPlayer = attacker;
             PlayerDataManager.get(attacker.getUUID()).combatTagPlayer = player.unwrap();
-            if (player.hasEffect(Minecraft.Effect.INVISIBILITY)) {
+            if (player.unwrap().hasEffect(MobEffects.INVISIBILITY)) {
                 player.unwrap().removeEffect(MobEffects.INVISIBILITY);
             }
         }

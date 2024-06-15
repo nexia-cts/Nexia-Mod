@@ -21,6 +21,7 @@ public class CommandLoader {
         CommandDispatcher<CommandSourceInfo> commandDispatcher = ServerTime.factoryServer.getCommandDispatcher();
 
         SprintFixCommand.register(commandDispatcher);
+        HelpCommand.register(commandDispatcher);
         DiscordCommand.register(commandDispatcher);
         LeaveCommand.register(commandDispatcher);
         PrefixCommand.register(commandDispatcher);

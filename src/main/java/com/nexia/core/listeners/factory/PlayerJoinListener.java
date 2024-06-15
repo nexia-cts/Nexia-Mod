@@ -99,7 +99,6 @@ public class PlayerJoinListener {
         if(discordUser == null) {
             if(player.hasPermission("nexia.prefix.supporter")) {
                 if(player.hasPermission("nexia.rank")) {
-                    NexiaRank.setPrefix(NexiaRank.DEFAULT, player);
                     NexiaRank.removePrefix(NexiaRank.SUPPORTER, player);
                     return;
                 }
@@ -117,11 +116,10 @@ public class PlayerJoinListener {
                 NexiaRank.addPrefix(NexiaRank.SUPPORTER, player, true);
                 return;
             }
-            ServerTime.factoryServer.runCommand("/rank " + player.getRawName() + " supporter", 4, false);
+            NexiaRank.setRank(NexiaRank.SUPPORTER, player);
         } else if(!hasRole && hasSupporterPrefix) {
             if(player.hasPermission("nexia.rank")) {
                 NexiaRank.removePrefix(NexiaRank.SUPPORTER, player);
-                NexiaRank.setPrefix(NexiaRank.DEFAULT, player);
                 return;
             }
             NexiaRank.setRank(NexiaRank.DEFAULT, player);

@@ -16,7 +16,6 @@ import com.nexia.minigames.games.oitc.util.player.PlayerDataManager;
 import net.blumbo.blfscheduler.BlfRunnable;
 import net.blumbo.blfscheduler.BlfScheduler;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import net.minecraft.core.BlockPos;
@@ -215,12 +214,12 @@ public class OitcGame {
 
     @NotNull
     private static Title getTitle(int queueTime) {
-        TextColor color = NamedTextColor.GREEN;
+        TextColor color = ChatFormat.Minecraft.green;
 
         if (queueTime == 2) {
-            color = NamedTextColor.YELLOW;
+            color = ChatFormat.Minecraft.yellow;
         } else if (queueTime <= 1) {
-            color = NamedTextColor.RED;
+            color = ChatFormat.Minecraft.red;
         }
 
         return Title.title(Component.text(queueTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));

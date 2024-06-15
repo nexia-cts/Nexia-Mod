@@ -5,6 +5,7 @@ import com.combatreforged.factory.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.commands.CommandUtil;
@@ -13,7 +14,7 @@ import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 
 
 public class MessageCommand {
@@ -49,10 +50,10 @@ public class MessageCommand {
         );
     }
 
-    private static int msgCommand(CommandContext<CommandSourceInfo> context) {
+    private static int msgCommand(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
         NexiaPlayer sender = CommandUtil.getPlayer(context);
-        NexiaPlayer receiver = new NexiaPlayer(context.getArgument("player", ServerPlayer.class));
+        NexiaPlayer receiver = new NexiaPlayer(context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())));
         String message = StringArgumentType.getString(context, "message");
 
         sendMessage(sender, receiver, message);

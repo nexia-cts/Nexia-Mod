@@ -1,6 +1,5 @@
 package com.nexia.minigames.games.bedwars.util;
 
-import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
@@ -25,6 +24,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -65,7 +65,7 @@ public class BwUtil {
         for (Iterator<NexiaPlayer> it = BwGame.invisiblePlayerArmor.keySet().iterator(); it.hasNext(); ) {
             NexiaPlayer player = it.next();
             invisArmorCheck(player);
-            if (!player.hasEffect(Minecraft.Effect.INVISIBILITY)) {
+            if (!player.unwrap().hasEffect(MobEffects.INVISIBILITY)) {
                 regainInvisArmor(player);
                 it.remove();
             }
@@ -289,6 +289,7 @@ public class BwUtil {
     public static void setAttackSpeed(ServerPlayer player) {
         UUID hasteUuid = UUID.fromString("AF8B6E3F-3328-4C0A-AA36-5BA2BB9DBEF3");
         AttributeInstance attackSpeed = player.getAttribute(Attributes.ATTACK_SPEED);
+        assert attackSpeed != null;
         AttributeModifier modifier = attackSpeed.getModifier(hasteUuid);
 
         if (modifier != null) {

@@ -1,14 +1,15 @@
 package com.nexia.minigames.games.bedwars.util;
 
-import com.nexia.core.utilities.chat.LegacyChatFormat;
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.minigames.games.bedwars.BwGame;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwTeam;
 import com.nexia.minigames.games.bedwars.upgrades.BwUpgrade;
+import net.kyori.adventure.text.Component;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -72,7 +73,7 @@ public class BwGen {
 
     public static final int[] upgradeCosts = {2, 4, 6, 8};
 
-    public static final int[] ironDelays = {15, 10, 8, 8, 6};
+    public static final int[] ironDelays = {15, 10, 8, 7, 6};
     public static final int[] goldDelays = {60, 40, 30, 30, 24};
     public static final int[] emeraldDelays = {0, 0, 0, 1200, 800};
 
@@ -99,9 +100,12 @@ public class BwGen {
                 }
                 // Change timer number
                 if (gen.timerDisplay != null && nextItemIn % 20 == 0) {
-                    gen.timerDisplay.setCustomName(new TextComponent(
-                            LegacyChatFormat.brandColor1 + "Spawns in " +
-                                    LegacyChatFormat.brandColor2 + nextItemIn / 20 + LegacyChatFormat.brandColor1 + " seconds"));
+                    gen.timerDisplay.setCustomName(ObjectMappings.convertComponent(
+                            Component.text("Spawns in ", ChatFormat.brandColor2)
+                                    .append(Component.text(nextItemIn / 20, ChatFormat.brandColor1))
+                                    .append(Component.text(" seconds", ChatFormat.brandColor2))
+                            )
+                    );
                 }
             }
         }
@@ -214,10 +218,10 @@ public class BwGen {
     }
 
     private static long getLastNumber(ArrayList<String> splitTag) {
-        String stringCap = splitTag.get(splitTag.size() - 1);
+        String stringCap = splitTag.getLast();
         if (!NumberUtils.isParsable(stringCap)) return -1;
         long number = Math.round(NumberUtils.toDouble(stringCap));
-        splitTag.remove(splitTag.size() - 1);
+        splitTag.removeLast();
         return number;
     }
 

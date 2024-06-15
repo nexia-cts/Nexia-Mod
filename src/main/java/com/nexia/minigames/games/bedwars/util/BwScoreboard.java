@@ -1,5 +1,7 @@
 package com.nexia.minigames.games.bedwars.util;
 
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
@@ -9,6 +11,7 @@ import com.nexia.minigames.games.bedwars.BwGame;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayers;
 import com.nexia.minigames.games.bedwars.players.BwTeam;
+import net.kyori.adventure.text.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket;
@@ -26,7 +29,7 @@ import java.util.ArrayList;
 public class BwScoreboard {
 
     private static final String objectiveName = "bedwars_sidebar";
-    private static final TextComponent title = new TextComponent(LegacyChatFormat.brandColor1 + "\247l    Bedwars    ");
+    private static final TextComponent title = (TextComponent) ObjectMappings.convertComponent(Component.text("    Bedwars    ", ChatFormat.brandColor2).decorate(ChatFormat.bold));
 
     public static final int timerLine = 1;
 

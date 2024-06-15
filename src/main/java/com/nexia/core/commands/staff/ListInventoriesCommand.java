@@ -33,7 +33,7 @@ public class ListInventoriesCommand {
             return 0;
         }
 
-        context.getSource().sendMessage(Component.text("Saved Inventories:", ChatFormat.normalColor)
+        context.getSource().sendMessage(Component.text("Saved Inventories: ", ChatFormat.normalColor)
                 .append(Component.text(InventoryUtil.getListOfInventoriesString(type), ChatFormat.brandColor2))
                 .append(Component.text(".", ChatFormat.normalColor))
         );
