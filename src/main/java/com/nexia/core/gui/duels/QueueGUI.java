@@ -82,7 +82,7 @@ public class QueueGUI extends SimpleGui {
 
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
                 if(name.getString().substring(4).equalsIgnoreCase("Leave ALL Queues")) {
-                    //PlayerUtil.getNexusPlayer(player).runCommand("/queue LEAVE", 0, false);
+                    //PlayerUtil.getFactoryPlayer(player).runCommand("/queue LEAVE", 0, false);
                     LobbyUtil.leaveAllGames(this.player, true);
                     this.close();
                     return super.click(index, clickType, action);

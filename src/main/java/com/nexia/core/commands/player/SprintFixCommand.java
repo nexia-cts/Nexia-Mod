@@ -21,7 +21,7 @@ public class SprintFixCommand {
         ServerPlayer player = context.getSource().getPlayerOrException();
         SavedPlayerData data = PlayerDataManager.get(player).savedData;
 
-        PlayerUtil.getNexusPlayer(player).sendMessage(ChatFormat.nexiaMessage.append(Component.text((data.setSprintFix(!data.isSprintFix()) ? "Enabled" : "Disabled") + " Sprint Fix!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
+        PlayerUtil.getFactoryPlayer(player).sendMessage(ChatFormat.nexiaMessage.append(Component.text((data.setSprintFix(!data.isSprintFix()) ? "Enabled" : "Disabled") + " Sprint Fix!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
 
         return 1;
     }

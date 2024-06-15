@@ -1,6 +1,6 @@
 package com.nexia.core.commands.player;
 
-import com.nexia.nexus.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -54,7 +54,7 @@ public class ReportCommand {
 
     public static int report(CommandContext<CommandSourceStack> context, ServerPlayer player, String reason) throws CommandSyntaxException {
         ServerPlayer mcExecutor = context.getSource().getPlayerOrException();
-        Player executor = PlayerUtil.getNexusPlayer(mcExecutor);
+        Player executor = PlayerUtil.getFactoryPlayer(mcExecutor);
 
         if(PlayerDataManager.get(mcExecutor).savedData.isReportBanned()) {
             executor.sendMessage(
@@ -98,7 +98,7 @@ public class ReportCommand {
                 .append(Component.text(reason).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false));
 
         for (ServerPlayer staffPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()){
-            if(Permissions.check(staffPlayer, "nexia.staff.report", 1)) PlayerUtil.getNexusPlayer(staffPlayer).sendMessage(staffReportMessage);
+            if(Permissions.check(staffPlayer, "nexia.staff.report", 1)) PlayerUtil.getFactoryPlayer(staffPlayer).sendMessage(staffReportMessage);
         }
 
         return 1;

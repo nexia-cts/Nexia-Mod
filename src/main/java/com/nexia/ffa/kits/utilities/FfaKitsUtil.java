@@ -1,6 +1,6 @@
 package com.nexia.ffa.kits.utilities;
 
-import com.nexia.nexus.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.ffa.KitGUI;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.function.Predicate;
 
-import static com.nexia.core.utilities.time.ServerTime.nexusServer;
+import static com.nexia.core.utilities.time.ServerTime.factoryServer;
 import static com.nexia.ffa.kits.utilities.FfaAreas.*;
 
 public class FfaKitsUtil {
@@ -66,7 +66,7 @@ public class FfaKitsUtil {
 
         if (data.killstreak % 5 == 0) {
             for (ServerPlayer serverPlayer : ffaWorld.players()) {
-                PlayerUtil.getNexusPlayer(serverPlayer).sendMessage(
+                PlayerUtil.getFactoryPlayer(serverPlayer).sendMessage(
                         Component.text("[")
                                 .color(ChatFormat.lineColor)
                                 .append(Component.text("☠").color(ChatFormat.failColor))
@@ -86,14 +86,14 @@ public class FfaKitsUtil {
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
 
             if (!com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(minecraftPlayer) && PlayerDataManager.get(minecraftPlayer).kit == null) {
-                PlayerUtil.getNexusPlayer(minecraftPlayer).sendTitle(Title.title(Component.text("No kit selected!").color(ChatFormat.failColor), Component.text("You need to select a kit!").color(ChatFormat.failColor)));
+                PlayerUtil.getFactoryPlayer(minecraftPlayer).sendTitle(Title.title(Component.text("No kit selected!").color(ChatFormat.failColor), Component.text("You need to select a kit!").color(ChatFormat.failColor)));
                 PlayerUtil.sendSound(minecraftPlayer, new EntityPos(minecraftPlayer), SoundEvents.NOTE_BLOCK_DIDGERIDOO, SoundSource.BLOCKS, 10, 1);
                 FfaKitsUtil.sendToSpawn(minecraftPlayer);
                 return;
             }
 
             if (wasInSpawn.contains(minecraftPlayer.getUUID()) && !com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(minecraftPlayer)) {
-                Player player = PlayerUtil.getNexusPlayer(minecraftPlayer);
+                Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
                 wasInSpawn.remove(minecraftPlayer.getUUID());
                 player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your kit was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
             }
@@ -111,7 +111,7 @@ public class FfaKitsUtil {
 
         if (data.killstreak >= 5) {
             for (ServerPlayer serverPlayer : FfaAreas.ffaWorld.players()) {
-                PlayerUtil.getNexusPlayer(serverPlayer).sendMessage(
+                PlayerUtil.getFactoryPlayer(serverPlayer).sendMessage(
                         Component.text("[")
                                 .color(ChatFormat.lineColor)
                                 .append(Component.text("☠").color(ChatFormat.failColor))
@@ -205,7 +205,7 @@ public class FfaKitsUtil {
             calculateKill(attacker, minecraftPlayer);
         }
 
-        for (Player player : nexusServer.getPlayers()) {
+        for (Player player : factoryServer.getPlayers()) {
             if (player.hasTag("ffa_kits")) player.sendMessage(msg);
         }
         return null;

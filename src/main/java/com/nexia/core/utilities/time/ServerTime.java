@@ -1,8 +1,8 @@
 package com.nexia.core.utilities.time;
 
-import com.nexia.nexus.api.NexusAPI;
-import com.nexia.nexus.api.NexusServer;
-import com.nexia.nexus.api.scheduler.TaskScheduler;
+import com.combatreforged.factory.api.FactoryAPI;
+import com.combatreforged.factory.api.FactoryServer;
+import com.combatreforged.factory.api.scheduler.TaskScheduler;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.ranks.NexiaRank;
@@ -37,9 +37,9 @@ public class ServerTime {
 
     public static MinecraftServer minecraftServer = null;
 
-    public static NexusServer nexusServer = null;
+    public static FactoryServer factoryServer = null;
 
-    public static NexusAPI nexusAPI = null;
+    public static FactoryAPI factoryAPI = null;
 
     public static TaskScheduler scheduler = null;
 

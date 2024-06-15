@@ -51,14 +51,14 @@ public class BwPlayerEvents {
 
     public static void tryToJoin(ServerPlayer player, boolean throughEvent) {
 
-        com.nexia.nexus.api.world.entity.player.Player nexusPlayer = PlayerUtil.getNexusPlayer(player);
+        com.combatreforged.factory.api.world.entity.player.Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
 
         if (BwUtil.isInBedWars(player)) {
-            nexusPlayer.sendMessage(Component.text("You are already in the game.").color(ChatFormat.failColor));
+            factoryPlayer.sendMessage(Component.text("You are already in the game.").color(ChatFormat.failColor));
             return;
         }
         if (BwGame.queueList.size() >= BwGame.maxPlayerCount) {
-            nexusPlayer.sendMessage(Component.text("The game is full.").color(ChatFormat.failColor));
+            factoryPlayer.sendMessage(Component.text("The game is full.").color(ChatFormat.failColor));
             return;
         }
         if (BwGame.isGameActive) {
@@ -71,10 +71,10 @@ public class BwPlayerEvents {
 
     public static boolean spectatorTeleport(ServerPlayer player, ServerboundTeleportToEntityPacket packet) {
 
-        com.nexia.nexus.api.world.entity.player.Player nexusPlayer = PlayerUtil.getNexusPlayer(player);
+        com.combatreforged.factory.api.world.entity.player.Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
 
         if (BwUtil.isBedWarsPlayer(player)) {
-            nexusPlayer.sendMessage(Component.text("You can't spectate others while in the game.").color(ChatFormat.failColor));
+            factoryPlayer.sendMessage(Component.text("You can't spectate others while in the game.").color(ChatFormat.failColor));
             return false;
         }
 
@@ -83,7 +83,7 @@ public class BwPlayerEvents {
             if (!(entity instanceof ServerPlayer target)) continue;
 
             if (!BwUtil.isBedWarsPlayer(target)) {
-                nexusPlayer.sendMessage(Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
+                factoryPlayer.sendMessage(Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
                 return false;
             }
         }

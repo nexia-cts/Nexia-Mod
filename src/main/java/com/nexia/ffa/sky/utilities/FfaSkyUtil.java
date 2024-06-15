@@ -1,6 +1,6 @@
 package com.nexia.ffa.sky.utilities;
 
-import com.nexia.nexus.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.google.gson.Gson;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -76,7 +76,7 @@ public class FfaSkyUtil {
         if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
             if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !isInFfaSpawn(minecraftPlayer)){
-                Player player = PlayerUtil.getNexusPlayer(minecraftPlayer);
+                Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
                 wasInSpawn.remove(minecraftPlayer.getUUID());
                 minecraftPlayer.getCooldowns().addCooldown(Items.ENDER_PEARL, 10);
                 saveInventory(minecraftPlayer);
@@ -263,7 +263,7 @@ public class FfaSkyUtil {
 
         // Inform player about given rewards
         
-        PlayerUtil.getNexusPlayer(attacker).sendMessage(Component.text("[").color(ChatFormat.arrowColor)
+        PlayerUtil.getFactoryPlayer(attacker).sendMessage(Component.text("[").color(ChatFormat.arrowColor)
                 .append(Component.text("☠").color(ChatFormat.brandColor1))
                 .append(Component.text("] ").color(ChatFormat.arrowColor))
                 .append(Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2))
@@ -272,7 +272,7 @@ public class FfaSkyUtil {
         for (ItemStack givenReward : givenRewards) {
             String itemName = LegacyChatFormat.removeColors(givenReward.getHoverName().getString());
             if (givenReward.getCount() > 1) itemName += "s";
-            PlayerUtil.getNexusPlayer(attacker).sendMessage(Component.text("[").color(ChatFormat.arrowColor)
+            PlayerUtil.getFactoryPlayer(attacker).sendMessage(Component.text("[").color(ChatFormat.arrowColor)
                     .append(Component.text("+" + givenReward.getCount()).color(ChatFormat.brandColor1))
                     .append(Component.text("] ").color(ChatFormat.arrowColor))
                     .append(Component.text(itemName).color(ChatFormat.brandColor2))

@@ -1,6 +1,6 @@
 package com.nexia.core.commands.player;
 
-import com.nexia.nexus.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -50,13 +50,13 @@ public class ShoutCommand {
 
         if (PlayerMutes.muted(executor)) return 0;
 
-        Player nexusExecutor = PlayerUtil.getNexusPlayer(executor);
+        Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor);
         if(ShoutCommand.cooldownTime.get(executor.getUUID()) == null) ShoutCommand.cooldownTime.put(executor.getUUID(), System.currentTimeMillis());
         long longTime = ShoutCommand.cooldownTime.get(executor.getUUID());
 
         if(longTime - System.currentTimeMillis() > 0) {
             String time = ShoutCommand.timeToText(longTime - System.currentTimeMillis());
-            nexusExecutor.sendMessage(ChatFormat.nexiaMessage.append(
+            factoryExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("You are still on cooldown, you have ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                             .append(Component.text(time).color(ChatFormat.brandColor1).decoration(ChatFormat.bold, true))
                             .append(Component.text(" left!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
@@ -64,11 +64,11 @@ public class ShoutCommand {
             return 0;
         }
 
-        Component cmessage = Component.text(nexusExecutor.getRawName()).color(ChatFormat.brandColor1).decoration(ChatFormat.bold, true)
+        Component cmessage = Component.text(factoryExecutor.getRawName()).color(ChatFormat.brandColor1).decoration(ChatFormat.bold, true)
                 .append(Component.text( " shouts: " + message).color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                 );
 
-        for(Player player : ServerTime.nexusServer.getPlayers()) {
+        for(Player player : ServerTime.factoryServer.getPlayers()) {
             player.sendMessage(cmessage);
         }
 

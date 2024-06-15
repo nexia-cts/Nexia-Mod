@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.skywars;
 
-import com.nexia.nexus.api.util.Identifier;
+import com.combatreforged.factory.api.util.Identifier;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;

@@ -1,6 +1,6 @@
 package com.nexia.core.commands.staff;
 
-import com.nexia.nexus.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.entity.player.Player;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -35,17 +35,17 @@ public class RankCommand {
 
     public static int give(CommandContext<CommandSourceStack> context, ServerPlayer player, String rank) {
         CommandSourceStack executor = context.getSource();
-        Player nexusExecutor = null;
-        Player otherNexusPlayer = PlayerUtil.getNexusPlayer(player);
+        Player factoryExecutor = null;
+        Player otherFactoryPlayer = PlayerUtil.getFactoryPlayer(player);
 
         try {
-            nexusExecutor = PlayerUtil.getNexusPlayer(context.getSource().getPlayerOrException());
+            factoryExecutor = PlayerUtil.getFactoryPlayer(context.getSource().getPlayerOrException());
         } catch(Exception ignored) { }
 
         NexiaRank nexiaRank = NexiaRank.identifyRank(rank);
         if(nexiaRank == null) {
-            if(nexusExecutor != null){
-                nexusExecutor.sendMessage(
+            if(factoryExecutor != null){
+                factoryExecutor.sendMessage(
                         ChatFormat.nexiaMessage
                                 .append(Component.text("Invalid rank!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                 );
@@ -55,21 +55,21 @@ public class RankCommand {
             return 0;
         }
 
-        if(nexusExecutor != null){
-            nexusExecutor.sendMessage(
+        if(factoryExecutor != null){
+            factoryExecutor.sendMessage(
                     ChatFormat.nexiaMessage
                             .append(Component.text("You have set the rank of ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                            .append(Component.text(otherNexusPlayer.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                            .append(Component.text(otherFactoryPlayer.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
                             .append(Component.text(" to ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                             .append(Component.text(nexiaRank.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true).decoration(ChatFormat.bold, false))
                             .append(Component.text(".").color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false).decoration(ChatFormat.bold, false))
             );
         } else {
-            executor.sendSuccess(LegacyChatFormat.format("{b1}You have set the rank of {b2}{} {b1}to: {b2}{b}{}{b1}.", otherNexusPlayer.getRawName(), nexiaRank.name), false);
+            executor.sendSuccess(LegacyChatFormat.format("{b1}You have set the rank of {b2}{} {b1}to: {b2}{b}{}{b1}.", otherFactoryPlayer.getRawName(), nexiaRank.name), false);
         }
 
 
-        otherNexusPlayer.sendMessage(
+        otherFactoryPlayer.sendMessage(
                 ChatFormat.nexiaMessage
                         .append(Component.text("Your rank has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                         .append(Component.text(nexiaRank.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
