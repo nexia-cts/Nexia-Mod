@@ -1,12 +1,12 @@
 package com.nexia.ffa.classic.utilities;
 
-import com.nexia.core.utilities.pos.BlockVec3;
-import com.nexia.ffa.Main;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
+import com.nexia.core.utilities.pos.PositionUtil;
+import com.nexia.ffa.Main;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 public class FfaAreas {
@@ -25,11 +25,8 @@ public class FfaAreas {
         return level.dimension().toString().contains(Main.classic.worldName);
     }
 
-    public static boolean isInFfaSpawn(Player player) {
-        BlockVec3 pos = new BlockVec3(player.position());
-        return pos.x >= spawnCorner1.getX() && pos.x <= spawnCorner2.getX() &&
-                pos.y >= spawnCorner1.getY() && pos.y <= spawnCorner2.getY() &&
-                pos.z >= spawnCorner1.getZ() && pos.z <= spawnCorner2.getZ();
+    public static boolean isInFfaSpawn(NexiaPlayer player) {
+        return PositionUtil.isBetween(spawnCorner1, spawnCorner2, player.unwrap().blockPosition());
     }
 
     public static void setFfaWorld(MinecraftServer server) {

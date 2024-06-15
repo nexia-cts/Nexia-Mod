@@ -1,7 +1,7 @@
 package com.nexia.core.mixin.item;
 
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.item.InventoryUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.ffa.sky.utilities.FfaAreas;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
@@ -35,10 +35,11 @@ public class EnderPearlItemMixin extends Item {
     private void setPlayer(Level level, Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         if (player instanceof ServerPlayer serverPlayer) {
             thrower = serverPlayer;
+            NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
 
-            if ((FfaAreas.isFfaWorld(serverPlayer.getLevel()) && FfaSkyUtil.wasInSpawn.contains(serverPlayer.getUUID())) || (com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode.equals(PlayerGameMode.LOBBY) && com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).gameMode.equals(DuelGameMode.LOBBY))) {
+            if ((FfaAreas.isFfaWorld(serverPlayer.getLevel()) && FfaSkyUtil.wasInSpawn.contains(serverPlayer.getUUID())) || (com.nexia.core.utilities.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(PlayerGameMode.LOBBY) && com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(DuelGameMode.LOBBY))) {
                 cir.setReturnValue(InteractionResultHolder.pass(serverPlayer.getItemInHand(interactionHand)));
-                InventoryUtil.sendHandItemPacket(serverPlayer, interactionHand);
+                nexiaPlayer.refreshInventory();
                 return;
             }
 
@@ -50,11 +51,12 @@ public class EnderPearlItemMixin extends Item {
     private int setPearlCooldown(int original) {
         int time = original;
         if (thrower == null) return time;
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(thrower);
 
-        DuelGameMode duelGameMode = PlayerDataManager.get(thrower).gameMode;
+        DuelGameMode duelGameMode = PlayerDataManager.get(nexiaPlayer).gameMode;
 
         if(duelGameMode.equals(DuelGameMode.POT) || duelGameMode.equals(DuelGameMode.NETH_POT)) time = 300;
-        if (FfaSkyUtil.isFfaPlayer(thrower)) time = 10;
+        if (FfaSkyUtil.isFfaPlayer(nexiaPlayer)) time = 10;
 
         return time;
     }

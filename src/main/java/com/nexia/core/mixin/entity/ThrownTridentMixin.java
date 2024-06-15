@@ -40,7 +40,6 @@ public abstract class ThrownTridentMixin extends AbstractArrow {
         */
 
         bonus -= 2;
-
         return bonus;
     }
 

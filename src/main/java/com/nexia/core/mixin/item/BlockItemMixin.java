@@ -1,6 +1,6 @@
 package com.nexia.core.mixin.item;
 
-import com.nexia.core.utilities.item.ItemStackUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaAreas;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
@@ -25,27 +25,32 @@ public abstract class BlockItemMixin {
     private void beforePlace(BlockPlaceContext context, CallbackInfoReturnable<InteractionResult> cir) {
         ServerPlayer player = (ServerPlayer)context.getPlayer();
         if (player == null) return;
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
+
         BlockPos blockPos = context.getClickedPos();
         ServerLevel level = player.getLevel();
 
-        if (BwAreas.isBedWarsWorld(player.getLevel()) && !BwPlayerEvents.beforePlace(player, context)) {
+        if (BwAreas.isBedWarsWorld(player.getLevel()) && !BwPlayerEvents.beforePlace(nexiaPlayer, context)) {
             cir.setReturnValue(InteractionResult.PASS);
+            nexiaPlayer.refreshInventory();
             return;
         }
 
         if (player.getLevel().equals(FootballGame.world) && !player.isCreative()) {
             cir.setReturnValue(InteractionResult.PASS);
+            nexiaPlayer.refreshInventory();
             return;
         }
 
-        if (FfaAreas.isFfaWorld(level) && !FfaUhcUtil.beforeBuild(player, blockPos)) {
+        if (FfaAreas.isFfaWorld(level) && !FfaUhcUtil.beforeBuild(nexiaPlayer, blockPos)) {
             cir.setReturnValue(InteractionResult.PASS);
-            ItemStackUtil.sendInventoryRefreshPacket(player);
+            nexiaPlayer.refreshInventory();
             return;
         }
 
-        if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(level) && !FfaSkyUtil.beforeBuild(player, blockPos)) {
+        if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(level) && !FfaSkyUtil.beforeBuild(nexiaPlayer, blockPos)) {
             cir.setReturnValue(InteractionResult.PASS);
+            nexiaPlayer.refreshInventory();
             return;
         }
     }
@@ -54,11 +59,12 @@ public abstract class BlockItemMixin {
     private void afterPlace(BlockPlaceContext context, CallbackInfoReturnable<InteractionResult> cir) {
         ServerPlayer player = (ServerPlayer)context.getPlayer();
         if (player == null) return;
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
         BlockPos blockPos = context.getClickedPos();
 
         if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(player.getLevel())) {
-            FfaSkyUtil.afterPlace(player, blockPos, context.getHand());
+            FfaSkyUtil.afterPlace(nexiaPlayer, blockPos, context.getHand());
         }
     }
 }
