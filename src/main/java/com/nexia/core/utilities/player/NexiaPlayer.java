@@ -7,6 +7,7 @@ import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
+import com.nexia.minigames.games.bedwars.util.BwScoreboard;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.football.FootballGame;
@@ -137,6 +138,10 @@ public class NexiaPlayer extends WrappedPlayer {
         } else if (PlayerDataManager.get(this).gameMode == PlayerGameMode.FOOTBALL) {
             FootballGame.leave(this);
         }
+
+        // sometimes those do not get removed
+        PlayerUtil.sendBossbar(SkywarsGame.BOSSBAR, this, true);
+        BwScoreboard.removeScoreboardFor(this);
 
         for (String tag : LobbyUtil.removedTags) {
             if (this.hasTag(tag)) this.removeTag(tag);
