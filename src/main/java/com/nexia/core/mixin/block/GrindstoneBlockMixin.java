@@ -1,7 +1,6 @@
 package com.nexia.core.mixin.block;
 
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
@@ -25,10 +24,9 @@ public class GrindstoneBlockMixin {
     @Inject(method = "use", cancellable = true, at = @At("HEAD"))
     private void use(BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult, CallbackInfoReturnable<InteractionResult> cir) {
         if (!(player instanceof ServerPlayer serverPlayer)) return;
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
-        PlayerData playerData = PlayerDataManager.get(nexiaPlayer);
+        PlayerData playerData = PlayerDataManager.get(serverPlayer);
 
-        if (BwUtil.isInBedWars(nexiaPlayer) || (playerData.gameOptions != null && (playerData.gameOptions.duelsGame != null || playerData.gameOptions.teamDuelsGame != null || playerData.gameOptions.customTeamDuelsGame != null || playerData.gameOptions.customDuelsGame != null)) || LobbyUtil.isLobbyWorld(serverPlayer.getLevel())) {
+        if (BwUtil.isInBedWars(serverPlayer) || (playerData.gameOptions != null && (playerData.gameOptions.duelsGame != null || playerData.gameOptions.teamDuelsGame != null || playerData.gameOptions.customTeamDuelsGame != null || playerData.gameOptions.customDuelsGame != null)) || LobbyUtil.isLobbyWorld(serverPlayer.getLevel())) {
             cir.setReturnValue(InteractionResult.FAIL);
             return;
         }

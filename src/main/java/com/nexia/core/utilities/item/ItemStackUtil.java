@@ -1,5 +1,6 @@
 package com.nexia.core.utilities.item;
 
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
 import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -94,6 +95,15 @@ public class ItemStackUtil {
         fullInv.addAll(player.inventory.armor);
         fullInv.addAll(player.inventory.offhand);
         return fullInv;
+    }
+
+    public static void sendInventoryRefreshPacket(ServerPlayer player) {
+        NonNullList<ItemStack> i = NonNullList.create();
+        for (int j = 0; j < player.containerMenu.slots.size(); ++j) {
+            ItemStack itemStack = player.containerMenu.slots.get(j).getItem();
+            i.add(itemStack.isEmpty() ? ItemStack.EMPTY : itemStack);
+        }
+        player.refreshContainer(player.containerMenu, i);
     }
 
     public static Item itemFromString(String name) {

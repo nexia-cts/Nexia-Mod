@@ -1,6 +1,5 @@
 package com.nexia.core.mixin.entity;
 
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,12 +21,11 @@ public abstract class ThrownEnderpearlMixin extends ThrowableItemProjectile {
     @ModifyArg(method = "onHit", index = 1, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
     private float pearlDamage(float damage) {
         if (getOwner() instanceof ServerPlayer thrower) {
-            NexiaPlayer nexiaPlayer = new NexiaPlayer(thrower);
 
-            if (BwUtil.isInBedWars(nexiaPlayer)) {
+            if (BwUtil.isInBedWars(thrower)) {
                 return BwUtil.getPearlDamage();
             }
-            if (FfaSkyUtil.isFfaPlayer(nexiaPlayer)) {
+            if (FfaSkyUtil.isFfaPlayer(thrower)) {
                 return 0;
             }
 

@@ -1,9 +1,7 @@
 package com.nexia.core.mixin.block;
 
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.KitRoom;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.ChestBlock;
@@ -35,7 +33,7 @@ public abstract class ChestBlockEntityMixin extends BlockEntity {
 
     @Inject(method = "startOpen", at = @At("HEAD"))
     public void onOpen(Player player, CallbackInfo ci) {
-        if (KitRoom.isInKitRoom(new NexiaPlayer((ServerPlayer) player))) {
+        if (KitRoom.isInKitRoom(player)) {
             nbtList.put(player.getUUID(), new CompoundTag());
             this.save(nbtList.get(player.getUUID()));
         }
@@ -43,7 +41,7 @@ public abstract class ChestBlockEntityMixin extends BlockEntity {
 
     @Inject(method = "stopOpen", at = @At("HEAD"))
     public void onClose(Player player, CallbackInfo ci) {
-        if (KitRoom.isInKitRoom(new NexiaPlayer((ServerPlayer) player))) {
+        if (KitRoom.isInKitRoom(player)) {
             BlockState blockState = this.getBlockState();
             if(blockState.getBlock() instanceof ChestBlock) {
                 this.load(blockState, nbtList.get(player.getUUID()));

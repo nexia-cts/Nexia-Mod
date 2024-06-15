@@ -1,7 +1,6 @@
 package com.nexia.core.mixin.block;
 
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.ffa.classic.utilities.FfaAreas;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.KitRoom;
@@ -26,10 +25,9 @@ public class PotBlockMixin {
     @Inject(method = "use", cancellable = true, at = @At("HEAD"))
     private void use(BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult, CallbackInfoReturnable<InteractionResult> cir) {
         if (!(player instanceof ServerPlayer serverPlayer)) return;
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
-        PlayerData playerData = PlayerDataManager.get(nexiaPlayer);
+        PlayerData playerData = PlayerDataManager.get(serverPlayer);
 
-        if (BwUtil.isInBedWars(nexiaPlayer) || KitRoom.isInKitRoom(nexiaPlayer) || (playerData.gameOptions != null && (playerData.gameOptions.duelsGame != null || playerData.gameOptions.teamDuelsGame != null || playerData.gameOptions.customTeamDuelsGame != null || playerData.gameOptions.customDuelsGame != null)) || LobbyUtil.isLobbyWorld(serverPlayer.getLevel()) || (FfaAreas.isFfaWorld(serverPlayer.getLevel()) || com.nexia.ffa.kits.utilities.FfaAreas.isFfaWorld(serverPlayer.getLevel())) && !serverPlayer.isCreative()) {
+        if (BwUtil.isInBedWars(serverPlayer) || KitRoom.isInKitRoom(player) || (playerData.gameOptions != null && (playerData.gameOptions.duelsGame != null || playerData.gameOptions.teamDuelsGame != null || playerData.gameOptions.customTeamDuelsGame != null || playerData.gameOptions.customDuelsGame != null)) || LobbyUtil.isLobbyWorld(serverPlayer.getLevel()) || (FfaAreas.isFfaWorld(serverPlayer.getLevel()) || com.nexia.ffa.kits.utilities.FfaAreas.isFfaWorld(serverPlayer.getLevel())) && !serverPlayer.isCreative()) {
             cir.setReturnValue(InteractionResult.FAIL);
             return;
         }

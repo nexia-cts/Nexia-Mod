@@ -32,7 +32,7 @@ public class SkipQueueCommand {
 
     private static int currentGamemode(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        PlayerGameMode gameMode = PlayerDataManager.get(player.getUUID()).gameMode;
+        PlayerGameMode gameMode = PlayerDataManager.get(player).gameMode;
 
         if(gameMode.equals(PlayerGameMode.SKYWARS)) return skywars(context);
         if(gameMode.equals(PlayerGameMode.BEDWARS)) return bedwars(context);
