@@ -1,26 +1,28 @@
 package com.nexia.core.commands.player.duels.custom;
 
-import com.combatreforged.factory.api.command.CommandSourceInfo;
-import com.combatreforged.factory.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.natamus.collective_fabric.functions.PlayerFunctions;
 import com.natamus.collective_fabric.functions.StringFunctions;
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
-import com.nexia.core.utilities.commands.CommandUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.CustomKitRoom;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.KitRoom;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.SmpKitRoom;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.VanillaKitRoom;
-import net.kyori.adventure.text.Component;
+import net.minecraft.Util;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.server.level.ServerPlayer;
+import net.notcoded.codelib.players.AccuratePlayer;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,24 +37,20 @@ public class KitEditorCommand {
 
     private static final List<String> slots = Arrays.asList("1", "2", "3", "smp", "vanilla");
 
-    public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
-        dispatcher.register((CommandUtils.literal("kiteditor")
-                .requires(commandSourceInfo -> {
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
+        dispatcher.register((Commands.literal("kiteditor")
+                .requires(commandSourceStack -> {
                     try {
-                        if(!CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
-                        NexiaPlayer player = CommandUtil.getPlayer(commandSourceInfo);
-
-                        assert player != null;
-                        com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
-                        PlayerData playerData1 = PlayerDataManager.get(player);
+                        com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(commandSourceStack.getPlayerOrException());
+                        PlayerData playerData1 = PlayerDataManager.get(commandSourceStack.getPlayerOrException());
                         return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
                     } catch (Exception ignored) {}
                     return false;
                 })
-                .then(CommandUtils.argument("argument", StringArgumentType.string())
+                .then(Commands.argument("argument", StringArgumentType.string())
                                 .suggests(((context, builder) -> SharedSuggestionProvider.suggest((new String[]{"save", "edit", "delete"}), builder)))
                                 .executes(context -> run(context, StringArgumentType.getString(context, "argument"), ""))
-                                .then(CommandUtils.argument("slot", StringArgumentType.string())
+                                .then(Commands.argument("slot", StringArgumentType.string())
                                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest(slots, builder)))
                                         .executes(context -> run(context, StringArgumentType.getString(context, "argument"), StringArgumentType.getString(context, "slot")))
                                 )
@@ -61,12 +59,11 @@ public class KitEditorCommand {
         );
     }
 
-    private static int run(CommandContext<CommandSourceInfo> context, @NotNull String argument, String slot) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        NexiaPlayer player = new NexiaPlayer(CommandUtil.getPlayer(context));
+    private static int run(CommandContext<CommandSourceStack> context, @NotNull String argument, String slot) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
 
         if (!slots.contains(slot) && !argument.equalsIgnoreCase("save")) {
-            player.sendMessage(Component.text("Invalid slot!", ChatFormat.failColor));
+            context.getSource().sendFailure(LegacyChatFormat.format("Invalid slot!"));
             return 0;
         }
 
@@ -79,15 +76,15 @@ public class KitEditorCommand {
             com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
 
             if(playerData.editingKit.isEmpty() || playerData.kitRoom == null) {
-                player.sendMessage(Component.text("You aren't editing a kit!", ChatFormat.failColor));
+                context.getSource().sendFailure(LegacyChatFormat.format("You aren't editing a kit!"));
                 return 0;
             }
 
             inventory = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).editingKit;
 
-            String gearstring = PlayerFunctions.getPlayerGearString(player.unwrap());
+            String gearstring = PlayerFunctions.getPlayerGearString(player);
 
-            Path playerPath = Path.of(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getUUID());
+            Path playerPath = Path.of(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID());
             File playerDir = playerPath.toFile();
             try {
                 if(!playerDir.exists()) Files.createDirectory(playerPath);
@@ -96,21 +93,22 @@ public class KitEditorCommand {
             KitRoom kitRoom = playerData.kitRoom;
 
             if (StringFunctions.sequenceCount(gearstring, "\n") < 40 || !playerDir.exists()) {
-                player.sendMessage(Component.text("Something went wrong while generating the save file content for your inventory.", ChatFormat.failColor));
-                kitRoom.leave();
-                player.runCommand("/hub", 0, false);
-                return 0;
-            } else if (!InventoryUtil.writeGearStringToFile("duels/custom/" + player.getUUID(), inventory, gearstring)) {
-                player.sendMessage(Component.text(String.format("Something went wrong while saving the content of your inventory as '%s'.", inventory), ChatFormat.failColor));
+                context.getSource().sendFailure(LegacyChatFormat.format("Something went wrong while generating the save file content for your inventory."));
 
                 kitRoom.leave();
-                player.runCommand("/hub", 0, false);
+                ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
+                return 0;
+            } else if (!InventoryUtil.writeGearStringToFile("duels/custom/" + player.getStringUUID(), inventory, gearstring)) {
+                context.getSource().sendFailure(LegacyChatFormat.format("Something went wrong while saving the content of your inventory as '{}'.", inventory));
+
+                kitRoom.leave();
+                ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
                 return 0;
             } else {
-                player.sendMessage(Component.text(String.format("Successfully saved your inventory as '%s'.", inventory), ChatFormat.failColor));
+                context.getSource().sendSuccess(LegacyChatFormat.format("{b1}Successfully saved your inventory as '{}'.", inventory),false);
 
                 kitRoom.leave();
-                player.runCommand("/hub", 0, false);
+                ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
                 return 1;
             }
         }
@@ -118,21 +116,22 @@ public class KitEditorCommand {
         if (argument.equalsIgnoreCase("edit")) {
 
             if(!com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).editingKit.isEmpty()) {
-                player.sendMessage(Component.text("You are still editing a kit! Save it or run /hub!", ChatFormat.failColor));
+                context.getSource().sendFailure(LegacyChatFormat.format("You are still editing a kit! Save it or run /hub!"));
                 return 0;
             }
 
             KitRoom kitRoom;
             com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
+            AccuratePlayer accuratePlayer = AccuratePlayer.create(player);
 
 
             switch (slot) {
-                case "1", "2", "3" -> kitRoom = new CustomKitRoom(player);
-                case "vanilla" -> kitRoom = new VanillaKitRoom(player);
-                case "smp" -> kitRoom = new SmpKitRoom(player);
+                case "1", "2", "3" -> kitRoom = new CustomKitRoom(accuratePlayer);
+                case "vanilla" -> kitRoom = new VanillaKitRoom(accuratePlayer);
+                case "smp" -> kitRoom = new SmpKitRoom(accuratePlayer);
                 default -> {
-                    player.sendMessage(Component.text("Something went wrong whilst creating your kit room.", ChatFormat.failColor));
-                    player.runCommand("/hub", 0, false);
+                    player.sendMessage(LegacyChatFormat.formatFail("Something went wrong whilst creating your kit room."), Util.NIL_UUID);
+                    ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
                     return 0;
                 }
             }
@@ -142,9 +141,9 @@ public class KitEditorCommand {
 
             if(kitRoom.generate()) kitRoom.teleport();
 
-            File playerFile = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getUUID(), inventory + ".txt");
+            File playerFile = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID(), inventory + ".txt");
             if(playerFile.exists()) {
-                InventoryUtil.loadInventory(player, "duels/custom/" + player.getUUID(), inventory.toLowerCase());
+                InventoryUtil.loadInventory(player, "duels/custom/" + player.getStringUUID(), inventory.toLowerCase());
             }
 
             return 1;
@@ -152,17 +151,17 @@ public class KitEditorCommand {
 
         if(argument.equalsIgnoreCase("delete")) {
 
-            File playerFile = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getUUID(), inventory + ".txt");
+            File playerFile = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID(), inventory + ".txt");
             if(playerFile.exists() && playerFile.delete()) {
-                player.sendMessage(Component.text(String.format("Successfully deleted slot '%s’!", slot), ChatFormat.brandColor1));
+                context.getSource().sendSuccess(LegacyChatFormat.format("{b1}Successfully deleted slot '{}'!", slot), false);
             } else {
-                player.sendMessage(Component.text(String.format("The saved kit for that slot (%s) does not exist!", slot), ChatFormat.failColor));
+                context.getSource().sendFailure(LegacyChatFormat.format("The saved kit for that slot ({}) does not exist!", slot));
             }
 
             return 1;
         }
 
-        player.sendMessage(Component.text("Invalid argument!", ChatFormat.failColor));
+        context.getSource().sendFailure(LegacyChatFormat.format("Invalid argument!"));
         return 1;
     }
 }

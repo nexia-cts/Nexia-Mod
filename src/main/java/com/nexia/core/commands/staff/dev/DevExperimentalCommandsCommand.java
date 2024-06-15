@@ -25,6 +25,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.dimension.DimensionType;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
@@ -60,7 +61,7 @@ public class DevExperimentalCommandsCommand {
             ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("ffa", name)).location(), (
                     new RuntimeWorldConfig()
                             .setDimensionType(DimensionType.OVERWORLD_LOCATION)
-                            .setGenerator(getChunkGenerator())
+                            .setGenerator(getChunkGenerator(Biomes.PLAINS))
                             .setDifficulty(Difficulty.HARD)
                             .setGameRule(GameRules.RULE_KEEPINVENTORY, true)
                             .setGameRule(GameRules.RULE_MOBGRIEFING, false)

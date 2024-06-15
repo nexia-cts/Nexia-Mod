@@ -17,7 +17,7 @@ public class DebugStickItemMixin {
                     target = "Lnet/minecraft/world/entity/player/Player;canUseGameMasterBlocks()Z"
             )
     )
-    public boolean addDebugStickUsePermission(boolean original, Player player, BlockState blockState) {
+    public boolean vanillaPermissions_addDebugStickUsePermission(boolean original, Player player, BlockState blockState) {
         return Permissions.check(player,"nexia.staff.debug_stick", original);
     }
 }

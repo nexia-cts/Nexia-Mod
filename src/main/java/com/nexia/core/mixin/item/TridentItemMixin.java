@@ -1,7 +1,6 @@
 package com.nexia.core.mixin.item;
 
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.ffa.classic.utilities.FfaAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
@@ -9,6 +8,7 @@ import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TridentItem;
@@ -27,9 +27,8 @@ public class TridentItemMixin {
 
         if (livingEntity instanceof ServerPlayer player) {
 
-            NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
-            if (BwUtil.isBedWarsPlayer(nexiaPlayer)) {
-                return BwPlayerEvents.throwTrident(nexiaPlayer, itemStack);
+            if (BwUtil.isBedWarsPlayer(player)) {
+                return BwPlayerEvents.throwTrident(player, itemStack);
             }
 
         }
@@ -39,13 +38,11 @@ public class TridentItemMixin {
 
     @Inject(method = "releaseUsing", at = @At(value = "HEAD"), cancellable = true)
     public void changeHoldTime(ItemStack itemStack, Level level, LivingEntity livingEntity, int i, CallbackInfo ci) {
-        if(livingEntity instanceof ServerPlayer player){
-            NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
-
-            if((FfaAreas.isFfaWorld(player.level) && FfaAreas.isInFfaSpawn(nexiaPlayer)) ||
-                    (com.nexia.ffa.kits.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(nexiaPlayer)) ||
-                            (com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(nexiaPlayer)) ||
-                                    (PlayerDataManager.get(nexiaPlayer).gameMode.equals(PlayerGameMode.LOBBY) && com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(DuelGameMode.LOBBY))
+        if(livingEntity instanceof Player player){
+            if((FfaAreas.isFfaWorld(player.level) && FfaAreas.isInFfaSpawn(player)) ||
+                    (com.nexia.ffa.kits.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(player)) ||
+                            (com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(player)) ||
+                                    (PlayerDataManager.get(player).gameMode.equals(PlayerGameMode.LOBBY) && com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).gameMode.equals(DuelGameMode.LOBBY))
             ) { ci.cancel(); }
         }
     }

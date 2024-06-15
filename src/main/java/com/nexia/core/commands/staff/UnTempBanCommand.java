@@ -1,29 +1,30 @@
 package com.nexia.core.commands.staff;
 
-import com.combatreforged.factory.api.command.CommandSourceInfo;
-import com.combatreforged.factory.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.core.utilities.player.BanHandler;
+import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.GameProfileArgument;
 
 public class UnTempBanCommand {
 
-    public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
-        dispatcher.register(CommandUtils.literal("untempban")
-                .requires(commandSourceInfo -> CommandUtil.hasPermission(commandSourceInfo, "nexia.staff.ban", 3))
-                .then(CommandUtils.argument("player", GameProfileArgument.gameProfile())
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
+        dispatcher.register(Commands.literal("untempban")
+                .requires(commandSourceStack -> Permissions.check(commandSourceStack, "nexia.staff.ban", 3))
+
+                .then(Commands.argument("player", GameProfileArgument.gameProfile())
                         .executes(UnTempBanCommand::unBan)
                 )
         );
     }
 
-    public static int unBan(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
-        CommandSourceInfo sender = context.getSource();
+    public static int unBan(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        CommandSourceStack sender = context.getSource();
 
-        BanHandler.tryUnBan(sender, context.getArgument("player", GameProfileArgument.Result.class).getNames(CommandUtil.getCommandSourceStack(context.getSource())));
+        BanHandler.tryUnBan(sender, GameProfileArgument.getGameProfiles(context, "player"));
 
         return 1;
     }
