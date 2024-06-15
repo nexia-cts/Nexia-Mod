@@ -163,30 +163,7 @@ public class FfaClassicUtil {
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player.unwrap());
 
         calculateDeath(player);
-
-        // TODO: what the fuck is this????
-        /*
-            double attackerOldRating = PlayerDataManager.get(attacker).savedData.rating;
-            double victimOldRating = PlayerDataManager.get(minecraftPlayer).savedData.rating;
-
-            calculateKill(attacker, minecraftPlayer);
-
-            double attackerNewRating = PlayerDataManager.get(attacker).savedData.rating;
-            double victimNewRating = PlayerDataManager.get(minecraftPlayer).savedData.rating;
-
-            msg = msg.append(Component.text(" (")
-                            .color(ChatFormat.chatColor2))
-                    .append(Component.text(String.format("%.2f", RatingUtil.calculateRatingDifference(victimNewRating, victimOldRating) * 100))
-                            .color(ChatFormat.failColor))
-                    .append(Component.text(" / ")
-                            .color(ChatFormat.chatColor2))
-                    .append(Component.text("+")
-                            .color(ChatFormat.greenColor))
-                    .append(Component.text(String.format("%.2f", RatingUtil.calculateRatingDifference(attackerNewRating, attackerOldRating) * 100))
-                            .color(ChatFormat.greenColor))
-                    .append(Component.text(")")
-                            .color(ChatFormat.chatColor2));
-        */
+        
         Component msg = FfaUtil.returnDeathMessage(player, source);
 
         if(attacker != null) {
@@ -195,7 +172,28 @@ public class FfaClassicUtil {
                 Component component = FfaUtil.returnClassicDeathMessage(player, nexiaAttacker);
                 if(component != null) msg = component;
 
+                double attackerOldRating = PlayerDataManager.get(nexiaAttacker).savedData.rating;
+                double victimOldRating = PlayerDataManager.get(player).savedData.rating;
+
                 calculateKill(nexiaAttacker, player);
+
+                double attackerNewRating = PlayerDataManager.get(nexiaAttacker).savedData.rating;
+                double victimNewRating = PlayerDataManager.get(player).savedData.rating;
+
+                if(component != null) {
+                    msg = msg.append(Component.text(" (")
+                                    .color(ChatFormat.chatColor2))
+                            .append(Component.text(String.format("%.2f", RatingUtil.calculateRatingDifference(victimNewRating, victimOldRating) * 100))
+                                    .color(ChatFormat.failColor))
+                            .append(Component.text(" / ")
+                                    .color(ChatFormat.chatColor2))
+                            .append(Component.text("+")
+                                    .color(ChatFormat.greenColor))
+                            .append(Component.text(String.format("%.2f", RatingUtil.calculateRatingDifference(attackerNewRating, attackerOldRating) * 100))
+                                    .color(ChatFormat.greenColor))
+                            .append(Component.text(")")
+                                    .color(ChatFormat.chatColor2));
+                }
             }
         }
 
