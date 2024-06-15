@@ -4,6 +4,7 @@ import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.map.DuelsMap;
@@ -156,14 +157,12 @@ public class CustomDuelGUI extends SimpleGui {
             ItemStack itemStack = element.getItemStack();
             Component name = itemStack.getHoverName();
 
-            System.out.println(name.getString());
-
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR && itemStack.getItem() != Items.PLAYER_HEAD && itemStack.getItem() != Items.COMMAND_BLOCK){
                 if(InventoryUtil.getListOfInventories("duels/custom/" + this.player.getStringUUID()).contains(name.getString().toLowerCase().replaceAll(" ", "_"))){
                     this.kit = name.getString().toLowerCase().replaceAll(" ", "_");
                     setMapLayout();
                 } else {
-                    GamemodeHandler.customChallengePlayer(this.player, this.other, this.kit, DuelsMap.identifyMap(name.getString()));
+                    GamemodeHandler.customChallengePlayer(new NexiaPlayer(this.player), new NexiaPlayer(this.other), this.kit, DuelsMap.identifyMap(name.getString().substring(2)));
                     this.close();
                 }
 

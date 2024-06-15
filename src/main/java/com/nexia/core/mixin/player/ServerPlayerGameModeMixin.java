@@ -1,6 +1,7 @@
 package com.nexia.core.mixin.player;
 
 import com.nexia.core.utilities.item.BlockUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaAreas;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
@@ -33,11 +34,13 @@ public class ServerPlayerGameModeMixin {
     @Inject(at = @At("HEAD"), method = "destroyBlock", cancellable = true)
     private void destroyBlock(BlockPos blockPos, CallbackInfoReturnable<Boolean> cir) {
 
-        if (BwAreas.isBedWarsWorld(level) && !BwPlayerEvents.beforeBreakBlock(player, blockPos)) {
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
+
+        if (BwAreas.isBedWarsWorld(level) && !BwPlayerEvents.beforeBreakBlock(nexiaPlayer, blockPos)) {
             cir.setReturnValue(false);
-        }  else if (FfaAreas.isFfaWorld(level) && !FfaUhcUtil.beforeBuild(player, blockPos)) {
+        }  else if (FfaAreas.isFfaWorld(level) && !FfaUhcUtil.beforeBuild(nexiaPlayer, blockPos)) {
             cir.setReturnValue(false);
-        } else if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(level) && !FfaSkyUtil.beforeBuild(player, blockPos)) {
+        } else if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(level) && !FfaSkyUtil.beforeBuild(nexiaPlayer, blockPos)) {
             cir.setReturnValue(false);
         } else if(level.equals(FootballGame.world) && !player.isCreative()) {
             cir.setReturnValue(false);
@@ -49,8 +52,10 @@ public class ServerPlayerGameModeMixin {
     @Inject(at = @At("RETURN"), method = "destroyBlock")
     private void destroyBlockTail(BlockPos blockPos, CallbackInfoReturnable<Boolean> cir) {
 
-        if (BwUtil.isBedWarsPlayer(player) && isBed) {
-            BwPlayerEvents.bedBroken(player, blockPos);
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
+
+        if (BwUtil.isBedWarsPlayer(nexiaPlayer) && isBed) {
+            BwPlayerEvents.bedBroken(nexiaPlayer, blockPos);
         }
 
     }

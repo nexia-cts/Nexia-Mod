@@ -1,32 +1,31 @@
 package com.nexia.core.commands.staff;
 
+import com.combatreforged.factory.api.command.CommandSourceInfo;
+import com.combatreforged.factory.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
-import com.nexia.core.utilities.player.PlayerUtil;
-import me.lucko.fabric.api.permissions.v0.Permissions;
+import com.nexia.core.utilities.commands.CommandUtil;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.HashMap;
 
 public class MuteCommand {
 
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
-        dispatcher.register(Commands.literal("mute")
-                .requires(commandSourceStack -> Permissions.check(commandSourceStack, "nexia.staff.mute", 1))
-                .then(Commands.argument("player", EntityArgument.player())
-                        .then(Commands.argument("duration", StringArgumentType.word())
+    public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
+        dispatcher.register(CommandUtils.literal("mute")
+                .requires(commandSourceInfo -> CommandUtil.hasPermission(commandSourceInfo, "nexia.staff.mute", 1))
+                .then(CommandUtils.argument("player", EntityArgument.player())
+                        .then(CommandUtils.argument("duration", StringArgumentType.word())
                                 .executes(context -> MuteCommand.mute(context, StringArgumentType.getString(context, "duration"), "No reason specified."))
-                                .then(Commands.argument("reason", StringArgumentType.greedyString())
+                                .then(CommandUtils.argument("reason", StringArgumentType.greedyString())
                                         .executes(context -> MuteCommand.mute(context,
                                                 StringArgumentType.getString(context, "duration"),
                                                 StringArgumentType.getString(context, "reason"))
@@ -37,20 +36,20 @@ public class MuteCommand {
         );
     }
 
-    public static int mute(CommandContext<CommandSourceStack> context, String durationArg, String reason) throws CommandSyntaxException {
+    public static int mute(CommandContext<CommandSourceInfo> context, String durationArg, String reason) throws CommandSyntaxException {
 
-        CommandSourceStack sender = context.getSource();
-        ServerPlayer muted = EntityArgument.getPlayer(context, "player");
+        CommandSourceInfo sender = context.getSource();
+        ServerPlayer muted = context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()));
 
         int durationInSeconds;
         try {
             durationInSeconds = parseTimeArg(durationArg);
         } catch (Exception e) {
 
-            PlayerUtil.safeSendMessage(sender, LegacyChatFormat.format("{f}Invalid duration. Examples: 1s / 2m / 3h / 4d / 5w"),
-                    ChatFormat.nexiaMessage
+            context.getSource().sendMessage(ChatFormat.nexiaMessage
                     .append(Component.text("Invalid duration. Examples: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                    .append(Component.text("1s / 2m / 3h / 4d / 5w").color(ChatFormat.failColor).decoration(ChatFormat.bold, false)),false);
+                    .append(Component.text("1s / 2m / 3h / 4d / 5w").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
+            );
 
             return 1;
         }

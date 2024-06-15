@@ -1,7 +1,7 @@
 package com.nexia.core.mixin.item;
 
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.item.ItemStackUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.duels.DuelGameMode;
@@ -30,9 +30,11 @@ public class EggItemMixin {
 
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void use(Level level, Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
-        if((com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode.equals(PlayerGameMode.LOBBY) && com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).gameMode.equals(DuelGameMode.LOBBY))) {
+        NexiaPlayer nexiaPlayer = new NexiaPlayer((ServerPlayer) player);
+
+        if((com.nexia.core.utilities.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(PlayerGameMode.LOBBY) && com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(DuelGameMode.LOBBY))) {
             cir.setReturnValue(new InteractionResultHolder<>(InteractionResult.FAIL, player.getItemInHand(interactionHand)));
-            ItemStackUtil.sendInventoryRefreshPacket((ServerPlayer) player);
+            nexiaPlayer.refreshInventory();
         }
         this.hand = interactionHand;
     }
@@ -43,7 +45,7 @@ public class EggItemMixin {
         if (livingEntity instanceof ServerPlayer player) {
 
             if (BwAreas.isBedWarsWorld(level)) {
-                return BwPlayerEvents.throwEgg(player, player.getItemInHand(hand));
+                return BwPlayerEvents.throwEgg(new NexiaPlayer(player), player.getItemInHand(hand));
             }
 
         }
