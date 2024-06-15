@@ -19,8 +19,7 @@ public class BwExplosiveSlime extends Slime {
     public static int explodeTime = 47;
 
     public static boolean isBwExplosiveSlime(ItemStack itemStack) {
-        if (!itemStack.hasTag()) return false;
-        return itemStack.getTag().getBoolean("BedWarsExplosiveSlime");
+        return itemStack.hasTag() && itemStack.getTag().getBoolean("BedWarsExplosiveSlime");
     }
 
     public BwExplosiveSlime(EntityType<? extends Slime> entityType, ServerPlayer player) {

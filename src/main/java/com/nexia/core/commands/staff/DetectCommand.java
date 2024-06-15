@@ -1,13 +1,12 @@
 package com.nexia.core.commands.staff;
 
-import com.combatreforged.factory.api.command.CommandSourceInfo;
-import com.combatreforged.factory.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.nexia.core.utilities.commands.CommandUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
+import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -19,27 +18,26 @@ public class DetectCommand {
 
     public static final boolean enabled = false;
 
-    public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
         if(!enabled) return;
-        dispatcher.register(CommandUtils.literal("detect")
-                .requires(commandSourceInfo -> CommandUtil.hasPermission(commandSourceInfo, "nexia.dev.detect", 4))
+        dispatcher.register(Commands.literal("detect")
+                .requires(commandSourceStack -> Permissions.check(commandSourceStack, "nexia.dev.detect", 4))
                 .executes(DetectCommand::run)
         );
     }
 
-    public static int run(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
-        if(!enabled || CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-
-        detect(CommandUtil.getPlayer(context));
+    public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        if(!enabled) return 0;
+        detect(context.getSource().getPlayerOrException());
         return 1;
     }
 
-    public static void detect(NexiaPlayer attacker) {
+    public static void detect(ServerPlayer attacker) {
 
         String botName = ".bot";
 
-        List<Player> playersNearby = attacker.unwrap().level.getEntitiesOfClass(ServerPlayer.class, attacker.unwrap().getBoundingBox().inflate(12, 0.25, 12));
-        Vec3 eyePos = attacker.unwrap().getEyePosition(1);
+        List<Player> playersNearby = attacker.level.getEntitiesOfClass(ServerPlayer.class, attacker.getBoundingBox().inflate(12, 0.25, 12));
+        Vec3 eyePos = attacker.getEyePosition(1);
         AtomicReference<Vec3> nearestPosition = new AtomicReference<>();
         playersNearby.forEach(player -> {
             Vec3 currentPos = player.getBoundingBox().getNearestPointTo(eyePos);

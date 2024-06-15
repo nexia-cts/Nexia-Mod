@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.bedwars.custom;
 
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.minigames.games.bedwars.BwGame;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,12 +29,11 @@ public class BwTrident extends ThrownTrident {
         this.willBeReturned = !player.abilities.instabuild;
         this.age = 0;
 
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(this.owner);
-        if (BwUtil.isBedWarsPlayer(nexiaPlayer)) {
-            if (!BwGame.gameTridents.containsKey(nexiaPlayer)) {
-                BwGame.gameTridents.put(nexiaPlayer, new ArrayList<>());
+        if (BwUtil.isBedWarsPlayer(this.owner)) {
+            if (!BwGame.gameTridents.containsKey(this.owner)) {
+                BwGame.gameTridents.put(this.owner, new ArrayList<>());
             }
-            BwGame.gameTridents.get(nexiaPlayer).add(this);
+            BwGame.gameTridents.get(this.owner).add(this);
         }
     }
 
@@ -44,11 +43,9 @@ public class BwTrident extends ThrownTrident {
         if (age >= returnTime) {
             this.remove();
             if (willBeReturned) {
-                this.owner.inventory.add(this.itemStack);
-                NexiaPlayer nexiaOwner = new NexiaPlayer(this.owner);
-                nexiaOwner.sendSound(SoundEvents.TRIDENT_RETURN, SoundSource.NEUTRAL, 2f, 1f);
-                nexiaOwner.sendSound(SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.05f, 2f);
-
+                owner.inventory.add(this.itemStack);
+                PlayerUtil.sendSound(owner, SoundEvents.TRIDENT_RETURN, SoundSource.NEUTRAL, 2f, 1f);
+                PlayerUtil.sendSound(owner, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.05f, 2f);
             }
         }
         age++;
@@ -57,4 +54,5 @@ public class BwTrident extends ThrownTrident {
     public void outOfWorld() {
         this.noPhysics = true;
     }
+
 }
