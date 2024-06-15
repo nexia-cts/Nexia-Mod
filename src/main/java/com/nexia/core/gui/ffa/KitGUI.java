@@ -1,7 +1,7 @@
 package com.nexia.core.gui.ffa;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
-import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
+import com.nexia.nexus.api.world.entity.player.Player;
+import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.ffa.kits.FfaKit;
@@ -59,7 +59,7 @@ public class KitGUI extends SimpleGui {
     }
 
     public static void giveKit(ServerPlayer minecraftPlayer, String name) {
-        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+        Player player = PlayerUtil.getNexusPlayer(minecraftPlayer);
         FfaKit kit = FfaKit.identifyKit(name);
         if(kit != null) kit.giveKit(minecraftPlayer, false);
         else player.sendMessage(Component.text("Invalid kit!").color(ChatFormat.failColor));

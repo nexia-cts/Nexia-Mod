@@ -1,6 +1,6 @@
 package com.nexia.ffa.kits;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
@@ -55,7 +55,7 @@ public class FfaKit {
     public void giveKit(ServerPlayer player, boolean clearEffect) {
         if (!FfaKitsUtil.isFfaPlayer(player)) return;
 
-        Player fPlayer = PlayerUtil.getFactoryPlayer(player);
+        Player fPlayer = PlayerUtil.getNexusPlayer(player);
         PlayerDataManager.get(player).kit = this;
 
         if (clearEffect) fPlayer.clearEffects();

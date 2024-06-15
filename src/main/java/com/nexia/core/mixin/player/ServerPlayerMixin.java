@@ -81,7 +81,7 @@ public abstract class ServerPlayerMixin extends Player {
                 return;
             }
             if(name.contains("team axe")) {
-                PlayerUtil.getFactoryPlayer(attacker).runCommand("/party invite " + player.getScoreboardName());
+                PlayerUtil.getNexusPlayer(attacker).runCommand("/party invite " + player.getScoreboardName());
                 return;
             }
             return;

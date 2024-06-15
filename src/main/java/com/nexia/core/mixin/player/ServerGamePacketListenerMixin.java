@@ -185,7 +185,7 @@ public class ServerGamePacketListenerMixin {
                 if (!(entity instanceof ServerPlayer target)) continue;
 
                 if (!FfaClassicUtil.isFfaPlayer(target)) {
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
+                    PlayerUtil.getNexusPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
                     ci.cancel();
                     return;
                 }
@@ -198,7 +198,7 @@ public class ServerGamePacketListenerMixin {
                 if (!(entity instanceof ServerPlayer target)) continue;
 
                 if (!FfaKitsUtil.isFfaPlayer(target)) {
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
+                    PlayerUtil.getNexusPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
                     ci.cancel();
                     return;
                 }
@@ -211,7 +211,7 @@ public class ServerGamePacketListenerMixin {
                 if (!(entity instanceof ServerPlayer target)) continue;
 
                 if (!FfaSkyUtil.isFfaPlayer(target)) {
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
+                    PlayerUtil.getNexusPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
                     ci.cancel();
                     return;
                 }
@@ -224,7 +224,7 @@ public class ServerGamePacketListenerMixin {
                 if (!(entity instanceof ServerPlayer target)) continue;
 
                 if (!FfaUhcUtil.isFfaPlayer(target)) {
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
+                    PlayerUtil.getNexusPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
                     ci.cancel();
                     return;
                 }
@@ -237,7 +237,7 @@ public class ServerGamePacketListenerMixin {
                 if (!(entity instanceof ServerPlayer target)) continue;
 
                 if (!SkywarsGame.isSkywarsPlayer(target)) {
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
+                    PlayerUtil.getNexusPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
                     ci.cancel();
                     return;
                 }
@@ -250,7 +250,7 @@ public class ServerGamePacketListenerMixin {
                 if (!(entity instanceof ServerPlayer target)) continue;
 
                 if (!FootballGame.isFootballPlayer(target)) {
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
+                    PlayerUtil.getNexusPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
                     ci.cancel();
                     return;
                 }

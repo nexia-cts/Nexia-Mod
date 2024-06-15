@@ -1,6 +1,6 @@
 package com.nexia.ffa.classic.utilities;
 
-import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
+import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaUtil;

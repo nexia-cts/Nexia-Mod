@@ -1,6 +1,6 @@
 package com.nexia.core.utilities.player;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.entity.player.Player;
 import com.google.gson.JsonParser;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
@@ -67,7 +67,7 @@ public class PlayerUtil {
     public static void safeSendMessage(CommandSourceStack source, Component safeMessage, net.kyori.adventure.text.Component fancyMessage, boolean bl) {
         try {
             ServerPlayer player = source.getPlayerOrException();
-            PlayerUtil.getFactoryPlayer(player).sendMessage(fancyMessage);
+            PlayerUtil.getNexusPlayer(player).sendMessage(fancyMessage);
         } catch(CommandSyntaxException ignored) {
             source.sendSuccess(safeMessage, bl);
         }
@@ -146,8 +146,8 @@ public class PlayerUtil {
         }
     }
 
-    public static Player getFactoryPlayer(@NotNull ServerPlayer minecraftPlayer) {
-       return ServerTime.factoryServer.getPlayer(minecraftPlayer.getUUID());
+    public static Player getNexusPlayer(@NotNull ServerPlayer minecraftPlayer) {
+       return ServerTime.nexusServer.getPlayer(minecraftPlayer.getUUID());
     }
 
     public static ServerPlayer getMinecraftPlayer(@NotNull Player player){

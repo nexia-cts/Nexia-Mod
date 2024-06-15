@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.duels.custom.kitroom.kitrooms;
 
-import com.combatreforged.factory.api.util.Identifier;
+import com.nexia.nexus.api.util.Identifier;
 import com.nexia.core.utilities.world.StructureMap;
 import net.minecraft.core.BlockPos;
 import net.notcoded.codelib.players.AccuratePlayer;
