@@ -1,6 +1,7 @@
 package com.nexia.minigames.games.duels.custom.kitroom.kitrooms;
 
 import com.combatreforged.factory.api.util.Identifier;
+import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
@@ -11,8 +12,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.dimension.DimensionType;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
@@ -96,28 +95,16 @@ public class KitRoom {
     public boolean teleport() {
         if(!this.hasBeenGenerated || this.level == null) return false;
 
-        this.player.get().teleportTo(this.level, 0.5, 80, 0.5, 0, 0);
-        this.player.get().clearFire();
-        this.player.get().getEnderChestInventory().clearContent();
-        this.player.get().inventory.clearContent();
-        this.player.get().setExperiencePoints(0);
-        this.player.get().setGameMode(GameType.ADVENTURE);
-        this.player.get().setExperienceLevels(0);
-        PlayerUtil.resetHealthStatus(this.player.get());
-
-        this.player.get().addTag("in_kitroom");
+        this.player.unwrap().teleportTo(this.level, 0.5, 80, 0.5, 0, 0);
+        this.player.reset(true, Minecraft.GameMode.ADVENTURE);
+        this.player.addTag("in_kitroom");
 
         return true;
     }
 
     public void leave() {
-        PlayerDataManager.get(this.player.get()).kitRoom = null;
-        this.player.get().inventory.clearContent();
-        this.player.get().getEnderChestInventory().clearContent();
-        this.player.get().clearFire();
-        this.player.get().setExperiencePoints(0);
-        this.player.get().setExperienceLevels(0);
-        PlayerUtil.resetHealthStatus(this.player.get());
+        PlayerDataManager.get(this.player).kitRoom = null;
+        this.player.reset(true, Minecraft.GameMode.ADVENTURE);
         this.delete();
     }
 

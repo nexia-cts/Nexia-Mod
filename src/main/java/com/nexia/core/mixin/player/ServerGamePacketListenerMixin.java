@@ -34,17 +34,17 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerGamePacketListenerImpl.class)
 public class ServerGamePacketListenerMixin {
 
-    @Shadow public ServerPlayer player;
+    @Shadow
+    public ServerPlayer player;
 
     @Inject(method = "handleChat", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/server/players/PlayerList;broadcastMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V"))
     private void handleChat(ServerboundChatPacket serverboundChatPacket, CallbackInfo ci) {
-        if (PlayerMutes.muted(player)) {
+        if (PlayerMutes.muted(new NexiaPlayer(player))) {
             ci.cancel();
         }
     }
@@ -87,10 +87,13 @@ public class ServerGamePacketListenerMixin {
     // |_|  \_\_/___\___|\_____\___/ \___/|_|\_\___|\__, |
     //                                               __/ |
     //                                              |___/
+    /*
     @Redirect(method = "handleInteract", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;getCurrentAttackReach(F)F"))
     public float redirectReachLonger(ServerPlayer playerEntity, float f) {
         return playerEntity.getCurrentAttackReach(f) + 0.75F;
     }
+    
+     */
 
     @Inject(at = @At("HEAD"), method = "onDisconnect")
     private void getLeavePlayer(Component component, CallbackInfo ci) {
@@ -99,6 +102,7 @@ public class ServerGamePacketListenerMixin {
 
     @Inject(method = "handleUseItemOn", at = @At("HEAD"), cancellable = true)
     private void handleUseItemOn(ServerboundUseItemOnPacket packet, CallbackInfo ci) {
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
         if (BwUtil.isInBedWars(nexiaPlayer)) {
             if (!BwPlayerEvents.useItem(player, packet.getHand())) {
@@ -113,6 +117,7 @@ public class ServerGamePacketListenerMixin {
 
     @Inject(method = "handleUseItem", at = @At("HEAD"), cancellable = true)
     private void handleUseItem(ServerboundUseItemPacket serverboundUseItemPacket, CallbackInfo ci) {
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
         if (BwUtil.isInBedWars(nexiaPlayer)) {
             if (!BwPlayerEvents.useItem(player, serverboundUseItemPacket.getHand())) {
@@ -127,13 +132,7 @@ public class ServerGamePacketListenerMixin {
         int slot = clickPacket.getSlotNum();
         ItemStack itemStack = clickPacket.getItem();
 
-        if (BwUtil.isBedWarsPlayer(player)) {
-            if (!BwPlayerEvents.containerClick(player, clickPacket)) {
-                ci.cancel();
-                ItemStackUtil.sendInventoryRefreshPacket(player);
-                return;
-            }
-        }
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
         if ((clickPacket.getClickType() == ClickType.THROW || slot == -999)) {
             if (!EventUtil.dropItem(nexiaPlayer, itemStack)) {
@@ -167,9 +166,11 @@ public class ServerGamePacketListenerMixin {
         ServerboundPlayerActionPacket.Action action = actionPacket.getAction();
         Inventory inv = player.inventory;
 
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
+
         if ((action == ServerboundPlayerActionPacket.Action.DROP_ITEM ||
                 action == ServerboundPlayerActionPacket.Action.DROP_ALL_ITEMS) &&
-                    !EventUtil.dropItem(player, inv.getItem(player.inventory.selected))) {
+                !EventUtil.dropItem(nexiaPlayer, inv.getItem(player.inventory.selected))) {
             player.connection.send(new ClientboundContainerSetSlotPacket(0, 36 + inv.selected, inv.getSelected()));
             ci.cancel();
             return;
@@ -179,88 +180,50 @@ public class ServerGamePacketListenerMixin {
     @Inject(method = "handleTeleportToEntityPacket", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;teleportTo(Lnet/minecraft/server/level/ServerLevel;DDDFF)V"))
     private void handleSpectatorTeleport(ServerboundTeleportToEntityPacket packet, CallbackInfo ci) {
 
-        if (BwUtil.isInBedWars(player)) {
-            if (!BwPlayerEvents.spectatorTeleport(player, packet)) {
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
+        net.kyori.adventure.text.Component noSpectateMSG = net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor);
+
+        if (BwUtil.isInBedWars(nexiaPlayer)) {
+            if (!BwPlayerEvents.spectatorTeleport(nexiaPlayer, packet)) {
                 ci.cancel();
                 return;
             }
         }
 
-        if(FfaClassicUtil.isFfaPlayer(player)) {
-            for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
-                Entity entity = packet.getEntity(serverLevel);
-                if (!(entity instanceof ServerPlayer target)) continue;
-
-                if (!FfaClassicUtil.isFfaPlayer(target)) {
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
-                    ci.cancel();
-                    return;
-                }
-            }
+        if (PlayerDataManager.get(nexiaPlayer).gameMode == PlayerGameMode.LOBBY) {
+            ci.cancel();
+            return;
         }
 
-        if(FfaKitsUtil.isFfaPlayer(player)) {
-            for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
-                Entity entity = packet.getEntity(serverLevel);
-                if (!(entity instanceof ServerPlayer target)) continue;
-
-                if (!FfaKitsUtil.isFfaPlayer(target)) {
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
-                    ci.cancel();
-                    return;
-                }
-            }
+        if (OitcGame.isOITCPlayer(nexiaPlayer)) {
+            ci.cancel();
+            return;
         }
 
-        if(FfaSkyUtil.isFfaPlayer(player)) {
-            for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
-                Entity entity = packet.getEntity(serverLevel);
-                if (!(entity instanceof ServerPlayer target)) continue;
+        for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
+            Entity entity = packet.getEntity(serverLevel);
+            if (!(entity instanceof ServerPlayer target)) continue;
+            NexiaPlayer nexiaTarget = new NexiaPlayer(target);
 
-                if (!FfaSkyUtil.isFfaPlayer(target)) {
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
-                    ci.cancel();
-                    return;
-                }
-            }
-        }
+            boolean cancel = (
+                    FfaClassicUtil.isFfaPlayer(nexiaPlayer) && !FfaClassicUtil.isFfaPlayer(nexiaTarget)
+            ) || (
+                    FfaKitsUtil.isFfaPlayer(nexiaPlayer) && !FfaKitsUtil.isFfaPlayer(nexiaTarget)
+            ) || (
+                    FfaSkyUtil.isFfaPlayer(nexiaPlayer) && !FfaSkyUtil.isFfaPlayer(nexiaTarget)
+            ) || (
+                    FfaUhcUtil.isFfaPlayer(nexiaPlayer) && !FfaUhcUtil.isFfaPlayer(nexiaTarget)
+            ) || (
+                    SkywarsGame.isSkywarsPlayer(nexiaPlayer) && !SkywarsGame.isSkywarsPlayer(nexiaTarget)
+            ) || (
+                    FootballGame.isFootballPlayer(nexiaTarget) && !FootballGame.isFootballPlayer(nexiaTarget)
+            );
 
-        if(FfaUhcUtil.isFfaPlayer(player)) {
-            for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
-                Entity entity = packet.getEntity(serverLevel);
-                if (!(entity instanceof ServerPlayer target)) continue;
 
-                if (!FfaUhcUtil.isFfaPlayer(target)) {
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
-                    ci.cancel();
-                    return;
-                }
-            }
-        }
-
-        if(SkywarsGame.isSkywarsPlayer(player)) {
-            for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
-                Entity entity = packet.getEntity(serverLevel);
-                if (!(entity instanceof ServerPlayer target)) continue;
-
-                if (!SkywarsGame.isSkywarsPlayer(target)) {
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
-                    ci.cancel();
-                    return;
-                }
-            }
-        }
-
-        if(FootballGame.isFootballPlayer(player)) {
-            for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
-                Entity entity = packet.getEntity(serverLevel);
-                if (!(entity instanceof ServerPlayer target)) continue;
-
-                if (!FootballGame.isFootballPlayer(target)) {
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
-                    ci.cancel();
-                    return;
-                }
+            if (cancel) {
+                nexiaPlayer.sendMessage(noSpectateMSG);
+                ci.cancel();
+                return;
             }
         }
     }

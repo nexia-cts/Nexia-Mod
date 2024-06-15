@@ -77,6 +77,7 @@ public class BwPlayerEvents {
         for (ServerLevel serverLevel : ServerTime.minecraftServer.getAllLevels()) {
             Entity entity = packet.getEntity(serverLevel);
             if (!(entity instanceof ServerPlayer target)) continue;
+            NexiaPlayer nexiaTarget = new NexiaPlayer(target);
 
             if (!BwUtil.isBedWarsPlayer(nexiaTarget)) {
                 player.sendMessage(Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
@@ -86,13 +87,13 @@ public class BwPlayerEvents {
         return true;
     }
 
-    public static void afterHurt(ServerPlayer player, DamageSource damageSource) {
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
+    public static void afterHurt(NexiaPlayer player, DamageSource damageSource) {
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player.unwrap());
         if (attacker != null) {
             PlayerDataManager.get(player).combatTagPlayer = attacker;
-            PlayerDataManager.get(attacker).combatTagPlayer = player;
-            if (player.hasEffect(MobEffects.INVISIBILITY)) {
-                player.removeEffect(MobEffects.INVISIBILITY);
+            PlayerDataManager.get(attacker.getUUID()).combatTagPlayer = player.unwrap();
+            if (player.hasEffect(Minecraft.Effect.INVISIBILITY)) {
+                player.unwrap().removeEffect(MobEffects.INVISIBILITY);
             }
         }
     }
@@ -115,9 +116,9 @@ public class BwPlayerEvents {
 
         BwTeam team = BwTeam.getPlayerTeam(player);
         if (team != null && BwTeam.bedExists(team)) {
-            player.setGameMode(GameType.SPECTATOR);
+            player.setGameMode(Minecraft.GameMode.SPECTATOR);
             BwGame.respawningList.put(player, BwGame.respawnTime * 20);
-            player.setRespawnPosition(BwAreas.bedWarsWorld.dimension(),
+            player.unwrap().setRespawnPosition(BwAreas.bedWarsWorld.dimension(),
                     BwAreas.spectatorSpawn.toBlockPos(), BwAreas.spectatorSpawn.yaw, true, false);
         } else {
             BwPlayers.eliminatePlayer(player, true);
@@ -130,7 +131,7 @@ public class BwPlayerEvents {
         if (!fixedTeamPlayer) {
             // Fix spectator
             for (int i = 0; i < BwGame.spectatorList.size(); i++) {
-                ServerPlayer spectator = BwGame.spectatorList.get(i);
+                NexiaPlayer spectator = BwGame.spectatorList.get(i);
                 if (spectator.getUUID().equals(player.getUUID())) {
                     BwGame.spectatorList.set(i, player);
                     return;
@@ -170,26 +171,26 @@ public class BwPlayerEvents {
 
         BlockPos blockPos = context.getClickedPos();
 
-        if (!BwAreas.canBuildAt(player, blockPos, false)) {
+        if (!BwAreas.canBuildAt(new NexiaPlayer(player), blockPos, false)) {
             return false;
         }
 
         return true;
     }
 
-    public static boolean beforePlace(ServerPlayer player, BlockPlaceContext blockPlaceContext) {
-        if (player.isCreative()) return true;
+    public static boolean beforePlace(NexiaPlayer player, BlockPlaceContext blockPlaceContext) {
+        if (player.unwrap().isCreative()) return true;
 
         BlockPos blockPos = blockPlaceContext.getClickedPos();
 
         if (!BwAreas.canBuildAt(player, blockPos, true)) {
             return false;
         }
-        return !BwUtil.placeTnt(player, blockPlaceContext);
+        return !BwUtil.placeTnt(player.unwrap(), blockPlaceContext);
     }
 
-    public static boolean beforeBreakBlock(ServerPlayer player, BlockPos blockPos) {
-        if (player.isCreative()) return true;
+    public static boolean beforeBreakBlock(NexiaPlayer player, BlockPos blockPos) {
+        if (player.unwrap().isCreative()) return true;
 
         BwTeam team = BwTeam.getPlayerTeam(player);
         BlockState blockState = BwAreas.bedWarsWorld.getBlockState(blockPos);
@@ -218,7 +219,7 @@ public class BwPlayerEvents {
             if (effect.getEffect() == MobEffects.INVISIBILITY) {
 
                 if (!BwGame.invisiblePlayerArmor.containsKey(player)) {
-                    BwGame.invisiblePlayerArmor.put(player, player.inventory.armor.toArray(new ItemStack[0]));
+                    BwGame.invisiblePlayerArmor.put(player, player.unwrap().inventory.armor.toArray(new ItemStack[0]));
                 }
                 break;
             }
@@ -228,7 +229,7 @@ public class BwPlayerEvents {
     public static ThrownEgg throwEgg(NexiaPlayer player, ItemStack itemStack) {
         CompoundTag compoundTag = itemStack.getTag();
         if (compoundTag == null || !compoundTag.getBoolean(BwBridgeEgg.itemTagKey)) {
-            return new ThrownEgg(player.level, player);
+            return new ThrownEgg(player.unwrap().level, player.unwrap());
         }
 
         Block trail = Blocks.AIR;
@@ -238,16 +239,16 @@ public class BwPlayerEvents {
         }
         if (trail == Blocks.AIR) trail = Blocks.WHITE_WOOL;
 
-        return new BwBridgeEgg(player.level, player, trail);
+        return new BwBridgeEgg(player.unwrap().level, player, trail);
     }
 
     public static ThrownTrident throwTrident(NexiaPlayer player, ItemStack itemStack) {
         CompoundTag compoundTag = itemStack.getTag();
         if (compoundTag == null || !compoundTag.getBoolean(BwTrident.itemTagKey)) {
-            return new ThrownTrident(player.level, player, itemStack);
+            return new ThrownTrident(player.unwrap().level, player.unwrap(), itemStack);
         }
 
-        return new BwTrident(player.level, player, itemStack);
+        return new BwTrident(player.unwrap().level, player.unwrap(), itemStack);
     }
 
     public static boolean interact(Player player, ServerboundInteractPacket serverboundInteractPacket) {
@@ -278,7 +279,7 @@ public class BwPlayerEvents {
             return false;
         }
 
-        ItemStack itemStack = ItemStackUtil.getContainerClickItem(player, packet);
+        ItemStack itemStack = ItemStackUtil.getContainerClickItem(player.unwrap(), packet);
 
         if ((itemStack != null) && (packet.getClickType() == ClickType.THROW || slot == -999)) {
             return BwUtil.canDropItem(itemStack);

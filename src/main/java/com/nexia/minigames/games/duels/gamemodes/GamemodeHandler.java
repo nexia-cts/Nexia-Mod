@@ -1,6 +1,5 @@
 package com.nexia.minigames.games.duels.gamemodes;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
 import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
@@ -22,11 +21,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.minecraft.Util;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.GameType;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -142,15 +136,15 @@ public class GamemodeHandler {
          */
         // what could go wrong?
 
-        factoryExecutor.setGameMode(Minecraft.GameMode.SPECTATOR);
-        executor.get().teleportTo(player.get().getLevel(), player.get().getX(), player.get().getY(), player.get().getZ(), 0, 0);
+        executor.setGameMode(Minecraft.GameMode.ADVENTURE);
+        executor.teleport(player.getLocation());
 
         DuelsGame duelsGame = playerData.gameOptions.duelsGame;
         CustomDuelsGame customDuelsGame = playerData.gameOptions.customDuelsGame;
         TeamDuelsGame teamDuelsGame = playerData.gameOptions.teamDuelsGame;
         CustomTeamDuelsGame customTeamDuelsGame = playerData.gameOptions.customTeamDuelsGame;
 
-        TextComponent spectateMSG = new TextComponent("§7§o(" + factoryExecutor.getRawName() + " started spectating)");
+        Component spectateMSG = Component.text(String.format("(%s started spectating)", executor.getRawName())).color(ChatFormat.systemColor).decorate(ChatFormat.bold);
 
         if (teamDuelsGame != null) {
             teamDuelsGame.spectators.add(executor);
@@ -182,7 +176,7 @@ public class GamemodeHandler {
                         .append(Component.text("You are now spectating ")
                                 .color(ChatFormat.normalColor)
                                 .decoration(ChatFormat.bold, false)
-                                .append(Component.text(player.get().getScoreboardName())
+                                .append(Component.text(player.getRawName())
                                         .color(ChatFormat.brandColor1)
                                         .decoration(ChatFormat.bold, true)
                                 )
@@ -196,8 +190,8 @@ public class GamemodeHandler {
     public static void unspectatePlayer(@NotNull NexiaPlayer executor, @Nullable NexiaPlayer player, boolean teleport) {
         PlayerData playerData = null;
 
-        if (player != null && player.get() != null) {
-            playerData = PlayerDataManager.get(player.get());
+        if (player != null && player.unwrap() != null) {
+            playerData = PlayerDataManager.get(player);
         }
 
         DuelsGame duelsGame = null;
@@ -213,8 +207,8 @@ public class GamemodeHandler {
             else if(playerData.gameOptions.customTeamDuelsGame != null) customTeamDuelsGame = playerData.gameOptions.customTeamDuelsGame;
         }
 
-        PlayerData executorData = PlayerDataManager.get(executor.get());
-        Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor.get());
+        PlayerData executorData = PlayerDataManager.get(executor);
+        Component spectateMSG = Component.text(String.format("(%s started spectating)", executor.getRawName())).color(ChatFormat.systemColor).decorate(ChatFormat.bold);
 
         if (duelsGame != null || teamDuelsGame != null || customDuelsGame != null || customTeamDuelsGame != null) {
             executor.sendMessage(
@@ -222,7 +216,7 @@ public class GamemodeHandler {
                             .append(Component.text("You have stopped spectating ")
                                     .color(ChatFormat.normalColor)
                                     .decoration(ChatFormat.bold, false)
-                                    .append(Component.text(player.name)
+                                    .append(Component.text(player.getRawName())
                                             .color(ChatFormat.brandColor1)
                                             .decoration(ChatFormat.bold, true)
                                     )
@@ -458,7 +452,7 @@ public class GamemodeHandler {
         DuelsMap map = selectedmap;
         if (map == null) {
             map = DuelsMap.duelsMaps.get(RandomUtil.randomInt(DuelsMap.duelsMaps.size()));
-            while(!map.isAdventureSupported && gameMode.gameMode.equals(GameType.ADVENTURE)) {
+            while(!map.isAdventureSupported && gameMode.gameMode.equals(Minecraft.GameMode.ADVENTURE)) {
                 map = DuelsMap.duelsMaps.get(RandomUtil.randomInt(DuelsMap.duelsMaps.size()));
             }
         } else {
@@ -467,7 +461,7 @@ public class GamemodeHandler {
                 return;
             }
         }
-        if(gameMode.gameMode == GameType.ADVENTURE && !map.isAdventureSupported) {
+        if(gameMode.gameMode == Minecraft.GameMode.ADVENTURE && !map.isAdventureSupported) {
             executor.sendMessage(Component.text("This map is not supported for this gamemode!").color(ChatFormat.failColor));
             return;
         }

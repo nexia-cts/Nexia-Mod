@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.duels;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -23,8 +23,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.level.GameType;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -101,7 +99,7 @@ public class DuelsGame {
         if(selectedMap == null){
             do {
                 selectedMap = DuelsMap.duelsMaps.get(RandomUtil.randomInt(0, DuelsMap.duelsMaps.size()));
-            } while (!selectedMap.isAdventureSupported && gameMode.gameMode.equals(GameType.ADVENTURE));
+            } while (!selectedMap.isAdventureSupported && gameMode.gameMode.equals(Minecraft.GameMode.ADVENTURE));
         }
 
         selectedMap.structureMap.pasteMap(duelLevel);
@@ -111,15 +109,15 @@ public class DuelsGame {
             p2.addTag(LobbyUtil.NO_SATURATION_TAG);
         }
 
-        PlayerUtil.resetHealthStatus(p1);
-        PlayerUtil.resetHealthStatus(p2);
+        p1.reset(true, Minecraft.GameMode.ADVENTURE);
+        p2.reset(true, Minecraft.GameMode.ADVENTURE);
 
-        selectedMap.p2Pos.teleportPlayer(duelLevel, mcP2);
+        selectedMap.p2Pos.teleportPlayer(duelLevel, p1.unwrap());
         playerData.inviteOptions.reset();
         playerData.inDuel = true;
         playerData.duelOptions.spectatingPlayer = null;
 
-        selectedMap.p1Pos.teleportPlayer(duelLevel, mcP1);
+        selectedMap.p1Pos.teleportPlayer(duelLevel, p1.unwrap());
         invitorData.inviteOptions.reset();
         invitorData.inDuel = true;
         invitorData.duelOptions.spectatingPlayer = null;
@@ -169,8 +167,8 @@ public class DuelsGame {
 
                 attacker.safeReset(false, this.gameMode.gameMode);
 
-                for(AccuratePlayer spectator : this.spectators) {
-                    PlayerUtil.getFactoryPlayer(spectator.get()).runCommand("/hub", 0, false);
+                for(NexiaPlayer spectator : this.spectators) {
+                    spectator.runCommand("/hub", 0, false);
                 }
 
                 victimData.gameOptions = null;
@@ -192,16 +190,16 @@ public class DuelsGame {
 
                 this.isEnding = false;
 
-                if(minecraftVictim.get() != null) {
-                    PlayerUtil.getFactoryPlayer(minecraftVictim.get()).runCommand("/hub", 0, false);
+                if(victim.unwrap() != null) {
+                    victim.runCommand("/hub", 0, false);
                 }
 
-                if(minecraftAttacker.get() != null) {
-                    PlayerUtil.getFactoryPlayer(minecraftAttacker.get()).runCommand("/hub", 0, false);
+                if(attacker.unwrap() != null) {
+                    attacker.runCommand("/hub", 0, false);
                 }
 
                 for(ServerPlayer spectator : this.level.players()) {
-                    PlayerUtil.getFactoryPlayer(spectator).runCommand("/hub", 0, false);
+                    new NexiaPlayer(spectator).runCommand("/hub", 0, false);
                     spectator.kill();
                 }
 
@@ -214,18 +212,19 @@ public class DuelsGame {
 
             this.currentStartTime--;
 
-            ServerPlayer p1 = this.p1.get();
-            ServerPlayer p2 = this.p2.get();
-
-            this.map.p1Pos.teleportPlayer(this.level, p1);
-            this.map.p2Pos.teleportPlayer(this.level, p2);
+            this.map.p1Pos.teleportPlayer(this.level, this.p1.unwrap());
+            this.map.p2Pos.teleportPlayer(this.level, this.p2.unwrap());
 
             if (this.startTime - this.currentStartTime >= this.startTime) {
-                PlayerUtil.sendSound(p1, new EntityPos(p1), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
-                PlayerUtil.sendSound(p2, new EntityPos(p2), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
-                p1.setGameMode((this.gameMode != null) ? this.gameMode.gameMode : GameType.SURVIVAL);
-                p1.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-                p1.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
+                this.p1.sendSound(new EntityPos(this.p1.unwrap()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
+                this.p1.setGameMode((this.gameMode != null) ? this.gameMode.gameMode : Minecraft.GameMode.SURVIVAL);
+                this.p1.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                this.p1.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
+
+                this.p2.sendSound(new EntityPos(this.p2.unwrap()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
+                this.p2.setGameMode((this.gameMode != null) ? this.gameMode.gameMode : Minecraft.GameMode.SURVIVAL);
+                this.p2.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                this.p2.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
                 this.hasStarted = true;
                 return;
@@ -246,6 +245,8 @@ public class DuelsGame {
             this.p2.sendTitle(title);
 
 
+            this.p1.sendSound(new EntityPos(this.p1.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+            this.p2.sendSound(new EntityPos(this.p2.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
         }
     }
 
@@ -255,10 +256,7 @@ public class DuelsGame {
         this.hasStarted = true;
         this.isEnding = true;
 
-        boolean attackerNull = minecraftAttacker == null;
-
-        Player victim = PlayerUtil.getFactoryPlayer(minecraftVictim);
-        Player attacker = null;
+        boolean attackerNull = attacker == null || attacker.unwrap() == null;
 
         if (!attackerNull) {
             this.winner = attacker;
@@ -317,13 +315,16 @@ public class DuelsGame {
         PlayerData victimData = PlayerDataManager.get(victim);
         if(victimData.gameOptions == null || victimData.gameOptions.duelsGame == null || victimData.gameOptions.duelsGame.isEnding) return;
 
-        victim.destroyVanishingCursedItems();
-        victim.inventory.dropAll();
+        victim.unwrap().destroyVanishingCursedItems();
+        victim.unwrap().inventory.dropAll();
 
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim);
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim.unwrap());
 
         if(attacker != null){
-            PlayerData attackerData = PlayerDataManager.get(attacker);
+
+            NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
+
+            PlayerData attackerData = PlayerDataManager.get(nexiaAttacker);
             if((victimData.inDuel && attackerData.inDuel) && victimData.gameOptions.duelsGame == attackerData.gameOptions.duelsGame){
                 this.endGame(victim, nexiaAttacker, true);
                 return;

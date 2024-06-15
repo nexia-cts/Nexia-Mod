@@ -33,6 +33,10 @@ public class EntityPos {
         this(entity.getX(), entity.getY(), entity.getZ(), entity.yRot, entity.xRot);
     }
 
+    public EntityPos(com.combatreforged.factory.api.world.entity.Entity entity) {
+        this(entity.getLocation().getX(), entity.getLocation().getY(), entity.getLocation().getZ(), entity.getLocation().getYaw(), entity.getLocation().getPitch());
+    }
+
     public EntityPos(BlockPos blockPos) {
         this(blockPos.getX(), blockPos.getY(), blockPos.getZ());
     }

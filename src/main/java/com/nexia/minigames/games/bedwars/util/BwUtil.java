@@ -1,8 +1,10 @@
 package com.nexia.minigames.games.bedwars.util;
 
+import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
@@ -22,7 +24,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -60,10 +61,10 @@ public class BwUtil {
     }
 
     private static void invisibilityTick() {
-        for (Iterator<ServerPlayer> it = BwGame.invisiblePlayerArmor.keySet().iterator(); it.hasNext(); ) {
-            ServerPlayer player = it.next();
+        for (Iterator<NexiaPlayer> it = BwGame.invisiblePlayerArmor.keySet().iterator(); it.hasNext(); ) {
+            NexiaPlayer player = it.next();
             invisArmorCheck(player);
-            if (!player.hasEffect(MobEffects.INVISIBILITY)) {
+            if (!player.hasEffect(Minecraft.Effect.INVISIBILITY)) {
                 regainInvisArmor(player);
                 it.remove();
             }
@@ -100,9 +101,8 @@ public class BwUtil {
 
         playerTeam.setDisplayName(new TextComponent(teamName));
         playerTeam.setPlayerPrefix(new TextComponent("\2477\247lBW " ));
-
-        server.getCommands().performCommand(server.createCommandSourceStack(),
-                "team modify " + teamName + " color gray");
+        playerTeam.setColor(ChatFormatting.GRAY);
+        playerTeam.setDeathMessageVisibility(Team.Visibility.NEVER);
 
         playerTeam.setColor(ChatFormatting.GRAY);
         playerTeam.setDeathMessageVisibility(Team.Visibility.NEVER);
@@ -137,25 +137,25 @@ public class BwUtil {
         explosiveCooldown.put(player.getUUID(), 10);
     }
 
-    private static void invisArmorCheck(ServerPlayer player) {
+    private static void invisArmorCheck(NexiaPlayer player) {
         ItemStack[] storedArmor = BwGame.invisiblePlayerArmor.get(player);
         if (storedArmor == null) return;
-        List<ItemStack> currentArmor = player.inventory.armor;
+        List<ItemStack> currentArmor = player.unwrap().inventory.armor;
 
         for (int i = 0; i < currentArmor.size() && i < storedArmor.length; i++) {
             if (!currentArmor.get(i).isEmpty()) {
                 storedArmor[i] = currentArmor.get(i);
-                player.inventory.setItem(36 + i, ItemStack.EMPTY);
+                player.unwrap().inventory.setItem(36 + i, ItemStack.EMPTY);
             }
         }
     }
 
-    private static void regainInvisArmor(ServerPlayer player) {
+    private static void regainInvisArmor(NexiaPlayer player) {
         ItemStack[] armor = BwGame.invisiblePlayerArmor.get(player);
         if (armor == null) return;
 
         for (int i = 0; i < armor.length; i++) {
-            player.inventory.setItem(36 + i, armor[i]);
+            player.unwrap().inventory.setItem(36 + i, armor[i]);
         }
     }
 
@@ -288,7 +288,6 @@ public class BwUtil {
     public static void setAttackSpeed(ServerPlayer player) {
         UUID hasteUuid = UUID.fromString("AF8B6E3F-3328-4C0A-AA36-5BA2BB9DBEF3");
         AttributeInstance attackSpeed = player.getAttribute(Attributes.ATTACK_SPEED);
-        assert attackSpeed != null;
         AttributeModifier modifier = attackSpeed.getModifier(hasteUuid);
 
         if (modifier != null) {
@@ -298,10 +297,10 @@ public class BwUtil {
                 player.getId(), player.getAttributes().getSyncableAttributes()));
     }
 
-    public static void giveKillResources(ServerPlayer victim) {
-        LivingEntity killCredit = victim.getKillCredit();
+    public static void giveKillResources(NexiaPlayer victim) {
+        LivingEntity killCredit = victim.unwrap().getKillCredit();
         if (killCredit instanceof ServerPlayer attacker) {
-            Inventory inventory = victim.inventory;
+            Inventory inventory = victim.unwrap().inventory;
             for (int i = 0; i < 36; i++) {
                 ItemStack itemStack = inventory.getItem(i);
                 if (isBedWarsCurrency(itemStack)) {
@@ -311,8 +310,8 @@ public class BwUtil {
         }
     }
 
-    public static void deathClearInventory(ServerPlayer player) {
-        Inventory inventory2 = player.inventory;
+    public static void deathClearInventory(NexiaPlayer player) {
+        Inventory inventory2 = player.unwrap().inventory;
         for (int i = 0; i < inventory2.items.size(); i++) {
             if (!isTool(inventory2.items.get(i))) {
                 inventory2.items.set(i, new ItemStack(Items.AIR));
@@ -336,28 +335,30 @@ public class BwUtil {
         }
     }
 
-    public static void announceDeath(ServerPlayer player) {
+    public static void announceDeath(NexiaPlayer player) {
         String mainColor = LegacyChatFormat.chatColor2;
-        String message = mainColor + player.getCombatTracker().getDeathMessage().getString();
+        String message = player.unwrap().getCombatTracker().getDeathMessage().getString();
 
         message = replaceDisplayName(message, mainColor, player);
 
-        Entity killCredit = player.getKillCredit();
+        Entity killCredit = player.unwrap().getKillCredit();
         if (killCredit instanceof ServerPlayer attacker) {
-            message = replaceDisplayName(message, mainColor, attacker);
+            message = replaceDisplayName(message, mainColor, new NexiaPlayer(attacker));
         }
 
-        PlayerUtil.broadcast(BwPlayers.getViewers(), message);
+        for(NexiaPlayer nexiaPlayer : BwPlayers.getViewers()) {
+            nexiaPlayer.unwrap().sendMessage(LegacyChatFormat.format(message), Util.NIL_UUID);
+        }
     }
 
-    public static String replaceDisplayName(String message, String mainColor, ServerPlayer player) {
+    public static String replaceDisplayName(String message, String mainColor, NexiaPlayer player) {
         if (player == null) return message;
 
         BwTeam team = BwTeam.getPlayerTeam(player);
         if (team == null) return message;
 
-        return message.replace(player.getDisplayName().getString(),
-                team.textColor + player.getScoreboardName() + mainColor);
+        return message.replace(player.unwrap().getDisplayName().getString(),
+                team.textColor + player.getRawName() + mainColor);
     }
 
     public static float getFireballInertia() {
@@ -378,14 +379,14 @@ public class BwUtil {
         return item == Items.IRON_INGOT || item == Items.GOLD_INGOT || item == Items.DIAMOND || item == Items.EMERALD;
     }
 
-    public static boolean isInBedWars(ServerPlayer player) {
+    public static boolean isInBedWars(NexiaPlayer player) {
         return PlayerDataManager.get(player).gameMode == PlayerGameMode.BEDWARS;
     }
 
-    public static boolean isBedWarsPlayer(ServerPlayer player) {
+    public static boolean isBedWarsPlayer(NexiaPlayer player) {
         if (!isInBedWars(player)) return false;
-        for (ServerPlayer serverPlayer : BwPlayers.getPlayers()) {
-            if (serverPlayer.getUUID().equals(player.getUUID())) return true;
+        for (NexiaPlayer nexiaPlayer : BwPlayers.getPlayers()) {
+            if (player.equals(nexiaPlayer)) return true;
         }
         return false;
     }

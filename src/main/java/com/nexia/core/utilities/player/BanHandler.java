@@ -1,14 +1,13 @@
 package com.nexia.core.utilities.player;
 
+import com.combatreforged.factory.api.command.CommandSourceInfo;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
-import com.nexia.core.utilities.chat.LegacyChatFormat;
-import com.nexia.core.utilities.http.DiscordWebhook;
-import com.nexia.core.utilities.player.anticheat.Punishment;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.discord.Main;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.commands.CommandSourceStack;
+import net.kyori.adventure.text.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import org.apache.commons.lang3.time.DurationFormatUtils;
@@ -84,7 +83,7 @@ public class BanHandler {
         } catch(Exception ignored) { return null; }
     }
 
-    public static void tryBan(CommandSourceStack sender, Collection<GameProfile> collection, int duration, String reason) {
+    public static void tryBan(CommandSourceInfo sender, Collection<GameProfile> collection, int duration, String reason) {
 
         GameProfile profile = collection.stream().findFirst().get();
 
@@ -95,18 +94,32 @@ public class BanHandler {
             if(LocalDateTime.now().isAfter(banTime)) {
                 removeBanFromList(profile);
             } else {
-                sender.sendSuccess(LegacyChatFormat.format("{s}This player has already been banned for {f}{}{s}." +
-                        "\n{s}Reason: {f}{}", banTimeToText(banTime), banJSON.get("reason")), false);
+                sender.sendMessage(Component.text("This player has already been banned for ", ChatFormat.systemColor)
+                        .append(Component.text(banTimeToText(banTime), ChatFormat.failColor))
+                        .append(Component.text(".", ChatFormat.systemColor))
+                );
+
+                sender.sendMessage(Component.text("Reason: ", ChatFormat.systemColor)
+                        .append(Component.text((String) banJSON.get("reason"), ChatFormat.failColor))
+                );
+
                 return;
             }
         }
 
         LocalDateTime banTime = LocalDateTime.now().plusSeconds(duration);
-
         addBanToList(profile, reason, LocalDateTime.now().plusSeconds(duration));
 
-        sender.sendSuccess(LegacyChatFormat.format("{s}Temp banned {b2}{} {s}for {b2}{}{s}." +
-                "\n{s}Reason: {b2}{}", profile.getName(), banTimeToText(banTime), reason), false);
+        sender.sendMessage(Component.text("Temp banned ", ChatFormat.systemColor)
+                .append(Component.text(profile.getName(), ChatFormat.brandColor2))
+                .append(Component.text(" for ", ChatFormat.systemColor))
+                .append(Component.text(banTimeToText(banTime), ChatFormat.brandColor2))
+                .append(Component.text(".", ChatFormat.systemColor))
+        );
+
+        sender.sendMessage(Component.text("Reason: ", ChatFormat.systemColor)
+                .append(Component.text(reason, ChatFormat.brandColor2))
+        );
 
         ServerPlayer banned = ServerTime.minecraftServer.getPlayerList().getPlayer(profile.getId());
 
@@ -138,14 +151,17 @@ public class BanHandler {
 
     }
 
-    public static void tryUnBan(CommandSourceStack sender, Collection<GameProfile> collection) {
+    public static void tryUnBan(CommandSourceInfo sender, Collection<GameProfile> collection) {
         GameProfile unBanned = collection.stream().findFirst().get();
 
         if (!removeBanFromList(unBanned)) {
-            sender.sendSuccess(LegacyChatFormat.format("{s}This player is not banned."), false);
+            sender.sendMessage(Component.text("This player is not banned.", ChatFormat.failColor));
             return;
         }
 
-        sender.sendSuccess(LegacyChatFormat.format("{s}Unbanned {b2}{}{s}.", unBanned.getName()), false);
+        sender.sendMessage(Component.text("Unbanned ", ChatFormat.systemColor)
+                .append(Component.text(unBanned.getName(), ChatFormat.brandColor2))
+                .append(Component.text(".", ChatFormat.systemColor))
+        );
     }
 }

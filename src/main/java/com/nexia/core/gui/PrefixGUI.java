@@ -1,10 +1,7 @@
 package com.nexia.core.gui;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
-import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.item.ItemDisplayUtil;
-import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.ranks.NexiaRank;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
@@ -55,13 +52,15 @@ public class PrefixGUI extends SimpleGui {
                 slot = 19;
             }
 
-            if(Permissions.check(player, "nexia.prefix." + rank.id) && player.getTags().contains(rank.id)){
+            boolean hasPermission = Permissions.check(player, rank.groupID);
+
+            if(hasPermission && player.getTags().contains(rank.id)){
                 ItemStack enchantedItem = new ItemStack(Items.NAME_TAG, 1);
                 ItemDisplayUtil.addGlint(enchantedItem);
                 enchantedItem.setHoverName(ObjectMappings.convertComponent(Component.text(rank.name, ChatFormat.brandColor2).decoration(ChatFormat.italic, false).decoration(ChatFormat.bold, true)));
                 this.setSlot(slot, enchantedItem);
                 slot++;
-            } else if(Permissions.check(player, "nexia.prefix." + rank.id)){
+            } else if(hasPermission){
                 ItemStack changedItem = new ItemStack(Items.NAME_TAG, 1);
                 changedItem.setHoverName(ObjectMappings.convertComponent(Component.text(rank.name, ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false).decoration(ChatFormat.bold, true)));
                 this.setSlot(slot, changedItem);
@@ -84,7 +83,7 @@ public class PrefixGUI extends SimpleGui {
 
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
 
-                Player player = PlayerUtil.getFactoryPlayer(this.player);
+                NexiaPlayer player = new NexiaPlayer(this.player);
 
                 player.sendMessage(
                         ChatFormat.nexiaMessage

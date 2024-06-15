@@ -2,6 +2,7 @@ package com.nexia.minigames.games.bedwars.util;
 
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.time.TickUtil;
 import com.nexia.minigames.games.bedwars.BwGame;
@@ -30,20 +31,20 @@ public class BwScoreboard {
     public static final int timerLine = 1;
 
     private static final Scoreboard scoreboard = new Scoreboard();
-    public static final Objective objective = new Objective(
+    private static final Objective objective = new Objective(
             scoreboard, objectiveName, ObjectiveCriteria.DUMMY,
             title, ObjectiveCriteria.RenderType.INTEGER);
 
     public static void setUpScoreboard() {
-        for (ServerPlayer player : BwPlayers.getPlayers()) {
+        for (NexiaPlayer player : BwPlayers.getPlayers()) {
             sendBedWarsScoreboard(player);
         }
         updateScoreboard();
     }
 
-    public static void sendBedWarsScoreboard(ServerPlayer player) {
-        player.connection.send(new ClientboundSetObjectivePacket(objective, 0));
-        player.connection.send(new ClientboundSetDisplayObjectivePacket(1, objective));
+    public static void sendBedWarsScoreboard(NexiaPlayer player) {
+        player.unwrap().connection.send(new ClientboundSetObjectivePacket(objective, 0));
+        player.unwrap().connection.send(new ClientboundSetDisplayObjectivePacket(1, objective));
     }
 
     public static void updateScoreboard() {
@@ -72,7 +73,7 @@ public class BwScoreboard {
         updateTimer();
 
         for (ServerPlayer player : ServerTime.minecraftServer.getPlayerList().getPlayers()) {
-            sendLines(player);
+            sendLines(new NexiaPlayer(player));
         }
     }
 
@@ -110,9 +111,9 @@ public class BwScoreboard {
         }
     }
 
-    public static void sendLines(ServerPlayer player) {
+    public static void sendLines(NexiaPlayer player) {
         for (Score score : scoreboard.getPlayerScores(objective)) {
-            player.connection.send(new ClientboundSetScorePacket(
+            player.unwrap().connection.send(new ClientboundSetScorePacket(
                     ServerScoreboard.Method.CHANGE, objectiveName, score.getOwner(), score.getScore()));
         }
     }
@@ -127,8 +128,8 @@ public class BwScoreboard {
         }
     }
 
-    public static void removeScoreboardFor(ServerPlayer player) {
-        player.connection.send(new ClientboundSetDisplayObjectivePacket(1, null));
+    public static void removeScoreboardFor(NexiaPlayer player) {
+        player.unwrap().connection.send(new ClientboundSetDisplayObjectivePacket(1, null));
     }
 
 }

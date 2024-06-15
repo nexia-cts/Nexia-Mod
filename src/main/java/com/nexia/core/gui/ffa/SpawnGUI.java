@@ -1,9 +1,8 @@
 package com.nexia.core.gui.ffa;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
-import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.ffa.classic.utilities.FfaAreas;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
@@ -110,7 +109,7 @@ public class SpawnGUI extends SimpleGui {
 
     public static void teleportPlayer(ServerPlayer minecraftPlayer, String name) {
         int[] pos = mapLocations.get(name);
-        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+        NexiaPlayer player = new NexiaPlayer(minecraftPlayer);
         if(pos != null){
             minecraftPlayer.teleportTo(FfaAreas.ffaWorld, pos[0], pos[1], pos[2], pos[3], pos[4]);
             player.sendMessage(

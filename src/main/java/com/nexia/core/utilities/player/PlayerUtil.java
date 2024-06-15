@@ -1,20 +1,11 @@
 package com.nexia.core.utilities.player;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
 import com.google.gson.JsonParser;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.nexia.core.utilities.chat.LegacyChatFormat;
-import com.nexia.core.utilities.item.ItemStackUtil;
-import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
-import net.minecraft.Util;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundSetTitlesPacket;
-import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.server.bossevents.CustomBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -22,7 +13,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.notcoded.codelib.minecraft.MinecraftAPI;
@@ -30,28 +20,19 @@ import net.notcoded.codelib.util.http.HttpAPI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.net.URL;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
 public class PlayerUtil {
 
-    public static void broadcast(List<ServerPlayer> players, String string) {
-        broadcast(players, new TextComponent(string));
-    }
-
-    public static void broadcast(List<ServerPlayer> players, Component component) {
-        for (ServerPlayer player : players) {
-            player.sendMessage(component, Util.NIL_UUID);
-        }
-    }
-
     public static String getTextureID(@NotNull UUID uuid){
         String response;
 
         try {
-            response = HttpAPI.get(new URL(String.format("https://sessionserver.mojang.com/session/minecraft/profile/%s", uuid)));
+            response = HttpAPI.get(URI.create(String.format("https://sessionserver.mojang.com/session/minecraft/profile/%s", uuid)).toURL());
         } catch(Exception ignored) { return null; }
 
         if(response != null && !response.trim().isEmpty()) {
@@ -63,15 +44,6 @@ public class PlayerUtil {
         return null;
     }
 
-
-    public static void safeSendMessage(CommandSourceStack source, Component safeMessage, net.kyori.adventure.text.Component fancyMessage, boolean bl) {
-        try {
-            ServerPlayer player = source.getPlayerOrException();
-            PlayerUtil.getFactoryPlayer(player).sendMessage(fancyMessage);
-        } catch(CommandSyntaxException ignored) {
-            source.sendSuccess(safeMessage, bl);
-        }
-    }
 
 
     public static ItemStack getPlayerHead(@NotNull UUID playerUUID) {
@@ -119,12 +91,18 @@ public class PlayerUtil {
         }
     }
 
-    public static boolean sendBossbar(CustomBossEvent customBossEvent, @Nullable Collection<ServerPlayer> collection) {
+    public static boolean minecraftSendBossbar(CustomBossEvent customBossEvent, @Nullable Collection<ServerPlayer> collection) {
         if(collection == null) {
             customBossEvent.removeAllPlayers();
             return true;
         }
         return customBossEvent.setPlayers(collection);
+    }
+
+    public static boolean sendBossbar(CustomBossEvent customBossEvent, @NotNull Collection<NexiaPlayer> collection) {
+        Collection<ServerPlayer> playerCollection = new ArrayList<>();
+        collection.forEach(player -> playerCollection.add(player.unwrap()));
+        return minecraftSendBossbar(customBossEvent, playerCollection);
     }
 
     public static boolean sendBossbar(CustomBossEvent customBossEvent, ServerPlayer player, boolean remove) {
@@ -136,41 +114,19 @@ public class PlayerUtil {
         customBossEvent.addPlayer(player);
         return true;
     }
-    private static void sendDefaultTitleLength(ServerPlayer player) {
-        player.connection.send(new ClientboundSetTitlesPacket(10, 60, 20));
+
+    public static boolean sendBossbar(CustomBossEvent customBossEvent, NexiaPlayer player, boolean remove) {
+        return sendBossbar(customBossEvent, player.unwrap(), remove);
     }
 
-    public static void broadcastSound(List<ServerPlayer> players, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch) {
-        for (ServerPlayer player : players) {
-            sendSound(player, soundEvent, soundSource, volume, pitch);
+    public static void broadcastSound(List<NexiaPlayer> players, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch) {
+        for (NexiaPlayer player : players) {
+            player.sendSound(soundEvent, soundSource, volume, pitch);
         }
     }
 
-    public static Player getFactoryPlayer(@NotNull ServerPlayer minecraftPlayer) {
-       return ServerTime.factoryServer.getPlayer(minecraftPlayer.getUUID());
-    }
-
-    public static ServerPlayer getMinecraftPlayer(@NotNull Player player){
-        return ServerTime.minecraftServer.getPlayerList().getPlayer(player.getUUID());
-    }
-
-    public static void resetHealthStatus(@NotNull Player player) {
-        player.setInvulnerabilityTime(0);
-        player.clearEffects();
-        player.setHealth(20);
-        player.setFoodLevel(20);
-    }
-
-    public static void resetHealthStatus(@NotNull net.minecraft.world.entity.player.Player player) {
-        player.setInvulnerable(false);
-        player.removeAllEffects();
-        player.setHealth(player.getMaxHealth());
-        player.getFoodData().setFoodLevel(20);
-    }
-
-    public static void sendActionbar(ServerPlayer player, String string){
-        player.connection.send(new ClientboundSetTitlesPacket(ClientboundSetTitlesPacket.Type.ACTIONBAR,
-                LegacyChatFormat.format(string)));
+    public static ServerPlayer getMinecraftPlayer(@NotNull UUID uuid){
+        return ServerTime.minecraftServer.getPlayerList().getPlayer(uuid);
     }
 
     public static void sendTitle(ServerPlayer player, String title, String sub, int in, int stay, int out) {
@@ -181,46 +137,16 @@ public class PlayerUtil {
                 ClientboundSetTitlesPacket.Type.SUBTITLE, new TextComponent(sub)));
     }
 
-    public static ServerPlayer getPlayerAttacker(@Nullable net.minecraft.world.entity.player.Player player, Entity attackerEntity) {
+    public static ServerPlayer getPlayerAttacker(@NotNull ServerPlayer player, Entity attackerEntity) {
 
-        if(player == null) {
-            if (attackerEntity == null) return null;
-
-            if (attackerEntity instanceof ServerPlayer) {
-                return (ServerPlayer) attackerEntity;
-            } else if (attackerEntity instanceof Projectile) {
-                Entity projectileOwner = ((Projectile) attackerEntity).getOwner();
-                if (!(projectileOwner instanceof ServerPlayer)) return null;
-                return (ServerPlayer) projectileOwner;
-            }
-            return null;
-        }
-        if(player.getCombatTracker().getKiller() instanceof ServerPlayer) {
-            return (ServerPlayer) player.getCombatTracker().getKiller();
-        }
-
-        if(player.getKillCredit() instanceof ServerPlayer) {
+        if (player.getKillCredit() instanceof ServerPlayer) {
             return (ServerPlayer) player.getKillCredit();
         }
 
-        if (attackerEntity == null) return null;
-
-        if (attackerEntity instanceof ServerPlayer) {
-            return (ServerPlayer) attackerEntity;
-        } else if (attackerEntity instanceof Projectile) {
-            Entity projectileOwner = ((Projectile) attackerEntity).getOwner();
-            if (!(projectileOwner instanceof ServerPlayer)) return null;
-            return (ServerPlayer) projectileOwner;
-        }
-
-        return null;
+        return getPlayerAttacker(attackerEntity);
     }
 
-    public static ServerPlayer getPlayerAttacker(@NotNull net.minecraft.world.entity.player.Player player) {
-
-        if(player.getCombatTracker().getKiller() instanceof ServerPlayer) {
-            return (ServerPlayer) player.getCombatTracker().getKiller();
-        }
+    public static ServerPlayer getPlayerAttacker(@NotNull ServerPlayer player) {
 
         if(player.getKillCredit() instanceof ServerPlayer) {
             return (ServerPlayer) player.getKillCredit();
@@ -232,63 +158,23 @@ public class PlayerUtil {
     }
 
     public static ServerPlayer getPlayerAttacker(Entity attackerEntity) {
-
-        if (attackerEntity == null) return null;
-
-        if (attackerEntity instanceof ServerPlayer) {
-            return (ServerPlayer) attackerEntity;
-        } else if (attackerEntity instanceof Projectile) {
-            Entity projectileOwner = ((Projectile) attackerEntity).getOwner();
-            if (!(projectileOwner instanceof ServerPlayer)) return null;
-            return (ServerPlayer) projectileOwner;
+        switch (attackerEntity) {
+            case ServerPlayer serverPlayer -> {
+                return serverPlayer;
+            }
+            case Projectile projectile -> {
+                Entity projectileOwner = projectile.getOwner();
+                if (!(projectileOwner instanceof ServerPlayer)) return null;
+                return (ServerPlayer) projectileOwner;
+            }
+            case null, default -> {
+                return null;
+            }
         }
-
-        return null;
     }
 
     public static boolean couldCrit(ServerPlayer player) {
         return !player.isOnGround() && player.fallDistance > 0.0f && !player.hasEffect(MobEffects.BLINDNESS)
                 && !player.onClimbable() && !player.isInWater() && !player.isPassenger();
-    }
-
-    public static void removeItem(ServerPlayer player, Item item, int count) {
-        for (ItemStack itemStack : ItemStackUtil.getInvItems(player)) {
-            if (itemStack.getItem() != item) continue;
-
-            if (itemStack.getCount() >= count) {
-                itemStack.shrink(count);
-                break;
-            } else {
-                count -= itemStack.getCount();
-                itemStack.shrink(itemStack.getCount());
-            }
-        }
-    }
-
-    public static void broadcastTitle(List<ServerPlayer> players, String title, String subtitle) {
-        ClientboundSetTitlesPacket titlePacket = new ClientboundSetTitlesPacket(
-                ClientboundSetTitlesPacket.Type.TITLE, new TextComponent(title));
-        ClientboundSetTitlesPacket subtitlePacket = new ClientboundSetTitlesPacket(
-                ClientboundSetTitlesPacket.Type.SUBTITLE, new TextComponent(subtitle));
-
-        for (ServerPlayer player : players) {
-            sendDefaultTitleLength(player);
-            player.connection.send(titlePacket);
-            player.connection.send(subtitlePacket);
-        }
-    }
-
-    public static void sendSound(ServerPlayer player, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch) {
-        sendSound(player, new EntityPos(player), soundEvent, soundSource, volume, pitch);
-    }
-
-    public static ServerPlayer getFixedPlayer(ServerPlayer serverPlayer) {
-        if (serverPlayer == null) return null;
-        return ServerTime.minecraftServer.getPlayerList().getPlayer(serverPlayer.getUUID());
-    }
-
-    public static void sendSound(ServerPlayer player, EntityPos position, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch) {
-        player.connection.send(new ClientboundSoundPacket(soundEvent, soundSource,
-                position.x, position.y, position.z, 16f * volume, pitch));
     }
 }

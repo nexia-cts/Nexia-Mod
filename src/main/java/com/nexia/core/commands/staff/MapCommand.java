@@ -1,25 +1,22 @@
 package com.nexia.core.commands.staff;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.command.CommandSourceInfo;
+import com.combatreforged.factory.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.commands.CommandUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.dimension.DimensionType;
 import org.apache.commons.io.FileUtils;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
@@ -29,33 +26,20 @@ import java.io.File;
 import static com.nexia.core.utilities.world.WorldUtil.getChunkGenerator;
 
 public class MapCommand {
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
-        dispatcher.register((Commands.literal("map")
-                .requires(commandSourceStack -> {
-                    try {
-                        return Permissions.check(commandSourceStack, "nexia.staff.map", 2);
-                    } catch (Exception ignored) {
-                        return false;
-                    }
-                })
-                .then(Commands.argument("type", StringArgumentType.string())
+    public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
+        dispatcher.register((CommandUtils.literal("map")
+                .requires(commandSourceInfo -> CommandUtil.hasPermission(commandSourceInfo, "nexia.staff.map", 2))
+                .then(CommandUtils.argument("type", StringArgumentType.string())
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest((new String[]{"delete", "create", "tp"}), builder)))
-                        .then(Commands.argument("map", StringArgumentType.greedyString())
+                        .then(CommandUtils.argument("map", StringArgumentType.greedyString())
                                 .executes(MapCommand::run)
                         )
                 )
         ));
     }
 
-    private static int run(CommandContext<CommandSourceStack> context) {
-        ServerPlayer mcPlayer = null;
-        Player player = null;
-
-        try {
-            mcPlayer = context.getSource().getPlayerOrException();
-            player = PlayerUtil.getFactoryPlayer(mcPlayer);
-        } catch (Exception ignored) { }
-
+    private static int run(CommandContext<CommandSourceInfo> context) {
+        NexiaPlayer player = CommandUtil.getPlayer(context);
 
         String type = StringArgumentType.getString(context, "type");
         String map = StringArgumentType.getString(context, "map");
@@ -79,7 +63,7 @@ public class MapCommand {
             ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), (
                     new RuntimeWorldConfig()
                             .setDimensionType(DimensionType.OVERWORLD_LOCATION)
-                            .setGenerator(getChunkGenerator(Biomes.THE_VOID))
+                            .setGenerator(getChunkGenerator())
                             .setDifficulty(Difficulty.HARD)
                             .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
                             .setGameRule(GameRules.RULE_MOBGRIEFING, false)
@@ -90,8 +74,8 @@ public class MapCommand {
                             .setGameRule(GameRules.RULE_SHOWDEATHMESSAGES, false)
                             .setGameRule(GameRules.RULE_SPAWN_RADIUS, 0))).asWorld();
 
-            if (mcPlayer != null && player != null) {
-                mcPlayer.teleportTo(level, 0, 80, 0, 0, 0);
+            if (player != null) {
+                player.unwrap().teleportTo(level, 0, 80, 0, 0, 0);
 
                 player.sendMessage(
                         ChatFormat.nexiaMessage
@@ -123,8 +107,8 @@ public class MapCommand {
         if(type.equalsIgnoreCase("tp")) {
             ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), null).asWorld();
 
-            if(mcPlayer != null && player != null) {
-                mcPlayer.teleportTo(level, 0, 80, 0, 0, 0);
+            if(player != null) {
+                player.unwrap().teleportTo(level, 0, 80, 0, 0, 0);
 
                 player.sendMessage(
                         ChatFormat.nexiaMessage

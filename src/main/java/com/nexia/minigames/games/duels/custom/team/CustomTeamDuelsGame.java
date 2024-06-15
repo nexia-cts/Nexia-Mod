@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.duels.custom.team;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -25,8 +25,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.level.GameType;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -107,23 +105,23 @@ public class CustomTeamDuelsGame { // implements Runnable{
 
         if (this.team1 == null)
             return "Team 1 is not set [NULL]";
-        if (this.team1.getLeader() == null || this.team1.getLeader().get() == null)
+        if (this.team1.getLeader() == null || this.team1.getLeader().unwrap() == null)
             return "Team 1 Leader is not set [NULL]";
 
         if (this.team2 == null)
             return "Team 2 is not set [NULL]";
-        if (this.team2.getLeader() == null || this.team2.getLeader().get() == null)
+        if (this.team2.getLeader() == null || this.team2.getLeader().unwrap() == null)
             return "Team 2 Leader is not set [NULL]";
 
         if (this.isEnding) {
             if (this.winner == null)
                 return "Winner Team is not set [NULL]";
-            if (this.winner.getLeader() == null || this.winner.getLeader().get() == null)
+            if (this.winner.getLeader() == null || this.winner.getLeader().unwrap() == null)
                 return "Winner Team Leader is not set [NULL]";
 
             if (this.loser == null)
                 return "Loser Team is not set [NULL]";
-            if (this.loser.getLeader() == null || this.loser.getLeader().get() == null)
+            if (this.loser.getLeader() == null || this.loser.getLeader().unwrap() == null)
                 return "Loser Team Leader is not set [NULL]";
         }
 
@@ -162,11 +160,11 @@ public class CustomTeamDuelsGame { // implements Runnable{
 
         selectedMap.structureMap.pasteMap(duelLevel);
 
-        File kitFile = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + team1.getLeader().get().getStringUUID(), kitID.toLowerCase() + ".txt");
+        File kitFile = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + team1.getLeader().getUUID(), kitID.toLowerCase() + ".txt");
         File p2File = null;
 
         if(perCustomKitID != null && !perCustomKitID.trim().isEmpty()) {
-            p2File = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + team2.getLeader().get().getStringUUID(), perCustomKitID.toLowerCase() + ".txt");
+            p2File = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + team2.getLeader().getUUID(), perCustomKitID.toLowerCase() + ".txt");
         }
 
         CustomTeamDuelsGame game;
@@ -177,10 +175,9 @@ public class CustomTeamDuelsGame { // implements Runnable{
 
         DuelGameHandler.customTeamDuelsGames.add(game);
 
-        for (AccuratePlayer player : team1.all) {
-            ServerPlayer serverPlayer = player.get();
-            PlayerData data = PlayerDataManager.get(serverPlayer);
-            Player factoryPlayer = PlayerUtil.getFactoryPlayer(serverPlayer);
+        for (NexiaPlayer player : team1.all) {
+            ServerPlayer serverPlayer = player.unwrap();
+            PlayerData data = PlayerDataManager.get(player);
 
             DuelGameHandler.leave(player, false);
 
@@ -191,25 +188,24 @@ public class CustomTeamDuelsGame { // implements Runnable{
 
             selectedMap.p1Pos.teleportPlayer(duelLevel, serverPlayer);
 
-            factoryPlayer.sendMessage(ChatFormat.nexiaMessage
+            player.sendMessage(ChatFormat.nexiaMessage
                     .append(Component.text("Your opponent: ").color(ChatFormat.normalColor)
                             .decoration(ChatFormat.bold, false)
-                            .append(Component.text(team2.getLeader().get().getScoreboardName() + "'s Team")
+                            .append(Component.text(team2.getLeader().getRawName() + "'s Team")
                                     .color(ChatFormat.brandColor2))));
 
-            if(kitFile.exists()) InventoryUtil.loadInventory(serverPlayer, "duels/custom/" + team1.getLeader().get().getStringUUID(), kitID.toLowerCase());
-            else InventoryUtil.loadInventory(serverPlayer, "duels", "classic");
+            if(kitFile.exists()) InventoryUtil.loadInventory(player, "duels/custom/" + team1.getLeader().getUUID(), kitID.toLowerCase());
+            else InventoryUtil.loadInventory(player, "duels", "classic");
 
-            factoryPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-            factoryPlayer.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
+            player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+            player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
-            PlayerUtil.resetHealthStatus(factoryPlayer);
+            player.reset(true, Minecraft.GameMode.ADVENTURE);
         }
 
-        for (AccuratePlayer player : team2.all) {
-            ServerPlayer serverPlayer = player.get();
-            PlayerData data = PlayerDataManager.get(serverPlayer);
-            Player factoryPlayer = PlayerUtil.getFactoryPlayer(serverPlayer);
+        for (NexiaPlayer player : team2.all) {
+            ServerPlayer serverPlayer = player.unwrap();
+            PlayerData data = PlayerDataManager.get(player);
 
             DuelGameHandler.leave(player, false);
 
@@ -220,25 +216,25 @@ public class CustomTeamDuelsGame { // implements Runnable{
 
             selectedMap.p2Pos.teleportPlayer(duelLevel, serverPlayer);
 
-            factoryPlayer.sendMessage(ChatFormat.nexiaMessage
+            player.sendMessage(ChatFormat.nexiaMessage
                     .append(Component.text("Your opponent: ").color(ChatFormat.normalColor)
                             .decoration(ChatFormat.bold, false)
-                            .append(Component.text(team1.getLeader().get().getScoreboardName() + "'s Team")
+                            .append(Component.text(team1.getLeader().getRawName() + "'s Team")
                                     .color(ChatFormat.brandColor2))));
 
 
             if(game.perCustomDuel) {
-                if(p2File != null && p2File.exists()) InventoryUtil.loadInventory(serverPlayer, "duels/custom/" + team2.getLeader().get().getStringUUID(), perCustomKitID.toLowerCase());
-                else InventoryUtil.loadInventory(serverPlayer, "duels", "classic");
+                if(p2File != null && p2File.exists()) InventoryUtil.loadInventory(player, "duels/custom/" + team2.getLeader().getUUID(), perCustomKitID.toLowerCase());
+                else InventoryUtil.loadInventory(player, "duels", "classic");
             } else {
-                if(kitFile.exists()) InventoryUtil.loadInventory(serverPlayer, "duels/custom/" + team1.getLeader().get().getStringUUID(), kitID.toLowerCase());
-                else InventoryUtil.loadInventory(serverPlayer, "duels", "classic");
+                if(kitFile.exists()) InventoryUtil.loadInventory(player, "duels/custom/" + team1.getLeader().getUUID(), kitID.toLowerCase());
+                else InventoryUtil.loadInventory(player, "duels", "classic");
             }
 
-            factoryPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-            factoryPlayer.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
+            player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+            player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
-            PlayerUtil.resetHealthStatus(factoryPlayer);
+           player.reset(true, Minecraft.GameMode.ADVENTURE);
         }
 
         game.uuid = gameUUID;
@@ -263,9 +259,9 @@ public class CustomTeamDuelsGame { // implements Runnable{
             }
 
             for (ServerPlayer player : this.level.players()) {
-                Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
-                factoryPlayer.sendMessage(error);
-                factoryPlayer.sendMessage(errormsg);
+                NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
+                nexiaPlayer.sendMessage(error);
+                nexiaPlayer.sendMessage(errormsg);
             }
 
             this.hasStarted = true;
@@ -287,19 +283,19 @@ public class CustomTeamDuelsGame { // implements Runnable{
                 DuelsTeam winnerTeam = this.winner;
                 DuelsTeam loserTeam = this.loser;
 
-                for (AccuratePlayer spectator : this.spectators) {
-                    PlayerUtil.getFactoryPlayer(spectator.get()).runCommand("/hub", 0, false);
+                for (NexiaPlayer spectator : this.spectators) {
+                    spectator.runCommand("/hub", 0, false);
                 }
 
                 this.isEnding = false;
 
-                for (AccuratePlayer player : loserTeam.all) {
-                    PlayerDataManager.get(player.get()).gameOptions = null;
-                    PlayerUtil.getFactoryPlayer(player.get()).runCommand("/hub", 0, false);
+                for (NexiaPlayer player : loserTeam.all) {
+                    PlayerDataManager.get(player).gameOptions = null;
+                    player.runCommand("/hub", 0, false);
                 }
-                for (AccuratePlayer player : winnerTeam.all) {
-                    PlayerDataManager.get(player.get()).gameOptions = null;
-                    PlayerUtil.getFactoryPlayer(player.get()).runCommand("/hub", 0, false);
+                for (NexiaPlayer player : winnerTeam.all) {
+                    PlayerDataManager.get(player).gameOptions = null;
+                    player.runCommand("/hub", 0, false);
                 }
 
                 DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
@@ -313,28 +309,28 @@ public class CustomTeamDuelsGame { // implements Runnable{
 
             this.currentStartTime--;
 
-            for (AccuratePlayer player : this.team1.alive) {
-                this.map.p1Pos.teleportPlayer(this.level, player.get());
+            for (NexiaPlayer player : this.team1.alive) {
+                this.map.p1Pos.teleportPlayer(this.level, player.unwrap());
             }
-            for (AccuratePlayer player : this.team2.alive) {
-                this.map.p2Pos.teleportPlayer(this.level, player.get());
+            for (NexiaPlayer player : this.team2.alive) {
+                this.map.p2Pos.teleportPlayer(this.level, player.unwrap());
             }
 
             if (this.startTime - this.currentStartTime >= this.startTime) {
 
-                for (AccuratePlayer player : this.team1.alive) {
-                    PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS,
+                for (NexiaPlayer player : this.team1.alive) {
+                    player.sendSound(new EntityPos(player.unwrap()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS,
                             10, 2);
-                    player.get().setGameMode(GameType.SURVIVAL);
-                    player.get().removeTag(LobbyUtil.NO_DAMAGE_TAG);
-                    player.get().removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
+                    player.setGameMode(Minecraft.GameMode.SURVIVAL);
+                    player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                    player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
                 }
-                for (AccuratePlayer player : this.team2.alive) {
-                    PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS,
+                for (NexiaPlayer player : this.team2.alive) {
+                    player.sendSound(new EntityPos(player.unwrap()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS,
                             10, 2);
-                    player.get().setGameMode(GameType.SURVIVAL);
-                    player.get().removeTag(LobbyUtil.NO_DAMAGE_TAG);
-                    player.get().removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
+                    player.setGameMode(Minecraft.GameMode.SURVIVAL);
+                    player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                    player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
                 }
                 this.hasStarted = true;
                 return;
@@ -342,14 +338,14 @@ public class CustomTeamDuelsGame { // implements Runnable{
 
             Title title = getTitle();
 
-            for (AccuratePlayer player : this.team1.alive) {
-                PlayerUtil.getFactoryPlayer(player.get()).sendTitle(title);
-                PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10,
+            for (NexiaPlayer player : this.team1.alive) {
+                player.sendTitle(title);
+                player.sendSound(new EntityPos(player.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10,
                         1);
             }
-            for (AccuratePlayer player : this.team2.alive) {
-                PlayerUtil.getFactoryPlayer(player.get()).sendTitle(title);
-                PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10,
+            for (NexiaPlayer player : this.team2.alive) {
+                player.sendTitle(title);
+                player.sendSound(new EntityPos(player.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10,
                         1);
             }
         }
@@ -398,28 +394,27 @@ public class CustomTeamDuelsGame { // implements Runnable{
         Component titleWin = titleLose;
         Component subtitleWin = win;
 
-        if ((winnerTeam == null || winnerTeam.getLeader() == null || winnerTeam.getLeader().get() == null)) {
-            for (AccuratePlayer player : loserTeam.all) {
-                Player factoryPlayer = PlayerUtil.getFactoryPlayer(player.get());
-                factoryPlayer.sendTitle(Title.title(titleWin, subtitleWin));
-                factoryPlayer.sendMessage(win);
+        if ((winnerTeam == null || winnerTeam.getLeader() == null || winnerTeam.getLeader().unwrap() == null)) {
+            for (NexiaPlayer player : loserTeam.all) {
+                player.sendTitle(Title.title(titleWin, subtitleWin));
+                player.sendMessage(win);
             }
             return;
         }
 
-        win = Component.text(winnerTeam.getLeader().get().getScoreboardName() + "'s Team").color(ChatFormat.brandColor2)
+        win = Component.text(winnerTeam.getLeader().getRawName() + "'s Team").color(ChatFormat.brandColor2)
                 .append(Component.text(" has won the duel!").color(ChatFormat.normalColor));
 
         titleLose = Component.text("You lost!").color(ChatFormat.brandColor2);
         subtitleLose = Component.text("You have lost against ")
                 .color(ChatFormat.normalColor)
-                .append(Component.text(winnerTeam.getLeader().get().getScoreboardName() + "'s Team")
+                .append(Component.text(winnerTeam.getLeader().getRawName() + "'s Team")
                         .color(ChatFormat.brandColor2));
 
         titleWin = Component.text("You won!").color(ChatFormat.brandColor2);
         subtitleWin = Component.text("You have won against ")
                 .color(ChatFormat.normalColor)
-                .append(Component.text(loserTeam.getLeader().get().getScoreboardName() + "'s Team")
+                .append(Component.text(loserTeam.getLeader().getRawName() + "'s Team")
                         .color(ChatFormat.brandColor2));
 
         for (NexiaPlayer player : loserTeam.all) {
@@ -441,13 +436,13 @@ public class CustomTeamDuelsGame { // implements Runnable{
 
         if (victimTeam == null || this.isEnding) return;
 
-        victim.destroyVanishingCursedItems();
-        victim.inventory.dropAll();
-        victimTeam.alive.remove(AccuratePlayer.create(victim));
+        victim.unwrap().destroyVanishingCursedItems();
+        victim.unwrap().inventory.dropAll();
+        victimTeam.alive.remove(victim);
 
         boolean isVictimTeamDead = victimTeam.alive.isEmpty();
 
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim);
+        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim.unwrap());
 
         if (attacker != null) {
             PlayerData attackerData = PlayerDataManager.get(attacker.getUUID());

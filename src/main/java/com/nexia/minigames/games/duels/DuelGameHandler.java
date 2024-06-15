@@ -4,30 +4,27 @@ import com.combatreforged.factory.api.util.Identifier;
 import com.google.gson.Gson;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.item.InventoryUtil;
-import com.nexia.core.utilities.item.ItemStackUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.minigames.games.duels.custom.CustomDuelsGame;
 import com.nexia.minigames.games.duels.custom.team.CustomTeamDuelsGame;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
-import com.nexia.core.utilities.world.WorldUtil;
 import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.dimension.DimensionType;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
@@ -38,8 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 import static com.nexia.core.utilities.world.WorldUtil.getChunkGenerator;
+import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 
 public class DuelGameHandler {
 
@@ -50,15 +47,15 @@ public class DuelGameHandler {
     public static List<CustomDuelsGame> customDuelsGames = new ArrayList<>();
     public static List<CustomTeamDuelsGame> customTeamDuelsGames = new ArrayList<>();
 
-    public static boolean validCustomKit(ServerPlayer player, String kitID) {
+    public static boolean validCustomKit(NexiaPlayer player, String kitID) {
         if(kitID.trim().isEmpty()) return false;
 
-        File file = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID(), kitID + ".txt");
+        File file = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getUUID(), kitID + ".txt");
         return file.exists();
     }
 
-    public static void loadInventory(ServerPlayer player, String gameMode) {
-        String file = InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getStringUUID() + File.separator + "layout" + File.separator + gameMode.toLowerCase() + ".json";
+    public static void loadInventory(NexiaPlayer player, String gameMode) {
+        String file = InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getUUID() + File.separator + "layout" + File.separator + gameMode.toLowerCase() + ".json";
 
         SavableInventory defaultInventory = null;
         SavableInventory layout = null;
@@ -83,31 +80,32 @@ public class DuelGameHandler {
         }
 
         if(layout != null) {
-            InventoryMerger.mergeSafe(player, layout.asPlayerInventory(), defaultInventory.asPlayerInventory());
+            InventoryMerger.mergeSafe(player.unwrap(), layout.asPlayerInventory(), defaultInventory.asPlayerInventory());
         } else {
             InventoryUtil.loadInventory(player, "duels", gameMode.toLowerCase());
         }
 
-        ItemStackUtil.sendInventoryRefreshPacket(player);
+        player.refreshInventory();
     }
 
-    public static void leave(ServerPlayer player, boolean leaveTeam) {
+    public static void leave(NexiaPlayer player, boolean leaveTeam) {
         PlayerData data = PlayerDataManager.get(player);
+        data.gameMode = DuelGameMode.LOBBY;
         if (data.gameOptions != null && data.gameOptions.duelsGame != null) {
-            data.gameOptions.duelsGame.death(player, player.getLastDamageSource());
+            data.gameOptions.duelsGame.death(player, player.unwrap().getLastDamageSource());
         }
         if (data.gameOptions != null && data.gameOptions.teamDuelsGame != null) {
-            data.gameOptions.teamDuelsGame.death(player, player.getLastDamageSource());
+            data.gameOptions.teamDuelsGame.death(player, player.unwrap().getLastDamageSource());
         }
         if (data.gameOptions != null && data.gameOptions.customDuelsGame != null) {
-            data.gameOptions.customDuelsGame.death(player, player.getLastDamageSource());
+            data.gameOptions.customDuelsGame.death(player, player.unwrap().getLastDamageSource());
         }
         if (data.gameOptions != null && data.gameOptions.customTeamDuelsGame != null) {
-            data.gameOptions.customTeamDuelsGame.death(player, player.getLastDamageSource());
+            data.gameOptions.customTeamDuelsGame.death(player, player.unwrap().getLastDamageSource());
         }
 
         if (data.gameMode == DuelGameMode.SPECTATING) {
-            GamemodeHandler.unspectatePlayer(AccuratePlayer.create(player), data.duelOptions.spectatingPlayer, false);
+            GamemodeHandler.unspectatePlayer(player, data.duelOptions.spectatingPlayer, false);
         }
 
         if(data.kitRoom != null) {
@@ -117,27 +115,26 @@ public class DuelGameHandler {
         data.inDuel = false;
         data.inviteOptions.reset();
         removeQueue(player, null, true);
-        data.gameMode = DuelGameMode.LOBBY;
         data.editingLayout = "";
         data.editingKit = "";
         data.kitRoom = null;
         if (leaveTeam) {
             if (data.duelOptions.duelsTeam != null) {
-                data.duelOptions.duelsTeam.leaveTeam(AccuratePlayer.create(player), true);
+                data.duelOptions.duelsTeam.leaveTeam(player, true);
             }
             data.duelOptions.duelsTeam = null;
         }
         data.gameOptions = null;
         data.duelOptions.spectatingPlayer = null;
 
-        if(Main.config.debugMode) Main.logger.info(String.format("[DEBUG]: Player %s left Duels.", player.getScoreboardName()));
+        if(Main.config.debugMode) Main.logger.info(String.format("[DEBUG]: Player %s left Duels.", player.getRawName()));
     }
 
-    public static void winnerRockets(@NotNull ServerPlayer winner, @NotNull ServerLevel level,
+    public static void winnerRockets(@NotNull NexiaPlayer winner, @NotNull ServerLevel level,
             @NotNull Integer winnerColor) {
 
         Random random = level.getRandom();
-        EntityPos pos = new EntityPos(winner).add(random.nextInt(9) - 4, 2, random.nextInt(9) - 4);
+        EntityPos pos = new EntityPos(winner.unwrap()).add(random.nextInt(9) - 4, 2, random.nextInt(9) - 4);
 
         ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET);
         try {
@@ -165,7 +162,7 @@ public class DuelGameHandler {
     public static ServerLevel createWorld(String uuid, boolean doRegeneration) {
         RuntimeWorldConfig config = new RuntimeWorldConfig()
                 .setDimensionType(DimensionType.OVERWORLD_LOCATION)
-                .setGenerator(getChunkGenerator(Biomes.PLAINS))
+                .setGenerator(getChunkGenerator())
                 .setDifficulty(Difficulty.HARD)
                 .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
                 .setGameRule(GameRules.RULE_MOBGRIEFING, false)

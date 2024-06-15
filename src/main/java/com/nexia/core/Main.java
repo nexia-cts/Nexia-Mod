@@ -30,9 +30,8 @@ public class Main implements ModInitializer, FactoryPlugin {
 		AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
 		config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
 
-
 		logger.info("Loading mod...");
-		logger.info("Registering commands....");
+		logger.info("Registering commands...");
 		CommandLoader.registerCommands();
 		logger.info("Registered commands.");
 
@@ -57,14 +56,17 @@ public class Main implements ModInitializer, FactoryPlugin {
 	@Override
 	@SuppressWarnings("FutureReturnValueIgnored")
 	public void onFactoryLoad(FactoryAPI api, FactoryServer server) {
-		Main.logger.info("Loading factory version...");
+		Main.logger.info("Loading Factory API...");
 
 		ServerTime.factoryServer = server;
 		ServerTime.factoryAPI = api;
 		ServerTime.scheduler = api.getScheduler();
 
-		Main.logger.info("Registering listeners....");
+		Main.logger.info("Registering listeners...");
 		ListenerHelper.registerListeners();
 		Main.logger.info("Registered listeners.");
+		Main.logger.info("Registering factory commands...");
+		CommandLoader.registerFactoryCommands();
+		Main.logger.info("Registered factory commands.");
 	}
 }
