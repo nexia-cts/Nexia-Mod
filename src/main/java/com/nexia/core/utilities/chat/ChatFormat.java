@@ -1,7 +1,6 @@
 package com.nexia.core.utilities.chat;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -10,10 +9,10 @@ public class ChatFormat {
 
     // Colors
 
-    public static TextColor chatColor2 = NamedTextColor.GRAY;
+    public static TextColor chatColor2 = Minecraft.gray;
 
-    public static TextColor normalColor = NamedTextColor.WHITE;
-    public static TextColor systemColor = NamedTextColor.DARK_GRAY;
+    public static TextColor normalColor = Minecraft.white;
+    public static TextColor systemColor = chatColor2;
 
     public static TextColor brandColor1 = TextColor.fromHexString("#a400fc");
 
@@ -25,7 +24,7 @@ public class ChatFormat {
 
     public static TextColor goldColor = TextColor.fromHexString("#f5bc42");
 
-    public static TextColor lineColor = systemColor;
+    public static TextColor lineColor = Minecraft.dark_gray;
 
     public static TextColor arrowColor = TextColor.fromHexString("#4a4a4a");
     public static TextColor lineTitleColor = brandColor1;

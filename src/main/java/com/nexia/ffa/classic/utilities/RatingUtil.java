@@ -1,6 +1,7 @@
 package com.nexia.ffa.classic.utilities;
 
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaUtil;
@@ -31,7 +32,7 @@ public class RatingUtil {
     public static List<Score> leaderboardRating = null;
     static List<Score> oldLeaderboardRating = null;
 
-    public static void calculateRating(ServerPlayer attacker, ServerPlayer player) {
+    public static void calculateRating(NexiaPlayer attacker, NexiaPlayer player) {
         SavedPlayerData attackerData = PlayerDataManager.get(attacker).savedData;
         SavedPlayerData playerData = PlayerDataManager.get(player).savedData;
 
@@ -61,13 +62,13 @@ public class RatingUtil {
         playerData.rating = expectedB / (1-expectedB);
 
         if (attacker.getServer() != null) {
-            Scoreboard scoreboard = attacker.getServer().getScoreboard();
+            Scoreboard scoreboard = ServerTime.minecraftServer.getScoreboard();
             Objective ratingObjective = scoreboard.getObjective("Rating");
             if (ratingObjective == null) {
                 ratingObjective = scoreboard.addObjective("Rating", ObjectiveCriteria.DUMMY, new TextComponent("Rating"), ObjectiveCriteria.RenderType.INTEGER);
             }
-            scoreboard.getOrCreatePlayerScore(attacker.getScoreboardName(), ratingObjective).setScore((int) Math.round(attackerData.rating * 100));
-            scoreboard.getOrCreatePlayerScore(player.getScoreboardName(), ratingObjective).setScore((int) Math.round(playerData.rating * 100));
+            scoreboard.getOrCreatePlayerScore(attacker.getRawName(), ratingObjective).setScore((int) Math.round(attackerData.rating * 100));
+            scoreboard.getOrCreatePlayerScore(player.getRawName(), ratingObjective).setScore((int) Math.round(playerData.rating * 100));
         }
     }
 
@@ -155,11 +156,12 @@ public class RatingUtil {
                 i++;
                 continue;
             }
+            NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
             if (Permissions.check(player, "nexia.rank")) {
-                NexiaRank.addPrefix(rank, player, false);
+                NexiaRank.addPrefix(rank, nexiaPlayer, false);
             } else {
-                NexiaRank.setRank(rank, player);
+                NexiaRank.setRank(rank, nexiaPlayer);
             }
 
             i++;
@@ -171,21 +173,21 @@ public class RatingUtil {
         for (Score oldScore : oldScores) {
             if (i >= 5) break;
 
-            checkRatingRank(ServerTime.minecraftServer.getPlayerList().getPlayerByName(oldScore.getOwner()));
+            checkRatingRank(new NexiaPlayer(ServerTime.minecraftServer.getPlayerList().getPlayerByName(oldScore.getOwner())));
 
             i++;
         }
     }
 
-    public static void checkRatingRank(ServerPlayer player) {
-        if (RatingUtil.leaderboardRating == null) return;
+    public static void checkRatingRank(NexiaPlayer player) {
+        if (RatingUtil.leaderboardRating == null || player == null || player.unwrap() == null) return;
 
         int i = 0;
         boolean isInTopFive = false;
         for (Score score : RatingUtil.leaderboardRating) {
             if (i >= 5) break;
 
-            if (player.getScoreboardName() == score.getOwner()) {
+            if (player.getRawName().equals(score.getOwner())) {
                 isInTopFive = true;
                 break;
             }
@@ -194,7 +196,7 @@ public class RatingUtil {
         }
 
         if (!isInTopFive) {
-            if (Permissions.check(player, "nexia.rank")) {
+            if (player.hasPermission("nexia.rank")) {
                 NexiaRank.removePrefix(NexiaRank.PRO, player);
                 NexiaRank.removePrefix(NexiaRank.GOD, player);
             } else {

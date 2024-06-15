@@ -1,11 +1,12 @@
 package com.nexia.minigames.games.oitc;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.combatreforged.factory.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.misc.RandomUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
@@ -15,7 +16,6 @@ import com.nexia.minigames.games.oitc.util.player.PlayerDataManager;
 import net.blumbo.blfscheduler.BlfRunnable;
 import net.blumbo.blfscheduler.BlfScheduler;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import net.minecraft.core.BlockPos;
@@ -32,9 +32,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.AABB;
-import net.notcoded.codelib.players.AccuratePlayer;
 import net.notcoded.codelib.util.TickUtil;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
@@ -47,11 +45,11 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class OitcGame {
-    public static ArrayList<AccuratePlayer> players = new ArrayList<>();
+    public static ArrayList<NexiaPlayer> players = new ArrayList<>();
 
-    public static ArrayList<AccuratePlayer> spectator = new ArrayList<>();
+    public static ArrayList<NexiaPlayer> spectator = new ArrayList<>();
 
-    public static HashMap<AccuratePlayer, Integer> deathPlayers = new HashMap<>();
+    public static HashMap<NexiaPlayer, Integer> deathPlayers = new HashMap<>();
 
     public static ServerLevel world = null;
 
@@ -63,47 +61,40 @@ public class OitcGame {
 
     public static int queueTime = 15;
 
-    public static ArrayList<AccuratePlayer> queue = new ArrayList<>();
+    public static ArrayList<NexiaPlayer> queue = new ArrayList<>();
 
     public static boolean isStarted = false;
 
     public static boolean isEnding = false;
 
-    private static AccuratePlayer winner = null;
+    private static NexiaPlayer winner = null;
 
     public static final String OITC_TAG = "oitc";
 
     private static int endTime = 5;
 
 
-    public static void leave(ServerPlayer minecraftPlayer) {
-        OitcGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
-        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
-        AccuratePlayer accuratePlayer = AccuratePlayer.create(minecraftPlayer);
+    public static void leave(NexiaPlayer player) {
+        OitcGame.death(player, player.unwrap().getLastDamageSource());
 
-        PlayerData data = PlayerDataManager.get(minecraftPlayer);
-        OitcGame.spectator.remove(accuratePlayer);
-        OitcGame.queue.remove(accuratePlayer);
-        OitcGame.players.remove(accuratePlayer);
-        OitcGame.deathPlayers.remove(accuratePlayer);
+        PlayerData data = PlayerDataManager.get(player);
+        OitcGame.spectator.remove(player);
+        OitcGame.queue.remove(player);
+        OitcGame.players.remove(player);
+        OitcGame.deathPlayers.remove(player);
 
         data.kills = 0;
 
         if(OitcGame.players.size() <= 1 && !OitcGame.isEnding && OitcGame.isStarted) {
-            if(OitcGame.players.size() == 1) OitcGame.endGame(OitcGame.players.get(0).get());
+            if(OitcGame.players.size() == 1) OitcGame.endGame(OitcGame.players.getFirst());
             else OitcGame.endGame(null);
         }
 
         player.removeTag("in_oitc_game");
 
-        PlayerUtil.resetHealthStatus(player);
-        minecraftPlayer.setGameMode(GameType.ADVENTURE);
+        player.reset(true, Minecraft.GameMode.ADVENTURE);
 
-        player.getInventory().clear();
-        minecraftPlayer.inventory.setCarried(ItemStack.EMPTY);
-        minecraftPlayer.getEnderChestInventory().clearContent();
-
-        if(data.gameMode.equals(OitcGameMode.PLAYING) && winner != accuratePlayer) {
+        if(data.gameMode.equals(OitcGameMode.PLAYING) && winner != player) {
             data.savedData.loss++;
         }
 
@@ -117,11 +108,11 @@ public class OitcGame {
             if(OitcGame.isEnding) {
                 int color = 244 * 65536 + 166 * 256 + 71;
                 // r * 65536 + g * 256 + b;
-                if(OitcGame.winner != null && OitcGame.winner.get() != null) DuelGameHandler.winnerRockets(OitcGame.winner.get(), OitcGame.world, color);
+                if(OitcGame.winner != null && OitcGame.winner.unwrap() != null) DuelGameHandler.winnerRockets(OitcGame.winner, OitcGame.world, color);
 
                 if(OitcGame.endTime <= 0) {
-                    for(ServerPlayer player : OitcGame.getViewers()){
-                        PlayerUtil.getFactoryPlayer(player).runCommand("/hub", 0, false);
+                    for(NexiaPlayer player : OitcGame.getViewers()){
+                        player.runCommand("/hub", 0, false);
                     }
 
                     OitcGame.resetAll();
@@ -133,7 +124,7 @@ public class OitcGame {
                     OitcGame.deathPlayers.forEach(((player, integer) -> {
                         int newInt = integer - 1;
 
-                        if(!player.get().isSpectator()) player.get().setGameMode(GameType.SPECTATOR);
+                        if(!player.unwrap().isSpectator()) player.setGameMode(Minecraft.GameMode.SPECTATOR);
 
                         /*
                         OitcGame.deathPlayers.remove(player);
@@ -144,20 +135,20 @@ public class OitcGame {
 
                         Title title = getTitle(newInt);
 
-                        PlayerUtil.getFactoryPlayer(player.get()).sendTitle(title);
-                        PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+                        player.sendTitle(title);
+                        player.sendSound(new EntityPos(player.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
 
 
                         if(newInt <= 1){
-                            spawnInRandomPos(player.get());
+                            spawnInRandomPos(player);
                             OitcGame.deathPlayers.remove(player);
                             //ServerTime.factoryServer.runCommand("/gamemode adventure " + player.get().getScoreboardName(), 4, false);
-                            player.get().setGameMode(GameType.ADVENTURE);
+                            player.setGameMode(Minecraft.GameMode.ADVENTURE);
                             BlfScheduler.delay(5, new BlfRunnable() {
                                 @Override
                                 public void run() {
-                                    giveKit(player.get());
-                                    player.get().setGameMode(GameType.ADVENTURE);
+                                    giveKit(player);
+                                    player.setGameMode(Minecraft.GameMode.ADVENTURE);
                                 }
                             });
 
@@ -170,11 +161,11 @@ public class OitcGame {
 
                     // Yes, I know I am a dumbass.
                     List<Integer> intKills = new ArrayList<>();
-                    HashMap<Integer, ServerPlayer> kills = new HashMap<>();
+                    HashMap<Integer, NexiaPlayer> kills = new HashMap<>();
 
-                    for(AccuratePlayer player : OitcGame.players) {
-                        intKills.add(PlayerDataManager.get(player.get()).kills);
-                        kills.put(PlayerDataManager.get(player.get()).kills, player.get());
+                    for(NexiaPlayer player : OitcGame.players) {
+                        intKills.add(PlayerDataManager.get(player).kills);
+                        kills.put(PlayerDataManager.get(player).kills, player);
                     }
 
                     endGame(kills.get(Collections.max(intKills)));
@@ -186,17 +177,15 @@ public class OitcGame {
 
         } else {
             if(OitcGame.queue.size() >= 2) {
-                for(AccuratePlayer player : OitcGame.queue){
-                    Player fPlayer = PlayerUtil.getFactoryPlayer(player.get());
-
+                for(NexiaPlayer player : OitcGame.queue){
                     if(OitcGame.queueTime <= 5) {
                         Title title = getTitle(OitcGame.queueTime);
 
-                        PlayerUtil.getFactoryPlayer(player.get()).sendTitle(title);
-                        PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+                        player.sendTitle(title);
+                        player.sendSound(new EntityPos(player.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
                     }
 
-                    fPlayer.sendActionBarMessage(
+                    player.sendActionBarMessage(
                             Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
                                     .append(Component.text(OitcGame.map.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                                     .append(Component.text(" (" + OitcGame.queue.size() + "/" + OitcGame.map.maxPlayers + ")").color(TextColor.fromHexString("#b3b3b3")))
@@ -208,7 +197,7 @@ public class OitcGame {
                     );
 
                     if(OitcGame.queueTime <= 5 || OitcGame.queueTime == 10 || OitcGame.queueTime == 15) {
-                        fPlayer.sendMessage(Component.text("The game will start in ").color(TextColor.fromHexString("#b3b3b3"))
+                        player.sendMessage(Component.text("The game will start in ").color(TextColor.fromHexString("#b3b3b3"))
                                 .append(Component.text(OitcGame.queueTime).color(ChatFormat.brandColor1))
                                 .append(Component.text(" seconds.").color(TextColor.fromHexString("#b3b3b3")))
                         );
@@ -225,54 +214,53 @@ public class OitcGame {
 
     @NotNull
     private static Title getTitle(int queueTime) {
-        TextColor color = NamedTextColor.GREEN;
+        TextColor color = ChatFormat.Minecraft.green;
 
         if (queueTime == 2) {
-            color = NamedTextColor.YELLOW;
+            color = ChatFormat.Minecraft.yellow;
         } else if (queueTime <= 1) {
-            color = NamedTextColor.RED;
+            color = ChatFormat.Minecraft.red;
         }
 
         return Title.title(Component.text(queueTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
     }
 
-    public static void joinQueue(ServerPlayer player) {
+    public static void joinQueue(NexiaPlayer player) {
         PlayerData data = PlayerDataManager.get(player);
         data.kills = 0;
-        AccuratePlayer accuratePlayer = AccuratePlayer.create(player);
-        accuratePlayer.get().setHealth(accuratePlayer.get().getMaxHealth());
+        player.setHealth(player.unwrap().getMaxHealth());
         if(OitcGame.isStarted || OitcGame.queue.size() >= OitcGame.map.maxPlayers){
-            OitcGame.spectator.add(accuratePlayer);
+            OitcGame.spectator.add(player);
             PlayerDataManager.get(player).gameMode = OitcGameMode.SPECTATOR;
-            accuratePlayer.get().setGameMode(GameType.SPECTATOR);
+            player.setGameMode(Minecraft.GameMode.SPECTATOR);
         } else {
-            OitcGame.queue.add(accuratePlayer);
+            OitcGame.queue.add(player);
             player.addTag(LobbyUtil.NO_DAMAGE_TAG);
         }
 
-        player.teleportTo(world, 0, 101, 0, 0, 0);
-        player.setRespawnPosition(world.dimension(), new BlockPos(0, 100, 0), 0, true, false);
+        player.unwrap().teleportTo(world, 0, 101, 0, 0, 0);
+        player.unwrap().setRespawnPosition(world.dimension(), new BlockPos(0, 100, 0), 0, true, false);
     }
 
-    public static void endGame(ServerPlayer serverPlayer) {
+    public static void endGame(NexiaPlayer player) {
         OitcGame.isEnding = true;
-        if(serverPlayer == null) return;
-        PlayerData data = PlayerDataManager.get(serverPlayer);
-        OitcGame.winner = AccuratePlayer.create(serverPlayer);
+        if(player == null || player.unwrap() == null) return;
+        PlayerData data = PlayerDataManager.get(player);
+        OitcGame.winner = player;
 
-        PlayerUtil.getFactoryPlayer(serverPlayer).sendTitle(Title.title(Component.text("You won!").color(ChatFormat.greenColor), Component.text("")));
+        player.sendTitle(Title.title(Component.text("You won!").color(ChatFormat.greenColor), Component.text("")));
 
         data.savedData.wins++;
 
-        for(ServerPlayer player : OitcGame.getViewers()){
-            PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(Component.text(serverPlayer.getScoreboardName()).color(ChatFormat.brandColor2), Component.text("has won the game! (" + data.kills + " kills)").color(ChatFormat.normalColor)));
+        for(NexiaPlayer viewer : OitcGame.getViewers()){
+            viewer.sendTitle(Title.title(Component.text(player.getRawName()).color(ChatFormat.brandColor2), Component.text("has won the game! (" + data.kills + " kills)").color(ChatFormat.normalColor)));
         }
     }
 
     public static void updateInfo() {
         String[] timer = TickUtil.minuteTimeStamp(OitcGame.gameTime * 20);
-        for(ServerPlayer player : OitcGame.getViewers()) {
-            PlayerUtil.getFactoryPlayer(player).sendActionBarMessage(
+        for(NexiaPlayer player : OitcGame.getViewers()) {
+            player.sendActionBarMessage(
                     Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
                             .append(Component.text(OitcGame.map.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
@@ -285,8 +273,8 @@ public class OitcGame {
         }
     }
 
-    public static void giveKit(ServerPlayer player) {
-        player.inventory.clearContent();
+    public static void giveKit(NexiaPlayer player) {
+        player.getInventory().clear();
 
         ItemStack sword = new ItemStack(Items.STONE_SWORD);
         sword.getOrCreateTag().putBoolean("Unbreakable", true);
@@ -299,9 +287,9 @@ public class OitcGame {
 
         ItemStack arrow = new ItemStack(Items.ARROW);
 
-        player.setSlot(0, sword);
-        player.setSlot(1, bow);
-        player.setSlot(2, arrow);
+        player.unwrap().setSlot(0, sword);
+        player.unwrap().setSlot(1, bow);
+        player.unwrap().setSlot(2, arrow);
     }
 
     public static void startGame() {
@@ -319,18 +307,17 @@ public class OitcGame {
             bow.getOrCreateTag().putBoolean("Unbreakable", true);
             bow.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
 
-            for(AccuratePlayer player : OitcGame.players) {
-                ServerPlayer serverPlayer = player.get();
-                serverPlayer.inventory.setItem(0, sword);
-                serverPlayer.inventory.setItem(1, bow);
-                serverPlayer.inventory.setItem(2, new ItemStack(Items.ARROW));
+            for(NexiaPlayer player : OitcGame.players) {
+                player.unwrap().inventory.setItem(0, sword);
+                player.unwrap().inventory.setItem(1, bow);
+                player.unwrap().inventory.setItem(2, new ItemStack(Items.ARROW));
 
-                PlayerDataManager.get(serverPlayer).gameMode = OitcGameMode.PLAYING;
+                PlayerDataManager.get(player).gameMode = OitcGameMode.PLAYING;
 
-                serverPlayer.addTag("in_oitc_game");
-                serverPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+                player.addTag("in_oitc_game");
+                player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
 
-                spawnInRandomPos(serverPlayer);
+                spawnInRandomPos(player);
 
                 //player.setRespawnPosition(world.dimension(), pos, 0, true, false);
             }
@@ -340,33 +327,35 @@ public class OitcGame {
         }
     }
 
-    public static void spawnInRandomPos(ServerPlayer player){
+    public static void spawnInRandomPos(NexiaPlayer player){
         OitcMap map = OitcGame.map;
         EntityPos spawnPosition = map.spawnPositions.get(RandomUtil.randomInt(map.spawnPositions.size()));
 
-        spawnPosition.teleportPlayer(OitcGame.world, player);
+        spawnPosition.teleportPlayer(OitcGame.world, player.unwrap());
     }
 
-    public static boolean isOITCPlayer(net.minecraft.world.entity.player.Player player){
-        return com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.OITC || player.getTags().contains("oitc") || player.getTags().contains("in_oitc_game");
+    public static boolean isOITCPlayer(NexiaPlayer player){
+        return com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.OITC || player.hasTag("oitc") || player.hasTag("in_oitc_game");
     }
 
-    public static void death(ServerPlayer victim, DamageSource source){
+    public static void death(NexiaPlayer victim, DamageSource source){
         PlayerData victimData = PlayerDataManager.get(victim);
-        AccuratePlayer accurateVictim = AccuratePlayer.create(victim);
-        if(OitcGame.isStarted && !OitcGame.deathPlayers.containsKey(accurateVictim) && victimData.gameMode == OitcGameMode.PLAYING) {
-            ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim);
-            if(attacker != null && victim != attacker) {
-                PlayerData attackerData = PlayerDataManager.get(attacker);
-                attackerData.kills++;
-                attackerData.savedData.kills++;
-                attacker.setHealth(attacker.getMaxHealth());
-                attacker.addItem(new ItemStack(Items.ARROW));
+        if(OitcGame.isStarted && !OitcGame.deathPlayers.containsKey(victim) && victimData.gameMode == OitcGameMode.PLAYING) {
+            ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim.unwrap());
+            if(attacker != null) {
+                NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
+                if(!nexiaAttacker.equals(victim)) {
+                    PlayerData attackerData = PlayerDataManager.get(nexiaAttacker);
+                    attackerData.kills++;
+                    attackerData.savedData.kills++;
+                    attacker.setHealth(attacker.getMaxHealth());
+                    attacker.addItem(new ItemStack(Items.ARROW));
+                }
             }
 
             PlayerDataManager.get(victim).hasDied = true;
-            OitcGame.deathPlayers.remove(accurateVictim);
-            OitcGame.deathPlayers.put(accurateVictim, 4); // 3 seconds
+            OitcGame.deathPlayers.remove(victim);
+            OitcGame.deathPlayers.put(victim, 4); // 3 seconds
         }
     }
 
@@ -414,10 +403,10 @@ public class OitcGame {
         resetAll();
     }
 
-    public static ArrayList<ServerPlayer> getViewers() {
-        ArrayList<ServerPlayer> viewers = new ArrayList<>();
-        OitcGame.players.forEach(player -> viewers.add(player.get()));
-        OitcGame.spectator.forEach(player -> viewers.add(player.get()));
+    public static ArrayList<NexiaPlayer> getViewers() {
+        ArrayList<NexiaPlayer> viewers = new ArrayList<>();
+        viewers.addAll(OitcGame.players);
+        viewers.addAll(OitcGame.spectator);
         return viewers;
     }
 }

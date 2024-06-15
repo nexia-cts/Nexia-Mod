@@ -2,7 +2,7 @@ package com.nexia.minigames.games.bedwars.shop;
 
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemStackUtil;
-import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
@@ -108,7 +108,7 @@ public class BwShop extends SimpleGui {
     private void purchase(ServerPlayer player, ItemStack soldItem, ItemStack cost, int slot, int targetInvSlot,
                           boolean isUpgradeable, boolean isArmorItem, boolean isSword) {
 
-        PlayerUtil.removeItem(player, cost.getItem(), cost.getCount());
+        new NexiaPlayer(player).removeItem(cost.getItem(), cost.getCount());
         playPurchaseSound(player, false);
 
         if (isUpgradeable) {
@@ -128,7 +128,7 @@ public class BwShop extends SimpleGui {
     }
 
     public static void sendFail(ServerPlayer player, String text) {
-        PlayerUtil.getFactoryPlayer(player).sendMessage(Component.text(text).color(ChatFormat.failColor));
+        new NexiaPlayer(player).sendMessage(Component.text(text).color(ChatFormat.failColor));
         playPurchaseSound(player, true);
     }
 
