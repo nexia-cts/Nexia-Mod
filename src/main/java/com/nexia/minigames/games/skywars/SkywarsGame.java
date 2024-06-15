@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.skywars;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
@@ -97,7 +97,7 @@ public class SkywarsGame {
     public static void leave(ServerPlayer minecraftPlayer) {
         AccuratePlayer accuratePlayer = AccuratePlayer.create(minecraftPlayer);
         SkywarsGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
-        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+        Player player = PlayerUtil.getNexusPlayer(minecraftPlayer);
 
         PlayerData data = PlayerDataManager.get(minecraftPlayer);
         SkywarsGame.spectator.remove(accuratePlayer);
@@ -137,7 +137,7 @@ public class SkywarsGame {
 
                 if(SkywarsGame.endTime <= 0) {
                     for(ServerPlayer player : SkywarsGame.getViewers()){
-                        PlayerUtil.getFactoryPlayer(player).runCommand("/hub", 0, false);
+                        PlayerUtil.getNexusPlayer(player).runCommand("/hub", 0, false);
                     }
 
                     SkywarsGame.resetAll();
@@ -165,7 +165,7 @@ public class SkywarsGame {
         } else {
             if(SkywarsGame.queue.size() >= 2) {
                 for(AccuratePlayer player : SkywarsGame.queue){
-                    Player fPlayer = PlayerUtil.getFactoryPlayer(player.get());
+                    Player fPlayer = PlayerUtil.getNexusPlayer(player.get());
 
                     if(SkywarsGame.queueTime <= 5) {
                         fPlayer.sendTitle(getTitle());
@@ -246,7 +246,7 @@ public class SkywarsGame {
                 new ResourceLocation("skywars", SkywarsGame.id)).asWorld();
 
         //SkywarsGame.map.structureMap.pasteMap(level);
-        ServerTime.factoryServer.runCommand(String.format("execute in skywars:%s run worldborder set 200", SkywarsGame.id), 4, false);
+        ServerTime.nexusServer.runCommand(String.format("execute in skywars:%s run worldborder set 200", SkywarsGame.id), 4, false);
         SkywarsMap.spawnQueueBuild(level, false);
         SkywarsGame.world = level;
 
@@ -332,7 +332,7 @@ public class SkywarsGame {
         PlayerDataManager.get(player).savedData.wins++;
 
         for(ServerPlayer serverPlayer : SkywarsGame.getViewers()){
-            PlayerUtil.getFactoryPlayer(serverPlayer).sendTitle(Title.title(Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2), Component.text("has won the game!").color(ChatFormat.normalColor)
+            PlayerUtil.getNexusPlayer(serverPlayer).sendTitle(Title.title(Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2), Component.text("has won the game!").color(ChatFormat.normalColor)
                     .append(Component.text(" [")
                             .color(ChatFormat.lineColor))
                     .append(Component.text(FfaUtil.calculateHealth(player.getHealth()) + "❤").color(ChatFormat.failColor))
@@ -345,7 +345,7 @@ public class SkywarsGame {
         CustomBossEvent bossbar = SkywarsGame.BOSSBAR;
 
         for(ServerPlayer player : SkywarsGame.getViewers()) {
-            PlayerUtil.getFactoryPlayer(player).sendActionBarMessage(
+            PlayerUtil.getNexusPlayer(player).sendActionBarMessage(
                     Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
                             .append(Component.text(StringUtil.capitalize(SkywarsGame.map.id)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
@@ -380,7 +380,7 @@ public class SkywarsGame {
         SkywarsGame.alive.forEach((player) -> player.get().setGlowing(true));
 
         for(ServerPlayer player : SkywarsGame.getViewers()) {
-            Player fPlayer = PlayerUtil.getFactoryPlayer(player);
+            Player fPlayer = PlayerUtil.getNexusPlayer(player);
             PlayerUtil.sendSound(player, new EntityPos(player.position()), SoundEvents.RESPAWN_ANCHOR_CHARGE, SoundSource.AMBIENT, 1000, 1);
             fPlayer.sendMessage(
                     Component.text("[").color(ChatFormat.lineColor)
@@ -398,7 +398,7 @@ public class SkywarsGame {
 
     public static void sendCenterWarning() {
         for(ServerPlayer player : SkywarsGame.getViewers()) {
-            Player fPlayer = PlayerUtil.getFactoryPlayer(player);
+            Player fPlayer = PlayerUtil.getNexusPlayer(player);
             PlayerUtil.sendSound(player, new EntityPos(player.position()), SoundEvents.RESPAWN_ANCHOR_CHARGE, SoundSource.AMBIENT, 1000, 1);
             fPlayer.sendMessage(
                     Component.text("[").color(ChatFormat.lineColor)

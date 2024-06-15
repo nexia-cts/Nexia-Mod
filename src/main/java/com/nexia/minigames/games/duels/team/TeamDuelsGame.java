@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.duels.team;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -138,7 +138,7 @@ public class TeamDuelsGame { // implements Runnable{
         for (AccuratePlayer player : team1.all) {
             ServerPlayer serverPlayer = player.get();
             PlayerData data = PlayerDataManager.get(serverPlayer);
-            Player factoryPlayer = PlayerUtil.getFactoryPlayer(serverPlayer);
+            Player nexusPlayer = PlayerUtil.getNexusPlayer(serverPlayer);
 
             DuelGameHandler.leave(serverPlayer, false);
 
@@ -150,7 +150,7 @@ public class TeamDuelsGame { // implements Runnable{
             serverPlayer.setGameMode(GameType.ADVENTURE);
             selectedMap.p1Pos.teleportPlayer(duelLevel, serverPlayer);
 
-            factoryPlayer.sendMessage(ChatFormat.nexiaMessage
+            nexusPlayer.sendMessage(ChatFormat.nexiaMessage
                     .append(Component.text("Your opponent: ").color(ChatFormat.normalColor)
                             .decoration(ChatFormat.bold, false)
                             .append(Component.text(team2.getLeader().get().getScoreboardName() + "'s Team")
@@ -159,19 +159,19 @@ public class TeamDuelsGame { // implements Runnable{
             DuelGameHandler.loadInventory(serverPlayer, stringGameMode);
 
             if (!gameMode.hasSaturation) {
-                factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
+                nexusPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
             }
 
-            factoryPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-            factoryPlayer.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
+            nexusPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+            nexusPlayer.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
-            PlayerUtil.resetHealthStatus(factoryPlayer);
+            PlayerUtil.resetHealthStatus(nexusPlayer);
         }
 
         for (AccuratePlayer player : team2.all) {
             ServerPlayer serverPlayer = player.get();
             PlayerData data = PlayerDataManager.get(serverPlayer);
-            Player factoryPlayer = PlayerUtil.getFactoryPlayer(serverPlayer);
+            Player nexusPlayer = PlayerUtil.getNexusPlayer(serverPlayer);
 
             DuelGameHandler.leave(serverPlayer, false);
 
@@ -183,7 +183,7 @@ public class TeamDuelsGame { // implements Runnable{
             serverPlayer.setGameMode(GameType.ADVENTURE);
             selectedMap.p2Pos.teleportPlayer(duelLevel, serverPlayer);
 
-            factoryPlayer.sendMessage(ChatFormat.nexiaMessage
+            nexusPlayer.sendMessage(ChatFormat.nexiaMessage
                     .append(Component.text("Your opponent: ").color(ChatFormat.normalColor)
                             .decoration(ChatFormat.bold, false)
                             .append(Component.text(team1.getLeader().get().getScoreboardName() + "'s Team")
@@ -192,13 +192,13 @@ public class TeamDuelsGame { // implements Runnable{
             DuelGameHandler.loadInventory(serverPlayer, stringGameMode);
 
             if (!gameMode.hasSaturation) {
-                factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
+                nexusPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
             }
 
-            factoryPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
-            factoryPlayer.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
+            nexusPlayer.removeTag(LobbyUtil.NO_DAMAGE_TAG);
+            nexusPlayer.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
-            PlayerUtil.resetHealthStatus(factoryPlayer);
+            PlayerUtil.resetHealthStatus(nexusPlayer);
         }
 
         game.uuid = gameUUID;
@@ -218,15 +218,15 @@ public class TeamDuelsGame { // implements Runnable{
             Component errormsg = Component.text("Cause: " + isBroken);
 
             for (AccuratePlayer spectator : this.spectators) {
-                Player factoryPlayer = PlayerUtil.getFactoryPlayer(spectator.get());
-                factoryPlayer.sendMessage(error);
-                factoryPlayer.sendMessage(errormsg);
+                Player nexusPlayer = PlayerUtil.getNexusPlayer(spectator.get());
+                nexusPlayer.sendMessage(error);
+                nexusPlayer.sendMessage(errormsg);
             }
 
             for (ServerPlayer player : this.level.players()) {
-                Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
-                factoryPlayer.sendMessage(error);
-                factoryPlayer.sendMessage(errormsg);
+                Player nexusPlayer = PlayerUtil.getNexusPlayer(player);
+                nexusPlayer.sendMessage(error);
+                nexusPlayer.sendMessage(errormsg);
             }
 
             this.hasStarted = true;
@@ -249,18 +249,18 @@ public class TeamDuelsGame { // implements Runnable{
                 DuelsTeam loserTeam = this.loser;
 
                 for (AccuratePlayer spectator : this.spectators) {
-                    PlayerUtil.getFactoryPlayer(spectator.get()).runCommand("/hub", 0, false);
+                    PlayerUtil.getNexusPlayer(spectator.get()).runCommand("/hub", 0, false);
                 }
 
                 this.isEnding = false;
 
                 for (AccuratePlayer player : loserTeam.all) {
                     PlayerDataManager.get(player.get()).gameOptions = null;
-                    PlayerUtil.getFactoryPlayer(player.get()).runCommand("/hub", 0, false);
+                    PlayerUtil.getNexusPlayer(player.get()).runCommand("/hub", 0, false);
                 }
                 for (AccuratePlayer player : winnerTeam.all) {
                     PlayerDataManager.get(player.get()).gameOptions = null;
-                    PlayerUtil.getFactoryPlayer(player.get()).runCommand("/hub", 0, false);
+                    PlayerUtil.getNexusPlayer(player.get()).runCommand("/hub", 0, false);
                 }
 
                 DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
@@ -304,12 +304,12 @@ public class TeamDuelsGame { // implements Runnable{
             Title title = getTitle();
 
             for (AccuratePlayer player : this.team1.alive) {
-                PlayerUtil.getFactoryPlayer(player.get()).sendTitle(title);
+                PlayerUtil.getNexusPlayer(player.get()).sendTitle(title);
                 PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10,
                         1);
             }
             for (AccuratePlayer player : this.team2.alive) {
-                PlayerUtil.getFactoryPlayer(player.get()).sendTitle(title);
+                PlayerUtil.getNexusPlayer(player.get()).sendTitle(title);
                 PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10,
                         1);
             }
@@ -361,9 +361,9 @@ public class TeamDuelsGame { // implements Runnable{
 
         if ((winnerTeam == null || winnerTeam.getLeader() == null || winnerTeam.getLeader().get() == null)) {
             for (AccuratePlayer player : loserTeam.all) {
-                Player factoryPlayer = PlayerUtil.getFactoryPlayer(player.get());
-                factoryPlayer.sendTitle(Title.title(titleWin, subtitleWin));
-                factoryPlayer.sendMessage(win);
+                Player nexusPlayer = PlayerUtil.getNexusPlayer(player.get());
+                nexusPlayer.sendTitle(Title.title(titleWin, subtitleWin));
+                nexusPlayer.sendMessage(win);
             }
             return;
         }
@@ -384,17 +384,17 @@ public class TeamDuelsGame { // implements Runnable{
                         .color(ChatFormat.brandColor2));
 
         for (AccuratePlayer player : loserTeam.all) {
-            Player factoryPlayer = PlayerUtil.getFactoryPlayer(player.get());
+            Player nexusPlayer = PlayerUtil.getNexusPlayer(player.get());
             PlayerDataManager.get(player.get()).savedData.loss++;
-            factoryPlayer.sendTitle(Title.title(titleLose, subtitleLose));
-            factoryPlayer.sendMessage(win);
+            nexusPlayer.sendTitle(Title.title(titleLose, subtitleLose));
+            nexusPlayer.sendMessage(win);
         }
 
         for (AccuratePlayer player : winnerTeam.all) {
-            Player factoryPlayer = PlayerUtil.getFactoryPlayer(player.get());
+            Player nexusPlayer = PlayerUtil.getNexusPlayer(player.get());
             PlayerDataManager.get(player.get()).savedData.wins++;
-            factoryPlayer.sendTitle(Title.title(titleWin, subtitleWin));
-            factoryPlayer.sendMessage(win);
+            nexusPlayer.sendTitle(Title.title(titleWin, subtitleWin));
+            nexusPlayer.sendMessage(win);
         }
     }
 

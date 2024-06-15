@@ -31,7 +31,7 @@ public class PingCommand {
         ServerPlayer executer = context.getSource().getPlayerOrException();
         int ping = executer.latency;
 
-        PlayerUtil.getFactoryPlayer(executer).sendMessage(
+        PlayerUtil.getNexusPlayer(executer).sendMessage(
                 ChatFormat.nexiaMessage
                                 .append(Component.text("Your ping is ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                                         .append(Component.text(ping + "ms").color(ChatFormat.brandColor2))
@@ -54,7 +54,7 @@ public class PingCommand {
             return ping;
         }
 
-        PlayerUtil.getFactoryPlayer(executor).sendMessage(
+        PlayerUtil.getNexusPlayer(executor).sendMessage(
                 ChatFormat.nexiaMessage
                                 .append(Component.text("The ping of ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                         .append(Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))

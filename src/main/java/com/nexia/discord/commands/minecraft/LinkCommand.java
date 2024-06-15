@@ -1,6 +1,6 @@
 package com.nexia.discord.commands.minecraft;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.entity.player.Player;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
@@ -34,7 +34,7 @@ public class LinkCommand {
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        Player factoryPlayer = PlayerUtil.getFactoryPlayer(player);
+        Player nexusPlayer = PlayerUtil.getNexusPlayer(player);
 
         int id = RandomUtil.randomInt(1000, 9999);
 
@@ -44,7 +44,7 @@ public class LinkCommand {
 
         Discord.idMinecraft.put(id, player.getUUID());
 
-        factoryPlayer.sendMessage(
+        nexusPlayer.sendMessage(
                 ChatFormat.nexiaMessage
                         .append(Component.text("Your code is: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                         .append(Component.text(id).color(ChatFormat.brandColor1)

@@ -1,9 +1,9 @@
 package com.nexia.core.games.util;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
-import com.combatreforged.factory.api.world.nbt.NBTObject;
-import com.combatreforged.factory.api.world.nbt.NBTValue;
-import com.combatreforged.factory.api.world.types.Minecraft;
+import com.nexia.nexus.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.nbt.NBTObject;
+import com.nexia.nexus.api.world.nbt.NBTValue;
+import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.BanHandler;
@@ -97,7 +97,7 @@ public class LobbyUtil {
     };
 
     public static void leaveAllGames(ServerPlayer minecraftPlayer, boolean tp) {
-        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+        Player player = PlayerUtil.getNexusPlayer(minecraftPlayer);
         if (BwUtil.isInBedWars(minecraftPlayer)) {
             BwPlayerEvents.leaveInBedWars(minecraftPlayer);
         }
@@ -139,7 +139,7 @@ public class LobbyUtil {
     }
 
     public static void returnToLobby(ServerPlayer minecraftPlayer, boolean tp) {
-        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+        Player player = PlayerUtil.getNexusPlayer(minecraftPlayer);
 
         if((FfaClassicUtil.isFfaPlayer(minecraftPlayer) && !FfaClassicUtil.canGoToSpawn(minecraftPlayer)) ||
                 (FfaKitsUtil.isFfaPlayer(minecraftPlayer)) && !FfaKitsUtil.canGoToSpawn(minecraftPlayer) ||
@@ -198,7 +198,7 @@ public class LobbyUtil {
 
     public static void giveItems(ServerPlayer minecraftPlayer) {
 
-        Player factoryPlayer = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+        Player nexusPlayer = PlayerUtil.getNexusPlayer(minecraftPlayer);
 
         NBTObject hideAttrubtesNBTObject = NBTObject.create();
         hideAttrubtesNBTObject.set("HideFlags", NBTValue.of(39));
@@ -207,19 +207,19 @@ public class LobbyUtil {
         unbreakableNBTObject.set("Unbreakable", NBTValue.of(1));
 
 
-        com.combatreforged.factory.api.world.item.ItemStack compass = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.COMPASS);
+        com.nexia.nexus.api.world.item.ItemStack compass = com.nexia.nexus.api.world.item.ItemStack.create(Minecraft.Item.COMPASS);
         compass.setItemNBT(hideAttrubtesNBTObject.copy());
         compass.setLore(Component.text("Right click to open the gamemode selector menu.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
         compass.setDisplayName(Component.text("Gamemode Selector", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
 
 
-        com.combatreforged.factory.api.world.item.ItemStack nameTag = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.NAME_TAG);
+        com.nexia.nexus.api.world.item.ItemStack nameTag = com.nexia.nexus.api.world.item.ItemStack.create(Minecraft.Item.NAME_TAG);
         nameTag.setItemNBT(hideAttrubtesNBTObject.copy());
         nameTag.setLore(Component.text("Right click to open the prefix selector menu.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
         nameTag.setDisplayName(Component.text("Prefix Selector", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
 
 
-        com.combatreforged.factory.api.world.item.ItemStack queueSword = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.IRON_SWORD);
+        com.nexia.nexus.api.world.item.ItemStack queueSword = com.nexia.nexus.api.world.item.ItemStack.create(Minecraft.Item.IRON_SWORD);
         queueSword.setItemNBT(hideAttrubtesNBTObject.copy());
         queueSword.setLore(new ArrayList<>(Arrays.asList(
                 Component.text("Right click to open the queue menu.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false),
@@ -228,7 +228,7 @@ public class LobbyUtil {
         queueSword.setDisplayName(Component.text("Duel Sword", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
 
 
-        com.combatreforged.factory.api.world.item.ItemStack teamSword = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.IRON_AXE);
+        com.nexia.nexus.api.world.item.ItemStack teamSword = com.nexia.nexus.api.world.item.ItemStack.create(Minecraft.Item.IRON_AXE);
         teamSword.setItemNBT(hideAttrubtesNBTObject.copy());
         teamSword.setLore(new ArrayList<>(Arrays.asList(
                 Component.text("Right click to list the team you're in.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false),
@@ -237,32 +237,32 @@ public class LobbyUtil {
         teamSword.setDisplayName(Component.text("Team Axe", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
 
 
-        com.combatreforged.factory.api.world.item.ItemStack customDuelSword = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.DIAMOND_SWORD);
+        com.nexia.nexus.api.world.item.ItemStack customDuelSword = com.nexia.nexus.api.world.item.ItemStack.create(Minecraft.Item.DIAMOND_SWORD);
         customDuelSword.setItemNBT(hideAttrubtesNBTObject.copy());
         customDuelSword.setLore(Component.text("Hit a player to duel them in your custom kit.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
         customDuelSword.setDisplayName(Component.text("Custom Duel Sword", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
 
         if(Permissions.check(minecraftPlayer, "nexia.prefix.supporter")) {
 
-            com.combatreforged.factory.api.world.item.ItemStack elytra = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.ELYTRA);
+            com.nexia.nexus.api.world.item.ItemStack elytra = com.nexia.nexus.api.world.item.ItemStack.create(Minecraft.Item.ELYTRA);
             elytra.setItemNBT(unbreakableNBTObject.copy());
             elytra.setLore(Component.text("Thanks for supporting the server!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
             elytra.setDisplayName(Component.text("Supporter Elytra", ChatFormat.brandColor2).decorate(ChatFormat.bold).decoration(ChatFormat.italic, false));
 
-            factoryPlayer.getInventory().setItemStack(38, elytra);
+            nexusPlayer.getInventory().setItemStack(38, elytra);
         }
 
 
-        factoryPlayer.getInventory().setItemStack(0, customDuelSword); // 1st slot
-        factoryPlayer.getInventory().setItemStack(4, compass); // middle slot
-        factoryPlayer.getInventory().setItemStack(3, nameTag); // left
-        factoryPlayer.getInventory().setItemStack(5, queueSword); // right
-        factoryPlayer.getInventory().setItemStack(8, teamSword); // like right right not right
+        nexusPlayer.getInventory().setItemStack(0, customDuelSword); // 1st slot
+        nexusPlayer.getInventory().setItemStack(4, compass); // middle slot
+        nexusPlayer.getInventory().setItemStack(3, nameTag); // left
+        nexusPlayer.getInventory().setItemStack(5, queueSword); // right
+        nexusPlayer.getInventory().setItemStack(8, teamSword); // like right right not right
 
         ItemStackUtil.sendInventoryRefreshPacket(minecraftPlayer);
     }
 
-    public static boolean checkGameModeBan(Player factoryPlayer, ServerPlayer player, String game) {
+    public static boolean checkGameModeBan(Player nexusPlayer, ServerPlayer player, String game) {
         ArrayList<PlayerGameMode> bannedGameModes = GamemodeBanHandler.getBannedGameModes(player);
         if(bannedGameModes.isEmpty()) {
             return false;
@@ -279,7 +279,7 @@ public class LobbyUtil {
                         GamemodeBanHandler.removeBanFromList(player.getStringUUID(), gameMode);
                         return false;
                     } else {
-                        factoryPlayer.sendMessage(
+                        nexusPlayer.sendMessage(
                                 ChatFormat.nexiaMessage
                                         .append(Component.text("You are gamemode (" + gameMode.name + ") banned for ").decoration(ChatFormat.bold, false))
                                         .append(Component.text(BanHandler.banTimeToText(banTime)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
@@ -289,13 +289,13 @@ public class LobbyUtil {
                         return true;
                     }
                 } else {
-                    factoryPlayer.sendMessage(
+                    nexusPlayer.sendMessage(
                             ChatFormat.nexiaMessage
                                     .append(Component.text("You are gamemode (" + gameMode.name + ") banned!"))
                     );
                 }
 
-                factoryPlayer.runCommand("/hub");
+                nexusPlayer.runCommand("/hub");
 
                 return true;
             }
@@ -305,7 +305,7 @@ public class LobbyUtil {
     }
 
     public static void sendGame(ServerPlayer minecraftPlayer, String game, boolean message, boolean tp){
-        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+        Player player = PlayerUtil.getNexusPlayer(minecraftPlayer);
 
         if(checkGameModeBan(player, minecraftPlayer, game)) {
             return;

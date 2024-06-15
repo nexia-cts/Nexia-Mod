@@ -50,7 +50,7 @@ public class UnBanCommand {
                 userBanList.remove(gameProfile);
                 ++i;
                 if(player != null){
-                    PlayerUtil.getFactoryPlayer(player).sendMessage(
+                    PlayerUtil.getNexusPlayer(player).sendMessage(
                             ChatFormat.nexiaMessage
                                     .append(Component.text("You have unbanned ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                                             .append(Component.text(gameProfile.getName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
@@ -67,7 +67,7 @@ public class UnBanCommand {
 
         if (i == 0) {
             if(player != null){
-                PlayerUtil.getFactoryPlayer(player).sendMessage(
+                PlayerUtil.getNexusPlayer(player).sendMessage(
                         ChatFormat.nexiaMessage
                                 .append(Component.text("That player is not banned.").color(ChatFormat.failColor))
                 );

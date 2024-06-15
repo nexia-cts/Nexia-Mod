@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.duels;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -95,8 +95,8 @@ public class DuelsGame {
         }
 
 
-        Player p1 = PlayerUtil.getFactoryPlayer(mcP1);
-        Player p2 = PlayerUtil.getFactoryPlayer(mcP2);
+        Player p1 = PlayerUtil.getNexusPlayer(mcP1);
+        Player p2 = PlayerUtil.getNexusPlayer(mcP2);
 
         UUID gameUUID = UUID.randomUUID();
 
@@ -171,7 +171,7 @@ public class DuelsGame {
             if(this.currentEndTime >= this.endTime || !this.shouldWait) {
                 AccuratePlayer minecraftAttacker = this.winner;
                 AccuratePlayer minecraftVictim = this.loser;
-                Player attacker = PlayerUtil.getFactoryPlayer(minecraftAttacker.get());
+                Player attacker = PlayerUtil.getNexusPlayer(minecraftAttacker.get());
 
                 PlayerData victimData = PlayerDataManager.get(minecraftVictim.get());
                 PlayerData attackerData = PlayerDataManager.get(minecraftAttacker.get());
@@ -179,7 +179,7 @@ public class DuelsGame {
                 PlayerUtil.resetHealthStatus(attacker);
 
                 for(AccuratePlayer spectator : this.spectators) {
-                    PlayerUtil.getFactoryPlayer(spectator.get()).runCommand("/hub", 0, false);
+                    PlayerUtil.getNexusPlayer(spectator.get()).runCommand("/hub", 0, false);
                 }
 
                 victimData.gameOptions = null;
@@ -202,15 +202,15 @@ public class DuelsGame {
                 this.isEnding = false;
 
                 if(minecraftVictim.get() != null) {
-                    PlayerUtil.getFactoryPlayer(minecraftVictim.get()).runCommand("/hub", 0, false);
+                    PlayerUtil.getNexusPlayer(minecraftVictim.get()).runCommand("/hub", 0, false);
                 }
 
                 if(minecraftAttacker.get() != null) {
-                    PlayerUtil.getFactoryPlayer(minecraftAttacker.get()).runCommand("/hub", 0, false);
+                    PlayerUtil.getNexusPlayer(minecraftAttacker.get()).runCommand("/hub", 0, false);
                 }
 
                 for(ServerPlayer spectator : this.level.players()) {
-                    PlayerUtil.getFactoryPlayer(spectator).runCommand("/hub", 0, false);
+                    PlayerUtil.getNexusPlayer(spectator).runCommand("/hub", 0, false);
                     spectator.kill();
                 }
 
@@ -254,8 +254,8 @@ public class DuelsGame {
 
             title = Title.title(Component.text(this.currentStartTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
 
-            PlayerUtil.getFactoryPlayer(p1).sendTitle(title);
-            PlayerUtil.getFactoryPlayer(p2).sendTitle(title);
+            PlayerUtil.getNexusPlayer(p1).sendTitle(title);
+            PlayerUtil.getNexusPlayer(p2).sendTitle(title);
 
             PlayerUtil.sendSound(p1, new EntityPos(p1), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
             PlayerUtil.sendSound(p2, new EntityPos(p2), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
@@ -271,12 +271,12 @@ public class DuelsGame {
 
         boolean attackerNull = minecraftAttacker == null;
 
-        Player victim = PlayerUtil.getFactoryPlayer(minecraftVictim);
+        Player victim = PlayerUtil.getNexusPlayer(minecraftVictim);
         Player attacker = null;
 
         if (!attackerNull) {
             this.winner = AccuratePlayer.create(minecraftAttacker);
-            attacker = PlayerUtil.getFactoryPlayer(minecraftAttacker);
+            attacker = PlayerUtil.getNexusPlayer(minecraftAttacker);
         }
 
         Component win = Component.text("The game was a ")

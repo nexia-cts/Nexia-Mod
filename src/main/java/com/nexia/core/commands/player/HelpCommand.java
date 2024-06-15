@@ -58,7 +58,7 @@ public class HelpCommand {
 
         message = message.append(Component.text("\n").append(ChatFormat.separatorLine(null)));
 
-        PlayerUtil.getFactoryPlayer(context.getSource().getPlayerOrException()).sendMessage(message);
+        PlayerUtil.getNexusPlayer(context.getSource().getPlayerOrException()).sendMessage(message);
 
         return 1;
     }
