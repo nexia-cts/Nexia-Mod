@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.duels;
 
-import com.combatreforged.factory.api.world.types.Minecraft;
+import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;

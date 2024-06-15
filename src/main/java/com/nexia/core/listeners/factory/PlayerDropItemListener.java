@@ -1,6 +1,6 @@
-package com.nexia.core.listeners.factory;
+package com.nexia.core.listeners.nexus;
 
-import com.combatreforged.factory.api.event.player.PlayerHotbarDropItemEvent;
+import com.nexia.nexus.api.event.player.PlayerHotbarDropItemEvent;
 import com.nexia.core.utilities.misc.EventUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 

@@ -1,8 +1,8 @@
-package com.nexia.core.listeners.factory;
+package com.nexia.core.listeners.nexus;
 
-import com.combatreforged.factory.api.event.player.PlayerRespawnEvent;
-import com.combatreforged.factory.api.world.types.Minecraft;
-import com.combatreforged.factory.api.world.util.Location;
+import com.nexia.nexus.api.event.player.PlayerRespawnEvent;
+import com.nexia.nexus.api.world.types.Minecraft;
+import com.nexia.nexus.api.world.util.Location;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.player.NexiaPlayer;

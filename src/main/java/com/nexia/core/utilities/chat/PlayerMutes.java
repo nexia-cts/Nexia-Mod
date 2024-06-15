@@ -1,6 +1,6 @@
 package com.nexia.core.utilities.chat;
 
-import com.combatreforged.factory.api.command.CommandSourceInfo;
+import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.SavedPlayerData;

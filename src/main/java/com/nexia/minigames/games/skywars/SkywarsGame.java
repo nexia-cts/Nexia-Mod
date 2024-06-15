@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.skywars;
 
-import com.combatreforged.factory.api.world.types.Minecraft;
+import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
@@ -229,7 +229,7 @@ public class SkywarsGame {
                 new ResourceLocation("skywars", SkywarsGame.id)).asWorld();
 
         //SkywarsGame.map.structureMap.pasteMap(level);
-        ServerTime.factoryServer.runCommand(String.format("execute in skywars:%s run worldborder set 200", SkywarsGame.id), 4, false);
+        ServerTime.nexusServer.runCommand(String.format("execute in skywars:%s run worldborder set 200", SkywarsGame.id), 4, false);
         SkywarsMap.spawnQueueBuild(level, false);
         SkywarsGame.world = level;
 

@@ -1,6 +1,6 @@
 package com.nexia.core.loader;
 
-import com.combatreforged.factory.api.command.CommandSourceInfo;
+import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.mojang.brigadier.CommandDispatcher;
 import com.nexia.core.commands.player.*;
 import com.nexia.core.commands.player.duels.*;
@@ -17,8 +17,8 @@ import net.fabricmc.fabric.api.event.Event;
 
 public class CommandLoader {
 
-    public static void registerFactoryCommands() {
-        CommandDispatcher<CommandSourceInfo> commandDispatcher = ServerTime.factoryServer.getCommandDispatcher();
+    public static void registerNexusCommands() {
+        CommandDispatcher<CommandSourceInfo> commandDispatcher = ServerTime.nexusServer.getCommandDispatcher();
 
         SprintFixCommand.register(commandDispatcher);
         HelpCommand.register(commandDispatcher);

@@ -236,7 +236,7 @@ public class BwTeam {
 
     public static void reloadPlayerTeamColors() {
         for (BwTeam team : teamsInOrder) {
-            ServerTime.factoryServer.runCommand(String.format("team modify %s color %s", team.scoreboardTeam.getName(), team.textColorName), 4, false);
+            ServerTime.nexusServer.runCommand(String.format("team modify %s color %s", team.scoreboardTeam.getName(), team.textColorName), 4, false);
         }
     }
 

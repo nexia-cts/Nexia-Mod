@@ -1,8 +1,8 @@
 package com.nexia.core.games.util;
 
-import com.combatreforged.factory.api.world.nbt.NBTObject;
-import com.combatreforged.factory.api.world.nbt.NBTValue;
-import com.combatreforged.factory.api.world.types.Minecraft;
+import com.nexia.nexus.api.world.nbt.NBTObject;
+import com.nexia.nexus.api.world.nbt.NBTValue;
+import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.BanHandler;
 import com.nexia.core.utilities.player.GamemodeBanHandler;
@@ -119,19 +119,19 @@ public class LobbyUtil {
         unbreakableNBTObject.set("Unbreakable", NBTValue.of(1));
 
 
-        com.combatreforged.factory.api.world.item.ItemStack compass = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.COMPASS);
+        com.nexia.nexus.api.world.item.ItemStack compass = com.nexia.nexus.api.world.item.ItemStack.create(Minecraft.Item.COMPASS);
         compass.setItemNBT(hideAttrubtesNBTObject.copy());
         compass.setLore(Component.text("Right click to open the gamemode selector menu.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
         compass.setDisplayName(Component.text("Gamemode Selector", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
 
 
-        com.combatreforged.factory.api.world.item.ItemStack nameTag = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.NAME_TAG);
+        com.nexia.nexus.api.world.item.ItemStack nameTag = com.nexia.nexus.api.world.item.ItemStack.create(Minecraft.Item.NAME_TAG);
         nameTag.setItemNBT(hideAttrubtesNBTObject.copy());
         nameTag.setLore(Component.text("Right click to open the prefix selector menu.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
         nameTag.setDisplayName(Component.text("Prefix Selector", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
 
 
-        com.combatreforged.factory.api.world.item.ItemStack queueSword = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.IRON_SWORD);
+        com.nexia.nexus.api.world.item.ItemStack queueSword = com.nexia.nexus.api.world.item.ItemStack.create(Minecraft.Item.IRON_SWORD);
         queueSword.setItemNBT(hideAttrubtesNBTObject.copy());
         queueSword.setLore(new ArrayList<>(Arrays.asList(
                 Component.text("Right click to open the queue menu.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false),
@@ -140,7 +140,7 @@ public class LobbyUtil {
         queueSword.setDisplayName(Component.text("Duel Sword", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
 
 
-        com.combatreforged.factory.api.world.item.ItemStack teamSword = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.IRON_AXE);
+        com.nexia.nexus.api.world.item.ItemStack teamSword = com.nexia.nexus.api.world.item.ItemStack.create(Minecraft.Item.IRON_AXE);
         teamSword.setItemNBT(hideAttrubtesNBTObject.copy());
         teamSword.setLore(new ArrayList<>(Arrays.asList(
                 Component.text("Right click to list the team you're in.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false),
@@ -149,14 +149,14 @@ public class LobbyUtil {
         teamSword.setDisplayName(Component.text("Team Axe", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
 
 
-        com.combatreforged.factory.api.world.item.ItemStack customDuelSword = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.DIAMOND_SWORD);
+        com.nexia.nexus.api.world.item.ItemStack customDuelSword = com.nexia.nexus.api.world.item.ItemStack.create(Minecraft.Item.DIAMOND_SWORD);
         customDuelSword.setItemNBT(hideAttrubtesNBTObject.copy());
         customDuelSword.setLore(Component.text("Hit a player to duel them in your custom kit.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
         customDuelSword.setDisplayName(Component.text("Custom Duel Sword", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
 
         if(player.hasPermission("nexia.prefix.supporter")) {
 
-            com.combatreforged.factory.api.world.item.ItemStack elytra = com.combatreforged.factory.api.world.item.ItemStack.create(Minecraft.Item.ELYTRA);
+            com.nexia.nexus.api.world.item.ItemStack elytra = com.nexia.nexus.api.world.item.ItemStack.create(Minecraft.Item.ELYTRA);
             elytra.setItemNBT(unbreakableNBTObject.copy());
             elytra.setLore(Component.text("Thanks for supporting the server!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
             elytra.setDisplayName(Component.text("Supporter Elytra", ChatFormat.brandColor2).decorate(ChatFormat.bold).decoration(ChatFormat.italic, false));

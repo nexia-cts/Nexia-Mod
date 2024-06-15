@@ -1,7 +1,7 @@
-package com.nexia.core.listeners.factory;
+package com.nexia.core.listeners.nexus;
 
-import com.combatreforged.factory.api.event.player.PlayerUseItemEvent;
-import com.combatreforged.factory.api.world.item.ItemStack;
+import com.nexia.nexus.api.event.player.PlayerUseItemEvent;
+import com.nexia.nexus.api.world.item.ItemStack;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;

@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.duels;
 
-import com.combatreforged.factory.api.util.Identifier;
+import com.nexia.nexus.api.util.Identifier;
 import com.google.gson.Gson;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;

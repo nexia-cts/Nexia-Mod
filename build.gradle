@@ -56,8 +56,8 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 
-	modImplementation("com.combatreforged.factory:factory-api:${project.factory_version}-full")
-	modImplementation("com.combatreforged.factory:factory-builder:${project.factory_version}-${project.minecraft_version}-full")
+	modImplementation("com.nexia.nexus:nexus-api:${project.nexus_version}-full")
+	modImplementation("com.nexia.nexus:nexus-builder:${project.nexus_version}-${project.minecraft_version}-full")
 
 	include(implementation("com.google.code.gson:gson:${project.gson_version}"))
 

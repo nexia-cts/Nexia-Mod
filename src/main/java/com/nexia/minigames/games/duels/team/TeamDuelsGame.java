@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.duels.team;
 
-import com.combatreforged.factory.api.world.types.Minecraft;
+import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -216,9 +216,9 @@ public class TeamDuelsGame { // implements Runnable{
             }
 
             for (ServerPlayer player : this.level.players()) {
-                NexiaPlayer factoryPlayer = new NexiaPlayer(player);
-                factoryPlayer.sendMessage(error);
-                factoryPlayer.sendMessage(errormsg);
+                NexiaPlayer nexusPlayer = new NexiaPlayer(player);
+                nexusPlayer.sendMessage(error);
+                nexusPlayer.sendMessage(errormsg);
             }
 
             this.hasStarted = true;

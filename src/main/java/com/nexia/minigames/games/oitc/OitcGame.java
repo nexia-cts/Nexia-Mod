@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.oitc;
 
-import com.combatreforged.factory.api.world.types.Minecraft;
+import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -142,7 +142,7 @@ public class OitcGame {
                         if(newInt <= 1){
                             spawnInRandomPos(player);
                             OitcGame.deathPlayers.remove(player);
-                            //ServerTime.factoryServer.runCommand("/gamemode adventure " + player.get().getScoreboardName(), 4, false);
+                            //ServerTime.nexusServer.runCommand("/gamemode adventure " + player.get().getScoreboardName(), 4, false);
                             player.setGameMode(Minecraft.GameMode.ADVENTURE);
                             BlfScheduler.delay(5, new BlfRunnable() {
                                 @Override

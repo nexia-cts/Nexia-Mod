@@ -1,7 +1,7 @@
 package com.nexia.core.gui.duels;
 
-import com.combatreforged.factory.api.world.types.Minecraft;
-import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
+import com.nexia.nexus.api.world.types.Minecraft;
+import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;

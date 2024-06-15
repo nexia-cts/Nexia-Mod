@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.bedwars.util;
 
-import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
+import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;

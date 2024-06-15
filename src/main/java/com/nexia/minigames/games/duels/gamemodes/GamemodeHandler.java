@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.duels.gamemodes;
 
-import com.combatreforged.factory.api.world.types.Minecraft;
+import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -130,7 +130,7 @@ public class GamemodeHandler {
 
         /*
         if(playerData.teamDuelsGame != null) {
-            factoryExecutor.sendMessage(Component.text("Spectating Team Duels is currently not available. We are sorry for the inconvenience.").color(ChatFormat.failColor));
+            nexusExecutor.sendMessage(Component.text("Spectating Team Duels is currently not available. We are sorry for the inconvenience.").color(ChatFormat.failColor));
             return;
         }
          */

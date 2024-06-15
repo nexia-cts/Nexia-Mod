@@ -1,6 +1,6 @@
 package com.nexia.core.utilities.player;
 
-import com.combatreforged.factory.api.command.CommandSourceInfo;
+import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
 import com.nexia.core.utilities.chat.ChatFormat;

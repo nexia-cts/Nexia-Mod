@@ -1,8 +1,8 @@
 package com.nexia.core.commands.player;
 
-import com.combatreforged.factory.api.command.CommandSourceInfo;
-import com.combatreforged.factory.api.command.CommandUtils;
-import com.combatreforged.factory.api.world.types.Minecraft;
+import com.nexia.nexus.api.command.CommandSourceInfo;
+import com.nexia.nexus.api.command.CommandUtils;
+import com.nexia.nexus.api.world.types.Minecraft;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.nexia.core.games.util.LobbyUtil;

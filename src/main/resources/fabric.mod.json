@@ -32,7 +32,7 @@
       "com.nexia.minigames.Main",
       "com.nexia.discord.Main"
     ],
-    "factory": [
+    "nexus": [
       "com.nexia.core.Main"
     ]
   },
@@ -44,7 +44,7 @@
     "fabricloader": ">=0.7.4",
     "minecraft": ["1.16.3-combat.8.c", "1.16.2-1.16.combat-6"],
     "fabric": "*",
-    "factory-api": "*",
+    "nexus-api": "*",
     "fantasy": ">=0.4.2",
     "collective-fabric": ">=1.16.5-5.50",
     "java": ">=21"

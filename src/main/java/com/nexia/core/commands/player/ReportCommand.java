@@ -1,7 +1,7 @@
 package com.nexia.core.commands.player;
 
-import com.combatreforged.factory.api.command.CommandSourceInfo;
-import com.combatreforged.factory.api.command.CommandUtils;
+import com.nexia.nexus.api.command.CommandSourceInfo;
+import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -98,7 +98,7 @@ public class ReportCommand {
                 .append(Component.text(reason).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false));
 
         for (ServerPlayer staffPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()){
-            if(Permissions.check(staffPlayer, "nexia.staff.report", 1)) ServerTime.factoryServer.getPlayer(staffPlayer.getUUID()).sendMessage(staffReportMessage);
+            if(Permissions.check(staffPlayer, "nexia.staff.report", 1)) ServerTime.nexusServer.getPlayer(staffPlayer.getUUID()).sendMessage(staffReportMessage);
         }
 
         return 1;

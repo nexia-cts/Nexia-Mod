@@ -1,7 +1,7 @@
 package com.nexia.discord.commands.minecraft;
 
-import com.combatreforged.factory.api.command.CommandSourceInfo;
-import com.combatreforged.factory.api.command.CommandUtils;
+import com.nexia.nexus.api.command.CommandSourceInfo;
+import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;

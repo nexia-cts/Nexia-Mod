@@ -1,7 +1,7 @@
 package com.nexia.core.commands.player.duels.custom;
 
-import com.combatreforged.factory.api.command.CommandSourceInfo;
-import com.combatreforged.factory.api.command.CommandUtils;
+import com.nexia.nexus.api.command.CommandSourceInfo;
+import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;

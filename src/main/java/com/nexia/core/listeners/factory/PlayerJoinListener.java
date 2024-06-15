@@ -1,7 +1,7 @@
-package com.nexia.core.listeners.factory;
+package com.nexia.core.listeners.nexus;
 
-import com.combatreforged.factory.api.event.player.PlayerJoinEvent;
-import com.combatreforged.factory.api.world.entity.player.Player;
+import com.nexia.nexus.api.event.player.PlayerJoinEvent;
+import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;
@@ -67,7 +67,7 @@ public class PlayerJoinListener {
                                 .append(Component.text("Players online: ").color(ChatFormat.normalColor))
                                         .append(Component.text(ServerTime.minecraftServer.getPlayerCount()).color(ChatFormat.brandColor2))
                                                 .append(Component.text("/").color(ChatFormat.lineColor))
-                                                        .append(Component.text(ServerTime.factoryServer.getMaxPlayerCount()).color(ChatFormat.brandColor2))
+                                                        .append(Component.text(ServerTime.nexusServer.getMaxPlayerCount()).color(ChatFormat.brandColor2))
         );
         player.sendMessage(
                 Component.text(" » ").color(ChatFormat.brandColor2)

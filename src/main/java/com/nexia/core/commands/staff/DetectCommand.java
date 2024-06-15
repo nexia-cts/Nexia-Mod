@@ -1,7 +1,7 @@
 package com.nexia.core.commands.staff;
 
-import com.combatreforged.factory.api.command.CommandSourceInfo;
-import com.combatreforged.factory.api.command.CommandUtils;
+import com.nexia.nexus.api.command.CommandSourceInfo;
+import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -48,7 +48,7 @@ public class DetectCommand {
         });
         if(nearestPosition.get() != null) {
             Vec3 nearestPos = nearestPosition.get();
-            ServerTime.factoryServer.runCommand("/player " + botName + " look at " + nearestPos.x + " " + nearestPos.y + " " + nearestPos.z, 4, false);
+            ServerTime.nexusServer.runCommand("/player " + botName + " look at " + nearestPos.x + " " + nearestPos.y + " " + nearestPos.z, 4, false);
         }
     }
 }

@@ -4,7 +4,7 @@
 <br>
 
 # Nexia
-using **Factory API**
+using **Nexus API**
 
 The mod for the Nexia CTS server.
 

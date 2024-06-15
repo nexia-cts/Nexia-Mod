@@ -1,6 +1,6 @@
 package com.nexia.core.utilities.ranks;
 
-import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
+import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
@@ -165,7 +165,7 @@ public class NexiaRank {
             player.removeTag(rank1.id);
         }
 
-        ServerTime.factoryServer.runCommand(String.format("/lp user %s parent set %s", player.getRawName(), rank.id));
+        ServerTime.nexusServer.runCommand(String.format("/lp user %s parent set %s", player.getRawName(), rank.id));
         player.addTag(rank.id);
     }
 
@@ -182,7 +182,7 @@ public class NexiaRank {
             setPrefix(NexiaRank.DEFAULT, player);
         }
 
-        ServerTime.factoryServer.runCommand(String.format("/lp user %s permission unset nexia.prefix.%s",
+        ServerTime.nexusServer.runCommand(String.format("/lp user %s permission unset nexia.prefix.%s",
                 player.getRawName(), rank.id)
         );
     }
@@ -192,7 +192,7 @@ public class NexiaRank {
             setPrefix(rank, player);
         }
 
-        ServerTime.factoryServer.runCommand(String.format("/lp user %s permission set nexia.prefix.%s",
+        ServerTime.nexusServer.runCommand(String.format("/lp user %s permission set nexia.prefix.%s",
                 player.getRawName(), rank.id)
         );
     }

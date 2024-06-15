@@ -1,7 +1,7 @@
 package com.nexia.ffa.uhc.utilities;
 
-import com.combatreforged.factory.api.world.entity.player.Player;
-import com.combatreforged.factory.api.world.types.Minecraft;
+import com.nexia.nexus.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.types.Minecraft;
 import com.google.gson.Gson;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
@@ -252,7 +252,7 @@ public class FfaUhcUtil {
             }
         }
 
-        for (Player player : ServerTime.factoryServer.getPlayers()) {
+        for (Player player : ServerTime.nexusServer.getPlayers()) {
             if (player.hasTag("ffa_uhc")) player.sendMessage(msg);
         }
     }

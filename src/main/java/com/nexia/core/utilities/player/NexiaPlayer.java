@@ -1,10 +1,5 @@
 package com.nexia.core.utilities.player;
 
-import com.combatreforged.factory.api.world.effect.StatusEffectInstance;
-import com.combatreforged.factory.api.world.entity.player.Player;
-import com.combatreforged.factory.api.world.item.ItemStack;
-import com.combatreforged.factory.api.world.types.Minecraft;
-import com.combatreforged.factory.builder.implementation.world.entity.player.WrappedPlayer;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.item.ItemStackUtil;
@@ -17,6 +12,11 @@ import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
+import com.nexia.nexus.api.world.effect.StatusEffectInstance;
+import com.nexia.nexus.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.item.ItemStack;
+import com.nexia.nexus.api.world.types.Minecraft;
+import com.nexia.nexus.builder.implementation.world.entity.player.WrappedPlayer;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.blumbo.blfscheduler.BlfRunnable;
 import net.blumbo.blfscheduler.BlfScheduler;
