@@ -1,6 +1,5 @@
 package com.nexia.minigames.games.duels.team;
 
-import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -15,9 +14,8 @@ import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.util.DuelOptions;
 import com.nexia.minigames.games.duels.util.player.PlayerData;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import com.nexia.nexus.api.world.types.Minecraft;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,10 +25,11 @@ import net.minecraft.world.damagesource.DamageSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.UUID;
+
+import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 
 public class TeamDuelsGame { // implements Runnable{
     public DuelsTeam team1;
@@ -137,12 +136,13 @@ public class TeamDuelsGame { // implements Runnable{
         for (NexiaPlayer player : team1.all) {
             PlayerData data = PlayerDataManager.get(player);
 
-            DuelGameHandler.leave(player, false);
-
             data.gameMode = gameMode;
             data.gameOptions = new DuelOptions.GameOptions(game, team2);
             data.inviteOptions.reset();
+            data.duelOptions.spectatingPlayer = null;
             data.inDuel = true;
+
+            removeQueue(player, null, true);
 
             player.setGameMode(Minecraft.GameMode.ADVENTURE);
 
@@ -167,12 +167,13 @@ public class TeamDuelsGame { // implements Runnable{
         for (NexiaPlayer player : team2.all) {
             PlayerData data = PlayerDataManager.get(player);
 
-            DuelGameHandler.leave(player, false);
-
             data.gameMode = gameMode;
             data.gameOptions = new DuelOptions.GameOptions(game, team1);
             data.inviteOptions.reset();
+            data.duelOptions.spectatingPlayer = null;
             data.inDuel = true;
+
+            removeQueue(player, null, true);
 
             selectedMap.p2Pos.teleportPlayer(duelLevel, player.unwrap());
 
@@ -293,7 +294,7 @@ public class TeamDuelsGame { // implements Runnable{
                 return;
             }
 
-            Title title = getTitle();
+            Title title = DuelGameHandler.getTitle(this.currentStartTime);
 
             for (NexiaPlayer player : this.team1.alive) {
                 player.sendTitle(title);
@@ -306,22 +307,6 @@ public class TeamDuelsGame { // implements Runnable{
                         1);
             }
         }
-    }
-
-    @NotNull
-    private Title getTitle() {
-        Title title;
-        TextColor color = NamedTextColor.GREEN;
-
-        if (this.currentStartTime <= 3 && this.currentStartTime > 1) {
-            color = NamedTextColor.YELLOW;
-        } else if (this.currentStartTime <= 1) {
-            color = NamedTextColor.RED;
-        }
-
-        title = Title.title(Component.text(this.currentStartTime).color(color), Component.text(""),
-                Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
-        return title;
     }
 
     public void endGame(@NotNull DuelsTeam loserTeam, @Nullable DuelsTeam winnerTeam, boolean wait) {
