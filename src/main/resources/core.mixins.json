@@ -12,6 +12,7 @@
     "block.CraftingTableMixin",
     "block.DispenserBlockMixin",
     "block.GrindstoneBlockMixin",
+    "block.HopperBlockMixin",
     "block.PotBlockMixin",
     "block.SignBlockMixin",
     "entity.AbstractArrowMixin",
