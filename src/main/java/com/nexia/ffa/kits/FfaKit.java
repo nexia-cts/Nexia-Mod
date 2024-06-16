@@ -20,11 +20,16 @@ public class FfaKit {
 
     public static final FfaKit KNIGHT = new FfaKit("knight", new ItemStack(Items.DIAMOND_SWORD));
     public static final FfaKit POSEIDON = new FfaKit("poseidon", new ItemStack(Items.TRIDENT));
-    public static final FfaKit BRUTE = new FfaKit("brute", new ItemStack(Items.NETHERITE_AXE));
-    public static final FfaKit HUNTER = new FfaKit("hunter", new ItemStack(Items.CROSSBOW));
+    public static final FfaKit BRUTE = new FfaKit("nrute", new ItemStack(Items.DIAMOND_AXE));
     public static final FfaKit NINJA = new FfaKit("ninja", new ItemStack(Items.SUGAR));
-    public static final FfaKit REAPER = new FfaKit("reaper", new ItemStack(Items.NETHERITE_HOE));
-    public static final FfaKit RANDOM = new FfaKit("random", new ItemStack(Items.BARRIER));
+    public static final FfaKit VIKING = new FfaKit("viking", new ItemStack(Items.SHIELD));
+    public static final FfaKit ARCHER = new FfaKit("archer", new ItemStack(Items.BOW));
+    public static final FfaKit HUNTER = new FfaKit("hunter", new ItemStack(Items.CROSSBOW));
+    public static final FfaKit FARMER = new FfaKit("farmer", new ItemStack(Items.DIAMOND_HOE));
+    public static final FfaKit RANDOM = new FfaKit("random", new ItemStack(Items.REDSTONE));
+
+    // Keep track of previously selected kits for each player
+    private static final Map<NexiaPlayer, String> previousKits = new HashMap<>();
 
     public FfaKit(String id, ItemStack item) {
         this.id = id;
@@ -48,8 +53,20 @@ public class FfaKit {
 
         if (this.equals(FfaKit.RANDOM)) {
             ArrayList<String> availableKits = new ArrayList<>(stringFfaKits);
-            availableKits.remove(FfaKit.RANDOM.id);
-            String selectedKit = availableKits.get(RandomUtil.randomInt(availableKits.size()));
+            availableKits.remove(RANDOM.id);
+
+            String previousKit = previousKits.getOrDefault(player, "");
+            availableKits.remove(previousKit);
+
+            String selectedKit;
+            if (!availableKits.isEmpty()) {
+                selectedKit = availableKits.get(RandomUtil.randomInt(availableKits.size()));
+            } else {
+                selectedKit = stringFfaKits.get(RandomUtil.randomInt(stringFfaKits.size()));
+            }
+
+            // Store the selected kit as the previous kit for this player
+            previousKits.put(player, selectedKit);
             InventoryUtil.loadInventory(player, "ffa_kits", selectedKit);
         } else {
             InventoryUtil.loadInventory(player, "ffa_kits", this.id);
