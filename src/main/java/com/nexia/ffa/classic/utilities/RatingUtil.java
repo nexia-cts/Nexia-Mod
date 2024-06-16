@@ -153,8 +153,10 @@ public class RatingUtil {
             }
 
             if (Permissions.check(player, "nexia.rank")) {
-                NexiaRank.addPrefix(NexiaRank.PRO, player, false);
+                if(i == 0) NexiaRank.addPrefix(NexiaRank.GOD, player, false);
+                else NexiaRank.addPrefix(NexiaRank.PRO, player, false);
             } else {
+                if(i == 0) NexiaRank.addPrefix(NexiaRank.GOD, player, false);
                 NexiaRank.setRank(NexiaRank.PRO, player);
             }
 
