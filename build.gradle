@@ -88,6 +88,7 @@ dependencies {
 
 	include(implementation("net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT"))
 	include(implementation("net.kyori:adventure-text-serializer-gson:4.1.0-SNAPSHOT"))
+	include(compileOnly("de.themoep:minedown-adventure:1.7.3-SNAPSHOT"))
 
 	// discord shit
 	include(api("net.dv8tion:JDA:${project.jda_version}"))

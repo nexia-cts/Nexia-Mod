@@ -1,5 +1,6 @@
 package com.nexia.core.mixin.player;
 
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
 import com.nexia.core.games.util.LobbyUtil;
@@ -14,6 +15,8 @@ import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.skywars.SkywarsGame;
+import de.themoep.minedown.adventure.MineDown;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.network.Connection;
@@ -58,7 +61,7 @@ public abstract class PlayerListMixin {
             if (key.contains("multiplayer.player.join")) args.set(0, joinFormat(component, joinPlayer));
 
             if(!PlayerMutes.muted(player)){
-                args.set(0, chatFormat(component));
+                args.set(0, chatFormat(player, component));
             }
 
         } catch (Exception ignored) {}
@@ -198,7 +201,7 @@ public abstract class PlayerListMixin {
     }
 
     @Unique
-    private static Component chatFormat(Component original) {
+    private static Component chatFormat(ServerPlayer player, Component original) {
         try {
             TranslatableComponent component = (TranslatableComponent) original;
             Object[] args = component.getArgs();
@@ -208,6 +211,10 @@ public abstract class PlayerListMixin {
 
             String messageString = (String) args[1];
             MutableComponent message = new TextComponent(messageString).withStyle(ChatFormatting.WHITE);
+
+            if(Permissions.check(player, "nexia.chat.formatting", 4)) {
+                message = (MutableComponent) ObjectMappings.convertComponent(MineDown.parse(messageString));
+            }
 
             return name.append(suffix).append(message);
 
