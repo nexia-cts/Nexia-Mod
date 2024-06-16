@@ -1,28 +1,28 @@
 package com.nexia.minigames.games.football;
 
 import com.nexia.core.utilities.pos.EntityPos;
-import net.notcoded.codelib.players.AccuratePlayer;
+import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
 public class FootballTeam {
 
-    public ArrayList<AccuratePlayer> players;
+    public ArrayList<ServerPlayer> players;
 
     public int goals;
 
     public EntityPos spawnPosition;
 
-    public FootballTeam(@NotNull ArrayList<AccuratePlayer> players, @NotNull EntityPos spawnPosition) {
+    public FootballTeam(@NotNull ArrayList<ServerPlayer> players, @NotNull EntityPos spawnPosition) {
         this.players = players;
         this.goals = 0;
         this.spawnPosition = spawnPosition;
     }
 
     public boolean refreshTeam() {
-        for(AccuratePlayer player : this.players) {
-            if(player.get() == null || !FootballGame.isFootballPlayer(player.get())) {
+        for(ServerPlayer player : this.players) {
+            if(player == null || !FootballGame.isFootballPlayer(player)) {
                 this.players.remove(player);
                 if(this.players.isEmpty()) return false;
             }
@@ -30,7 +30,7 @@ public class FootballTeam {
         return true;
     }
 
-    public boolean addPlayer(AccuratePlayer player) {
+    public boolean addPlayer(ServerPlayer player) {
         return this.players.add(player);
     }
 }

@@ -6,18 +6,18 @@ import com.nexia.minigames.games.duels.custom.team.CustomTeamDuelsGame;
 import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.team.DuelsTeam;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
-import net.notcoded.codelib.players.AccuratePlayer;
+import net.minecraft.server.level.ServerPlayer;
 
 public class DuelOptions {
 
     public DuelsTeam duelsTeam;
-    public AccuratePlayer spectatingPlayer;
+    public ServerPlayer spectatingPlayer;
 
     public static class InviteOptions {
 
         public boolean inviting;
 
-        public AccuratePlayer invitingPlayer;
+        public ServerPlayer invitingPlayer;
 
         public DuelsMap inviteMap;
 
@@ -28,7 +28,7 @@ public class DuelOptions {
 
         public boolean perCustomDuel;
 
-        public InviteOptions(AccuratePlayer invitingPlayer, boolean inviting, DuelsMap inviteMap, String inviteKit, boolean customDuel) {
+        public InviteOptions(ServerPlayer invitingPlayer, boolean inviting, DuelsMap inviteMap, String inviteKit, boolean customDuel) {
             this.invitingPlayer = invitingPlayer;
             this.inviting = inviting;
             this.inviteMap = inviteMap;
@@ -39,7 +39,7 @@ public class DuelOptions {
             this.perCustomDuel = false;
         }
 
-        public InviteOptions(AccuratePlayer invitingPlayer, boolean inviting, DuelsMap inviteMap, String inviteKit, String inviteKit2, boolean customDuel) {
+        public InviteOptions(ServerPlayer invitingPlayer, boolean inviting, DuelsMap inviteMap, String inviteKit, String inviteKit2, boolean customDuel) {
             this.invitingPlayer = invitingPlayer;
             this.inviting = inviting;
             this.inviteMap = inviteMap;
@@ -65,7 +65,7 @@ public class DuelOptions {
     public static class GameOptions {
         // Duels
         public DuelsGame duelsGame;
-        public AccuratePlayer duelPlayer;
+        public ServerPlayer duelPlayer;
 
         // Custom
         public CustomDuelsGame customDuelsGame;
@@ -75,12 +75,12 @@ public class DuelOptions {
         public TeamDuelsGame teamDuelsGame;
         public DuelsTeam duelTeam;
 
-        public GameOptions(DuelsGame duelsGame, AccuratePlayer duelPlayer) {
+        public GameOptions(DuelsGame duelsGame, ServerPlayer duelPlayer) {
             this.duelsGame = duelsGame;
             this.duelPlayer = duelPlayer;
         }
 
-        public GameOptions(CustomDuelsGame customDuelsGame, AccuratePlayer duelPlayer) {
+        public GameOptions(CustomDuelsGame customDuelsGame, ServerPlayer duelPlayer) {
             this.customDuelsGame = customDuelsGame;
             this.duelPlayer = duelPlayer;
         }
@@ -96,7 +96,7 @@ public class DuelOptions {
         }
     }
 
-    public DuelOptions(AccuratePlayer spectatingPlayer, DuelsTeam duelsTeam) {
+    public DuelOptions(ServerPlayer spectatingPlayer, DuelsTeam duelsTeam) {
         this.spectatingPlayer = spectatingPlayer;
         this.duelsTeam = duelsTeam;
     }

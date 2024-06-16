@@ -22,7 +22,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.server.level.ServerPlayer;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -122,13 +121,12 @@ public class KitEditorCommand {
 
             KitRoom kitRoom;
             com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
-            AccuratePlayer accuratePlayer = AccuratePlayer.create(player);
 
 
             switch (slot) {
-                case "1", "2", "3" -> kitRoom = new CustomKitRoom(accuratePlayer);
-                case "vanilla" -> kitRoom = new VanillaKitRoom(accuratePlayer);
-                case "smp" -> kitRoom = new SmpKitRoom(accuratePlayer);
+                case "1", "2", "3" -> kitRoom = new CustomKitRoom(player);
+                case "vanilla" -> kitRoom = new VanillaKitRoom(player);
+                case "smp" -> kitRoom = new SmpKitRoom(player);
                 default -> {
                     player.sendMessage(LegacyChatFormat.formatFail("Something went wrong whilst creating your kit room."), Util.NIL_UUID);
                     ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");

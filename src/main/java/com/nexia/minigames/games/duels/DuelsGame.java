@@ -23,7 +23,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.GameType;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,10 +33,10 @@ import java.util.UUID;
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 
 public class DuelsGame {
-    public AccuratePlayer p1;
+    public ServerPlayer p1;
 
     public UUID uuid;
-    public AccuratePlayer p2;
+    public ServerPlayer p2;
 
     public DuelGameMode gameMode;
 
@@ -57,18 +56,18 @@ public class DuelsGame {
 
     public ServerLevel level;
 
-    public ArrayList<AccuratePlayer> spectators = new ArrayList<>();
+    public ArrayList<ServerPlayer> spectators = new ArrayList<>();
 
     // Winner thingie
-    public AccuratePlayer winner = null;
+    public ServerPlayer winner = null;
 
-    public AccuratePlayer loser = null;
+    public ServerPlayer loser = null;
 
     private boolean shouldWait = false;
 
     public DuelsGame(ServerPlayer p1, ServerPlayer p2, DuelGameMode gameMode, DuelsMap map, ServerLevel level, int endTime, int startTime){
-        this.p1 = AccuratePlayer.create(p1);
-        this.p2 = AccuratePlayer.create(p2);
+        this.p1 = p1;
+        this.p2 = p2;
         this.gameMode = gameMode;
         this.map = map;
         this.endTime = endTime;
@@ -88,10 +87,10 @@ public class DuelsGame {
         PlayerData playerData = PlayerDataManager.get(mcP2);
 
         if(invitorData.duelOptions.spectatingPlayer != null) {
-            GamemodeHandler.unspectatePlayer(AccuratePlayer.create(mcP1), invitorData.duelOptions.spectatingPlayer, false);
+            GamemodeHandler.unspectatePlayer(mcP1, invitorData.duelOptions.spectatingPlayer, false);
         }
         if(playerData.duelOptions.spectatingPlayer != null) {
-            GamemodeHandler.unspectatePlayer(AccuratePlayer.create(mcP2), playerData.duelOptions.spectatingPlayer, false);
+            GamemodeHandler.unspectatePlayer(mcP2, playerData.duelOptions.spectatingPlayer, false);
         }
 
 
@@ -152,8 +151,8 @@ public class DuelsGame {
 
         DuelsGame game = new DuelsGame(mcP1, mcP2, gameMode, selectedMap, duelLevel, 5, 5);
 
-        playerData.gameOptions = new DuelOptions.GameOptions(game, AccuratePlayer.create(mcP1));
-        invitorData.gameOptions = new DuelOptions.GameOptions(game, AccuratePlayer.create(mcP2));
+        playerData.gameOptions = new DuelOptions.GameOptions(game, mcP1);
+        invitorData.gameOptions = new DuelOptions.GameOptions(game, mcP2);
 
         DuelGameHandler.duelsGames.add(game);
 
@@ -166,32 +165,32 @@ public class DuelsGame {
         if(this.isEnding) {
             int color = 160 * 65536 + 248;
             // r * 65536 + g * 256 + b;
-            DuelGameHandler.winnerRockets(this.winner.get(), this.level, color);
+            DuelGameHandler.winnerRockets(this.winner, this.level, color);
             this.currentEndTime++;
             if(this.currentEndTime >= this.endTime || !this.shouldWait) {
-                AccuratePlayer minecraftAttacker = this.winner;
-                AccuratePlayer minecraftVictim = this.loser;
-                Player attacker = PlayerUtil.getFactoryPlayer(minecraftAttacker.get());
+                ServerPlayer minecraftAttacker = this.winner;
+                ServerPlayer minecraftVictim = this.loser;
+                Player attacker = PlayerUtil.getFactoryPlayer(minecraftAttacker);
 
-                PlayerData victimData = PlayerDataManager.get(minecraftVictim.get());
-                PlayerData attackerData = PlayerDataManager.get(minecraftAttacker.get());
+                PlayerData victimData = PlayerDataManager.get(minecraftVictim);
+                PlayerData attackerData = PlayerDataManager.get(minecraftAttacker);
 
                 PlayerUtil.resetHealthStatus(attacker);
 
-                for(AccuratePlayer spectator : this.spectators) {
-                    PlayerUtil.getFactoryPlayer(spectator.get()).runCommand("/hub", 0, false);
+                for(ServerPlayer spectator : this.spectators) {
+                    PlayerUtil.getFactoryPlayer(spectator).runCommand("/hub", 0, false);
                 }
 
                 victimData.gameOptions = null;
                 victimData.inDuel = false;
-                removeQueue(minecraftVictim.get(), null, true);
+                removeQueue(minecraftVictim, null, true);
                 victimData.gameMode = DuelGameMode.LOBBY;
                 victimData.inviteOptions.reset();
                 victimData.duelOptions.spectatingPlayer = null;
 
                 attackerData.gameOptions = null;
                 attackerData.inDuel = false;
-                removeQueue(minecraftAttacker.get(), null, true);
+                removeQueue(minecraftAttacker, null, true);
                 attackerData.gameMode = DuelGameMode.LOBBY;
                 attackerData.inviteOptions.reset();
                 attackerData.duelOptions.spectatingPlayer = null;
@@ -201,13 +200,8 @@ public class DuelsGame {
 
                 this.isEnding = false;
 
-                if(minecraftVictim.get() != null) {
-                    PlayerUtil.getFactoryPlayer(minecraftVictim.get()).runCommand("/hub", 0, false);
-                }
-
-                if(minecraftAttacker.get() != null) {
-                    PlayerUtil.getFactoryPlayer(minecraftAttacker.get()).runCommand("/hub", 0, false);
-                }
+                PlayerUtil.getFactoryPlayer(minecraftVictim).runCommand("/hub", 0, false);
+                PlayerUtil.getFactoryPlayer(minecraftAttacker).runCommand("/hub", 0, false);
 
                 for(ServerPlayer spectator : this.level.players()) {
                     PlayerUtil.getFactoryPlayer(spectator).runCommand("/hub", 0, false);
@@ -223,8 +217,8 @@ public class DuelsGame {
 
             this.currentStartTime--;
 
-            ServerPlayer p1 = this.p1.get();
-            ServerPlayer p2 = this.p2.get();
+            ServerPlayer p1 = this.p1;
+            ServerPlayer p2 = this.p2;
 
             this.map.p1Pos.teleportPlayer(this.level, p1);
             this.map.p2Pos.teleportPlayer(this.level, p2);
@@ -264,7 +258,7 @@ public class DuelsGame {
     }
 
     public void endGame(@NotNull ServerPlayer minecraftVictim, @Nullable ServerPlayer minecraftAttacker, boolean wait) {
-        this.loser = AccuratePlayer.create(minecraftVictim);
+        this.loser = minecraftVictim;
         this.shouldWait = wait;
         this.hasStarted = true;
         this.isEnding = true;
@@ -275,7 +269,7 @@ public class DuelsGame {
         Player attacker = null;
 
         if (!attackerNull) {
-            this.winner = AccuratePlayer.create(minecraftAttacker);
+            this.winner = minecraftAttacker;
             attacker = PlayerUtil.getFactoryPlayer(minecraftAttacker);
         }
 
@@ -345,8 +339,8 @@ public class DuelsGame {
             }
         }
         if(victimData.gameOptions.duelPlayer != null) {
-            AccuratePlayer accurateAttacker = victimData.gameOptions.duelPlayer;
-            attacker = accurateAttacker.get();
+            ServerPlayer accurateAttacker = victimData.gameOptions.duelPlayer;
+            attacker = accurateAttacker;
             PlayerData attackerData = PlayerDataManager.get(attacker);
 
             if ((victimData.inDuel && attackerData.inDuel) && accurateAttacker.equals(victimData.gameOptions.duelPlayer)) {

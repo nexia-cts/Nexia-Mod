@@ -68,7 +68,7 @@ public class PlayerRespawnListener {
                 LobbyUtil.giveItems(player);
 
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
-                respawnEvent.setSpawnpoint(new Location(duelsGame.winner.get().getX(), duelsGame.winner.get().getY(), duelsGame.winner.get().getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getIdentifierWorldName(duelsGame.level).getId()))));
+                respawnEvent.setSpawnpoint(new Location(duelsGame.winner.getX(), duelsGame.winner.getY(), duelsGame.winner.getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getIdentifierWorldName(duelsGame.level).getId()))));
             } else if(teamDuelsGame != null && duelsData.duelOptions.duelsTeam != null) {
                 factoryPlayer.getInventory().clear();
                 LobbyUtil.giveItems(player);
@@ -79,9 +79,9 @@ public class PlayerRespawnListener {
                 ServerPlayer player1 = null;
                 if(duelsData.duelOptions.duelsTeam.alive.isEmpty()) {
                     if(teamDuelsGame.team1 == duelsData.duelOptions.duelsTeam && !teamDuelsGame.team2.alive.isEmpty()) {
-                        player1 = teamDuelsGame.team2.alive.get(new Random().nextInt(teamDuelsGame.team2.alive.size())).get();
+                        player1 = teamDuelsGame.team2.alive.get(new Random().nextInt(teamDuelsGame.team2.alive.size()));
                     } else if(teamDuelsGame.team2 == duelsData.duelOptions.duelsTeam && !teamDuelsGame.team1.alive.isEmpty()){
-                        player1 = teamDuelsGame.team1.alive.get(new Random().nextInt(teamDuelsGame.team1.alive.size())).get();
+                        player1 = teamDuelsGame.team1.alive.get(new Random().nextInt(teamDuelsGame.team1.alive.size()));
                     }
 
                     if(player1 != null) {
@@ -91,7 +91,7 @@ public class PlayerRespawnListener {
                     }
 
                 } else {
-                    player1 = duelsData.duelOptions.duelsTeam.alive.get(new Random().nextInt(duelsData.duelOptions.duelsTeam.alive.size())).get();
+                    player1 = duelsData.duelOptions.duelsTeam.alive.get(new Random().nextInt(duelsData.duelOptions.duelsTeam.alive.size()));
                 }
 
 
@@ -102,7 +102,7 @@ public class PlayerRespawnListener {
                 LobbyUtil.giveItems(player);
 
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
-                respawnEvent.setSpawnpoint(new Location(customDuelsGame.winner.get().getX(), customDuelsGame.winner.get().getY(), customDuelsGame.winner.get().getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getIdentifierWorldName(customDuelsGame.level).getId()))));
+                respawnEvent.setSpawnpoint(new Location(customDuelsGame.winner.getX(), customDuelsGame.winner.getY(), customDuelsGame.winner.getZ(), ServerTime.factoryServer.getWorld(new Identifier("duels", WorldUtil.getIdentifierWorldName(customDuelsGame.level).getId()))));
                 //player.teleportTo(duelsGame.level, duelsGame.winner.getX(), duelsGame.winner.getY(), duelsGame.winner.getZ(), 0, 0);
             } else if(customTeamDuelsGame != null && duelsData.duelOptions.duelsTeam != null) {
                 factoryPlayer.getInventory().clear();
@@ -114,9 +114,9 @@ public class PlayerRespawnListener {
                 ServerPlayer player1 = null;
                 if(duelsData.duelOptions.duelsTeam.alive.isEmpty()) {
                     if(customTeamDuelsGame.team1 == duelsData.duelOptions.duelsTeam && !customTeamDuelsGame.team2.alive.isEmpty()) {
-                        player1 = customTeamDuelsGame.team2.alive.get(new Random().nextInt(customTeamDuelsGame.team2.alive.size())).get();
+                        player1 = customTeamDuelsGame.team2.alive.get(new Random().nextInt(customTeamDuelsGame.team2.alive.size()));
                     } else if (customTeamDuelsGame.team2 == duelsData.duelOptions.duelsTeam && !customTeamDuelsGame.team1.alive.isEmpty()) {
-                        player1 = customTeamDuelsGame.team1.alive.get(new Random().nextInt(customTeamDuelsGame.team1.alive.size())).get();
+                        player1 = customTeamDuelsGame.team1.alive.get(new Random().nextInt(customTeamDuelsGame.team1.alive.size()));
                     }
 
                     if(player1 != null) {
@@ -127,7 +127,7 @@ public class PlayerRespawnListener {
 
 
                 } else {
-                    player1 = duelsData.duelOptions.duelsTeam.alive.get(new Random().nextInt(duelsData.duelOptions.duelsTeam.alive.size())).get();
+                    player1 = duelsData.duelOptions.duelsTeam.alive.get(new Random().nextInt(duelsData.duelOptions.duelsTeam.alive.size()));
                 }
 
 

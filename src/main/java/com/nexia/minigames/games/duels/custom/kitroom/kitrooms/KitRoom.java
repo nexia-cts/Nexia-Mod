@@ -9,13 +9,13 @@ import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.dimension.DimensionType;
-import net.notcoded.codelib.players.AccuratePlayer;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
@@ -37,11 +37,11 @@ public class KitRoom {
 
     // Other
 
-    public AccuratePlayer player;
+    public ServerPlayer player;
 
     private StructureMap kitRoom;
 
-    public KitRoom(AccuratePlayer player) {
+    public KitRoom(ServerPlayer player) {
         this.player = player;
 
         this.uuid = null;
@@ -98,28 +98,28 @@ public class KitRoom {
     public boolean teleport() {
         if(!this.hasBeenGenerated || this.level == null) return false;
 
-        this.player.get().teleportTo(this.level, 0.5, 80, 0.5, 0, 0);
-        this.player.get().clearFire();
-        this.player.get().getEnderChestInventory().clearContent();
-        this.player.get().inventory.clearContent();
-        this.player.get().setExperiencePoints(0);
-        this.player.get().setGameMode(GameType.ADVENTURE);
-        this.player.get().setExperienceLevels(0);
-        PlayerUtil.resetHealthStatus(this.player.get());
+        this.player.teleportTo(this.level, 0.5, 80, 0.5, 0, 0);
+        this.player.clearFire();
+        this.player.getEnderChestInventory().clearContent();
+        this.player.inventory.clearContent();
+        this.player.setExperiencePoints(0);
+        this.player.setGameMode(GameType.ADVENTURE);
+        this.player.setExperienceLevels(0);
+        PlayerUtil.resetHealthStatus(this.player);
 
-        this.player.get().addTag("in_kitroom");
+        this.player.addTag("in_kitroom");
 
         return true;
     }
 
     public void leave() {
-        PlayerDataManager.get(this.player.get()).kitRoom = null;
-        this.player.get().inventory.clearContent();
-        this.player.get().getEnderChestInventory().clearContent();
-        this.player.get().clearFire();
-        this.player.get().setExperiencePoints(0);
-        this.player.get().setExperienceLevels(0);
-        PlayerUtil.resetHealthStatus(this.player.get());
+        PlayerDataManager.get(this.player).kitRoom = null;
+        this.player.inventory.clearContent();
+        this.player.getEnderChestInventory().clearContent();
+        this.player.clearFire();
+        this.player.setExperiencePoints(0);
+        this.player.setExperienceLevels(0);
+        PlayerUtil.resetHealthStatus(this.player);
         this.delete();
     }
 

@@ -27,7 +27,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.dimension.DimensionType;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
@@ -107,7 +106,7 @@ public class DuelGameHandler {
         }
 
         if (data.gameMode == DuelGameMode.SPECTATING) {
-            GamemodeHandler.unspectatePlayer(AccuratePlayer.create(player), data.duelOptions.spectatingPlayer, false);
+            GamemodeHandler.unspectatePlayer(player, data.duelOptions.spectatingPlayer, false);
         }
 
         if(data.kitRoom != null) {
@@ -123,7 +122,7 @@ public class DuelGameHandler {
         data.kitRoom = null;
         if (leaveTeam) {
             if (data.duelOptions.duelsTeam != null) {
-                data.duelOptions.duelsTeam.leaveTeam(AccuratePlayer.create(player), true);
+                data.duelOptions.duelsTeam.leaveTeam(player, true);
             }
             data.duelOptions.duelsTeam = null;
         }

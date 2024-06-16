@@ -26,7 +26,6 @@ import net.minecraft.Util;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
-import net.notcoded.codelib.players.AccuratePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -115,14 +114,14 @@ public class GamemodeHandler {
     }
 
 
-    public static void spectatePlayer(@NotNull AccuratePlayer executor, @NotNull AccuratePlayer player) {
-        Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor.get());
+    public static void spectatePlayer(@NotNull ServerPlayer executor, @NotNull ServerPlayer player) {
+        Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor);
         if (executor == player) {
             factoryExecutor.sendMessage(Component.text("You may not spectate yourself!").color(ChatFormat.failColor));
             return;
         }
 
-        PlayerData playerData = PlayerDataManager.get(player.get());
+        PlayerData playerData = PlayerDataManager.get(player);
 
         if (playerData.gameOptions == null || (!playerData.inDuel || playerData.gameOptions.teamDuelsGame == null || playerData.gameOptions.duelsGame == null || playerData.gameOptions.customTeamDuelsGame == null || playerData.gameOptions.customDuelsGame == null)) {
             factoryExecutor.sendMessage(Component.text("That player is not in a duel!").color(ChatFormat.failColor));
@@ -130,7 +129,7 @@ public class GamemodeHandler {
         }
 
 
-        PlayerData executorData = PlayerDataManager.get(executor.get());
+        PlayerData executorData = PlayerDataManager.get(executor);
 
         if (executorData.gameMode == DuelGameMode.SPECTATING) {
             unspectatePlayer(executor, player, false);
@@ -145,7 +144,7 @@ public class GamemodeHandler {
         // what could go wrong?
 
         factoryExecutor.setGameMode(Minecraft.GameMode.SPECTATOR);
-        executor.get().teleportTo(player.get().getLevel(), player.get().getX(), player.get().getY(), player.get().getZ(), 0, 0);
+        executor.teleportTo(player.getLevel(), player.getX(), player.getY(), player.getZ(), 0, 0);
 
         DuelsGame duelsGame = playerData.gameOptions.duelsGame;
         CustomDuelsGame customDuelsGame = playerData.gameOptions.customDuelsGame;
@@ -156,26 +155,26 @@ public class GamemodeHandler {
 
         if (teamDuelsGame != null) {
             teamDuelsGame.spectators.add(executor);
-            List<AccuratePlayer> everyTeamMember = teamDuelsGame.team1.all;
+            List<ServerPlayer> everyTeamMember = teamDuelsGame.team1.all;
             everyTeamMember.addAll(teamDuelsGame.team2.all);
-            for (AccuratePlayer players : everyTeamMember) {
-                players.get().sendMessage(spectateMSG, Util.NIL_UUID);
+            for (ServerPlayer players : everyTeamMember) {
+                players.sendMessage(spectateMSG, Util.NIL_UUID);
             }
         } else if (duelsGame != null) {
             duelsGame.spectators.add(executor);
-            duelsGame.p1.get().sendMessage(spectateMSG, Util.NIL_UUID);
-            duelsGame.p2.get().sendMessage(spectateMSG, Util.NIL_UUID);
+            duelsGame.p1.sendMessage(spectateMSG, Util.NIL_UUID);
+            duelsGame.p2.sendMessage(spectateMSG, Util.NIL_UUID);
         } else if (customTeamDuelsGame != null) {
             customTeamDuelsGame.spectators.add(executor);
-            List<AccuratePlayer> everyTeamMember = customTeamDuelsGame.team1.all;
+            List<ServerPlayer> everyTeamMember = customTeamDuelsGame.team1.all;
             everyTeamMember.addAll(customTeamDuelsGame.team2.all);
-            for (AccuratePlayer players : everyTeamMember) {
-                players.get().sendMessage(spectateMSG, Util.NIL_UUID);
+            for (ServerPlayer players : everyTeamMember) {
+                players.sendMessage(spectateMSG, Util.NIL_UUID);
             }
         } else if (customDuelsGame != null) {
             customDuelsGame.spectators.add(executor);
-            customDuelsGame.p1.get().sendMessage(spectateMSG, Util.NIL_UUID);
-            customDuelsGame.p2.get().sendMessage(spectateMSG, Util.NIL_UUID);
+            customDuelsGame.p1.sendMessage(spectateMSG, Util.NIL_UUID);
+            customDuelsGame.p2.sendMessage(spectateMSG, Util.NIL_UUID);
         }
 
 
@@ -184,7 +183,7 @@ public class GamemodeHandler {
                         .append(Component.text("You are now spectating ")
                                 .color(ChatFormat.normalColor)
                                 .decoration(ChatFormat.bold, false)
-                                .append(Component.text(player.get().getScoreboardName())
+                                .append(Component.text(player.getScoreboardName())
                                         .color(ChatFormat.brandColor1)
                                         .decoration(ChatFormat.bold, true)
                                 )
@@ -195,11 +194,11 @@ public class GamemodeHandler {
         executorData.gameMode = DuelGameMode.SPECTATING;
     }
 
-    public static void unspectatePlayer(@NotNull AccuratePlayer executor, @Nullable AccuratePlayer player, boolean teleport) {
+    public static void unspectatePlayer(@NotNull ServerPlayer executor, @Nullable ServerPlayer player, boolean teleport) {
         PlayerData playerData = null;
 
-        if (player != null && player.get() != null) {
-            playerData = PlayerDataManager.get(player.get());
+        if (player != null) {
+            playerData = PlayerDataManager.get(player);
         }
 
         DuelsGame duelsGame = null;
@@ -215,8 +214,8 @@ public class GamemodeHandler {
             else if(playerData.gameOptions.customTeamDuelsGame != null) customTeamDuelsGame = playerData.gameOptions.customTeamDuelsGame;
         }
 
-        PlayerData executorData = PlayerDataManager.get(executor.get());
-        Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor.get());
+        PlayerData executorData = PlayerDataManager.get(executor);
+        Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor);
 
         TextComponent spectateMSG = new TextComponent("§7§o(" + factoryExecutor.getRawName() + " has stopped spectating)");
         if (duelsGame != null || teamDuelsGame != null || customDuelsGame != null || customTeamDuelsGame != null) {
@@ -225,7 +224,7 @@ public class GamemodeHandler {
                             .append(Component.text("You have stopped spectating ")
                                     .color(ChatFormat.normalColor)
                                     .decoration(ChatFormat.bold, false)
-                                    .append(Component.text(player.name)
+                                    .append(Component.text(player.getScoreboardName())
                                             .color(ChatFormat.brandColor1)
                                             .decoration(ChatFormat.bold, true)
                                     )
@@ -236,37 +235,37 @@ public class GamemodeHandler {
         if (duelsGame != null) {
             duelsGame.spectators.remove(executor);
 
-            duelsGame.p1.get().sendMessage(spectateMSG, Util.NIL_UUID);
-            duelsGame.p2.get().sendMessage(spectateMSG, Util.NIL_UUID);
+            duelsGame.p1.sendMessage(spectateMSG, Util.NIL_UUID);
+            duelsGame.p2.sendMessage(spectateMSG, Util.NIL_UUID);
         } else if (teamDuelsGame != null) {
             teamDuelsGame.spectators.remove(executor);
 
-            List<AccuratePlayer> everyTeamPlayer = teamDuelsGame.team1.all;
+            List<ServerPlayer> everyTeamPlayer = teamDuelsGame.team1.all;
             everyTeamPlayer.addAll(teamDuelsGame.team2.all);
 
-            for (AccuratePlayer players : everyTeamPlayer) {
-                players.get().sendMessage(spectateMSG, Util.NIL_UUID);
+            for (ServerPlayer players : everyTeamPlayer) {
+                players.sendMessage(spectateMSG, Util.NIL_UUID);
             }
         } else if (customDuelsGame != null) {
             customDuelsGame.spectators.remove(executor);
 
-            customDuelsGame.p1.get().sendMessage(spectateMSG, Util.NIL_UUID);
-            customDuelsGame.p2.get().sendMessage(spectateMSG, Util.NIL_UUID);
+            customDuelsGame.p1.sendMessage(spectateMSG, Util.NIL_UUID);
+            customDuelsGame.p2.sendMessage(spectateMSG, Util.NIL_UUID);
         } else if (customTeamDuelsGame != null) {
             customTeamDuelsGame.spectators.remove(executor);
 
-            List<AccuratePlayer> everyTeamPlayer = customTeamDuelsGame.team1.all;
+            List<ServerPlayer> everyTeamPlayer = customTeamDuelsGame.team1.all;
             everyTeamPlayer.addAll(customTeamDuelsGame.team2.all);
 
-            for (AccuratePlayer players : everyTeamPlayer) {
-                players.get().sendMessage(spectateMSG, Util.NIL_UUID);
+            for (ServerPlayer players : everyTeamPlayer) {
+                players.sendMessage(spectateMSG, Util.NIL_UUID);
             }
         }
 
 
         executorData.gameMode = DuelGameMode.LOBBY;
         executorData.duelOptions.spectatingPlayer = null;
-        LobbyUtil.leaveAllGames(executor.get(), teleport);
+        LobbyUtil.leaveAllGames(executor, teleport);
     }
     public static void joinGamemode(ServerPlayer invitor, ServerPlayer player, String stringGameMode, @Nullable DuelsMap selectedmap, boolean silent) {
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
@@ -279,14 +278,14 @@ public class GamemodeHandler {
         PlayerData data = PlayerDataManager.get(invitor);
         PlayerData playerData = PlayerDataManager.get(player);
 
-        if (data.duelOptions.duelsTeam != null && data.duelOptions.duelsTeam.getPeople().contains(AccuratePlayer.create(player))) {
+        if (data.duelOptions.duelsTeam != null && data.duelOptions.duelsTeam.getPeople().contains(player)) {
             if (!silent) {
                 PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("You cannot duel people on your team!").color(ChatFormat.failColor));
             }
             return;
         }
 
-        if (data.duelOptions.duelsTeam != null && !data.duelOptions.duelsTeam.isLeader(AccuratePlayer.create(invitor))) {
+        if (data.duelOptions.duelsTeam != null && !data.duelOptions.duelsTeam.isLeader(invitor)) {
             if (!silent) {
                 PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
             }
@@ -329,14 +328,14 @@ public class GamemodeHandler {
             data.inviteOptions.perCustomDuel = true;
         }
         
-        if (data.duelOptions.duelsTeam != null && data.duelOptions.duelsTeam.getPeople().contains(AccuratePlayer.create(player))) {
+        if (data.duelOptions.duelsTeam != null && data.duelOptions.duelsTeam.getPeople().contains(player)) {
             if (!silent) {
                 PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("You cannot duel people on your team!").color(ChatFormat.failColor));
             }
             return;
         }
 
-        if (data.duelOptions.duelsTeam != null && !data.duelOptions.duelsTeam.isLeader(AccuratePlayer.create(invitor))) {
+        if (data.duelOptions.duelsTeam != null && !data.duelOptions.duelsTeam.isLeader(invitor)) {
             if (!silent) {
                 PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
             }
@@ -380,7 +379,7 @@ public class GamemodeHandler {
 
         DuelOptions.InviteOptions inviteOptions = playerData.inviteOptions;
 
-        if (!inviteOptions.inviting || !inviteOptions.invitingPlayer.equals(AccuratePlayer.create(minecraftExecutor))) {
+        if (!inviteOptions.inviting || !inviteOptions.invitingPlayer.equals(minecraftExecutor)) {
             executor.sendMessage(Component.text("That player has not challenged you to a duel!").color(ChatFormat.failColor));
             return;
         }
@@ -408,7 +407,7 @@ public class GamemodeHandler {
 
         DuelOptions.InviteOptions inviteOptions = playerData.inviteOptions;
 
-        if (!inviteOptions.inviting || !inviteOptions.invitingPlayer.equals(AccuratePlayer.create(minecraftExecutor))) {
+        if (!inviteOptions.inviting || !inviteOptions.invitingPlayer.equals(minecraftExecutor)) {
             executor.sendMessage(Component.text("That player has not challenged you to a duel!").color(ChatFormat.failColor));
             return;
         }
@@ -461,7 +460,7 @@ public class GamemodeHandler {
             return;
         }
 
-        if (executorData.duelOptions.duelsTeam != null && !executorData.duelOptions.duelsTeam.isLeader(AccuratePlayer.create(minecraftExecutor))) {
+        if (executorData.duelOptions.duelsTeam != null && !executorData.duelOptions.duelsTeam.isLeader(minecraftExecutor)) {
             executor.sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
             return;
         }
@@ -488,7 +487,7 @@ public class GamemodeHandler {
         inviteOptions.inviteMap = map;
         inviteOptions.inviteKit = stringGameMode.toUpperCase();
         inviteOptions.inviting = true;
-        inviteOptions.invitingPlayer = AccuratePlayer.create(minecraftPlayer);
+        inviteOptions.invitingPlayer = minecraftPlayer;
         inviteOptions.customDuel = false;
 
         // } else if((!executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) || !executorData.inviteKit.equalsIgnoreCase(playerData.inviteKit)) && (playerData.invitingPlayer == null || !playerData.invitingPlayer.getStringUUID().equalsIgnoreCase(minecraftExecutor.getStringUUID())) && playerData.gameMode == DuelGameMode.LOBBY){
@@ -591,7 +590,7 @@ public class GamemodeHandler {
             return;
         }
 
-        if (executorData.duelOptions.duelsTeam != null && !executorData.duelOptions.duelsTeam.isLeader(AccuratePlayer.create(minecraftExecutor))) {
+        if (executorData.duelOptions.duelsTeam != null && !executorData.duelOptions.duelsTeam.isLeader(minecraftExecutor)) {
             executor.sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
             return;
         }
@@ -609,7 +608,7 @@ public class GamemodeHandler {
         inviteOptions.inviteMap = map;
         inviteOptions.inviteKit = customKit.toLowerCase();
         inviteOptions.inviting = true;
-        inviteOptions.invitingPlayer = AccuratePlayer.create(minecraftPlayer);
+        inviteOptions.invitingPlayer = minecraftPlayer;
         inviteOptions.customDuel = true;
 
         inviteOptions.perCustomDuel = inviteOptions.inviteKit2 != null && !inviteOptions.inviteKit2.trim().isEmpty();

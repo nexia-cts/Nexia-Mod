@@ -35,7 +35,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.AABB;
-import net.notcoded.codelib.players.AccuratePlayer;
 import net.notcoded.codelib.util.TickUtil;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
@@ -45,9 +44,9 @@ import java.util.ArrayList;
 import java.util.function.Predicate;
 
 public class FootballGame {
-    public static ArrayList<AccuratePlayer> players = new ArrayList<>();
+    public static ArrayList<ServerPlayer> players = new ArrayList<>();
 
-    public static ArrayList<AccuratePlayer> spectator = new ArrayList<>();
+    public static ArrayList<ServerPlayer> spectator = new ArrayList<>();
 
     public static ServerLevel world = null;
 
@@ -62,7 +61,7 @@ public class FootballGame {
 
     public static int queueTime = 15;
 
-    public static ArrayList<AccuratePlayer> queue = new ArrayList<>();
+    public static ArrayList<ServerPlayer> queue = new ArrayList<>();
 
     public static boolean isStarted = false;
 
@@ -77,14 +76,13 @@ public class FootballGame {
 
     public static void leave(ServerPlayer minecraftPlayer) {
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
-        AccuratePlayer accuratePlayer = AccuratePlayer.create(minecraftPlayer);
 
         PlayerData data = PlayerDataManager.get(minecraftPlayer);
-        FootballGame.spectator.remove(accuratePlayer);
-        FootballGame.queue.remove(accuratePlayer);
-        FootballGame.players.remove(accuratePlayer);
+        FootballGame.spectator.remove(minecraftPlayer);
+        FootballGame.queue.remove(minecraftPlayer);
+        FootballGame.players.remove(minecraftPlayer);
 
-        if(data.gameMode.equals(FootballGameMode.PLAYING) && (winnerTeam == null || !winnerTeam.players.contains(accuratePlayer))) data.savedData.loss++;
+        if(data.gameMode.equals(FootballGameMode.PLAYING) && (winnerTeam == null || !winnerTeam.players.contains(minecraftPlayer))) data.savedData.loss++;
         data.team = null;
 
         player.removeTag("in_football_game");
@@ -111,7 +109,7 @@ public class FootballGame {
                 // r * 65536 + g * 256 + b;
 
                 if(winnerTeam != null) {
-                    ServerPlayer randomPlayer = winnerTeam.players.get(RandomUtil.randomInt(winnerTeam.players.size())).get();
+                    ServerPlayer randomPlayer = winnerTeam.players.get(RandomUtil.randomInt(winnerTeam.players.size()));
                     if(randomPlayer != null) DuelGameHandler.winnerRockets(randomPlayer, FootballGame.world, color);
                 }
 
@@ -144,15 +142,15 @@ public class FootballGame {
 
         } else {
             if(FootballGame.queue.size() >= 2) {
-                for(AccuratePlayer player : FootballGame.queue){
-                    if(player.get() == null) return;
-                    Player fPlayer = PlayerUtil.getFactoryPlayer(player.get());
+                for(ServerPlayer player : FootballGame.queue){
+                    if(player == null) return;
+                    Player fPlayer = PlayerUtil.getFactoryPlayer(player);
 
                     if(FootballGame.queueTime <= 5) {
                         Title title = getTitle(FootballGame.queueTime);
 
-                        PlayerUtil.getFactoryPlayer(player.get()).sendTitle(title);
-                        PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+                        PlayerUtil.getFactoryPlayer(player).sendTitle(title);
+                        PlayerUtil.sendSound(player, new EntityPos(player), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
                     }
 
                     fPlayer.sendActionBarMessage(
@@ -185,7 +183,7 @@ public class FootballGame {
         if(!team1.refreshTeam() || !team2.refreshTeam()) endGame(null);
 
         if(!FootballGame.isEnding) {
-            ServerPlayer closestPlayer = (ServerPlayer) FootballGame.world.getNearestPlayer(entity.getX(), entity.getY(), entity.getZ(), 20, e -> e instanceof ServerPlayer se && !se.isSpectator() && !se.isCreative() && team.players.contains(AccuratePlayer.create(se)));
+            ServerPlayer closestPlayer = (ServerPlayer) FootballGame.world.getNearestPlayer(entity.getX(), entity.getY(), entity.getZ(), 20, e -> e instanceof ServerPlayer se && !se.isSpectator() && !se.isCreative() && team.players.contains(se));
             if(closestPlayer != null) PlayerDataManager.get(closestPlayer).savedData.goals++;
             team.goals++;
             if(team.goals >= FootballGame.map.maxGoals) FootballGame.endGame(team);
@@ -193,7 +191,7 @@ public class FootballGame {
 
         FootballGame.updateInfo();
 
-        //PlayerDataManager.get(scorer.get()).savedData.goals++;
+        //PlayerDataManager.get(scorer).savedData.goals++;
 
         int teamID = 1;
         if(team == FootballGame.team2) teamID = 2;
@@ -206,12 +204,12 @@ public class FootballGame {
                 PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(Component.text("Team " + teamID).color(ChatFormat.brandColor2), Component.text("has scored a goal!").color(ChatFormat.normalColor)));
             }
 
-            for(AccuratePlayer player : FootballGame.team1.players) {
-                FootballGame.team1.spawnPosition.teleportPlayer(FootballGame.world, player.get());
+            for(ServerPlayer player : FootballGame.team1.players) {
+                FootballGame.team1.spawnPosition.teleportPlayer(FootballGame.world, player);
             }
 
-            for(AccuratePlayer player : FootballGame.team2.players) {
-                FootballGame.team2.spawnPosition.teleportPlayer(FootballGame.world, player.get());
+            for(ServerPlayer player : FootballGame.team2.players) {
+                FootballGame.team2.spawnPosition.teleportPlayer(FootballGame.world, player);
             }
         }
 
@@ -235,14 +233,13 @@ public class FootballGame {
     public static void joinQueue(ServerPlayer player) {
         com.nexia.minigames.games.football.util.player.PlayerData data = PlayerDataManager.get(player);
         data.team = null;
-        AccuratePlayer accuratePlayer = AccuratePlayer.create(player);
-        accuratePlayer.get().setHealth(accuratePlayer.get().getMaxHealth());
+        player.setHealth(player.getMaxHealth());
         if(FootballGame.isStarted){
-            FootballGame.spectator.add(accuratePlayer);
+            FootballGame.spectator.add(player);
             PlayerDataManager.get(player).gameMode = FootballGameMode.SPECTATOR;
-            accuratePlayer.get().setGameMode(GameType.SPECTATOR);
+            player.setGameMode(GameType.SPECTATOR);
         } else {
-            FootballGame.queue.add(accuratePlayer);
+            FootballGame.queue.add(player);
             player.addTag(LobbyUtil.NO_DAMAGE_TAG);
         }
 
@@ -271,9 +268,9 @@ public class FootballGame {
         int teamID = 1;
         if(winnerTeam == FootballGame.team2) teamID = 2;
 
-        for(AccuratePlayer accuratePlayer : winnerTeam.players) {
-            PlayerUtil.getFactoryPlayer(accuratePlayer.get()).sendTitle(Title.title(Component.text("You won!").color(ChatFormat.greenColor), Component.text("")));
-            PlayerDataManager.get(accuratePlayer.get()).savedData.wins++;
+        for(ServerPlayer player : winnerTeam.players) {
+            PlayerUtil.getFactoryPlayer(player).sendTitle(Title.title(Component.text("You won!").color(ChatFormat.greenColor), Component.text("")));
+            PlayerDataManager.get(player).savedData.wins++;
         }
 
         for(ServerPlayer player : FootballGame.getViewers()){
@@ -348,7 +345,7 @@ public class FootballGame {
         return armorStand;
     }
 
-    private static FootballTeam assignPlayer(AccuratePlayer player) {
+    private static FootballTeam assignPlayer(ServerPlayer player) {
         int players = FootballGame.players.size();
         int random = RandomUtil.randomInt(1, 2);
 
@@ -399,25 +396,24 @@ public class FootballGame {
              */
             FootballGame.createArmorStand();
 
-            for(AccuratePlayer player : FootballGame.players) {
-                ServerPlayer serverPlayer = player.get();
+            for(ServerPlayer player : FootballGame.players) {
                 //serverPlayer.inventory.setItem(0, normal);
                 //serverPlayer.inventory.setItem(1, kicking);
-                serverPlayer.inventory.setItem(0, kicking);
+                player.inventory.setItem(0, kicking);
 
-                PlayerData data = PlayerDataManager.get(serverPlayer);
+                PlayerData data = PlayerDataManager.get(player);
                 data.gameMode = FootballGameMode.PLAYING;
 
-                serverPlayer.addTag("in_football_game");
-                serverPlayer.addTag(LobbyUtil.NO_DAMAGE_TAG);
-                serverPlayer.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 99999, 255, false, false, false));
+                player.addTag("in_football_game");
+                player.addTag(LobbyUtil.NO_DAMAGE_TAG);
+                player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 99999, 255, false, false, false));
 
                 data.team = FootballGame.assignPlayer(player);
                 while(data.team == null) {
                     data.team = FootballGame.assignPlayer(player);
                     // if you're still null then im going to beat the shit out of you
                 }
-                data.team.spawnPosition.teleportPlayer(FootballGame.world, serverPlayer);
+                data.team.spawnPosition.teleportPlayer(FootballGame.world, player);
 
                 ItemStack helmet = Items.LEATHER_HELMET.getDefaultInstance();
                 helmet.getOrCreateTag().putInt("Unbreakable", 1);
@@ -447,15 +443,15 @@ public class FootballGame {
                 leatherItem.setColor(leggings, colour);
                 leatherItem.setColor(boots, colour);
 
-                player.get().setItemSlot(EquipmentSlot.HEAD, helmet);
-                player.get().setItemSlot(EquipmentSlot.CHEST, chestplate);
-                player.get().setItemSlot(EquipmentSlot.LEGS, leggings);
-                player.get().setItemSlot(EquipmentSlot.FEET, boots);
+                player.setItemSlot(EquipmentSlot.HEAD, helmet);
+                player.setItemSlot(EquipmentSlot.CHEST, chestplate);
+                player.setItemSlot(EquipmentSlot.LEGS, leggings);
+                player.setItemSlot(EquipmentSlot.FEET, boots);
 
 
-                player.get().setGameMode(GameType.SURVIVAL);
+                player.setGameMode(GameType.SURVIVAL);
                 //player.setRespawnPosition(world.dimension(), pos, 0, true, false);
-                player.get().getCooldowns().addCooldown(Items.NETHERITE_SWORD, 200);
+                player.getCooldowns().addCooldown(Items.NETHERITE_SWORD, 200);
             }
 
             FootballGame.spectator.clear();
@@ -521,8 +517,8 @@ public class FootballGame {
 
     public static ArrayList<ServerPlayer> getViewers() {
         ArrayList<ServerPlayer> viewers = new ArrayList<>();
-        FootballGame.players.forEach(player -> viewers.add(player.get()));
-        FootballGame.spectator.forEach(player -> viewers.add(player.get()));
+        viewers.addAll(FootballGame.players);
+        viewers.addAll(FootballGame.spectator);
         return viewers;
     }
 }

@@ -34,7 +34,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.AABB;
-import net.notcoded.codelib.players.AccuratePlayer;
 import net.notcoded.codelib.util.TickUtil;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
@@ -47,11 +46,11 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class OitcGame {
-    public static ArrayList<AccuratePlayer> players = new ArrayList<>();
+    public static ArrayList<ServerPlayer> players = new ArrayList<>();
 
-    public static ArrayList<AccuratePlayer> spectator = new ArrayList<>();
+    public static ArrayList<ServerPlayer> spectator = new ArrayList<>();
 
-    public static HashMap<AccuratePlayer, Integer> deathPlayers = new HashMap<>();
+    public static HashMap<ServerPlayer, Integer> deathPlayers = new HashMap<>();
 
     public static ServerLevel world = null;
 
@@ -63,13 +62,13 @@ public class OitcGame {
 
     public static int queueTime = 15;
 
-    public static ArrayList<AccuratePlayer> queue = new ArrayList<>();
+    public static ArrayList<ServerPlayer> queue = new ArrayList<>();
 
     public static boolean isStarted = false;
 
     public static boolean isEnding = false;
 
-    private static AccuratePlayer winner = null;
+    private static ServerPlayer winner = null;
 
     public static final String OITC_TAG = "oitc";
 
@@ -79,18 +78,17 @@ public class OitcGame {
     public static void leave(ServerPlayer minecraftPlayer) {
         OitcGame.death(minecraftPlayer, minecraftPlayer.getLastDamageSource());
         Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
-        AccuratePlayer accuratePlayer = AccuratePlayer.create(minecraftPlayer);
 
         PlayerData data = PlayerDataManager.get(minecraftPlayer);
-        OitcGame.spectator.remove(accuratePlayer);
-        OitcGame.queue.remove(accuratePlayer);
-        OitcGame.players.remove(accuratePlayer);
-        OitcGame.deathPlayers.remove(accuratePlayer);
+        OitcGame.spectator.remove(minecraftPlayer);
+        OitcGame.queue.remove(minecraftPlayer);
+        OitcGame.players.remove(minecraftPlayer);
+        OitcGame.deathPlayers.remove(minecraftPlayer);
 
         data.kills = 0;
 
         if(OitcGame.players.size() <= 1 && !OitcGame.isEnding && OitcGame.isStarted) {
-            if(OitcGame.players.size() == 1) OitcGame.endGame(OitcGame.players.get(0).get());
+            if(OitcGame.players.size() == 1) OitcGame.endGame(OitcGame.players.getFirst());
             else OitcGame.endGame(null);
         }
 
@@ -103,7 +101,7 @@ public class OitcGame {
         minecraftPlayer.inventory.setCarried(ItemStack.EMPTY);
         minecraftPlayer.getEnderChestInventory().clearContent();
 
-        if(data.gameMode.equals(OitcGameMode.PLAYING) && winner != accuratePlayer) {
+        if(data.gameMode.equals(OitcGameMode.PLAYING) && winner != minecraftPlayer) {
             data.savedData.loss++;
         }
 
@@ -117,7 +115,7 @@ public class OitcGame {
             if(OitcGame.isEnding) {
                 int color = 244 * 65536 + 166 * 256 + 71;
                 // r * 65536 + g * 256 + b;
-                if(OitcGame.winner != null && OitcGame.winner.get() != null) DuelGameHandler.winnerRockets(OitcGame.winner.get(), OitcGame.world, color);
+                if(OitcGame.winner != null) DuelGameHandler.winnerRockets(OitcGame.winner, OitcGame.world, color);
 
                 if(OitcGame.endTime <= 0) {
                     for(ServerPlayer player : OitcGame.getViewers()){
@@ -133,7 +131,7 @@ public class OitcGame {
                     OitcGame.deathPlayers.forEach(((player, integer) -> {
                         int newInt = integer - 1;
 
-                        if(!player.get().isSpectator()) player.get().setGameMode(GameType.SPECTATOR);
+                        if(!player.isSpectator()) player.setGameMode(GameType.SPECTATOR);
 
                         /*
                         OitcGame.deathPlayers.remove(player);
@@ -144,20 +142,20 @@ public class OitcGame {
 
                         Title title = getTitle(newInt);
 
-                        PlayerUtil.getFactoryPlayer(player.get()).sendTitle(title);
-                        PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+                        PlayerUtil.getFactoryPlayer(player).sendTitle(title);
+                        PlayerUtil.sendSound(player, new EntityPos(player), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
 
 
                         if(newInt <= 1){
-                            spawnInRandomPos(player.get());
+                            spawnInRandomPos(player);
                             OitcGame.deathPlayers.remove(player);
-                            //ServerTime.factoryServer.runCommand("/gamemode adventure " + player.get().getScoreboardName(), 4, false);
-                            player.get().setGameMode(GameType.ADVENTURE);
+                            //ServerTime.factoryServer.runCommand("/gamemode adventure " + player.getScoreboardName(), 4, false);
+                            player.setGameMode(GameType.ADVENTURE);
                             BlfScheduler.delay(5, new BlfRunnable() {
                                 @Override
                                 public void run() {
-                                    giveKit(player.get());
-                                    player.get().setGameMode(GameType.ADVENTURE);
+                                    giveKit(player);
+                                    player.setGameMode(GameType.ADVENTURE);
                                 }
                             });
 
@@ -172,9 +170,9 @@ public class OitcGame {
                     List<Integer> intKills = new ArrayList<>();
                     HashMap<Integer, ServerPlayer> kills = new HashMap<>();
 
-                    for(AccuratePlayer player : OitcGame.players) {
-                        intKills.add(PlayerDataManager.get(player.get()).kills);
-                        kills.put(PlayerDataManager.get(player.get()).kills, player.get());
+                    for(ServerPlayer player : OitcGame.players) {
+                        intKills.add(PlayerDataManager.get(player).kills);
+                        kills.put(PlayerDataManager.get(player).kills, player);
                     }
 
                     endGame(kills.get(Collections.max(intKills)));
@@ -186,14 +184,14 @@ public class OitcGame {
 
         } else {
             if(OitcGame.queue.size() >= 2) {
-                for(AccuratePlayer player : OitcGame.queue){
-                    Player fPlayer = PlayerUtil.getFactoryPlayer(player.get());
+                for(ServerPlayer player : OitcGame.queue){
+                    Player fPlayer = PlayerUtil.getFactoryPlayer(player);
 
                     if(OitcGame.queueTime <= 5) {
                         Title title = getTitle(OitcGame.queueTime);
 
-                        PlayerUtil.getFactoryPlayer(player.get()).sendTitle(title);
-                        PlayerUtil.sendSound(player.get(), new EntityPos(player.get()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+                        PlayerUtil.getFactoryPlayer(player).sendTitle(title);
+                        PlayerUtil.sendSound(player, new EntityPos(player), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
                     }
 
                     fPlayer.sendActionBarMessage(
@@ -239,14 +237,13 @@ public class OitcGame {
     public static void joinQueue(ServerPlayer player) {
         PlayerData data = PlayerDataManager.get(player);
         data.kills = 0;
-        AccuratePlayer accuratePlayer = AccuratePlayer.create(player);
-        accuratePlayer.get().setHealth(accuratePlayer.get().getMaxHealth());
+        player.setHealth(player.getMaxHealth());
         if(OitcGame.isStarted || OitcGame.queue.size() >= OitcGame.map.maxPlayers){
-            OitcGame.spectator.add(accuratePlayer);
+            OitcGame.spectator.add(player);
             PlayerDataManager.get(player).gameMode = OitcGameMode.SPECTATOR;
-            accuratePlayer.get().setGameMode(GameType.SPECTATOR);
+            player.setGameMode(GameType.SPECTATOR);
         } else {
-            OitcGame.queue.add(accuratePlayer);
+            OitcGame.queue.add(player);
             player.addTag(LobbyUtil.NO_DAMAGE_TAG);
         }
 
@@ -258,7 +255,7 @@ public class OitcGame {
         OitcGame.isEnding = true;
         if(serverPlayer == null) return;
         PlayerData data = PlayerDataManager.get(serverPlayer);
-        OitcGame.winner = AccuratePlayer.create(serverPlayer);
+        OitcGame.winner = serverPlayer;
 
         PlayerUtil.getFactoryPlayer(serverPlayer).sendTitle(Title.title(Component.text("You won!").color(ChatFormat.greenColor), Component.text("")));
 
@@ -319,8 +316,7 @@ public class OitcGame {
             bow.getOrCreateTag().putBoolean("Unbreakable", true);
             bow.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
 
-            for(AccuratePlayer player : OitcGame.players) {
-                ServerPlayer serverPlayer = player.get();
+            for(ServerPlayer serverPlayer : OitcGame.players) {
                 serverPlayer.inventory.setItem(0, sword);
                 serverPlayer.inventory.setItem(1, bow);
                 serverPlayer.inventory.setItem(2, new ItemStack(Items.ARROW));
@@ -353,8 +349,7 @@ public class OitcGame {
 
     public static void death(ServerPlayer victim, DamageSource source){
         PlayerData victimData = PlayerDataManager.get(victim);
-        AccuratePlayer accurateVictim = AccuratePlayer.create(victim);
-        if(OitcGame.isStarted && !OitcGame.deathPlayers.containsKey(accurateVictim) && victimData.gameMode == OitcGameMode.PLAYING) {
+        if(OitcGame.isStarted && !OitcGame.deathPlayers.containsKey(victim) && victimData.gameMode == OitcGameMode.PLAYING) {
             ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim);
             if(attacker != null && victim != attacker) {
                 PlayerData attackerData = PlayerDataManager.get(attacker);
@@ -365,8 +360,8 @@ public class OitcGame {
             }
 
             PlayerDataManager.get(victim).hasDied = true;
-            OitcGame.deathPlayers.remove(accurateVictim);
-            OitcGame.deathPlayers.put(accurateVictim, 4); // 3 seconds
+            OitcGame.deathPlayers.remove(victim);
+            OitcGame.deathPlayers.put(victim, 4); // 3 seconds
         }
     }
 
@@ -416,8 +411,8 @@ public class OitcGame {
 
     public static ArrayList<ServerPlayer> getViewers() {
         ArrayList<ServerPlayer> viewers = new ArrayList<>();
-        OitcGame.players.forEach(player -> viewers.add(player.get()));
-        OitcGame.spectator.forEach(player -> viewers.add(player.get()));
+        viewers.addAll(OitcGame.players);
+        viewers.addAll(OitcGame.spectator);
         return viewers;
     }
 }

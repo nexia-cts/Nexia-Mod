@@ -15,7 +15,6 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerPlayer;
-import net.notcoded.codelib.players.AccuratePlayer;
 
 public class PartyCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
@@ -107,7 +106,7 @@ public class PartyCommand {
             return 1;
         }
 
-        data.duelOptions.duelsTeam.replaceLeader(AccuratePlayer.create(executor), AccuratePlayer.create(player), true);
+        data.duelOptions.duelsTeam.replaceLeader(executor, player, true);
         return 1;
     }
 
@@ -135,7 +134,7 @@ public class PartyCommand {
             return 1;
         }
 
-        com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).duelOptions.duelsTeam.disbandTeam(AccuratePlayer.create(player), true);
+        com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).duelOptions.duelsTeam.disbandTeam(player, true);
         return 1;
     }
     public static int leaveTeam(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
@@ -148,7 +147,7 @@ public class PartyCommand {
             return 1;
         }
 
-        com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).duelOptions.duelsTeam.leaveTeam(AccuratePlayer.create(player), true);
+        com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).duelOptions.duelsTeam.leaveTeam(player, true);
         return 1;
     }
 }
