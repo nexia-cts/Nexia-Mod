@@ -1,7 +1,6 @@
 package com.nexia.core.games.util;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
-import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
@@ -54,7 +53,7 @@ public class LobbyUtil {
     public static String[] statsGameModes = {"FFA CLASSIC", "SKY FFA", "UHC FFA", "KIT FFA", "BEDWARS", "OITC", "DUELS", "SKYWARS", "FOOTBALL"};
 
     public static ServerLevel lobbyWorld = null;
-    public static EntityPos lobbySpawn = new EntityPos(Main.config.lobbyPos[0], Main.config.lobbyPos[1], Main.config.lobbyPos[2], 0, 0);
+    public static EntityPos lobbySpawn = new EntityPos(0, 65, 0, 0, 0);
 
     public static boolean isLobbyWorld(Level level) {
         return level.dimension() == Level.OVERWORLD;

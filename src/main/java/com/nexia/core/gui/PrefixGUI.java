@@ -1,20 +1,22 @@
 package com.nexia.core.gui;
 
 import com.combatreforged.factory.api.world.entity.player.Player;
-import com.nexia.core.Main;
+import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.ranks.NexiaRank;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import me.lucko.fabric.api.permissions.v0.Permissions;
-import net.minecraft.ChatFormatting;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantments;
 
 public class PrefixGUI extends SimpleGui {
     static final TextComponent title = new TextComponent("Prefix Menu");
@@ -47,28 +49,28 @@ public class PrefixGUI extends SimpleGui {
             this.setSlot(airSlots, new ItemStack(Items.AIR));
             airSlots++;
         }
-        for(String rank : Main.config.ranks){
+
+        for(NexiaRank rank : NexiaRank.ranks){
+
             if(slot == 17) {
                 slot = 19;
             }
 
-            if(Permissions.check(player, "nexia.prefix." + rank) && player.getTags().contains(rank)){
+            if(Permissions.check(player, "nexia.prefix." + rank.id) && player.getTags().contains(rank.id)){
                 ItemStack enchantedItem = new ItemStack(Items.NAME_TAG, 1);
-                enchantedItem.enchant(Enchantments.SHARPNESS, 1);
-                enchantedItem.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
-                enchantedItem.setHoverName(new TextComponent("§d§l" + rank));
+                ItemDisplayUtil.addGlint(enchantedItem);
+                enchantedItem.setHoverName(ObjectMappings.convertComponent(Component.text(rank.name, ChatFormat.brandColor2).decoration(ChatFormat.italic, false).decoration(ChatFormat.bold, true)));
                 this.setSlot(slot, enchantedItem);
                 slot++;
-            } else if(Permissions.check(player, "nexia.prefix." + rank)){
+            } else if(Permissions.check(player, "nexia.prefix." + rank.id)){
                 ItemStack changedItem = new ItemStack(Items.NAME_TAG, 1);
-                changedItem.setHoverName(new TextComponent("§f" + rank));
+                changedItem.setHoverName(ObjectMappings.convertComponent(Component.text(rank.name, NamedTextColor.WHITE).decoration(ChatFormat.italic, false).decoration(ChatFormat.bold, true)));
                 this.setSlot(slot, changedItem);
                 slot++;
-            } else if(player.getTags().contains(rank)) {
+            } else if(player.getTags().contains(rank.id)) {
                 ItemStack enchantedItem = new ItemStack(Items.NAME_TAG, 1);
-                enchantedItem.enchant(Enchantments.SHARPNESS, 1);
-                enchantedItem.hideTooltipPart(ItemStack.TooltipPart.ENCHANTMENTS);
-                enchantedItem.setHoverName(new TextComponent(rank).withStyle(ChatFormatting.BOLD, ChatFormatting.LIGHT_PURPLE));
+                ItemDisplayUtil.addGlint(enchantedItem);
+                enchantedItem.setHoverName(ObjectMappings.convertComponent(Component.text(rank.name, ChatFormat.brandColor2).decoration(ChatFormat.italic, false).decoration(ChatFormat.bold, true)));
                 this.setSlot(slot, enchantedItem);
                 slot++;
             }
@@ -79,7 +81,7 @@ public class PrefixGUI extends SimpleGui {
         GuiElementInterface element = this.getSlot(index);
         if(element != null && clickType != ClickType.MOUSE_DOUBLE_CLICK) {
             ItemStack itemStack = element.getItemStack();
-            String name = itemStack.getHoverName().getString().substring(2).replaceAll("§l", "");
+            String name = itemStack.getHoverName().getString();
 
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
 
@@ -87,14 +89,16 @@ public class PrefixGUI extends SimpleGui {
 
                 player.sendMessage(
                         ChatFormat.nexiaMessage
-                                        .append(net.kyori.adventure.text.Component.text("Your prefix has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                                .append(net.kyori.adventure.text.Component.text(name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                                                        .append(net.kyori.adventure.text.Component.text(".").decoration(ChatFormat.bold, false))
+                                .append(net.kyori.adventure.text.Component.text("Your prefix has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                .append(net.kyori.adventure.text.Component.text(name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                .append(net.kyori.adventure.text.Component.text(".").decoration(ChatFormat.bold, false))
                 );
 
-                for(String rank : Main.config.ranks){
-                    player.removeTag(rank);
+                for(NexiaRank rank : NexiaRank.ranks){
+                    player.removeTag(rank.id);
                 }
+
+                if(name.equalsIgnoreCase("player")) name = "default";
 
                 player.addTag(name.toLowerCase());
                 this.setMainLayout(this.player);
