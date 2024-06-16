@@ -299,7 +299,7 @@ public class StatsCommand {
                     .append(Component.text(bestKillstreak).color(ChatFormat.goldColor))
             );
 
-            if(gamemode.equalsIgnoreCase("classic ffa")) {
+            if(gamemode.equalsIgnoreCase("ffa classic")) {
                 player.sendMessage(start
                         .append(Component.text(" Rating: ").color(ChatFormat.brandColor2))
                         .append(Component.text(rating).color(ChatFormat.goldColor))
