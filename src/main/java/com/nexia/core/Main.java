@@ -65,8 +65,8 @@ public class Main implements ModInitializer, NexusPlugin {
 		Main.logger.info("Registering listeners...");
 		ListenerHelper.registerListeners();
 		Main.logger.info("Registered listeners.");
-		Main.logger.info("Registering nexus commands...");
+		Main.logger.info("Registering Nexus commands...");
 		CommandLoader.registerNexusCommands();
-		Main.logger.info("Registered nexus commands.");
+		Main.logger.info("Registered Nexus commands.");
 	}
 }
