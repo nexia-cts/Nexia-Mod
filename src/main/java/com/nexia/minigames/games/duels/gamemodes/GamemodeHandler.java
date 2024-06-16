@@ -123,7 +123,7 @@ public class GamemodeHandler {
 
         PlayerData playerData = PlayerDataManager.get(player);
 
-        if (playerData.gameOptions == null || (!playerData.inDuel || playerData.gameOptions.teamDuelsGame == null || playerData.gameOptions.duelsGame == null || playerData.gameOptions.customTeamDuelsGame == null || playerData.gameOptions.customDuelsGame == null)) {
+        if (playerData.gameOptions == null || (!playerData.inDuel && playerData.gameOptions.teamDuelsGame == null && playerData.gameOptions.duelsGame == null && playerData.gameOptions.customTeamDuelsGame == null && playerData.gameOptions.customDuelsGame == null)) {
             factoryExecutor.sendMessage(Component.text("That player is not in a duel!").color(ChatFormat.failColor));
             return;
         }
