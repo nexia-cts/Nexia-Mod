@@ -90,8 +90,8 @@ public class RatingUtil {
         Collections.reverse(playerScores);
         leaderboardRating = playerScores;
 
-        //if (oldLeaderboardRating != null) removePlayersRank(oldLeaderboardRating);
-        //givePlayersRank(playerScores);
+        if (oldLeaderboardRating != null) removePlayersRank(oldLeaderboardRating);
+        givePlayersRank(playerScores);
 
         oldLeaderboardRating = playerScores;
 
@@ -146,10 +146,6 @@ public class RatingUtil {
         int i = 0;
         for (Score score : scores) {
             if (i >= 5) break;
-            
-            NexiaRank rank;
-            if (i == 0) rank = NexiaRank.GOD;
-            else rank = NexiaRank.PRO;
 
             ServerPlayer player = ServerTime.minecraftServer.getPlayerList().getPlayerByName(score.getOwner());
             if (player == null) {
@@ -159,9 +155,11 @@ public class RatingUtil {
             NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
             if (Permissions.check(player, "nexia.rank")) {
-                NexiaRank.addPrefix(rank, nexiaPlayer, false);
+                if(i == 0) NexiaRank.addPrefix(NexiaRank.GOD, nexiaPlayer, false);
+                else NexiaRank.addPrefix(NexiaRank.PRO, nexiaPlayer, false);
             } else {
-                NexiaRank.setRank(rank, nexiaPlayer);
+                if(i == 0) NexiaRank.addPrefix(NexiaRank.GOD, nexiaPlayer, false);
+                NexiaRank.setRank(NexiaRank.PRO, nexiaPlayer);
             }
 
             i++;
@@ -180,7 +178,7 @@ public class RatingUtil {
     }
 
     public static void checkRatingRank(NexiaPlayer player) {
-        if (RatingUtil.leaderboardRating == null || player == null || player.unwrap() == null) return;
+        if (RatingUtil.leaderboardRating == null || player == null) return;
 
         int i = 0;
         boolean isInTopFive = false;
@@ -201,6 +199,19 @@ public class RatingUtil {
                 NexiaRank.removePrefix(NexiaRank.GOD, player);
             } else {
                 NexiaRank.setRank(NexiaRank.DEFAULT, player);
+            }
+        } else {
+            if (player.hasPermission("nexia.rank")) {
+                if(i == 0) NexiaRank.addPrefix(NexiaRank.GOD, player, false);
+                else {
+                    // just in case
+                    NexiaRank.removePrefix(NexiaRank.GOD, player);
+
+                    NexiaRank.addPrefix(NexiaRank.PRO, player, false);
+                }
+            } else {
+                if(i == 0) NexiaRank.setRank(NexiaRank.GOD, player);
+                else NexiaRank.setRank(NexiaRank.PRO, player);
             }
         }
     }

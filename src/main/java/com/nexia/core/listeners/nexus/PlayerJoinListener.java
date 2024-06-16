@@ -1,5 +1,6 @@
 package com.nexia.core.listeners.nexus;
 
+import com.nexia.ffa.classic.utilities.RatingUtil;
 import com.nexia.nexus.api.event.player.PlayerJoinEvent;
 import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
@@ -144,7 +145,7 @@ public class PlayerJoinListener {
         LobbyUtil.returnToLobby(player, true);
 
         checkBooster(player);
-        //checkRatingRank(player);
+        RatingUtil.checkRatingRank(player);
         sendJoinMessage(player);
     }
 }
