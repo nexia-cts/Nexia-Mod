@@ -9,6 +9,7 @@ import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.discord.Main;
 import com.nexia.discord.utilities.player.PlayerData;
+import com.nexia.ffa.classic.utilities.RatingUtil;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -148,6 +149,7 @@ public class PlayerJoinListener {
         com.nexia.minigames.games.skywars.util.player.PlayerDataManager.addPlayerData(minecraftPlayer);
         LobbyUtil.leaveAllGames(minecraftPlayer, true);
         checkBooster(minecraftPlayer);
+        RatingUtil.checkRatingRank(minecraftPlayer);
         sendJoinMessage(player);
     }
 }

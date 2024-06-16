@@ -99,6 +99,10 @@ public class FfaClassicUtil {
         if(player.getTags().contains("bot") || attacker.getTags().contains("bot")) return;
 
         SavedPlayerData data = PlayerDataManager.get(attacker).savedData;
+
+        RatingUtil.calculateRating(attacker, player);
+        RatingUtil.updateLeaderboard();
+
         data.killstreak++;
         if(data.killstreak > data.bestKillstreak){
             data.bestKillstreak = data.killstreak;
@@ -162,7 +166,26 @@ public class FfaClassicUtil {
             Component component = FfaUtil.returnClassicDeathMessage(minecraftPlayer, attacker);
             if(component != null) msg = component;
 
+            double attackerOldRating = com.nexia.ffa.kits.utilities.player.PlayerDataManager.get(attacker).savedData.rating;
+            double victimOldRating = com.nexia.ffa.kits.utilities.player.PlayerDataManager.get(minecraftPlayer).savedData.rating;
+
             calculateKill(attacker, minecraftPlayer);
+
+            double attackerNewRating = com.nexia.ffa.kits.utilities.player.PlayerDataManager.get(attacker).savedData.rating;
+            double victimNewRating = com.nexia.ffa.kits.utilities.player.PlayerDataManager.get(minecraftPlayer).savedData.rating;
+
+            msg = msg.append(Component.text(" (")
+                            .color(ChatFormat.chatColor2))
+                    .append(Component.text(String.format("%.2f", RatingUtil.calculateRatingDifference(victimNewRating, victimOldRating)))
+                            .color(ChatFormat.failColor))
+                    .append(Component.text(" / ")
+                            .color(ChatFormat.chatColor2))
+                    .append(Component.text("+")
+                            .color(ChatFormat.greenColor))
+                    .append(Component.text(String.format("%.2f", RatingUtil.calculateRatingDifference(attackerNewRating, attackerOldRating)))
+                            .color(ChatFormat.greenColor))
+                    .append(Component.text(")")
+                            .color(ChatFormat.chatColor2));
         }
 
         for (Player player : ServerTime.factoryServer.getPlayers()) {
