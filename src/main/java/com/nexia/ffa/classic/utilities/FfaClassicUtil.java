@@ -168,13 +168,13 @@ public class FfaClassicUtil {
             Component component = FfaUtil.returnClassicDeathMessage(minecraftPlayer, attacker);
             if(component != null) msg = component;
 
-            double attackerOldRating = com.nexia.ffa.kits.utilities.player.PlayerDataManager.get(attacker).savedData.rating;
-            double victimOldRating = com.nexia.ffa.kits.utilities.player.PlayerDataManager.get(minecraftPlayer).savedData.rating;
+            double attackerOldRating = com.nexia.ffa.classic.utilities.player.PlayerDataManager.get(attacker).savedData.rating;
+            double victimOldRating = com.nexia.ffa.classic.utilities.player.PlayerDataManager.get(minecraftPlayer).savedData.rating;
 
             calculateKill(attacker, minecraftPlayer);
 
-            double attackerNewRating = com.nexia.ffa.kits.utilities.player.PlayerDataManager.get(attacker).savedData.rating;
-            double victimNewRating = com.nexia.ffa.kits.utilities.player.PlayerDataManager.get(minecraftPlayer).savedData.rating;
+            double attackerNewRating = com.nexia.ffa.classic.utilities.player.PlayerDataManager.get(attacker).savedData.rating;
+            double victimNewRating = com.nexia.ffa.classic.utilities.player.PlayerDataManager.get(minecraftPlayer).savedData.rating;
 
             msg = msg.append(Component.text(" (")
                             .color(ChatFormat.chatColor2))

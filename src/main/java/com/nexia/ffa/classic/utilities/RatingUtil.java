@@ -199,6 +199,11 @@ public class RatingUtil {
                 NexiaRank.setRank(NexiaRank.DEFAULT, player);
             }
         } else {
+
+            if(i != 0) {
+                NexiaRank.removePrefix(NexiaRank.GOD, player);
+            }
+
             if (Permissions.check(player, "nexia.rank")) {
                 if(i == 0) NexiaRank.addPrefix(NexiaRank.GOD, player, false);
                 else NexiaRank.addPrefix(NexiaRank.PRO, player, false);
