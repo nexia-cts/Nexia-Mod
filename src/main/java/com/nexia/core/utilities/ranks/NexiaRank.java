@@ -41,10 +41,17 @@ public class NexiaRank {
         private final Component prefix;
         public final ChatFormatting color;
 
+        public final String color1;
+        public final String color2;
+
         public NexiaPlayerTeam(String name, String teamName, String color1, String color2, ChatFormatting color) {
             this.name = name;
             this.teamName = teamName;
             this.color = color;
+
+            this.color1 = color1;
+            this.color2 = color2;
+
             if(color1 == null || color2 == null) this.prefix = new TextComponent("");
             else {
                 this.prefix = ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<bold><gradient:%s:%s>%s</gradient></bold> <dark_gray>| </dark_gray>", color1, color2, name)));
