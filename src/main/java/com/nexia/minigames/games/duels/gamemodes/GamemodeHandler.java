@@ -6,7 +6,7 @@ import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.DuelsGame;
@@ -44,24 +44,26 @@ public class GamemodeHandler {
 
     }
 
-    public static boolean isInQueue(@NotNull NexiaPlayer player, @NotNull DuelGameMode gameMode) {
+    public static boolean isInQueue(@NotNull ServerPlayer player, @NotNull DuelGameMode gameMode) {
         return gameMode.queue.contains(player);
     }
 
-    public static void joinQueue(NexiaPlayer player, String stringGameMode, boolean silent) {
-        if (stringGameMode.equalsIgnoreCase("leave")) {
-            removeQueue(player, null, silent);
+    public static void joinQueue(ServerPlayer minecraftPlayer, String stringGameMode, boolean silent) {
+        if (stringGameMode.equalsIgnoreCase("lobby") || stringGameMode.equalsIgnoreCase("leave")) {
+            LobbyUtil.leaveAllGames(minecraftPlayer, true);
             return;
         }
 
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
+
+        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
 
         if (gameMode == null) {
             if (!silent) player.sendMessage(Component.text("Invalid gamemode!").color(ChatFormat.failColor));
             return;
         }
 
-        PlayerData data = PlayerDataManager.get(player);
+        PlayerData data = PlayerDataManager.get(minecraftPlayer);
 
         if (data.duelOptions.duelsTeam != null) {
             if (!silent) player.sendMessage(Component.text("You are in a team!").color(ChatFormat.failColor));
@@ -78,57 +80,57 @@ public class GamemodeHandler {
 
         }
 
-        removeQueue(player, stringGameMode, true);
+        removeQueue(minecraftPlayer, stringGameMode, true);
 
-        gameMode.queue.add(player);
+        gameMode.queue.add(minecraftPlayer);
         if (gameMode.queue.size() >= 2) {
-            GamemodeHandler.joinGamemode(player, gameMode.queue.getFirst(), stringGameMode, null, false);
+            GamemodeHandler.joinGamemode(minecraftPlayer, gameMode.queue.getFirst(), stringGameMode, null, false);
         }
     }
 
-    public static void removeQueue(NexiaPlayer player, @Nullable String stringGameMode, boolean silent) {
-        if(stringGameMode == null || stringGameMode.trim().isEmpty()) {
-            for(DuelGameMode gameMode : DuelGameMode.duelGameModes) {
-                gameMode.queue.remove(player);
+    public static void removeQueue(ServerPlayer minecraftPlayer, @Nullable String stringGameMode, boolean silent) {
+        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+        if (stringGameMode != null) {
+            DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
+            if (gameMode == null) {
+                if (!silent) player.sendMessage(Component.text("Invalid gamemode!").color(ChatFormat.failColor));
+                return;
             }
-            return;
+
+            gameMode.queue.remove(minecraftPlayer);
+
+            if (!silent) {
+                player.sendMessage(
+                        ChatFormat.nexiaMessage
+                                .append(Component.text("You have left the queue for ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
+                                        .append(Component.text(stringGameMode.toUpperCase()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                                        .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                ));
+            }
+        } else {
+            for(DuelGameMode gameMode : DuelGameMode.duelGameModes) {
+                gameMode.queue.remove(minecraftPlayer);
+            }
         }
-
-        DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
-        if (gameMode == null) {
-            if (!silent) player.sendMessage(Component.text("Invalid gamemode!").color(ChatFormat.failColor));
-            return;
-        }
-
-        gameMode.queue.remove(player);
-
-        if (!silent) {
-            player.sendMessage(
-                    ChatFormat.nexiaMessage
-                            .append(Component.text("You have left the queue for ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                                    .append(Component.text(stringGameMode.toUpperCase()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                                    .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                            ));
-        }
-
     }
 
 
-    public static void spectatePlayer(@NotNull NexiaPlayer executor, @NotNull NexiaPlayer player) {
-        if (executor.equals(player)) {
-            executor.sendMessage(Component.text("You may not spectate yourself!").color(ChatFormat.failColor));
+    public static void spectatePlayer(@NotNull AccuratePlayer executor, @NotNull AccuratePlayer player) {
+        Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor.get());
+        if (executor == player) {
+            factoryExecutor.sendMessage(Component.text("You may not spectate yourself!").color(ChatFormat.failColor));
             return;
         }
 
-        PlayerData playerData = PlayerDataManager.get(player);
+        PlayerData playerData = PlayerDataManager.get(player.get());
 
         if (playerData.gameOptions == null || (!playerData.inDuel || playerData.gameOptions.teamDuelsGame == null || playerData.gameOptions.duelsGame == null || playerData.gameOptions.customTeamDuelsGame == null || playerData.gameOptions.customDuelsGame == null)) {
-            executor.sendMessage(Component.text("That player is not in a duel!").color(ChatFormat.failColor));
+            factoryExecutor.sendMessage(Component.text("That player is not in a duel!").color(ChatFormat.failColor));
             return;
         }
 
 
-        PlayerData executorData = PlayerDataManager.get(executor);
+        PlayerData executorData = PlayerDataManager.get(executor.get());
 
         if (executorData.gameMode == DuelGameMode.SPECTATING) {
             unspectatePlayer(executor, player, false);
@@ -154,30 +156,30 @@ public class GamemodeHandler {
 
         if (teamDuelsGame != null) {
             teamDuelsGame.spectators.add(executor);
-            List<NexiaPlayer> everyTeamMember = teamDuelsGame.team1.all;
+            List<AccuratePlayer> everyTeamMember = teamDuelsGame.team1.all;
             everyTeamMember.addAll(teamDuelsGame.team2.all);
-            for (NexiaPlayer players : everyTeamMember) {
-                players.sendMessage(spectateMSG);
+            for (AccuratePlayer players : everyTeamMember) {
+                players.get().sendMessage(spectateMSG, Util.NIL_UUID);
             }
         } else if (duelsGame != null) {
             duelsGame.spectators.add(executor);
-            duelsGame.p1.sendMessage(spectateMSG);
-            duelsGame.p2.sendMessage(spectateMSG);
+            duelsGame.p1.get().sendMessage(spectateMSG, Util.NIL_UUID);
+            duelsGame.p2.get().sendMessage(spectateMSG, Util.NIL_UUID);
         } else if (customTeamDuelsGame != null) {
             customTeamDuelsGame.spectators.add(executor);
-            List<NexiaPlayer> everyTeamMember = customTeamDuelsGame.team1.all;
+            List<AccuratePlayer> everyTeamMember = customTeamDuelsGame.team1.all;
             everyTeamMember.addAll(customTeamDuelsGame.team2.all);
-            for (NexiaPlayer players : everyTeamMember) {
-                players.sendMessage(spectateMSG);
+            for (AccuratePlayer players : everyTeamMember) {
+                players.get().sendMessage(spectateMSG, Util.NIL_UUID);
             }
         } else if (customDuelsGame != null) {
             customDuelsGame.spectators.add(executor);
-            customDuelsGame.p1.sendMessage(spectateMSG);
-            customDuelsGame.p2.sendMessage(spectateMSG);
+            customDuelsGame.p1.get().sendMessage(spectateMSG, Util.NIL_UUID);
+            customDuelsGame.p2.get().sendMessage(spectateMSG, Util.NIL_UUID);
         }
 
 
-        executor.sendMessage(
+        factoryExecutor.sendMessage(
                 ChatFormat.nexiaMessage
                         .append(Component.text("You are now spectating ")
                                 .color(ChatFormat.normalColor)
@@ -193,7 +195,7 @@ public class GamemodeHandler {
         executorData.gameMode = DuelGameMode.SPECTATING;
     }
 
-    public static void unspectatePlayer(@NotNull NexiaPlayer executor, @Nullable NexiaPlayer player, boolean teleport) {
+    public static void unspectatePlayer(@NotNull AccuratePlayer executor, @Nullable AccuratePlayer player, boolean teleport) {
         PlayerData playerData = null;
 
         if (player != null && player.get() != null) {
@@ -216,8 +218,9 @@ public class GamemodeHandler {
         PlayerData executorData = PlayerDataManager.get(executor.get());
         Player factoryExecutor = PlayerUtil.getFactoryPlayer(executor.get());
 
+        TextComponent spectateMSG = new TextComponent("§7§o(" + factoryExecutor.getRawName() + " has stopped spectating)");
         if (duelsGame != null || teamDuelsGame != null || customDuelsGame != null || customTeamDuelsGame != null) {
-            executor.sendMessage(
+            factoryExecutor.sendMessage(
                     ChatFormat.nexiaMessage
                             .append(Component.text("You have stopped spectating ")
                                     .color(ChatFormat.normalColor)
@@ -233,61 +236,59 @@ public class GamemodeHandler {
         if (duelsGame != null) {
             duelsGame.spectators.remove(executor);
 
-            duelsGame.p1.sendMessage(spectateMSG);
-            duelsGame.p2.sendMessage(spectateMSG);
+            duelsGame.p1.get().sendMessage(spectateMSG, Util.NIL_UUID);
+            duelsGame.p2.get().sendMessage(spectateMSG, Util.NIL_UUID);
         } else if (teamDuelsGame != null) {
             teamDuelsGame.spectators.remove(executor);
 
-            List<NexiaPlayer> everyTeamPlayer = teamDuelsGame.team1.all;
+            List<AccuratePlayer> everyTeamPlayer = teamDuelsGame.team1.all;
             everyTeamPlayer.addAll(teamDuelsGame.team2.all);
 
-            for (NexiaPlayer players : everyTeamPlayer) {
-                players.sendMessage(spectateMSG);
+            for (AccuratePlayer players : everyTeamPlayer) {
+                players.get().sendMessage(spectateMSG, Util.NIL_UUID);
             }
         } else if (customDuelsGame != null) {
             customDuelsGame.spectators.remove(executor);
 
-            customDuelsGame.p1.sendMessage(spectateMSG);
-            customDuelsGame.p2.sendMessage(spectateMSG);
+            customDuelsGame.p1.get().sendMessage(spectateMSG, Util.NIL_UUID);
+            customDuelsGame.p2.get().sendMessage(spectateMSG, Util.NIL_UUID);
         } else if (customTeamDuelsGame != null) {
             customTeamDuelsGame.spectators.remove(executor);
 
-            List<NexiaPlayer> everyTeamPlayer = customTeamDuelsGame.team1.all;
+            List<AccuratePlayer> everyTeamPlayer = customTeamDuelsGame.team1.all;
             everyTeamPlayer.addAll(customTeamDuelsGame.team2.all);
 
-            for (NexiaPlayer players : everyTeamPlayer) {
-                players.sendMessage(spectateMSG);
+            for (AccuratePlayer players : everyTeamPlayer) {
+                players.get().sendMessage(spectateMSG, Util.NIL_UUID);
             }
         }
 
 
         executorData.gameMode = DuelGameMode.LOBBY;
         executorData.duelOptions.spectatingPlayer = null;
-
-        LobbyUtil.returnToLobby(executor, teleport);
-
+        LobbyUtil.leaveAllGames(executor.get(), teleport);
     }
-    public static void joinGamemode(NexiaPlayer invitor, NexiaPlayer player, String stringGameMode, @Nullable DuelsMap selectedmap, boolean silent) {
+    public static void joinGamemode(ServerPlayer invitor, ServerPlayer player, String stringGameMode, @Nullable DuelsMap selectedmap, boolean silent) {
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
         if (gameMode == null) {
             if (!silent) {
-                invitor.sendMessage(Component.text("Invalid gamemode!").color(ChatFormat.failColor));
+                PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("Invalid gamemode!").color(ChatFormat.failColor));
             }
             return;
         }
         PlayerData data = PlayerDataManager.get(invitor);
         PlayerData playerData = PlayerDataManager.get(player);
 
-        if (data.duelOptions.duelsTeam != null && data.duelOptions.duelsTeam.getPeople().contains(player)) {
+        if (data.duelOptions.duelsTeam != null && data.duelOptions.duelsTeam.getPeople().contains(AccuratePlayer.create(player))) {
             if (!silent) {
-                invitor.sendMessage(Component.text("You cannot duel people on your team!").color(ChatFormat.failColor));
+                PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("You cannot duel people on your team!").color(ChatFormat.failColor));
             }
             return;
         }
 
-        if (data.duelOptions.duelsTeam != null && !data.duelOptions.duelsTeam.isLeader(invitor)) {
+        if (data.duelOptions.duelsTeam != null && !data.duelOptions.duelsTeam.isLeader(AccuratePlayer.create(invitor))) {
             if (!silent) {
-                invitor.sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
+                PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
             }
             return;
         }
@@ -307,10 +308,10 @@ public class GamemodeHandler {
 
     }
 
-    public static void joinCustomGamemode(NexiaPlayer invitor, NexiaPlayer player, String kitID, @Nullable DuelsMap selectedmap, boolean silent) {
+    public static void joinCustomGamemode(ServerPlayer invitor, ServerPlayer player, String kitID, @Nullable DuelsMap selectedmap, boolean silent) {
         if (!DuelGameHandler.validCustomKit(invitor, kitID)) {
             if (!silent) {
-                invitor.sendMessage(Component.text("Invalid custom kit!").color(ChatFormat.failColor));
+                PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("Invalid custom kit!").color(ChatFormat.failColor));
             }
             return;
         }
@@ -320,7 +321,7 @@ public class GamemodeHandler {
 
         if(data.inviteOptions.inviteKit2 != null && !DuelGameHandler.validCustomKit(player, data.inviteOptions.inviteKit2)) {
             if (!silent) {
-                invitor.sendMessage(Component.text("Invalid per-custom kit (2)!").color(ChatFormat.failColor));
+                PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("Invalid per-custom kit (2)!").color(ChatFormat.failColor));
             }
             data.inviteOptions.inviteKit2 = null;
             return;
@@ -328,16 +329,16 @@ public class GamemodeHandler {
             data.inviteOptions.perCustomDuel = true;
         }
         
-        if (data.duelOptions.duelsTeam != null && data.duelOptions.duelsTeam.getPeople().contains(player)) {
+        if (data.duelOptions.duelsTeam != null && data.duelOptions.duelsTeam.getPeople().contains(AccuratePlayer.create(player))) {
             if (!silent) {
-                invitor.sendMessage(Component.text("You cannot duel people on your team!").color(ChatFormat.failColor));
+                PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("You cannot duel people on your team!").color(ChatFormat.failColor));
             }
             return;
         }
 
-        if (data.duelOptions.duelsTeam != null && !data.duelOptions.duelsTeam.isLeader(invitor)) {
+        if (data.duelOptions.duelsTeam != null && !data.duelOptions.duelsTeam.isLeader(AccuratePlayer.create(invitor))) {
             if (!silent) {
-                invitor.sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
+                PlayerUtil.getFactoryPlayer(invitor).sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
             }
             return;
         }
@@ -355,12 +356,14 @@ public class GamemodeHandler {
 
     }
 
-    public static void acceptDuel(@NotNull NexiaPlayer executor, @NotNull NexiaPlayer player) {
+    public static void acceptDuel(@NotNull ServerPlayer minecraftExecutor, @NotNull ServerPlayer minecraftPlayer) {
+        Player executor = PlayerUtil.getFactoryPlayer(minecraftExecutor);
+        //Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
 
-        PlayerData executorData = PlayerDataManager.get(executor);
-        PlayerData playerData = PlayerDataManager.get(player);
+        PlayerData executorData = PlayerDataManager.get(minecraftExecutor);
+        PlayerData playerData = PlayerDataManager.get(minecraftPlayer);
 
-        if (executor.equals(player)) {
+        if (minecraftExecutor == minecraftPlayer) {
             executor.sendMessage(Component.text("You cannot duel yourself!").color(ChatFormat.failColor));
             return;
         }
@@ -370,39 +373,42 @@ public class GamemodeHandler {
             return;
         }
 
-        if (com.nexia.core.utilities.player.PlayerDataManager.get(executor).gameMode != PlayerGameMode.LOBBY || com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode != PlayerGameMode.LOBBY) {
+        if (com.nexia.core.utilities.player.PlayerDataManager.get(minecraftExecutor).gameMode != PlayerGameMode.LOBBY || com.nexia.core.utilities.player.PlayerDataManager.get(minecraftPlayer).gameMode != PlayerGameMode.LOBBY) {
             executor.sendMessage(Component.text("That player is not in duels!").color(ChatFormat.failColor));
             return;
         }
 
         DuelOptions.InviteOptions inviteOptions = playerData.inviteOptions;
 
-        if (!inviteOptions.inviting || !inviteOptions.invitingPlayer.equals(executor)) {
+        if (!inviteOptions.inviting || !inviteOptions.invitingPlayer.equals(AccuratePlayer.create(minecraftExecutor))) {
             executor.sendMessage(Component.text("That player has not challenged you to a duel!").color(ChatFormat.failColor));
             return;
         }
 
-        if(inviteOptions.customDuel) GamemodeHandler.joinCustomGamemode(player, executor, inviteOptions.inviteKit, inviteOptions.inviteMap, false);
-        else GamemodeHandler.joinGamemode(player, executor, inviteOptions.inviteKit, inviteOptions.inviteMap, false);
+        if(inviteOptions.customDuel) GamemodeHandler.joinCustomGamemode(minecraftPlayer, minecraftExecutor, inviteOptions.inviteKit, inviteOptions.inviteMap, false);
+        else GamemodeHandler.joinGamemode(minecraftPlayer, minecraftExecutor, inviteOptions.inviteKit, inviteOptions.inviteMap, false);
     }
 
-    public static void declineDuel(@NotNull NexiaPlayer executor, @NotNull NexiaPlayer player) {
-        //PlayerData executorData = PlayerDataManager.get(executor);
-        PlayerData playerData = PlayerDataManager.get(player);
+    public static void declineDuel(@NotNull ServerPlayer minecraftExecutor, @NotNull ServerPlayer minecraftPlayer) {
+        Player executor = PlayerUtil.getFactoryPlayer(minecraftExecutor);
+        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
 
-        if (executor.equals(player)) {
+        //PlayerData executorData = PlayerDataManager.get(minecraftExecutor);
+        PlayerData playerData = PlayerDataManager.get(minecraftPlayer);
+
+        if (minecraftExecutor == minecraftPlayer) {
             executor.sendMessage(Component.text("You cannot duel yourself!").color(ChatFormat.failColor));
             return;
         }
 
-        if (com.nexia.core.utilities.player.PlayerDataManager.get(executor).gameMode != PlayerGameMode.LOBBY || com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode != PlayerGameMode.LOBBY) {
+        if (com.nexia.core.utilities.player.PlayerDataManager.get(minecraftExecutor).gameMode != PlayerGameMode.LOBBY || com.nexia.core.utilities.player.PlayerDataManager.get(minecraftPlayer).gameMode != PlayerGameMode.LOBBY) {
             executor.sendMessage(Component.text("That player is not in duels!").color(ChatFormat.failColor));
             return;
         }
 
         DuelOptions.InviteOptions inviteOptions = playerData.inviteOptions;
 
-        if (!inviteOptions.inviting || !inviteOptions.invitingPlayer.equals(executor)) {
+        if (!inviteOptions.inviting || !inviteOptions.invitingPlayer.equals(AccuratePlayer.create(minecraftExecutor))) {
             executor.sendMessage(Component.text("That player has not challenged you to a duel!").color(ChatFormat.failColor));
             return;
         }
@@ -426,31 +432,36 @@ public class GamemodeHandler {
         );
     }
 
-    public static void challengePlayer(NexiaPlayer executor, NexiaPlayer player, String stringGameMode, @Nullable DuelsMap selectedmap) {
+    public static void challengePlayer(ServerPlayer minecraftExecutor, ServerPlayer minecraftPlayer, String stringGameMode, @Nullable DuelsMap selectedmap) {
+
+        Player executor = PlayerUtil.getFactoryPlayer(minecraftExecutor);
+
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
         if (gameMode == null) {
             executor.sendMessage(Component.text("Invalid gamemode!").color(ChatFormat.failColor));
             return;
         }
-        if (executor.equals(player)) {
+        if (minecraftExecutor == minecraftPlayer) {
             executor.sendMessage(Component.text("You cannot duel yourself!").color(ChatFormat.failColor));
             return;
         }
 
-        PlayerData executorData = PlayerDataManager.get(executor);
-        PlayerData playerData = PlayerDataManager.get(player);
+        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+
+        PlayerData executorData = PlayerDataManager.get(minecraftExecutor);
+        PlayerData playerData = PlayerDataManager.get(minecraftPlayer);
 
         if (executorData.inDuel || playerData.inDuel) {
             executor.sendMessage(Component.text("That player is currently dueling someone.").color(ChatFormat.failColor));
             return;
         }
 
-        if (com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode != PlayerGameMode.LOBBY) {
+        if (com.nexia.core.utilities.player.PlayerDataManager.get(minecraftPlayer).gameMode != PlayerGameMode.LOBBY) {
             executor.sendMessage(Component.text("That player is not in duels!").color(ChatFormat.failColor));
             return;
         }
 
-        if (executorData.duelOptions.duelsTeam != null && !executorData.duelOptions.duelsTeam.isLeader(executor)) {
+        if (executorData.duelOptions.duelsTeam != null && !executorData.duelOptions.duelsTeam.isLeader(AccuratePlayer.create(minecraftExecutor))) {
             executor.sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
             return;
         }
@@ -477,10 +488,10 @@ public class GamemodeHandler {
         inviteOptions.inviteMap = map;
         inviteOptions.inviteKit = stringGameMode.toUpperCase();
         inviteOptions.inviting = true;
-        inviteOptions.invitingPlayer = player;
+        inviteOptions.invitingPlayer = AccuratePlayer.create(minecraftPlayer);
         inviteOptions.customDuel = false;
 
-        // } else if((!executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) || !executorData.inviteKit.equalsIgnoreCase(playerData.inviteKit)) && (playerData.invitingPlayer == null || !playerData.invitingPlayer.getStringUUID().equalsIgnoreCase(executor.getStringUUID())) && playerData.gameMode == DuelGameMode.LOBBY){
+        // } else if((!executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) || !executorData.inviteKit.equalsIgnoreCase(playerData.inviteKit)) && (playerData.invitingPlayer == null || !playerData.invitingPlayer.getStringUUID().equalsIgnoreCase(minecraftExecutor.getStringUUID())) && playerData.gameMode == DuelGameMode.LOBBY){
 
         Component message = Component.text(executor.getRawName()).color(ChatFormat.brandColor1)
                 .append(Component.text(" has challenged you to a duel!").color(ChatFormat.normalColor)
@@ -544,41 +555,43 @@ public class GamemodeHandler {
         player.sendMessage(yes.append(no));
     }
 
-    public static void customChallengePlayer(NexiaPlayer executor, NexiaPlayer player, String customKit, @Nullable DuelsMap selectedmap) {
-        PlayerData executorData = PlayerDataManager.get(executor);
+    public static void customChallengePlayer(ServerPlayer minecraftExecutor, ServerPlayer minecraftPlayer, String customKit, @Nullable DuelsMap selectedmap) {
+        Player executor = PlayerUtil.getFactoryPlayer(minecraftExecutor);
+        PlayerData executorData = PlayerDataManager.get(minecraftExecutor);
         DuelOptions.InviteOptions inviteOptions = executorData.inviteOptions;
 
-        if(customKit.equalsIgnoreCase("vanilla") || customKit.equalsIgnoreCase("smp")) com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(executor).inviteOptions.inviteKit2 = customKit;
+        if(customKit.equalsIgnoreCase("vanilla") || customKit.equalsIgnoreCase("smp")) com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(minecraftExecutor).inviteOptions.inviteKit2 = customKit;
 
-        if (!DuelGameHandler.validCustomKit(executor, customKit)) {
+        if (!DuelGameHandler.validCustomKit(minecraftExecutor, customKit)) {
             executor.sendMessage(Component.text("Invalid kit!").color(ChatFormat.failColor));
             return;
         }
 
-        if(inviteOptions.inviteKit2 != null && !DuelGameHandler.validCustomKit(player, inviteOptions.inviteKit2)) {
+        if(inviteOptions.inviteKit2 != null && !DuelGameHandler.validCustomKit(minecraftPlayer, inviteOptions.inviteKit2)) {
             executor.sendMessage(Component.text("The other player does not have a valid custom kit for " + customKit + ".").color(ChatFormat.failColor));
             inviteOptions.inviteKit2 = null;
             return;
         }
 
-        if (executor == player) {
+        if (minecraftExecutor == minecraftPlayer) {
             executor.sendMessage(Component.text("You cannot duel yourself!").color(ChatFormat.failColor));
             return;
         }
-        
-        PlayerData playerData = PlayerDataManager.get(player);
+
+        Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
+        PlayerData playerData = PlayerDataManager.get(minecraftPlayer);
 
         if (executorData.inDuel || playerData.inDuel) {
             executor.sendMessage(Component.text("That player is currently dueling someone.").color(ChatFormat.failColor));
             return;
         }
 
-        if (com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode != PlayerGameMode.LOBBY) {
+        if (com.nexia.core.utilities.player.PlayerDataManager.get(minecraftPlayer).gameMode != PlayerGameMode.LOBBY) {
             executor.sendMessage(Component.text("That player is not in duels!").color(ChatFormat.failColor));
             return;
         }
 
-        if (executorData.duelOptions.duelsTeam != null && !executorData.duelOptions.duelsTeam.isLeader(executor)) {
+        if (executorData.duelOptions.duelsTeam != null && !executorData.duelOptions.duelsTeam.isLeader(AccuratePlayer.create(minecraftExecutor))) {
             executor.sendMessage(Component.text("You are not the team leader!").color(ChatFormat.failColor));
             return;
         }
@@ -596,12 +609,12 @@ public class GamemodeHandler {
         inviteOptions.inviteMap = map;
         inviteOptions.inviteKit = customKit.toLowerCase();
         inviteOptions.inviting = true;
-        inviteOptions.invitingPlayer = player;
+        inviteOptions.invitingPlayer = AccuratePlayer.create(minecraftPlayer);
         inviteOptions.customDuel = true;
 
         inviteOptions.perCustomDuel = inviteOptions.inviteKit2 != null && !inviteOptions.inviteKit2.trim().isEmpty();
 
-        // } else if((!executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) || !executorData.inviteKit.equalsIgnoreCase(playerData.inviteKit)) && (playerData.invitingPlayer == null || !playerData.invitingPlayer.getStringUUID().equalsIgnoreCase(executor.getStringUUID())) && playerData.gameMode == DuelGameMode.LOBBY){
+        // } else if((!executorData.inviteMap.equalsIgnoreCase(playerData.inviteMap) || !executorData.inviteKit.equalsIgnoreCase(playerData.inviteKit)) && (playerData.invitingPlayer == null || !playerData.invitingPlayer.getStringUUID().equalsIgnoreCase(minecraftExecutor.getStringUUID())) && playerData.gameMode == DuelGameMode.LOBBY){
 
         Component message = Component.text(executor.getRawName()).color(ChatFormat.brandColor1)
                 .append(Component.text(" has challenged you to a duel!").color(ChatFormat.normalColor)

@@ -5,7 +5,6 @@ import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.minigames.games.duels.DuelGameHandler;
@@ -59,7 +58,7 @@ public class TeamDuelsGame { // implements Runnable{
 
     public ServerLevel level;
 
-    public ArrayList<NexiaPlayer> spectators = new ArrayList<>();
+    public ArrayList<AccuratePlayer> spectators = new ArrayList<>();
 
     // Winner thingie
     public DuelsTeam winner = null;
@@ -136,10 +135,12 @@ public class TeamDuelsGame { // implements Runnable{
         TeamDuelsGame game = new TeamDuelsGame(team1, team2, gameMode, selectedMap, duelLevel, 5, 5);
         DuelGameHandler.teamDuelsGames.add(game);
 
-        for (NexiaPlayer player : team1.all) {
-            PlayerData data = PlayerDataManager.get(player);
+        for (AccuratePlayer player : team1.all) {
+            ServerPlayer serverPlayer = player.get();
+            PlayerData data = PlayerDataManager.get(serverPlayer);
+            Player factoryPlayer = PlayerUtil.getFactoryPlayer(serverPlayer);
 
-            DuelGameHandler.leave(player, false);
+            DuelGameHandler.leave(serverPlayer, false);
 
             data.gameMode = gameMode;
             data.gameOptions = new DuelOptions.GameOptions(game, team2);
@@ -149,13 +150,13 @@ public class TeamDuelsGame { // implements Runnable{
             serverPlayer.setGameMode(GameType.ADVENTURE);
             selectedMap.p1Pos.teleportPlayer(duelLevel, serverPlayer);
 
-            player.sendMessage(ChatFormat.nexiaMessage
+            factoryPlayer.sendMessage(ChatFormat.nexiaMessage
                     .append(Component.text("Your opponent: ").color(ChatFormat.normalColor)
                             .decoration(ChatFormat.bold, false)
                             .append(Component.text(team2.getLeader().get().getScoreboardName() + "'s Team")
                                     .color(ChatFormat.brandColor2))));
 
-            DuelGameHandler.loadInventory(player, stringGameMode);
+            DuelGameHandler.loadInventory(serverPlayer, stringGameMode);
 
             if (!gameMode.hasSaturation) {
                 factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
@@ -167,10 +168,12 @@ public class TeamDuelsGame { // implements Runnable{
             PlayerUtil.resetHealthStatus(factoryPlayer);
         }
 
-        for (NexiaPlayer player : team2.all) {
-            PlayerData data = PlayerDataManager.get(player);
+        for (AccuratePlayer player : team2.all) {
+            ServerPlayer serverPlayer = player.get();
+            PlayerData data = PlayerDataManager.get(serverPlayer);
+            Player factoryPlayer = PlayerUtil.getFactoryPlayer(serverPlayer);
 
-            DuelGameHandler.leave(player, false);
+            DuelGameHandler.leave(serverPlayer, false);
 
             data.gameMode = gameMode;
             data.gameOptions = new DuelOptions.GameOptions(game, team1);
@@ -180,13 +183,13 @@ public class TeamDuelsGame { // implements Runnable{
             serverPlayer.setGameMode(GameType.ADVENTURE);
             selectedMap.p2Pos.teleportPlayer(duelLevel, serverPlayer);
 
-            player.sendMessage(ChatFormat.nexiaMessage
+            factoryPlayer.sendMessage(ChatFormat.nexiaMessage
                     .append(Component.text("Your opponent: ").color(ChatFormat.normalColor)
                             .decoration(ChatFormat.bold, false)
                             .append(Component.text(team1.getLeader().get().getScoreboardName() + "'s Team")
                                     .color(ChatFormat.brandColor2))));
 
-            DuelGameHandler.loadInventory(player, stringGameMode);
+            DuelGameHandler.loadInventory(serverPlayer, stringGameMode);
 
             if (!gameMode.hasSaturation) {
                 factoryPlayer.addTag(LobbyUtil.NO_SATURATION_TAG);
@@ -214,9 +217,10 @@ public class TeamDuelsGame { // implements Runnable{
 
             Component errormsg = Component.text("Cause: " + isBroken);
 
-            for (NexiaPlayer spectator : this.spectators) {
-                spectator.sendMessage(error);
-                spectator.sendMessage(errormsg);
+            for (AccuratePlayer spectator : this.spectators) {
+                Player factoryPlayer = PlayerUtil.getFactoryPlayer(spectator.get());
+                factoryPlayer.sendMessage(error);
+                factoryPlayer.sendMessage(errormsg);
             }
 
             for (ServerPlayer player : this.level.players()) {
@@ -237,7 +241,7 @@ public class TeamDuelsGame { // implements Runnable{
         if (this.isEnding) {
             int color = 160 * 65536 + 248;
             // r * 65536 + g * 256 + b;
-            DuelGameHandler.winnerRockets(this.winner.alive.get(new Random().nextInt(this.winner.alive.size())),
+            DuelGameHandler.winnerRockets(this.winner.alive.get(new Random().nextInt(this.winner.alive.size())).get(),
                     this.level, color);
             this.currentEndTime++;
             if (this.currentEndTime >= this.endTime || !this.shouldWait) {
@@ -379,20 +383,22 @@ public class TeamDuelsGame { // implements Runnable{
                 .append(Component.text(loserTeam.getLeader().get().getScoreboardName() + "'s Team")
                         .color(ChatFormat.brandColor2));
 
-        for (NexiaPlayer player : loserTeam.all) {
-            PlayerDataManager.get(player).savedData.loss++;
-            player.sendTitle(Title.title(titleLose, subtitleLose));
-            player.sendMessage(win);
+        for (AccuratePlayer player : loserTeam.all) {
+            Player factoryPlayer = PlayerUtil.getFactoryPlayer(player.get());
+            PlayerDataManager.get(player.get()).savedData.loss++;
+            factoryPlayer.sendTitle(Title.title(titleLose, subtitleLose));
+            factoryPlayer.sendMessage(win);
         }
 
-        for (NexiaPlayer player : winnerTeam.all) {
-            PlayerDataManager.get(player).savedData.wins++;
-            player.sendTitle(Title.title(titleWin, subtitleWin));
-            player.sendMessage(win);
+        for (AccuratePlayer player : winnerTeam.all) {
+            Player factoryPlayer = PlayerUtil.getFactoryPlayer(player.get());
+            PlayerDataManager.get(player.get()).savedData.wins++;
+            factoryPlayer.sendTitle(Title.title(titleWin, subtitleWin));
+            factoryPlayer.sendMessage(win);
         }
     }
 
-    public void death(@NotNull NexiaPlayer victim, @Nullable DamageSource source) {
+    public void death(@NotNull ServerPlayer victim, @Nullable DamageSource source) {
         PlayerData victimData = PlayerDataManager.get(victim);
         DuelsTeam victimTeam = victimData.duelOptions.duelsTeam;
 
@@ -407,7 +413,7 @@ public class TeamDuelsGame { // implements Runnable{
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim);
 
         if (attacker != null) {
-            PlayerData attackerData = PlayerDataManager.get(attacker.getUUID());
+            PlayerData attackerData = PlayerDataManager.get(attacker);
             if (attackerData.gameOptions.teamDuelsGame != null && attackerData.gameOptions.teamDuelsGame.equals(this) && isVictimTeamDead) {
                 this.endGame(victimTeam, attackerData.duelOptions.duelsTeam, true);
             }

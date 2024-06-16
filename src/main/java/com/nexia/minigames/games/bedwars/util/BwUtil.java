@@ -11,7 +11,6 @@ import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.custom.BwExplosiveSlime;
 import com.nexia.minigames.games.bedwars.players.BwPlayers;
 import com.nexia.minigames.games.bedwars.players.BwTeam;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundUpdateAttributesPacket;
@@ -42,13 +41,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.PlayerTeam;
-import net.minecraft.world.scores.Team;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class BwUtil {
 
@@ -103,9 +98,6 @@ public class BwUtil {
 
         server.getCommands().performCommand(server.createCommandSourceStack(),
                 "team modify " + teamName + " color gray");
-
-        playerTeam.setColor(ChatFormatting.GRAY);
-        playerTeam.setDeathMessageVisibility(Team.Visibility.NEVER);
 
         BwGame.spectatorTeam = playerTeam;
     }

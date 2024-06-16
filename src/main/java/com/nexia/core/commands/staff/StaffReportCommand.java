@@ -41,7 +41,7 @@ public class StaffReportCommand {
                                     } catch (Exception ignored) { }
 
 
-                                    PlayerData data = PlayerDataManager.get(mcOtherPlayer.getUUID());
+                                    PlayerData data = PlayerDataManager.get(mcOtherPlayer);
 
                                     if(type.equalsIgnoreCase("ban")) {
                                         if(data.savedData.isReportBanned()) {

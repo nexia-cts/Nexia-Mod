@@ -4,7 +4,6 @@ import com.combatreforged.factory.api.world.entity.player.Player;
 import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.ffa.kits.utilities.FfaKitsUtil;
 import com.nexia.ffa.kits.utilities.player.PlayerDataManager;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -53,8 +52,6 @@ public class FfaKit {
     }
 
     public void giveKit(ServerPlayer player, boolean clearEffect) {
-        if (!FfaKitsUtil.isFfaPlayer(player)) return;
-
         Player fPlayer = PlayerUtil.getFactoryPlayer(player);
         PlayerDataManager.get(player).kit = this;
 

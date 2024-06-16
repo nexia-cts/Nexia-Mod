@@ -60,7 +60,7 @@ public abstract class PlayerMixin extends LivingEntity {
         Player player = (Player) (Object) this;
         this.level.broadcastEntityEvent(this, (byte)30);
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
-        if(attacker != null){
+        if(attacker != null && Main.config.enhancements.betterShields){
             //this.level.broadcastEntityEvent(attacker, (byte)30);
 
             SoundSource soundSource = null;

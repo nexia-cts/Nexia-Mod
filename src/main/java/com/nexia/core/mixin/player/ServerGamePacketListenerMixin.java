@@ -4,9 +4,10 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
+import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.misc.EventUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
@@ -100,7 +101,7 @@ public class ServerGamePacketListenerMixin {
     @Inject(method = "handleUseItemOn", at = @At("HEAD"), cancellable = true)
     private void handleUseItemOn(ServerboundUseItemOnPacket packet, CallbackInfo ci) {
 
-        if (BwUtil.isInBedWars(nexiaPlayer)) {
+        if (BwUtil.isInBedWars(player)) {
             if (!BwPlayerEvents.useItem(player, packet.getHand())) {
                 ci.cancel();
                 BlockPos blockPos = packet.getHitResult().getBlockPos().relative(packet.getHitResult().getDirection());
@@ -114,7 +115,7 @@ public class ServerGamePacketListenerMixin {
     @Inject(method = "handleUseItem", at = @At("HEAD"), cancellable = true)
     private void handleUseItem(ServerboundUseItemPacket serverboundUseItemPacket, CallbackInfo ci) {
 
-        if (BwUtil.isInBedWars(nexiaPlayer)) {
+        if (BwUtil.isInBedWars(player)) {
             if (!BwPlayerEvents.useItem(player, serverboundUseItemPacket.getHand())) {
                 ci.cancel();
             }
@@ -136,26 +137,18 @@ public class ServerGamePacketListenerMixin {
         }
 
         if ((clickPacket.getClickType() == ClickType.THROW || slot == -999)) {
-            if (!EventUtil.dropItem(nexiaPlayer, itemStack)) {
+            if (!EventUtil.dropItem(player, itemStack)) {
                 ci.cancel();
-                nexiaPlayer.refreshInventory();
+                ItemStackUtil.sendInventoryRefreshPacket(player);
                 return;
             }
         }
 
-        if (BwUtil.isBedWarsPlayer(nexiaPlayer)) {
-            if (!BwPlayerEvents.containerClick(nexiaPlayer, clickPacket)) {
-                ci.cancel();
-                nexiaPlayer.refreshInventory();
-                return;
-            }
-        }
-
-        if (FfaUtil.isFfaPlayer(nexiaPlayer)) {
+        if (FfaUtil.isFfaPlayer(player) || BwUtil.isBedWarsPlayer(player)) {
             // If clicks on crafting slot
             if (containerId == 0 && slot >= 1 && slot <= 4) {
                 ci.cancel();
-                nexiaPlayer.refreshInventory();
+                ItemStackUtil.sendInventoryRefreshPacket(player);
                 return;
             }
         }
@@ -262,6 +255,16 @@ public class ServerGamePacketListenerMixin {
                     return;
                 }
             }
+        }
+
+        if(PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY){
+            ci.cancel();
+            return;
+        }
+
+        if(OitcGame.isOITCPlayer(player)){
+            ci.cancel();
+            return;
         }
     }
 }

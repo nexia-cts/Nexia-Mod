@@ -1,6 +1,5 @@
 package com.nexia.core.mixin.player;
 
-import com.combatreforged.factory.api.world.types.Minecraft;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
 import com.nexia.core.games.util.LobbyUtil;
@@ -8,8 +7,8 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.player.BanHandler;
-import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
@@ -80,7 +79,7 @@ public abstract class PlayerListMixin {
 
         if(key.contains("multiplayer.player.join")) {
             if(joinPlayer.getTags().contains("bot")) ci.cancel();
-            if(PlayerDataManager.get(joinPlayer.getUUID()).clientType.equals(com.nexia.core.utilities.player.PlayerData.ClientType.VIAFABRICPLUS)) {
+            if(PlayerDataManager.get(joinPlayer).clientType.equals(com.nexia.core.utilities.player.PlayerData.ClientType.VIAFABRICPLUS)) {
                 joinPlayer.addTag("viafabricplus");
                 ci.cancel();
             }
@@ -94,8 +93,8 @@ public abstract class PlayerListMixin {
 
         ServerLevel respawn = ServerTime.minecraftServer.getLevel(player.getRespawnDimension());
 
-        if(FfaSkyUtil.isFfaPlayer(nexiaPlayer)) {
-            FfaSkyUtil.joinOrRespawn(nexiaPlayer);
+        if(FfaSkyUtil.isFfaPlayer(player)) {
+            FfaSkyUtil.joinOrRespawn(player);
             return;
         }
 

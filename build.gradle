@@ -46,7 +46,6 @@ repositories {
 	maven { url "https://maven.terraformersmc.com/releases/" }
 	maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
 	maven { url 'https://github.com/ricksouth/serilum-forge-maven/raw/maven/' }
-	maven { url 'https://repo.minebench.de/' }
 }
 
 dependencies {
@@ -86,8 +85,6 @@ dependencies {
 	include(modApi("io.github.blumbo:inventory-merger:${project.inventory_merger_version}"))
 	include(modApi("net.notcoded:codelib:${project.codelib_version}+${project.minecraft_version}"))
 
-	include(implementation("net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT"))
-	include(implementation("net.kyori:adventure-text-serializer-gson:4.1.0-SNAPSHOT"))
 
 	// discord shit
 	include(api("net.dv8tion:JDA:${project.jda_version}"))

@@ -19,7 +19,6 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.UUID;
 
 import static com.nexia.core.utilities.player.BanHandler.getBanTime;
 
@@ -27,11 +26,11 @@ public class GamemodeBanHandler {
 
     static final String dataDirectory = FabricLoader.getInstance().getConfigDir().toString() + "/nexia/tempbans/gamemodebans";
 
-    public static boolean removeBanFromList(UUID uuid, PlayerGameMode gameMode){
+    public static boolean removeBanFromList(String uuid, PlayerGameMode gameMode){
         return new File(dataDirectory + "/" + uuid, gameMode.id + ".json").delete();
     }
 
-    public static JSONObject getBanList(UUID uuid, PlayerGameMode gameMode) {
+    public static JSONObject getBanList(String uuid, PlayerGameMode gameMode) {
         JSONParser parser = new JSONParser();
 
         try {
@@ -39,7 +38,7 @@ public class GamemodeBanHandler {
         } catch(Exception ignored) { return null; }
     }
 
-    public static PlayerGameMode getBannedGameMode(NexiaPlayer player) {
+    public static PlayerGameMode getBannedGameMode(ServerPlayer player) {
         for(PlayerGameMode gameMode : PlayerGameMode.playerGameModes) {
             JSONObject banList = getBanList(player.getStringUUID(), gameMode);
             if(banList == null) continue;
@@ -50,7 +49,7 @@ public class GamemodeBanHandler {
         return null;
     }
 
-    public static ArrayList<PlayerGameMode> getBannedGameModes(NexiaPlayer player) {
+    public static ArrayList<PlayerGameMode> getBannedGameModes(ServerPlayer player) {
         ArrayList<PlayerGameMode> bannedGameModes = new ArrayList<>();
 
         for(PlayerGameMode gameMode : PlayerGameMode.playerGameModes) {
@@ -64,7 +63,7 @@ public class GamemodeBanHandler {
         return bannedGameModes;
     }
 
-    public static void addBanToList(NexiaPlayer player, PlayerGameMode gameMode, String reason, LocalDateTime duration) {
+    public static void addBanToList(ServerPlayer player, PlayerGameMode gameMode, String reason, LocalDateTime duration) {
         try {
             JSONObject jsonObject = new JSONObject();
 
@@ -112,9 +111,9 @@ public class GamemodeBanHandler {
         sender.sendSuccess(LegacyChatFormat.format("{s}Gamemode ({}) banned {b2}{} {s}for {b2}{}{s}." +
                 "\n{s}Reason: {b2}{}", gameMode.name, player.getScoreboardName(), BanHandler.banTimeToText(banTime), reason), false);
 
-        LobbyUtil.returnToLobby(player, true);
+        ServerTime.minecraftServer.getCommands().performCommand(player.createCommandSourceStack(), "/hub");
 
-        player.sendMessage(
+        PlayerUtil.getFactoryPlayer(player).sendMessage(
                 ChatFormat.nexiaMessage
                         .append(Component.text("You have been gamemode (" + gameMode.name + ") banned for ").decoration(ChatFormat.bold, false))
                         .append(Component.text(BanHandler.banTimeToText(banTime)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))

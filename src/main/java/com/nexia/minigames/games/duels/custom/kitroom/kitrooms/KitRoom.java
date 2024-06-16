@@ -2,7 +2,7 @@ package com.nexia.minigames.games.duels.custom.kitroom.kitrooms;
 
 import com.combatreforged.factory.api.util.Identifier;
 import com.nexia.core.Main;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.world.StructureMap;
 import com.nexia.core.utilities.world.WorldUtil;
@@ -10,10 +10,12 @@ import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.dimension.DimensionType;
+import net.notcoded.codelib.players.AccuratePlayer;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
 
@@ -35,11 +37,11 @@ public class KitRoom {
 
     // Other
 
-    public NexiaPlayer player;
+    public AccuratePlayer player;
 
     private StructureMap kitRoom;
 
-    public KitRoom(NexiaPlayer player) {
+    public KitRoom(AccuratePlayer player) {
         this.player = player;
 
         this.uuid = null;
@@ -49,7 +51,7 @@ public class KitRoom {
         this.hasBeenGenerated = false;
     }
 
-    public static boolean isInKitRoom(NexiaPlayer player) {
+    public static boolean isInKitRoom(Player player) {
         return PlayerDataManager.get(player).kitRoom != null && !PlayerDataManager.get(player).editingKit.isEmpty();
     }
 
@@ -68,7 +70,7 @@ public class KitRoom {
 
         RuntimeWorldConfig config = new RuntimeWorldConfig()
                 .setDimensionType(DimensionType.OVERWORLD_LOCATION)
-                .setGenerator(getChunkGenerator())
+                .setGenerator(getChunkGenerator(Biomes.THE_VOID))
                 .setDifficulty(Difficulty.HARD)
                 .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
                 .setGameRule(GameRules.RULE_MOBGRIEFING, false)

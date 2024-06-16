@@ -8,11 +8,15 @@ import com.nexia.core.listeners.ListenerHelper;
 import com.nexia.core.loader.CommandLoader;
 import com.nexia.core.networking.NetworkingHandler;
 import com.nexia.core.utilities.misc.NxFileUtil;
+import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.core.utilities.player.anticheat.Punishment;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.gatoanticheat.events.PlayerDetectionEvent;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1u.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.server.level.ServerPlayer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,8 +40,6 @@ public class Main implements ModInitializer, FactoryPlugin {
 		CommandLoader.registerCommands();
 		logger.info("Registered commands.");
 
-		// annoying ahh
-		/*
 		PlayerDetectionEvent.REACH.register((player, entity) -> {
 			Punishment punishment = PlayerDataManager.get(player).punishment;
 			punishment.reachOffences++;
@@ -49,7 +51,6 @@ public class Main implements ModInitializer, FactoryPlugin {
 			punishment.noSwingOffences++;
 			punishment.check((ServerPlayer) player);
 		});
-		 */
 
 		networkingHandler = new NetworkingHandler();
 	}

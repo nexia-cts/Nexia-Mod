@@ -32,7 +32,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.scores.PlayerTeam;
-import net.minecraft.world.scores.Team;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,7 +79,6 @@ public class BwTeam {
         playerTeam.setDisplayName(new TextComponent(teamName));
         playerTeam.setPlayerPrefix(new TextComponent(textColor  + "\247lBW " ));
 
-        playerTeam.setDeathMessageVisibility(Team.Visibility.HIDE_FOR_OTHER_TEAMS);
         return playerTeam;
     }
 
