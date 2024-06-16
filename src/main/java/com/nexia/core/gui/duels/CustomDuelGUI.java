@@ -162,7 +162,7 @@ public class CustomDuelGUI extends SimpleGui {
                     this.kit = name.getString().toLowerCase().replaceAll(" ", "_");
                     setMapLayout();
                 } else {
-                    GamemodeHandler.customChallengePlayer(new NexiaPlayer(this.player), new NexiaPlayer(this.other), this.kit, DuelsMap.identifyMap(name.getString().substring(2)));
+                    GamemodeHandler.customChallengePlayer(new NexiaPlayer(this.player), new NexiaPlayer(this.other), this.kit, DuelsMap.identifyMap(name.getString()));
                     this.close();
                 }
 

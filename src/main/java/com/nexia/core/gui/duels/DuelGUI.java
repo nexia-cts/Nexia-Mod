@@ -118,7 +118,7 @@ public class DuelGUI extends SimpleGui {
                     this.kit = name.getString().replaceAll(" ", "_");
                     setMapLayout(GamemodeHandler.identifyGamemode(this.kit));
                 } else {
-                    GamemodeHandler.challengePlayer(new NexiaPlayer(this.player), new NexiaPlayer(this.other), this.kit, DuelsMap.identifyMap(name.getString().substring(2)));
+                    GamemodeHandler.challengePlayer(new NexiaPlayer(this.player), new NexiaPlayer(this.other), this.kit, DuelsMap.identifyMap(name.getString()));
                     this.close();
                 }
 
