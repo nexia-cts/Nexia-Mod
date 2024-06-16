@@ -55,7 +55,7 @@ public class DuelGUI extends SimpleGui {
             airSlots++;
         }
         for(DuelsMap map : DuelsMap.duelsMaps){
-            if(gameMode.gameMode == Minecraft.GameMode.ADVENTURE && !map.isAdventureSupported) return;
+            if(gameMode.gameMode == Minecraft.GameMode.ADVENTURE && !map.isAdventureSupported) continue;
             this.setSlot(slot, map.item.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text(map.id, ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false))));
             slot++;
         }
