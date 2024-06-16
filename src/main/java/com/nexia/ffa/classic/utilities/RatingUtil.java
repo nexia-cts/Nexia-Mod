@@ -175,7 +175,7 @@ public class RatingUtil {
 
     public static void checkRatingRank(ServerPlayer player) {
         if (RatingUtil.leaderboardRating == null || player == null) return;
-
+    
         int i = 0;
         boolean isInTopFive = false;
         for (Score score : RatingUtil.leaderboardRating) {
@@ -192,14 +192,17 @@ public class RatingUtil {
         if (!isInTopFive) {
             if (Permissions.check(player, "nexia.rank")) {
                 NexiaRank.removePrefix(NexiaRank.PRO, player);
+                NexiaRank.removePrefix(NexiaRank.GOD, player);
             } else {
                 NexiaRank.setRank(NexiaRank.DEFAULT, player);
             }
         } else {
             if (Permissions.check(player, "nexia.rank")) {
-                NexiaRank.addPrefix(NexiaRank.PRO, player, false);
+                if(i == 0) NexiaRank.addPrefix(NexiaRank.GOD, player, false);
+                else NexiaRank.addPrefix(NexiaRank.PRO, player, false);
             } else {
-                NexiaRank.setRank(NexiaRank.PRO, player);
+                if(i == 0) NexiaRank.setRank(NexiaRank.GOD, player);
+                else NexiaRank.setRank(NexiaRank.PRO, player);
             }
         }
     }

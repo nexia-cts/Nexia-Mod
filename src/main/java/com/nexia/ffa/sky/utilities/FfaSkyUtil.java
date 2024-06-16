@@ -75,6 +75,8 @@ public class FfaSkyUtil {
         if(ffaWorld == null) return;
         if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
+            if(!isFfaPlayer(minecraftPlayer)) continue;
+
             if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !isInFfaSpawn(minecraftPlayer)){
                 Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
                 wasInSpawn.remove(minecraftPlayer.getUUID());

@@ -49,7 +49,12 @@ public class FfaKitsUtil {
     }
 
     public static void calculateKill(ServerPlayer attacker, ServerPlayer player) {
-        attacker.heal(attacker.getMaxHealth());
+        BlfScheduler.delay(5, new BlfRunnable() {
+            @Override
+            public void run() {
+                attacker.heal(attacker.getMaxHealth());
+            }
+        });
 
         FfaKitsUtil.clearArrows(attacker);
         FfaKitsUtil.clearSpectralArrows(attacker);
@@ -89,14 +94,16 @@ public class FfaKitsUtil {
         if (ffaWorld.players().isEmpty()) return;
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
 
-            if (!com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(minecraftPlayer) && PlayerDataManager.get(minecraftPlayer).kit == null) {
+            if(!isFfaPlayer(minecraftPlayer)) continue;
+
+            if (!FfaAreas.isInFfaSpawn(minecraftPlayer) && PlayerDataManager.get(minecraftPlayer).kit == null) {
                 PlayerUtil.getFactoryPlayer(minecraftPlayer).sendTitle(Title.title(Component.text("No kit selected!").color(ChatFormat.failColor), Component.text("You need to select a kit!").color(ChatFormat.failColor)));
                 PlayerUtil.sendSound(minecraftPlayer, new EntityPos(minecraftPlayer), SoundEvents.NOTE_BLOCK_DIDGERIDOO, SoundSource.BLOCKS, 10, 1);
                 FfaKitsUtil.sendToSpawn(minecraftPlayer);
                 return;
             }
 
-            if (wasInSpawn.contains(minecraftPlayer.getUUID()) && !com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(minecraftPlayer)) {
+            if (wasInSpawn.contains(minecraftPlayer.getUUID()) && !FfaAreas.isInFfaSpawn(minecraftPlayer)) {
                 Player player = PlayerUtil.getFactoryPlayer(minecraftPlayer);
                 wasInSpawn.remove(minecraftPlayer.getUUID());
                 player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your kit was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
@@ -194,7 +201,7 @@ public class FfaKitsUtil {
         return !(Math.round(player.getHealth()) < 20);
     }
 
-    public static net.kyori.adventure.text.@NotNull TextComponent setDeathMessage(@NotNull ServerPlayer minecraftPlayer, @Nullable DamageSource source) {
+    public static void setDeathMessage(@NotNull ServerPlayer minecraftPlayer, @Nullable DamageSource source) {
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(minecraftPlayer);
 
         calculateDeath(minecraftPlayer);
@@ -211,7 +218,6 @@ public class FfaKitsUtil {
         for (Player player : factoryServer.getPlayers()) {
             if (player.hasTag("ffa_kits")) player.sendMessage(msg);
         }
-        return null;
     }
 
 

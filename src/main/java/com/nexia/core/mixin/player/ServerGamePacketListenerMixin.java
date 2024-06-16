@@ -68,6 +68,15 @@ public class ServerGamePacketListenerMixin {
     }
      */
 
+    @Inject(method = "handlePlaceRecipe", cancellable = true, at = @At("HEAD"))
+    private void handlePlaceRecipe(ServerboundPlaceRecipePacket serverboundPlaceRecipePacket, CallbackInfo ci) {
+        if (FfaUtil.isFfaPlayer(player) || BwUtil.isBedWarsPlayer(player)) {
+            ci.cancel();
+            ItemStackUtil.sendInventoryRefreshPacket(player);
+            return;
+        }
+    }
+
     @ModifyExpressionValue(
             method = "handleSetCommandBlock",
             at = @At(

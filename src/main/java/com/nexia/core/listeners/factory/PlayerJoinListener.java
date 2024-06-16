@@ -6,6 +6,7 @@ import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
+import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.discord.Main;
 import com.nexia.discord.utilities.player.PlayerData;
@@ -103,11 +104,10 @@ public class PlayerJoinListener {
         if(discordUser == null) {
             if(Permissions.check(player, "nexia.prefix.supporter")) {
                 if(Permissions.check(player, "nexia.rank")) {
-                    ServerTime.factoryServer.runCommand("/staffprefix set " + player.getScoreboardName() + " default");
-                    ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getScoreboardName() + " supporter");
+                    NexiaRank.removePrefix(NexiaRank.SUPPORTER, player);
                     return;
                 }
-                ServerTime.factoryServer.runCommand("/rank " + player.getScoreboardName() + " default", 4, false);
+                NexiaRank.setRank(NexiaRank.DEFAULT, player);
             }
             return;
         }
@@ -118,17 +118,16 @@ public class PlayerJoinListener {
 
         if(hasRole && !hasSupporterPrefix) {
             if(Permissions.check(player, "nexia.rank")) {
-                ServerTime.factoryServer.runCommand("/staffprefix add " + player.getScoreboardName() + " supporter", 4, false);
+                NexiaRank.addPrefix(NexiaRank.SUPPORTER, player, true);
                 return;
             }
-            ServerTime.factoryServer.runCommand("/rank " + player.getScoreboardName() + " supporter", 4, false);
+            NexiaRank.setRank(NexiaRank.SUPPORTER, player);
         } else if(!hasRole && hasSupporterPrefix) {
             if(Permissions.check(player, "nexia.rank")) {
-                ServerTime.factoryServer.runCommand("/staffprefix remove " + player.getScoreboardName() + " supporter", 4, false);
-                ServerTime.factoryServer.runCommand("/staffprefix set " + player.getScoreboardName() + " default", 4, false);
+                NexiaRank.removePrefix(NexiaRank.SUPPORTER, player);
                 return;
             }
-            ServerTime.factoryServer.runCommand("/rank " + player.getScoreboardName() + " default", 4, false);
+            NexiaRank.setRank(NexiaRank.DEFAULT, player);
         }
     }
 

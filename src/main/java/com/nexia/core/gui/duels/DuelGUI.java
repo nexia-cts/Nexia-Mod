@@ -53,7 +53,7 @@ public class DuelGUI extends SimpleGui {
             airSlots++;
         }
         for(DuelsMap map : DuelsMap.duelsMaps){
-            if(gameMode.gameMode == GameType.ADVENTURE && !map.isAdventureSupported) return;
+            if(gameMode.gameMode == GameType.ADVENTURE && !map.isAdventureSupported) continue;
             this.setSlot(slot, map.item.setHoverName(new TextComponent("§f" + map.id)));
             slot++;
         }
