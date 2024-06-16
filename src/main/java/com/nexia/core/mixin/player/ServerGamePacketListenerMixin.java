@@ -165,7 +165,7 @@ public class ServerGamePacketListenerMixin {
     private void handlePlaceRecipe(ServerboundPlaceRecipePacket serverboundPlaceRecipePacket, CallbackInfo ci) {
         NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
-        if (FfaUtil.isFfaPlayer(nexiaPlayer) || BwUtil.isBedWarsPlayer(nexiaPlayer)) {
+        if (!EventUtil.craftItem(nexiaPlayer)) {
             ci.cancel();
             nexiaPlayer.refreshInventory();
             return;

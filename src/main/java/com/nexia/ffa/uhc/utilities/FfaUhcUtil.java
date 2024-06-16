@@ -94,6 +94,7 @@ public class FfaUhcUtil {
         if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
             NexiaPlayer nexiaPlayer = new NexiaPlayer(minecraftPlayer);
+            if(!isFfaPlayer(nexiaPlayer)) continue;
             if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !FfaAreas.isInFfaSpawn(nexiaPlayer)){
                 wasInSpawn.remove(minecraftPlayer.getUUID());
                 saveInventory(nexiaPlayer);

@@ -56,6 +56,7 @@ public class FfaClassicUtil {
         if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer player : ffaWorld.players()) {
             NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
+            if(!isFfaPlayer(nexiaPlayer)) continue;
             if(wasInSpawn.contains(player.getUUID()) && !FfaAreas.isInFfaSpawn(nexiaPlayer)){
                 wasInSpawn.remove(player.getUUID());
                 saveInventory(nexiaPlayer);
@@ -258,8 +259,7 @@ public class FfaClassicUtil {
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player.unwrap());
 
         if (attacker != null) {
-            NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker
-            );
+            NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
             clearThrownTridents(nexiaAttacker);
             setInventory(nexiaAttacker);
         }

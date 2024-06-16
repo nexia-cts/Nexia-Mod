@@ -46,6 +46,16 @@ public class EventUtil {
         return true;
     }
 
+    public static boolean craftItem(NexiaPlayer player) {
+        if(FfaUtil.isFfaPlayer(player)) return false;
+        if(LobbyUtil.isLobbyWorld(player.unwrap().level)) return false;
+        if(OitcGame.isOITCPlayer(player)) return false;
+        if(FootballGame.isFootballPlayer(player)) return false;
+        if (BwUtil.isBedWarsPlayer(player)) return false;
+
+        return true;
+    }
+
     public static void onSignClick(CallbackInfoReturnable<InteractionResult> ci, BlockPos signPos, Level level, ServerPlayer p) {
         if (level.equals(com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld)) {
             List<BlockPos> bp = new ArrayList<>(Arrays.asList(
@@ -58,9 +68,9 @@ public class EventUtil {
             if(bp.contains(signPos)) {
                 KitGUI.openKitGUI(p);
             }
+            p.swing(InteractionHand.MAIN_HAND);
             ci.setReturnValue(InteractionResult.PASS);
         }
 
-        p.swing(InteractionHand.MAIN_HAND);
     }
 }

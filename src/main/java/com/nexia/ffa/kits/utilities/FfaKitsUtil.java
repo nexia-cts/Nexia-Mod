@@ -98,7 +98,9 @@ public class FfaKitsUtil {
 
             NexiaPlayer player = new NexiaPlayer(minecraftPlayer);
 
-            if(!com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(player) && PlayerDataManager.get(player).kit == null) {
+            if(!isFfaPlayer(player)) continue;
+
+            if(!FfaAreas.isInFfaSpawn(player) && PlayerDataManager.get(player).kit == null) {
                 player.sendTitle(Title.title(Component.text("No kit selected!").color(ChatFormat.failColor), Component.text("You need to select a kit!").color(ChatFormat.failColor)));
                 player.sendSound(new EntityPos(minecraftPlayer), SoundEvents.NOTE_BLOCK_DIDGERIDOO, SoundSource.BLOCKS, 10, 1);
                 FfaKitsUtil.sendToSpawn(player);

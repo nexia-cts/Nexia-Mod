@@ -1,8 +1,7 @@
 package com.nexia.core.mixin.item;
 
+import com.nexia.core.utilities.misc.EventUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
-import com.nexia.ffa.FfaUtil;
-import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -34,7 +33,7 @@ public class CraftingMixin {
         if (crafter == null) return itemStack;
         NexiaPlayer nexiaPlayer = new NexiaPlayer(crafter);
 
-        if (BwUtil.isInBedWars(nexiaPlayer) || FfaUtil.isFfaPlayer(nexiaPlayer)) {
+        if (!EventUtil.craftItem(nexiaPlayer)) {
             nexiaPlayer.refreshInventory();
             return ItemStack.EMPTY;
         }
@@ -47,7 +46,7 @@ public class CraftingMixin {
         if (crafter == null) return itemStack;
         NexiaPlayer nexiaPlayer = new NexiaPlayer(crafter);
 
-        if (BwUtil.isInBedWars(nexiaPlayer) || FfaUtil.isFfaPlayer(nexiaPlayer)) return ItemStack.EMPTY;
+        if (!EventUtil.craftItem(nexiaPlayer)) return ItemStack.EMPTY;
 
         return itemStack;
     }

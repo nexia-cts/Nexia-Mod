@@ -73,6 +73,7 @@ public class FfaSkyUtil {
         if(ffaWorld.players().isEmpty()) return;
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
             NexiaPlayer player = new NexiaPlayer(minecraftPlayer);
+            if(!isFfaPlayer(player)) continue;
             if(wasInSpawn.contains(minecraftPlayer.getUUID()) && !isInFfaSpawn(player)){
                 wasInSpawn.remove(minecraftPlayer.getUUID());
                 minecraftPlayer.getCooldowns().addCooldown(Items.ENDER_PEARL, 10);
