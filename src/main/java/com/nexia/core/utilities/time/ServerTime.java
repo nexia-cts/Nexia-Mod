@@ -1,10 +1,7 @@
 package com.nexia.core.utilities.time;
 
-import com.nexia.nexus.api.NexusAPI;
-import com.nexia.nexus.api.NexusServer;
-import com.nexia.nexus.api.scheduler.TaskScheduler;
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.utilities.chat.LegacyChatFormat;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.ffa.classic.utilities.FfaAreas;
@@ -25,6 +22,11 @@ import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
+import com.nexia.nexus.api.NexusAPI;
+import com.nexia.nexus.api.NexusServer;
+import com.nexia.nexus.api.scheduler.TaskScheduler;
+import com.nexia.nexus.api.world.entity.player.Player;
+import net.kyori.adventure.text.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import xyz.nucleoid.fantasy.Fantasy;
@@ -76,8 +78,8 @@ public class ServerTime {
 
     public static void stopServer() {
         try {
-            for(ServerPlayer player : ServerTime.minecraftServer.getPlayerList().getPlayers()){
-                player.connection.disconnect(LegacyChatFormat.formatFail("The server is restarting!"));
+            for(Player player : ServerTime.nexusServer.getPlayers()){
+                player.disconnect(ChatFormat.nexiaMessage.append(Component.text("The server is restarting!", ChatFormat.Minecraft.white)));
             }
 
             DuelGameHandler.starting();

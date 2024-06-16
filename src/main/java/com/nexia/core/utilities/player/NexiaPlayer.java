@@ -76,13 +76,17 @@ public class NexiaPlayer extends WrappedPlayer {
         return PlayerDataManager.get(this).gameMode.equals(gameMode);
     }
 
+    public void setGameMode(Minecraft.GameMode gameMode) {
+        this.unwrap().setGameMode(ObjectMappings.GAME_MODES.get(gameMode));
+    }
+
     public void safeReset(boolean heal, Minecraft.GameMode gameMode) {
         this.setInvulnerabilityTime(0);
         this.clearEffects();
         this.setRemainingFireTicks(0);
         this.unwrap().setGlowing(false);
 
-        this.unwrap().setGameMode(ObjectMappings.GAME_MODES.get(gameMode));
+        this.setGameMode(gameMode);
 
         if (heal) {
             this.setHealth(this.unwrap().getMaxHealth());

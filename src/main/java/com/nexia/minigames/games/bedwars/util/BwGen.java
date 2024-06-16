@@ -101,9 +101,9 @@ public class BwGen {
                 // Change timer number
                 if (gen.timerDisplay != null && nextItemIn % 20 == 0) {
                     gen.timerDisplay.setCustomName(ObjectMappings.convertComponent(
-                            Component.text("Spawns in ", ChatFormat.brandColor2)
-                                    .append(Component.text(nextItemIn / 20, ChatFormat.brandColor1))
-                                    .append(Component.text(" seconds", ChatFormat.brandColor2))
+                            Component.text("Spawns in ", ChatFormat.Minecraft.white)
+                                    .append(Component.text(nextItemIn / 20, ChatFormat.brandColor2))
+                                    .append(Component.text(" seconds", ChatFormat.Minecraft.white))
                             )
                     );
                 }

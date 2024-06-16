@@ -1,5 +1,6 @@
 package com.nexia.minigames.games.bedwars;
 
+import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.NxFileUtil;
@@ -365,10 +366,12 @@ public class BwGame {
         try {
             for (NexiaPlayer player : spectatorList) {
                 if (player == null || player.unwrap() == null) continue;
-                LobbyUtil.returnToLobby(player, true);
+                player.runCommand("/hub", 0, false);
                 BwScoreboard.removeScoreboardFor(player);
             }
-        } catch (Exception ignored) { }
+        } catch (Exception exception) {
+            if(Main.config.debugMode) Main.logger.error(exception.getMessage());
+        }
 
         spectatorList.clear();
     }

@@ -269,7 +269,7 @@ public class BwTeam {
 
         for(NexiaPlayer viewer : BwPlayers.getViewers()) {
             viewer.sendMessage(Component.text(String.format("%s%s bed", textColor, displayName))
-                    .append(Component.text(" has been destroyed by ").color(ChatFormat.brandColor2))
+                    .append(Component.text(" has been destroyed by ").color(ChatFormat.Minecraft.white))
                     .append(Component.text(breakerColor + breaker.getRawName()))
             );
         }
