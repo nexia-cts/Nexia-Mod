@@ -14,12 +14,14 @@ import net.minecraft.world.scores.PlayerTeam;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+
 public class NexiaRank {
     public static ArrayList<NexiaRank> ranks = new ArrayList<>();
     public String name;
     public final String id;
     public final String groupID;
     public final NexiaPlayerTeam team;
+
     NexiaRank(String name, String id, NexiaPlayerTeam team) {
         this.name = name;
         this.id = id;
@@ -27,15 +29,18 @@ public class NexiaRank {
         this.groupID = "group." + id;
         NexiaRank.ranks.add(this);
     }
+
     @Override
     public String toString() {
         return this.id;
     }
+
     public static class NexiaPlayerTeam {
         public final String name;
         public final String teamName;
         private final Component prefix;
         public final ChatFormatting color;
+
         public NexiaPlayerTeam(String name, String teamName, String color1, String color2, ChatFormatting color) {
             this.name = name;
             this.teamName = teamName;
@@ -45,10 +50,12 @@ public class NexiaRank {
                 this.prefix = ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<bold><gradient:%s:%s>%s</gradient></bold> <dark_gray>| </dark_gray>", color1, color2, name)));
             }
         }
+
         @Override
         public String toString() {
             return this.teamName;
         }
+
         private @NotNull PlayerTeam getTeam(@NotNull MinecraftServer server) {
             ServerScoreboard scoreboard = server.getScoreboard();
             PlayerTeam playerTeam = scoreboard.getPlayerTeam(teamName);
@@ -111,6 +118,7 @@ public class NexiaRank {
             "admin",
             new NexiaPlayerTeam("Admin", "VAdmin", "#BD2020", "#FD6C46", ChatFormatting.WHITE)
     );
+
     public static void setupRanks(MinecraftServer server) {
         NexiaRank.ranks.forEach(rank -> rank.team.getTeam(server));
     }
