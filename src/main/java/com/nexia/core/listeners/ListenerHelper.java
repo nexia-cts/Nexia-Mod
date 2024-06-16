@@ -7,6 +7,7 @@ public class ListenerHelper {
         // Nexus Listeners
         new PlayerJoinListener().registerListener();
         new PlayerLeaveListener().registerListener();
+        new PlayerSwapHandItemsListener().registerListener();
         new UseItemListener().registerListener();
         new PlayerDropItemListener().registerListener();
         new PlayerRespawnListener().registerListener();

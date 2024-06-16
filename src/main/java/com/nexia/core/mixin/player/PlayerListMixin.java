@@ -1,6 +1,5 @@
 package com.nexia.core.mixin.player;
 
-import com.nexia.nexus.api.world.types.Minecraft;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
 import com.nexia.core.games.util.LobbyUtil;
@@ -23,6 +22,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.stats.Stats;
+import net.minecraft.world.level.GameType;
 import org.json.simple.JSONObject;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -102,14 +102,14 @@ public abstract class PlayerListMixin {
         if(respawn != null && LobbyUtil.isLobbyWorld(respawn)) {
             nexiaPlayer.unwrap().inventory.clearContent();
             LobbyUtil.giveItems(nexiaPlayer);
-            nexiaPlayer.setGameMode(Minecraft.GameMode.ADVENTURE);
+            nexiaPlayer.unwrap().setGameMode(GameType.ADVENTURE);
 
             nexiaPlayer.runCommand("/hub", 0, false);
             return;
         }
 
         if (BwUtil.isInBedWars(nexiaPlayer)) { BwPlayerEvents.respawned(nexiaPlayer); }
-        if (SkywarsGame.world.equals(respawn) || SkywarsGame.isSkywarsPlayer(nexiaPlayer)) { nexiaPlayer.setGameMode(Minecraft.GameMode.SPECTATOR); }
+        if (SkywarsGame.world.equals(respawn) || SkywarsGame.isSkywarsPlayer(nexiaPlayer)) { nexiaPlayer.unwrap().setGameMode(GameType.SPECTATOR); }
     }
 
     @Unique

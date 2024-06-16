@@ -17,10 +17,9 @@ import com.nexia.nexus.api.world.effect.StatusEffectInstance;
 import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.nexus.api.world.item.ItemStack;
 import com.nexia.nexus.api.world.types.Minecraft;
+import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import com.nexia.nexus.builder.implementation.world.entity.player.WrappedPlayer;
 import me.lucko.fabric.api.permissions.v0.Permissions;
-import net.blumbo.blfscheduler.BlfRunnable;
-import net.blumbo.blfscheduler.BlfScheduler;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
@@ -58,27 +57,23 @@ public class NexiaPlayer extends WrappedPlayer {
         this.unwrap().setGlowing(false);
         this.unwrap().connection.send(new ClientboundStopSoundPacket());
 
-        this.setGameMode(gameMode);
-        BlfScheduler.delay(5, new BlfRunnable() {
-            @Override
-            public void run() {
-                setGameMode(gameMode);
-            }
-        });
+        this.unwrap().setGameMode(ObjectMappings.GAME_MODES.get(gameMode));
 
         if (heal) {
             this.setHealth(this.unwrap().getMaxHealth());
             this.setFoodLevel(20);
         }
 
-
         this.setAbleToFly(false);
-
 
         Objects.requireNonNull(this.unwrap().getAttribute(Attributes.KNOCKBACK_RESISTANCE)).setBaseValue(0.0);
         this.unwrap().onUpdateAbilities();
 
         ServerTime.minecraftServer.getPlayerList().sendPlayerPermissionLevel(this.unwrap());
+    }
+
+    public boolean isInGameMode(PlayerGameMode gameMode) {
+        return PlayerDataManager.get(this).gameMode.equals(gameMode);
     }
 
     public void safeReset(boolean heal, Minecraft.GameMode gameMode) {
@@ -87,14 +82,7 @@ public class NexiaPlayer extends WrappedPlayer {
         this.setRemainingFireTicks(0);
         this.unwrap().setGlowing(false);
 
-        this.setGameMode(gameMode);
-        BlfScheduler.delay(5, new BlfRunnable() {
-            @Override
-            public void run() {
-                setGameMode(gameMode);
-            }
-        });
-
+        this.unwrap().setGameMode(ObjectMappings.GAME_MODES.get(gameMode));
 
         if (heal) {
             this.setHealth(this.unwrap().getMaxHealth());
@@ -102,7 +90,6 @@ public class NexiaPlayer extends WrappedPlayer {
         }
 
         this.setAbleToFly(false);
-
         ServerTime.minecraftServer.getPlayerList().sendPlayerPermissionLevel(this.unwrap());
     }
 

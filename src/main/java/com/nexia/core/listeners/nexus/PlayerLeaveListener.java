@@ -1,19 +1,11 @@
 package com.nexia.core.listeners.nexus;
 
-import com.nexia.nexus.api.event.player.PlayerDisconnectEvent;
-import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
-import com.nexia.ffa.FfaUtil;
-import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
-import com.nexia.minigames.games.bedwars.util.BwUtil;
-import com.nexia.minigames.games.duels.DuelGameHandler;
-import com.nexia.minigames.games.football.FootballGame;
-import com.nexia.minigames.games.oitc.OitcGame;
-import com.nexia.minigames.games.skywars.SkywarsGame;
+import com.nexia.nexus.api.event.player.PlayerDisconnectEvent;
 
 public class PlayerLeaveListener {
-    public static void registerListener() {
+    public void registerListener() {
         PlayerDisconnectEvent.BACKEND.register(playerDisconnectEvent -> {
 
             NexiaPlayer player = new NexiaPlayer(playerDisconnectEvent.getPlayer());
@@ -36,6 +28,7 @@ public class PlayerLeaveListener {
 
 
     private static void processDisconnect(NexiaPlayer player){
+        /*
         if (BwUtil.isInBedWars(player)) BwPlayerEvents.leaveInBedWars(player);
         else if (FfaUtil.isFfaPlayer(player)) {
             FfaUtil.leaveOrDie(player, player.unwrap().getLastDamageSource(), true);
@@ -45,6 +38,9 @@ public class PlayerLeaveListener {
         else if (PlayerDataManager.get(player).gameMode == PlayerGameMode.OITC) OitcGame.leave(player);
         else if (PlayerDataManager.get(player).gameMode == PlayerGameMode.FOOTBALL) FootballGame.leave(player);
         else if (player.hasTag("duels")) DuelGameHandler.leave(player, true);
+         */
+
+        player.leaveAllGames();
 
         com.nexia.ffa.classic.utilities.player.PlayerDataManager.removePlayerData(player);
         com.nexia.ffa.kits.utilities.player.PlayerDataManager.removePlayerData(player);
@@ -57,9 +53,6 @@ public class PlayerLeaveListener {
         com.nexia.minigames.games.football.util.player.PlayerDataManager.removePlayerData(player);
         com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.removePlayerData(player);
         com.nexia.minigames.games.skywars.util.player.PlayerDataManager.removePlayerData(player);
-
-
-        //LobbyUtil.leaveAllGames(player, true);
 
         PlayerDataManager.removePlayerData(player);
     }
