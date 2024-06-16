@@ -161,6 +161,17 @@ public class ServerGamePacketListenerMixin {
 
     }
 
+    @Inject(method = "handlePlaceRecipe", cancellable = true, at = @At("HEAD"))
+    private void handlePlaceRecipe(ServerboundPlaceRecipePacket serverboundPlaceRecipePacket, CallbackInfo ci) {
+        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
+
+        if (FfaUtil.isFfaPlayer(nexiaPlayer) || BwUtil.isBedWarsPlayer(nexiaPlayer)) {
+            ci.cancel();
+            nexiaPlayer.refreshInventory();
+            return;
+        }
+    }
+
     @Inject(method = "handlePlayerAction", cancellable = true, at = @At("HEAD"))
     private void handlePlayerAction(ServerboundPlayerActionPacket actionPacket, CallbackInfo ci) {
         ServerboundPlayerActionPacket.Action action = actionPacket.getAction();
