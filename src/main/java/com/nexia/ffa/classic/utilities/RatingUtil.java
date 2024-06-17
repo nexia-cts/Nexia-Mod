@@ -156,8 +156,8 @@ public class RatingUtil {
                 if(i == 0) NexiaRank.addPrefix(NexiaRank.GOD, player, false);
                 else NexiaRank.addPrefix(NexiaRank.PRO, player, false);
             } else {
-                if(i == 0) NexiaRank.addPrefix(NexiaRank.GOD, player, false);
-                NexiaRank.setRank(NexiaRank.PRO, player);
+                if(i == 0) NexiaRank.setRank(NexiaRank.GOD, player);
+                else NexiaRank.setRank(NexiaRank.PRO, player);
             }
 
             i++;
