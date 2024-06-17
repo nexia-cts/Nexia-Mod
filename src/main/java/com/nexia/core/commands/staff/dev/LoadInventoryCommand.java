@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class LoadInventoryCommand {
@@ -31,7 +32,15 @@ public class LoadInventoryCommand {
                         .then(Commands.argument("type", StringArgumentType.string())
                                 .suggests(((context, builder) -> SharedSuggestionProvider.suggest((Objects.requireNonNull(new File(InventoryUtil.dirpath).list())), builder)))
                                 .then(Commands.argument("inventory", StringArgumentType.string())
-                                        .suggests(((context, builder) -> SharedSuggestionProvider.suggest(InventoryUtil.getListOfInventories(StringArgumentType.getString(context, "type")), builder)))
+                                        .suggests(((context, builder) -> {
+                                            ArrayList<String> inventoryList = new ArrayList<>();
+                                            try {
+                                                inventoryList = InventoryUtil.getListOfInventories(StringArgumentType.getString(context, "type"));
+                                            } catch (Exception ignored) {
+                                                inventoryList.add("Unable to get inventories!");
+                                            }
+                                            return SharedSuggestionProvider.suggest(inventoryList, builder);
+                                        }))
                                         .executes(context -> run(context, StringArgumentType.getString(context, "type"), StringArgumentType.getString(context, "inventory"), context.getSource().getPlayerOrException()))
                                         .then(Commands.argument("player", EntityArgument.player())
                                                 .executes(context -> run(context, StringArgumentType.getString(context, "type"), StringArgumentType.getString(context, "inventory"), EntityArgument.getPlayer(context, "player")))
