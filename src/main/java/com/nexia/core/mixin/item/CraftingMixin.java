@@ -22,8 +22,8 @@ public class CraftingMixin {
     private static ServerPlayer crafter;
     @Inject(method = "slotChangedCraftingGrid", at = @At("HEAD"))
     private static void craft(int i, Level level, Player player, CraftingContainer craftingContainer, ResultContainer resultContainer, CallbackInfo ci) {
-        if (player instanceof ServerPlayer) {
-            crafter = (ServerPlayer) player;
+        if (player instanceof ServerPlayer serverPlayer) {
+            crafter = serverPlayer;
         }
     }
 

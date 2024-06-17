@@ -1,6 +1,6 @@
 package com.nexia.core.mixin.item;
 
-import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.ffa.sky.utilities.FfaAreas;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
@@ -37,7 +37,7 @@ public class EnderPearlItemMixin extends Item {
             thrower = serverPlayer;
             NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
 
-            if ((FfaAreas.isFfaWorld(serverPlayer.getLevel()) && FfaSkyUtil.wasInSpawn.contains(serverPlayer.getUUID())) || (com.nexia.core.utilities.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(PlayerGameMode.LOBBY) && com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(DuelGameMode.LOBBY))) {
+            if (((FfaAreas.isFfaWorld(serverPlayer.getLevel()) && FfaSkyUtil.wasInSpawn.contains(serverPlayer.getUUID())) || (serverPlayer.getLevel().equals(LobbyUtil.lobbyWorld))) && !serverPlayer.isCreative()) {
                 cir.setReturnValue(InteractionResultHolder.pass(serverPlayer.getItemInHand(interactionHand)));
                 nexiaPlayer.refreshInventory();
                 return;
