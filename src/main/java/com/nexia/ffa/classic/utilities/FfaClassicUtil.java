@@ -33,6 +33,7 @@ import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -58,9 +59,35 @@ public class FfaClassicUtil {
         return !(Math.round(player.getHealth()) < 20);
     }
 
+    private static boolean checkWorld() {
+        if(ffaWorld == null) return true;
+        List<ServerPlayer> players = ffaWorld.players();
+        if(players.isEmpty()) return true;
+
+        ServerPlayer bot = null;
+
+        for(ServerPlayer player : players) {
+            if(player.getScoreboardName().equals("femboy.ai")) {
+                bot = player;
+                break;
+            }
+        }
+
+        if(bot != null && players.size() == 1) {
+            bot.kill(); // despawns the bot
+            return true;
+        }
+
+        if(bot == null && !players.isEmpty()) {
+            ServerTime.factoryServer.runCommand("/function core:bot/bot", 4, false); // spawns the bot
+            return false;
+        }
+
+        return false;
+    }
+
     public static void fiveTick() {
-        if(ffaWorld == null) return;
-        if(ffaWorld.players().isEmpty()) return;
+        if(checkWorld()) return;
         for (ServerPlayer minecraftPlayer : ffaWorld.players()) {
             if(!isFfaPlayer(minecraftPlayer)) continue;
 
