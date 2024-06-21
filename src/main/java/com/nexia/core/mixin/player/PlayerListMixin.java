@@ -2,10 +2,8 @@ package com.nexia.core.mixin.player;
 
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.mojang.authlib.GameProfile;
-import com.mojang.brigadier.StringReader;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.player.BanHandler;
 import com.nexia.core.utilities.player.NexiaPlayer;
@@ -19,7 +17,6 @@ import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import de.themoep.minedown.adventure.MineDown;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.ChatFormatting;
-import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.*;
 import net.minecraft.server.level.ServerLevel;
@@ -119,61 +116,37 @@ public abstract class PlayerListMixin {
 
     @Unique
     private static Component joinFormat(Component original, ServerPlayer joinPlayer) {
-        try {
-            String name = joinPlayer.getScoreboardName();
-            if(name.isEmpty()) { return original; }
+        String name = joinPlayer.getScoreboardName();
+        if(name.isEmpty()) { return original; }
 
-            Component component;
-            boolean firstJoiner = joinPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) < 1;
-
-            try {
-                // this is so hacky lmfao
-
-                component = ComponentArgument.textComponent().parse(new StringReader(
-                        "[{\"text\":\"[\",\"color\":\"#4A4A4A\"},{\"text\":\"+\",\"color\":\"" + ChatFormat.greenColor.asHexString().toUpperCase() + "\"},{\"text\":\"]\",\"color\":\"#4A4A4A\"},{\"text\":\" " + name + "\",\"color\":\"" + ChatFormat.greenColor.asHexString().toUpperCase() + "\"}]"
-                ));
-
-                if(firstJoiner) {
-                    component = ComponentArgument.textComponent().parse(new StringReader(
-                            "[{\"text\":\"[\",\"color\":\"#4A4A4A\"},{\"text\":\"!\",\"color\":\"" + ChatFormat.goldColor.asHexString().toUpperCase() + "\"},{\"text\":\"]\",\"color\":\"#4A4A4A\"},{\"text\":\" " + name + "\",\"color\":\"" + ChatFormat.goldColor.asHexString().toUpperCase() + "\"}]"
-                    ));
-                }
-
-            } catch (Throwable ignored) {
-                component = LegacyChatFormat.format("§8[§a+§8] §a{}", name);
-
-                if(firstJoiner) {
-                    component = LegacyChatFormat.format("§8[§6!§8] §6{}", name);
-                }
-            }
-
-
-            return component;
-        } catch (Exception var8) {
-            return original;
+        if(joinPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) < 1) {
+            return ObjectMappings.convertComponent(
+                    net.kyori.adventure.text.Component.text("[").color(ChatFormat.lineColor)
+                            .append(net.kyori.adventure.text.Component.text("!").color(ChatFormat.goldColor)
+                                    .append(net.kyori.adventure.text.Component.text("] ").color(ChatFormat.lineColor))
+                                    .append(net.kyori.adventure.text.Component.text(name).color(ChatFormat.goldColor)))
+            );
+        } else {
+            return ObjectMappings.convertComponent(
+                    net.kyori.adventure.text.Component.text("[").color(ChatFormat.lineColor)
+                            .append(net.kyori.adventure.text.Component.text("+").color(ChatFormat.greenColor))
+                            .append(net.kyori.adventure.text.Component.text("] ").color(ChatFormat.lineColor))
+                            .append(net.kyori.adventure.text.Component.text(name).color(ChatFormat.greenColor))
+            );
         }
     }
 
     @Unique
     private static Component leaveFormat(Component original, ServerPlayer leavePlayer) {
-        try {
-            String name = leavePlayer.getScoreboardName();
-            if(name.isEmpty()) { return original; }
+        String name = leavePlayer.getScoreboardName();
+        if(name.isEmpty()) { return original; }
 
-            Component component;
-            try {
-                // this is so hacky lmfao
-                component = ComponentArgument.textComponent().parse(new StringReader(
-                        "[{\"text\":\"[\",\"color\":\"#4A4A4A\"},{\"text\":\"-\",\"color\":\"" + ChatFormat.failColor.asHexString().toUpperCase() + "\"},{\"text\":\"]\",\"color\":\"#4A4A4A\"},{\"text\":\" " + name + "\",\"color\":\"" + ChatFormat.failColor.asHexString().toUpperCase() + "\"}]"
-                ));
-            } catch (Throwable ignored) {
-                component = LegacyChatFormat.format("§8[§c-§8] §c{}", name);
-            }
-
-            return component;
-        } catch (Exception var8) {
-            return original;
-        }
+        return ObjectMappings.convertComponent(
+                net.kyori.adventure.text.Component.text("[").color(ChatFormat.lineColor)
+                        .append(net.kyori.adventure.text.Component.text("-").color(ChatFormat.failColor)
+                                .append(net.kyori.adventure.text.Component.text("] ").color(ChatFormat.lineColor))
+                                .append(net.kyori.adventure.text.Component.text(name).color(ChatFormat.failColor)))
+        );
     }
 
     @Inject(method = "canPlayerLogin", at = @At("TAIL"), cancellable = true)
@@ -216,7 +189,7 @@ public abstract class PlayerListMixin {
             MutableComponent message = new TextComponent(messageString).withStyle(ChatFormatting.WHITE);
 
             if(player.hasPermission("nexia.chat.formatting", 4)) {
-                message = (MutableComponent) ObjectMappings.convertComponent(MineDown.parse(messageString));
+                message = (MutableComponent) ObjectMappings.convertComponent("§f" + MineDown.parse(messageString));
             }
 
             return name.append(suffix).append(message);
