@@ -22,18 +22,6 @@ public class PlayerLeaveListener {
             ServerPlayer minecraftPlayer = PlayerUtil.getMinecraftPlayer(player);
 
             processDisconnect(player, minecraftPlayer);
-
-            /*
-            if(Main.config.events.statusMessages){
-                playerDisconnectEvent.setLeaveMessage(
-                        Component.text("[").color(ChatFormat.lineColor)
-                                .append(Component.text("-").color(ChatFormat.failColor)
-                                .append(Component.text("] ").color(ChatFormat.lineColor))
-                                .append(Component.text(player.getRawName()).color(ChatFormat.failColor)))
-                );
-            }
-
-             */
         });
     }
 
