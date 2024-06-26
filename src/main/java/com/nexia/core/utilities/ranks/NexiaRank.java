@@ -3,6 +3,7 @@ package com.nexia.core.utilities.ranks;
 import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.time.ServerTime;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -140,6 +141,15 @@ public class NexiaRank {
 
 
     }
+
+    public static boolean hasRank(NexiaRank rank, ServerPlayer player) {
+        return Permissions.check(player, rank.groupID);
+    }
+
+    public static boolean hasPrefix(NexiaRank rank, ServerPlayer player) {
+        return Permissions.check(player, "nexia.prefix." + rank.id);
+    }
+
 
     public static void setRank(NexiaRank rank, ServerPlayer player) {
         for (NexiaRank rank1 : NexiaRank.ranks) {
