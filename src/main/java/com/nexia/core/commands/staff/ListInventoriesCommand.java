@@ -10,8 +10,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 
-import java.io.File;
-import java.util.Objects;
+import java.util.ArrayList;
 
 public class ListInventoriesCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
@@ -24,7 +23,15 @@ public class ListInventoriesCommand {
                             }
                         })
                 .then(Commands.argument("type", StringArgumentType.string())
-                        .suggests(((context, builder) -> SharedSuggestionProvider.suggest((Objects.requireNonNull(new File(InventoryUtil.dirpath).list())), builder)))
+                        .suggests(((context, builder) -> {
+                            ArrayList<String> inventoryList = new ArrayList<>();
+                            try {
+                                inventoryList = InventoryUtil.getListOfInventories(StringArgumentType.getString(context, "type"));
+                            } catch (Exception ignored) {
+                                inventoryList.add("Unable to get inventories!");
+                            }
+                            return SharedSuggestionProvider.suggest(inventoryList, builder);
+                        }))
                         .executes(ListInventoriesCommand::run)
                 )
         ));
