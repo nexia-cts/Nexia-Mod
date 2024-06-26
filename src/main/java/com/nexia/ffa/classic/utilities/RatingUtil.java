@@ -155,11 +155,19 @@ public class RatingUtil {
             NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
             if (Permissions.check(player, "nexia.rank")) {
-                if(i == 0) NexiaRank.addPrefix(NexiaRank.GOD, nexiaPlayer, false);
-                else NexiaRank.addPrefix(NexiaRank.PRO, nexiaPlayer, false);
+                if(i == 0) {
+                    if(!nexiaPlayer.hasPrefix(NexiaRank.GOD)) NexiaRank.addPrefix(NexiaRank.GOD, nexiaPlayer, false);
+                }
+                else {
+                    if(!nexiaPlayer.hasPrefix(NexiaRank.PRO)) NexiaRank.addPrefix(NexiaRank.PRO, nexiaPlayer, false);
+                }
             } else {
-                if(i == 0) NexiaRank.addPrefix(NexiaRank.GOD, nexiaPlayer, false);
-                NexiaRank.setRank(NexiaRank.PRO, nexiaPlayer);
+                if(i == 0) {
+                    if(!nexiaPlayer.hasRank(NexiaRank.GOD)) NexiaRank.setRank(NexiaRank.GOD, nexiaPlayer);
+                }
+                else {
+                    if(!nexiaPlayer.hasRank(NexiaRank.PRO)) NexiaRank.setRank(NexiaRank.PRO, nexiaPlayer);
+                }
             }
 
             i++;
@@ -195,23 +203,27 @@ public class RatingUtil {
 
         if (!isInTopFive) {
             if (player.hasPermission("nexia.rank")) {
-                NexiaRank.removePrefix(NexiaRank.PRO, player);
-                NexiaRank.removePrefix(NexiaRank.GOD, player);
+                if(nexiaPlayer.hasPrefix(NexiaRank.PRO)) NexiaRank.removePrefix(NexiaRank.PRO, player);
+                if(nexiaPlayer.hasPrefix(NexiaRank.GOD)) NexiaRank.removePrefix(NexiaRank.GOD, player);
             } else {
-                NexiaRank.setRank(NexiaRank.DEFAULT, player);
+                if(!nexiaPlayer.hasRank(NexiaRank.DEFAULT)) NexiaRank.setRank(NexiaRank.DEFAULT, player);
             }
         } else {
             if (player.hasPermission("nexia.rank")) {
                 if(i == 0) NexiaRank.addPrefix(NexiaRank.GOD, player, false);
                 else {
                     // just in case
-                    NexiaRank.removePrefix(NexiaRank.GOD, player);
+                    if(nexiaPlayer.hasPrefix(NexiaRank.GOD)) NexiaRank.removePrefix(NexiaRank.GOD, player);
 
-                    NexiaRank.addPrefix(NexiaRank.PRO, player, false);
+                    if(!nexiaPlayer.hasPrefix(NexiaRank.PRO)) NexiaRank.addPrefix(NexiaRank.PRO, player, false);
                 }
             } else {
-                if(i == 0) NexiaRank.setRank(NexiaRank.GOD, player);
-                else NexiaRank.setRank(NexiaRank.PRO, player);
+                if(i == 0) {
+                    if(!nexiaPlayer.hasRank(NexiaRank.GOD)) NexiaRank.setRank(NexiaRank.GOD, player);
+                }
+                else {
+                    if(!nexiaPlayer.hasRank(NexiaRank.PRO)) NexiaRank.setRank(NexiaRank.PRO, player);
+                }
             }
         }
     }

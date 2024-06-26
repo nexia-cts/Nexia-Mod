@@ -4,6 +4,7 @@ import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.pos.EntityPos;
+import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
@@ -176,6 +177,14 @@ public class NexiaPlayer extends WrappedPlayer {
         }
 
         this.unwrap().connection.send(new ClientboundContainerSetSlotPacket(0, packetSlot, this.unwrap().inventory.getItem(slot)));
+    }
+
+    public boolean hasRank(NexiaRank rank) {
+        return this.hasPermission(rank.groupID);
+    }
+
+    public boolean hasPrefix(NexiaRank rank) {
+        return this.hasPermission("nexia.prefix." + rank.id);
     }
 
     public void removeItem(Item item, int count) {
