@@ -78,23 +78,6 @@ public class ServerGamePacketListenerMixin {
         return Permissions.check(this.player, "nexia.dev.commandblock");
     }
 
-    // Thank you, our lord and saviour
-    //   _____  _          _____            _
-    // |  __ \(_)        / ____|          | |
-    // | |__) |_ _______| |     ___   ___ | | _____ _   _
-    // |  _  /| |_  / _ \ |    / _ \ / _ \| |/ / _ \ | | |
-    // | | \ \| |/ /  __/ |___| (_) | (_) |   <  __/ |_| |
-    // |_|  \_\_/___\___|\_____\___/ \___/|_|\_\___|\__, |
-    //                                               __/ |
-    //                                              |___/
-    /*
-    @Redirect(method = "handleInteract", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;getCurrentAttackReach(F)F"))
-    public float redirectReachLonger(ServerPlayer playerEntity, float f) {
-        return playerEntity.getCurrentAttackReach(f) + 0.75F;
-    }
-    
-     */
-
     @Inject(at = @At("HEAD"), method = "onDisconnect")
     private void getLeavePlayer(Component component, CallbackInfo ci) {
         ServerTime.leavePlayer = player;
