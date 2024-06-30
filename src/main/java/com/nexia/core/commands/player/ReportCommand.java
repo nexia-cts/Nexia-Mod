@@ -1,5 +1,6 @@
 package com.nexia.core.commands.player;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
@@ -52,9 +53,8 @@ public class ReportCommand {
     }
 
 
-    public static int report(CommandContext<CommandSourceInfo> context, ServerPlayer player, String reason) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        NexiaPlayer executor = CommandUtil.getPlayer(context);
+    public static int report(CommandContext<CommandSourceInfo> context, ServerPlayer player, String reason) throws CommandSyntaxException {
+        NexiaPlayer executor = new NexiaPlayer(context.getSource().getPlayerOrException());
 
         if(PlayerDataManager.get(executor).savedData.isReportBanned()) {
             executor.sendMessage(

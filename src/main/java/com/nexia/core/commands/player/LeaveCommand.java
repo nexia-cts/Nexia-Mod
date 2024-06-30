@@ -1,12 +1,12 @@
 package com.nexia.core.commands.player;
 
-import com.nexia.nexus.api.command.CommandSourceInfo;
-import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.nexus.api.command.CommandSourceInfo;
+import com.nexia.nexus.api.command.CommandUtils;
 
 public class LeaveCommand {
 
@@ -21,10 +21,8 @@ public class LeaveCommand {
         dispatcher.register(CommandUtils.literal(string).executes(LeaveCommand::run));
     }
 
-    public static int run(CommandContext<CommandSourceInfo> context) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        NexiaPlayer player = new NexiaPlayer(CommandUtil.getPlayer(context));
-
+    public static int run(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
+        NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
         LobbyUtil.returnToLobby(player, true);
         return 1;
     }

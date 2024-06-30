@@ -1,16 +1,14 @@
 package com.nexia.minigames.games.skywars;
 
-import com.nexia.nexus.api.util.Identifier;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
+import com.nexia.core.utilities.world.StructureMap;
 import com.nexia.core.utilities.world.WorldUtil;
+import com.nexia.nexus.api.util.Identifier;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
-import net.notcoded.codelib.util.world.structure.Rotation;
-import net.notcoded.codelib.util.world.structure.StructureMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,7 +49,7 @@ public class SkywarsMap {
             new EntityPos(-59.5,91.0,-14.5),
             new EntityPos(-14.5,91.0,-59.5),
             new EntityPos(14.5,91.0,-59.5))
-    ), new StructureMap(new ResourceLocation("skywars", "relic"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-63,-7,-63), true));
+    ), new StructureMap(new Identifier("skywars", "relic"), StructureMap.Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-63,-7,-63), true));
 
     public static SkywarsMap SKYHENGE = new SkywarsMap("skyhenge", 12, new ArrayList<>(Arrays.asList(
             new EntityPos(72.5, 88.0, 0.5),
@@ -66,7 +64,7 @@ public class SkywarsMap {
             new EntityPos(0.5,88.0,72.5),
             new EntityPos(23.5,88.0,49.5),
             new EntityPos(49.5,88.0,23.5))
-    ), new StructureMap(new ResourceLocation("skywars", "skyhenge"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-77, -7, -77), true));
+    ), new StructureMap(new Identifier("skywars", "skyhenge"), StructureMap.Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-77, -7, -77), true));
 
     public static SkywarsMap PLACEHOLDER = new SkywarsMap("placeholder", 12, null, null);
 
@@ -79,21 +77,30 @@ public class SkywarsMap {
             new EntityPos(-28.5,81.0,-68.5),
             new EntityPos(-68.5,81.0,-28.5),
             new EntityPos(-68.5,81.0,29.5))
-    ), new StructureMap(new ResourceLocation("skywars", "below"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-76, -9, -76), true));
+    ), new StructureMap(new Identifier("skywars", "below"), StructureMap.Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-76, -9, -76), true));
 
-    public static SkywarsMap NULL = new SkywarsMap("null", 4, new ArrayList<>(Arrays.asList(
+    public static SkywarsMap NULL = new SkywarsMap("null", 8, new ArrayList<>(Arrays.asList(
             new EntityPos(25.5, 77.0, 25.5),
             new EntityPos(-24.5, 77.0, 25.5),
             new EntityPos(25.5, 77.0, -24.5),
+            new EntityPos(-49.5, 77, 0.5),
+            new EntityPos(0.5, 77, 50.5),
+            new EntityPos(50.5, 77, 0.5),
+            new EntityPos(0.5, 77, -49.5),
             new EntityPos(-24.5, 77.0, -24.5))
-    ), new StructureMap(new ResourceLocation("skywars", "null"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-33, -42, -33), true));
+    ), new StructureMap(new Identifier("skywars", "null"), StructureMap.Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-54, -42, -54), true));
 
-    // public static SkywarsMap SHROOMS = new SkywarsMap("shrooms", 4, new ArrayList<>(Arrays.asList(
-            // new EntityPos(40.5, 75, 40.5),
-            // new EntityPos(40.5, 75, -39.5),
-            // new EntityPos(-39.5, 75, -39.5),
-            // new EntityPos(-39.5, 75, 40.5))
-    // ), new StructureMap(new ResourceLocation("skywars", "shrooms"), Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-44, -11, -45), true));
+
+    public static SkywarsMap SHROOMS = new SkywarsMap("shrooms", 8, new ArrayList<>(Arrays.asList(
+            new EntityPos(-22.5, 81.0, -75.5),
+            new EntityPos(6.5, 81, -79.5),
+            new EntityPos(28.5, 81, -69.5),
+            new EntityPos(-76.5, 81, -9.5),
+            new EntityPos(-76.5, 81, 14.5),
+            new EntityPos(-17.5, 81, 75.5),
+            new EntityPos(10.5, 81, 76.5),
+            new EntityPos(36.5, 81, 68.5))
+    ), new StructureMap(new Identifier("skywars", "shrooms"), StructureMap.Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-85, -20, -85), true));
 
 
     public static SkywarsMap identifyMap(String name) {
@@ -161,7 +168,7 @@ public class SkywarsMap {
 
         SkywarsMap.fourPlayerMaps.add(this);
     }
-    
+
     public static SkywarsMap calculateMap(int players, boolean rerollPrevention) {
         if(players <= 4 && (rerollPrevention && !SkywarsMap.fourPlayerMaps.contains(SkywarsGame.map))) {
             return SkywarsMap.fourPlayerMaps.get(RandomUtil.randomInt(SkywarsMap.fourPlayerMaps.size()));

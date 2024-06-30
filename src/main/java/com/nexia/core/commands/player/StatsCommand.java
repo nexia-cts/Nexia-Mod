@@ -1,5 +1,6 @@
 package com.nexia.core.commands.player;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
@@ -33,9 +34,8 @@ public class StatsCommand {
         );
     }
 
-    public static int run(CommandContext<CommandSourceInfo> context) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        NexiaPlayer player = CommandUtil.getPlayer(context);
+    public static int run(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
+        NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
         PlayerData playerData = com.nexia.core.utilities.player.PlayerDataManager.get(player);
 
 

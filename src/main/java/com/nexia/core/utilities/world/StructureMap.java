@@ -1,12 +1,11 @@
 package com.nexia.core.utilities.world;
 
-import com.nexia.nexus.api.util.Identifier;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.nexus.api.util.Identifier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.notcoded.codelib.util.world.structure.Rotation;
 
 /**
  * Uses Structure Blocks to paste a map using /setblock.
@@ -119,6 +118,19 @@ public class StructureMap {
             return String.format("%s run setblock %s %s %s minecraft:structure_block{mode:'LOAD',name:'%s:%s',posX:%s,posY:%s,posZ:%s,rotation:\"%s\"}", start, placePos.getX(), placePos.getY(), placePos.getZ(), Identifier.getNamespace(), Identifier.getId(), pastePos.getX(), pastePos.getY(), pastePos.getZ(), this.rotation.id);
         } else {
             return String.format("%s run setblock %s %s %s minecraft:structure_block{mode:'LOAD',name:'%s:%s',posX:%s,posY:%s,posZ:%s}", start, placePos.getX(), placePos.getY(), placePos.getZ(), Identifier.getNamespace(), Identifier.getId(), pastePos.getX(), pastePos.getY(), pastePos.getZ());
+        }
+    }
+
+    public enum Rotation {
+        NO_ROTATION("0"),
+        CLOCKWISE_90("CLOCKWISE_90"),
+        CLOCKWISE_180("CLOCKWISE_180"),
+        COUNTERCLOCKWISE_90("COUNTERCLOCKWISE_90");
+
+        public final String id;
+
+        Rotation(String id) {
+            this.id = id;
         }
     }
 }

@@ -1,7 +1,5 @@
 package com.nexia.ffa.uhc.utilities;
 
-import com.nexia.nexus.api.world.entity.player.Player;
-import com.nexia.nexus.api.world.types.Minecraft;
 import com.google.gson.Gson;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
@@ -13,10 +11,10 @@ import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.uhc.utilities.player.PlayerDataManager;
 import com.nexia.ffa.uhc.utilities.player.SavedPlayerData;
+import com.nexia.nexus.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.types.Minecraft;
 import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
-import net.blumbo.blfscheduler.BlfRunnable;
-import net.blumbo.blfscheduler.BlfScheduler;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -64,12 +62,7 @@ public class FfaUhcUtil {
         }
         data.kills++;
 
-        BlfScheduler.delay(5, new BlfRunnable() {
-            @Override
-            public void run() {
-                player.setHealth(player.unwrap().getMaxHealth());
-            }
-        });
+        ServerTime.scheduler.schedule(() -> player.setHealth(player.unwrap().getMaxHealth()), 5);
 
         FfaUhcUtil.clearArrows(player);
         FfaUhcUtil.clearTrident(player);
@@ -268,12 +261,7 @@ public class FfaUhcUtil {
         FfaAreas.spawn.teleportPlayer(FfaAreas.ffaWorld, player.unwrap());
 
         if(shouldResetMap) {
-            BlfScheduler.delay(30, new BlfRunnable() {
-                @Override
-                public void run() {
-                    FfaAreas.resetMap(true);
-                }
-            });
+            ServerTime.scheduler.schedule(() -> FfaAreas.resetMap(true), 30);
             shouldResetMap = false;
         }
     }

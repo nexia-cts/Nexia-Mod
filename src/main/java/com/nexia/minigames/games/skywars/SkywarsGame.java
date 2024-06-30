@@ -1,6 +1,5 @@
 package com.nexia.minigames.games.skywars;
 
-import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
@@ -10,10 +9,12 @@ import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.core.utilities.time.TickUtil;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.skywars.util.player.PlayerData;
 import com.nexia.minigames.games.skywars.util.player.PlayerDataManager;
+import com.nexia.nexus.api.world.types.Minecraft;
 import net.fabricmc.loader.impl.util.StringUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -31,7 +32,6 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.dimension.DimensionType;
-import net.notcoded.codelib.util.TickUtil;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 

@@ -1,16 +1,14 @@
 package com.nexia.core.commands.player.duels.custom;
 
-import com.nexia.nexus.api.command.CommandSourceInfo;
-import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.natamus.collective_fabric.functions.PlayerFunctions;
 import com.natamus.collective_fabric.functions.StringFunctions;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
-import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
@@ -19,6 +17,8 @@ import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.CustomKitRoom;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.KitRoom;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.SmpKitRoom;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.VanillaKitRoom;
+import com.nexia.nexus.api.command.CommandSourceInfo;
+import com.nexia.nexus.api.command.CommandUtils;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.SharedSuggestionProvider;
 import org.apache.commons.lang3.StringUtils;
@@ -39,10 +39,8 @@ public class KitEditorCommand {
         dispatcher.register((CommandUtils.literal("kiteditor")
                 .requires(commandSourceInfo -> {
                     try {
-                        if(!CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
-                        NexiaPlayer player = CommandUtil.getPlayer(commandSourceInfo);
+                        NexiaPlayer player = new NexiaPlayer(commandSourceInfo.getPlayerOrException());
 
-                        assert player != null;
                         com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
                         PlayerData playerData1 = PlayerDataManager.get(player);
                         return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
@@ -61,9 +59,8 @@ public class KitEditorCommand {
         );
     }
 
-    private static int run(CommandContext<CommandSourceInfo> context, @NotNull String argument, String slot) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        NexiaPlayer player = new NexiaPlayer(CommandUtil.getPlayer(context));
+    private static int run(CommandContext<CommandSourceInfo> context, @NotNull String argument, String slot) throws CommandSyntaxException {
+        NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
 
         if (!slots.contains(slot) && !argument.equalsIgnoreCase("save")) {
             player.sendMessage(Component.text("Invalid slot!", ChatFormat.failColor));

@@ -24,10 +24,7 @@ public class HealCommand {
     }
 
     public static int run(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
-
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-
-        NexiaPlayer executor = CommandUtil.getPlayer(context);
+        NexiaPlayer executor = new NexiaPlayer(context.getSource().getPlayerOrException());
         executor.setHealth(executor.unwrap().getMaxHealth());
 
         executor.sendMessage(

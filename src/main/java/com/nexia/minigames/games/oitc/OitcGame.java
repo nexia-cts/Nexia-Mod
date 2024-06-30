@@ -1,5 +1,6 @@
 package com.nexia.minigames.games.oitc;
 
+import com.nexia.core.utilities.time.TickUtil;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
@@ -13,8 +14,6 @@ import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.oitc.util.player.PlayerData;
 import com.nexia.minigames.games.oitc.util.player.PlayerDataManager;
-import net.blumbo.blfscheduler.BlfRunnable;
-import net.blumbo.blfscheduler.BlfScheduler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
@@ -33,7 +32,6 @@ import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
-import net.notcoded.codelib.util.TickUtil;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
@@ -144,13 +142,10 @@ public class OitcGame {
                             OitcGame.deathPlayers.remove(player);
                             //ServerTime.nexusServer.runCommand("/gamemode adventure " + player.get().getScoreboardName(), 4, false);
                             player.setGameMode(Minecraft.GameMode.ADVENTURE);
-                            BlfScheduler.delay(5, new BlfRunnable() {
-                                @Override
-                                public void run() {
-                                    giveKit(player);
-                                    player.setGameMode(Minecraft.GameMode.ADVENTURE);
-                                }
-                            });
+                            ServerTime.scheduler.schedule(() -> {
+                                giveKit(player);
+                                player.setGameMode(Minecraft.GameMode.ADVENTURE);
+                            }, 5);
 
                         }
                     }));

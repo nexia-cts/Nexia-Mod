@@ -1,5 +1,6 @@
 package com.nexia.core.commands.player.duels;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
@@ -25,10 +26,8 @@ public class DeclineDuelCommand {
         dispatcher.register(CommandUtils.literal(string)
                 .requires(commandSourceInfo -> {
                     try {
-                        if(!CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
-                        NexiaPlayer player = CommandUtil.getPlayer(commandSourceInfo);
+                        NexiaPlayer player = new NexiaPlayer(commandSourceInfo.getPlayerOrException());
 
-                        assert player != null;
                         com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
                         PlayerData playerData1 = PlayerDataManager.get(player);
                         return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
@@ -42,9 +41,8 @@ public class DeclineDuelCommand {
         );
     }
 
-    public static int decline(CommandContext<CommandSourceInfo> context, ServerPlayer player) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        NexiaPlayer executor = new NexiaPlayer(CommandUtil.getPlayer(context));
+    public static int decline(CommandContext<CommandSourceInfo> context, ServerPlayer player) throws CommandSyntaxException {
+        NexiaPlayer executor = new NexiaPlayer(context.getSource().getPlayerOrException());
 
         GamemodeHandler.declineDuel(executor, new NexiaPlayer(player));
         return 1;

@@ -45,7 +45,7 @@
     "fabricloader": ">=0.7.4",
     "minecraft": ["1.16.3-combat.8.c", "1.16.2-1.16.combat-6"],
     "fabric": "*",
-    "nexus-api": "*",
+    "nexus-api": ">=0.1.14",
     "fantasy": ">=0.4.2",
     "collective-fabric": ">=1.16.5-5.50",
     "java": ">=21"

@@ -1,19 +1,19 @@
 package com.nexia.core.commands.player.duels;
 
-import com.nexia.nexus.api.command.CommandSourceInfo;
-import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
-import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelGameMode;
+import com.nexia.nexus.api.command.CommandSourceInfo;
+import com.nexia.nexus.api.command.CommandUtils;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -30,10 +30,8 @@ public class KitLayoutCommand {
         dispatcher.register((CommandUtils.literal("kitlayout")
                 .requires(commandSourceInfo -> {
                     try {
-                        if(!CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
-                        NexiaPlayer player = CommandUtil.getPlayer(commandSourceInfo);
+                        NexiaPlayer player = new NexiaPlayer(commandSourceInfo.getPlayerOrException());
 
-                        assert player != null;
                         com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
                         PlayerData playerData1 = PlayerDataManager.get(player);
                         return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
@@ -52,9 +50,8 @@ public class KitLayoutCommand {
         );
     }
 
-    private static int run(CommandContext<CommandSourceInfo> context, @NotNull String argument, @NotNull String inventory) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        NexiaPlayer player = new NexiaPlayer(CommandUtil.getPlayer(context));
+    private static int run(CommandContext<CommandSourceInfo> context, @NotNull String argument, @NotNull String inventory) throws CommandSyntaxException {
+       NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
 
         if((inventory.trim().isEmpty() || !InventoryUtil.getListOfInventories("duels").contains(inventory.toLowerCase())) && !argument.equalsIgnoreCase("save")) {
             player.sendMessage(Component.text("Invalid gamemode!", ChatFormat.failColor));

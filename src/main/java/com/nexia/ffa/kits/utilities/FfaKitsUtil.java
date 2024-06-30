@@ -15,8 +15,6 @@ import com.nexia.ffa.kits.FfaKit;
 import com.nexia.ffa.kits.utilities.player.PlayerData;
 import com.nexia.ffa.kits.utilities.player.PlayerDataManager;
 import com.nexia.ffa.kits.utilities.player.SavedPlayerData;
-import net.blumbo.blfscheduler.BlfRunnable;
-import net.blumbo.blfscheduler.BlfScheduler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.minecraft.core.BlockPos;
@@ -50,12 +48,7 @@ public class FfaKitsUtil {
 
     public static void calculateKill(NexiaPlayer attacker, NexiaPlayer player){
 
-        BlfScheduler.delay(20, new BlfRunnable() {
-            @Override
-            public void run() {
-                attacker.setHealth(attacker.unwrap().getMaxHealth());
-            }
-        });
+        ServerTime.scheduler.schedule(() -> attacker.setHealth(attacker.unwrap().getMaxHealth()), 5);
 
         FfaKitsUtil.clearArrows(attacker);
         FfaKitsUtil.clearSpectralArrows(attacker);
@@ -234,13 +227,6 @@ public class FfaKitsUtil {
         player.safeReset(true, Minecraft.GameMode.ADVENTURE);
         FfaAreas.spawn.teleportPlayer(FfaAreas.ffaWorld, player.unwrap());
         if(data.kit != null) data.kit.giveKit(player, true);
-        else {
-            BlfScheduler.delay(20, new BlfRunnable() {
-                @Override
-                public void run() {
-                    KitGUI.openKitGUI(player.unwrap());
-                }
-            });
-        }
+        else ServerTime.scheduler.schedule(() -> KitGUI.openKitGUI(player.unwrap()), 20);
     }
 }

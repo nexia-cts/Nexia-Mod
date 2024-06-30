@@ -8,6 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class FfaKit {
     public static ArrayList<FfaKit> ffaKits = new ArrayList<>();
@@ -29,7 +30,7 @@ public class FfaKit {
     public static final FfaKit RANDOM = new FfaKit("random", new ItemStack(Items.REDSTONE));
 
     // Keep track of previously selected kits for each player
-    private static final Map<NexiaPlayer, String> previousKits = new HashMap<>();
+    private static final HashMap<NexiaPlayer, String> previousKits = new HashMap<>();
 
     public FfaKit(String id, ItemStack item) {
         this.id = id;

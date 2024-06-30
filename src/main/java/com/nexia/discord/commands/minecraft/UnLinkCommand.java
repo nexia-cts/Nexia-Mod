@@ -1,16 +1,15 @@
 package com.nexia.discord.commands.minecraft;
 
-import com.nexia.nexus.api.command.CommandSourceInfo;
-import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.discord.Main;
 import com.nexia.discord.utilities.player.PlayerData;
 import com.nexia.discord.utilities.player.PlayerDataManager;
+import com.nexia.nexus.api.command.CommandSourceInfo;
+import com.nexia.nexus.api.command.CommandUtils;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
 
@@ -24,8 +23,7 @@ public class UnLinkCommand {
         dispatcher.register(CommandUtils.literal("unlink")
                 .requires(commandSourceInfo -> {
                     try {
-                        if(!CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
-                        return PlayerDataManager.get(CommandUtil.getPlayer(commandSourceInfo).getUUID()).savedData.isLinked;
+                        return PlayerDataManager.get(commandSourceInfo.getPlayerOrException().getUUID()).savedData.isLinked;
                     } catch (Exception ignored) { }
                     return false;
                 })
@@ -34,8 +32,7 @@ public class UnLinkCommand {
     }
 
     public static int run(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        NexiaPlayer player = CommandUtil.getPlayer(context);
+        NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
 
         PlayerData data = PlayerDataManager.get(player.getUUID());
 
@@ -43,7 +40,7 @@ public class UnLinkCommand {
 
         try {
             jda.getGuildById(Main.config.guildID).retrieveMemberById(data.savedData.discordID).complete();
-        } catch (NullPointerException exception) {
+        } catch (Exception exception) {
             new File(FabricLoader.getInstance().getConfigDir().toString() + "/nexia/discord/discorddata", data.savedData.discordID + ".json").delete();
         }
 

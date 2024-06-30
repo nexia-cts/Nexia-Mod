@@ -9,6 +9,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.nexus.api.world.entity.player.Player;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.Registry;
@@ -39,20 +40,19 @@ public class MapCommand {
     }
 
     private static int run(CommandContext<CommandSourceInfo> context) {
-        NexiaPlayer player = CommandUtil.getPlayer(context);
+        NexiaPlayer player = null;
+        if(context.getSource().getExecutingEntity() instanceof Player nexusPlayer) {
+            player = new NexiaPlayer(nexusPlayer);
+        }
 
         String type = StringArgumentType.getString(context, "type");
         String map = StringArgumentType.getString(context, "map");
 
         if(map.trim().isEmpty() || type.trim().isEmpty()) {
-            if(player != null) {
-                player.sendMessage(
-                        ChatFormat.nexiaMessage
-                                .append(Component.text("Invalid name!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
-                );
-            }
-
-
+            context.getSource().sendMessage(
+                    ChatFormat.nexiaMessage
+                            .append(Component.text("Invalid name!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
+            );
             return 1;
         }
 

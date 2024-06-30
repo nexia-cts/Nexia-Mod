@@ -1,30 +1,28 @@
 package com.nexia.core.commands.player.duels;
 
-import com.nexia.nexus.api.command.CommandSourceInfo;
-import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.duels.QueueGUI;
-import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerData;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
+import com.nexia.nexus.api.command.CommandSourceInfo;
+import com.nexia.nexus.api.command.CommandUtils;
 import net.minecraft.commands.SharedSuggestionProvider;
 
 public class QueueCommand {
+
     public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
         dispatcher.register(CommandUtils.literal("queue")
                 .requires(commandSourceInfo -> {
                     try {
-                        if(!CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
-                        NexiaPlayer player = CommandUtil.getPlayer(commandSourceInfo);
+                        NexiaPlayer player = new NexiaPlayer(commandSourceInfo.getPlayerOrException());
 
-                        assert player != null;
                         com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
                         PlayerData playerData1 = PlayerDataManager.get(player);
                         return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
@@ -32,8 +30,7 @@ public class QueueCommand {
                     return false;
                 })
                 .executes(context -> {
-                    if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-                    NexiaPlayer player = new NexiaPlayer(CommandUtil.getPlayer(context));
+                    NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
 
                     QueueGUI.openQueueGUI(player.unwrap());
                     return 1;
@@ -45,8 +42,7 @@ public class QueueCommand {
     }
 
     public static int queue(CommandContext<CommandSourceInfo> context, String gameMode) throws CommandSyntaxException {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        NexiaPlayer player = new NexiaPlayer(CommandUtil.getPlayer(context));
+        NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
 
         GamemodeHandler.joinQueue(player, gameMode, false);
         return 1;

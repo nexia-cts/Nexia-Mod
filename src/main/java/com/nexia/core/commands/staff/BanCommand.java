@@ -1,7 +1,5 @@
 package com.nexia.core.commands.staff;
 
-import com.nexia.nexus.api.command.CommandSourceInfo;
-import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -9,6 +7,8 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.nexus.api.command.CommandSourceInfo;
+import com.nexia.nexus.api.command.CommandUtils;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.network.chat.ComponentUtils;

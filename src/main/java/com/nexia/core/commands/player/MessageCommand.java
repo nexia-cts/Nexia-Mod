@@ -51,8 +51,7 @@ public class MessageCommand {
     }
 
     private static int msgCommand(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        NexiaPlayer sender = CommandUtil.getPlayer(context);
+        NexiaPlayer sender = new NexiaPlayer(context.getSource().getPlayerOrException());
         NexiaPlayer receiver = new NexiaPlayer(context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())));
         String message = StringArgumentType.getString(context, "message");
 
@@ -61,9 +60,8 @@ public class MessageCommand {
         return 1;
     }
 
-    private static int replyCommand(CommandContext<CommandSourceInfo> context) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        NexiaPlayer sender = CommandUtil.getPlayer(context);
+    private static int replyCommand(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
+        NexiaPlayer sender = new NexiaPlayer(context.getSource().getPlayerOrException());
         PlayerData senderData = PlayerDataManager.get(sender);
         NexiaPlayer receiver = senderData.lastMessageSender;
 

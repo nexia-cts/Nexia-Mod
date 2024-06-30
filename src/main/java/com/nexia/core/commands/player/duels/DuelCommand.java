@@ -1,5 +1,6 @@
 package com.nexia.core.commands.player.duels;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
@@ -31,10 +32,8 @@ public class DuelCommand {
         dispatcher.register(CommandUtils.literal(string)
                 .requires(commandSourceInfo -> {
                     try {
-                        if(!CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
-                        NexiaPlayer player = CommandUtil.getPlayer(commandSourceInfo);
+                        NexiaPlayer player = new NexiaPlayer(commandSourceInfo.getPlayerOrException());
 
-                        assert player != null;
                         com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
                         PlayerData playerData1 = PlayerDataManager.get(player);
                         return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
@@ -44,8 +43,7 @@ public class DuelCommand {
                 })
                 .then(CommandUtils.argument("player", EntityArgument.player())
                         .executes(context -> {
-                            if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-                            NexiaPlayer player = new NexiaPlayer(CommandUtil.getPlayer(context));
+                            NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
 
                             DuelGUI.openDuelGui(player.unwrap(), context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())));
                             return 1;
@@ -59,9 +57,8 @@ public class DuelCommand {
                                 ))));
     }
 
-    public static int challenge(CommandContext<CommandSourceInfo> context, ServerPlayer player, String gameMode, @Nullable String map) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        NexiaPlayer executor = new NexiaPlayer(CommandUtil.getPlayer(context));
+    public static int challenge(CommandContext<CommandSourceInfo> context, ServerPlayer player, String gameMode, @Nullable String map) throws CommandSyntaxException {
+        NexiaPlayer executor = new NexiaPlayer(context.getSource().getPlayerOrException());
 
         GamemodeHandler.challengePlayer(executor, new NexiaPlayer(player), gameMode, DuelsMap.identifyMap(map));
         return 1;

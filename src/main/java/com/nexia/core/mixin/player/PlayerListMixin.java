@@ -1,6 +1,5 @@
 package com.nexia.core.mixin.player;
 
-import com.combatreforged.factory.builder.implementation.util.ObjectMappings;
 import com.mojang.authlib.GameProfile;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -15,7 +14,6 @@ import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import de.themoep.minedown.adventure.MineDown;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.*;
@@ -189,7 +187,7 @@ public abstract class PlayerListMixin {
             MutableComponent message = new TextComponent(messageString).withStyle(ChatFormatting.WHITE);
 
             if(player.hasPermission("nexia.chat.formatting", 4)) {
-                message = (MutableComponent) ObjectMappings.convertComponent("§f" + MineDown.parse(messageString));
+                message = (MutableComponent) ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("§f").append(MineDown.parse(messageString)));
             }
 
             return name.append(suffix).append(message);

@@ -7,6 +7,7 @@ import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.minigames.games.bedwars.players.BwTeam;
 import com.nexia.minigames.games.bedwars.shop.BwShop;
 import com.nexia.minigames.games.bedwars.util.BwGen;
+import com.nexia.nexus.api.util.RomanNumbers;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
@@ -17,7 +18,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.notcoded.codelib.util.numbers.RomanNumbers;
 
 import java.util.HashMap;
 

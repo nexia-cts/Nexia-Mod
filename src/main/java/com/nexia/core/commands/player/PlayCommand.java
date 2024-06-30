@@ -1,12 +1,13 @@
 package com.nexia.core.commands.player;
 
-import com.nexia.nexus.api.command.CommandSourceInfo;
-import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.gui.PlayGUI;
-import com.nexia.core.utilities.commands.CommandUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.nexus.api.command.CommandSourceInfo;
+import com.nexia.nexus.api.command.CommandUtils;
 
 public class PlayCommand {
 
@@ -16,94 +17,47 @@ public class PlayCommand {
         register(dispatcher, "join");
 
         dispatcher.register(CommandUtils.literal("ffa").executes(PlayCommand::openFFAGui)
-                .then(CommandUtils.literal("kits").executes(PlayCommand::playKitFFA))
-                .then(CommandUtils.literal("sky").executes(PlayCommand::playSkyFFA))
-                .then(CommandUtils.literal("uhc").executes(PlayCommand::playUhcFFA))
-                .then(CommandUtils.literal("classic").executes(PlayCommand::playNormalFFA))
+                .then(CommandUtils.literal("kits").executes(context -> playGame(context, "kits ffa")))
+                .then(CommandUtils.literal("sky").executes(context -> playGame(context, "sky ffa")))
+                .then(CommandUtils.literal("uhc").executes(context -> playGame(context, "uhc ffa")))
+                .then(CommandUtils.literal("classic").executes(context -> playGame(context, "classic ffa")))
         );
     }
 
     private static void register(CommandDispatcher<CommandSourceInfo> dispatcher, String string) {
         dispatcher.register(CommandUtils.literal(string).executes(PlayCommand::openGUI)
                 .then(CommandUtils.literal("ffa").executes(PlayCommand::openFFAGui)
-                        .then(CommandUtils.literal("kits").executes(PlayCommand::playKitFFA))
-                        .then(CommandUtils.literal("sky").executes(PlayCommand::playSkyFFA))
-                        .then(CommandUtils.literal("uhc").executes(PlayCommand::playUhcFFA))
-                        .then(CommandUtils.literal("classic").executes(PlayCommand::playNormalFFA)))
-                .then(CommandUtils.literal("bedwars").executes(PlayCommand::playBedWars))
-                .then(CommandUtils.literal("duels").executes(PlayCommand::playDuels))
-                .then(CommandUtils.literal("skywars").executes(PlayCommand::playSkywars))
-                .then(CommandUtils.literal("sw").executes(PlayCommand::playSkywars))
-                .then(CommandUtils.literal("football").executes(PlayCommand::playFootball))
-                .then(CommandUtils.literal("oitc").executes(PlayCommand::playOITC))
-                .then(CommandUtils.literal("bw").executes(PlayCommand::playBedWars)));
+                        .then(CommandUtils.literal("kits").executes(context -> playGame(context, "kits ffa")))
+                        .then(CommandUtils.literal("sky").executes(context -> playGame(context, "sky ffa")))
+                        .then(CommandUtils.literal("uhc").executes(context -> playGame(context, "uhc ffa")))
+                        .then(CommandUtils.literal("classic").executes(context -> playGame(context, "classic ffa")))
+                )
+                .then(CommandUtils.literal("bedwars").executes(context -> playGame(context, "bedwars")))
+                .then(CommandUtils.literal("duels").executes(context -> playGame(context, "duels")))
+                .then(CommandUtils.literal("skywars").executes(context -> playGame(context, "skywars")))
+                .then(CommandUtils.literal("sw").executes(context -> playGame(context, "skywars")))
+                .then(CommandUtils.literal("football").executes(context -> playGame(context, "football")))
+                .then(CommandUtils.literal("oitc").executes(context -> playGame(context, "oitc")))
+                .then(CommandUtils.literal("bw").executes(context -> playGame(context, "bedwars")))
+        );
     }
 
-
-    private static int openGUI(CommandContext<CommandSourceInfo> context) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        PlayGUI.openMainGUI(CommandUtil.getPlayer(context).unwrap());
+    private static int openGUI(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
+        PlayGUI.openMainGUI(new NexiaPlayer(context.getSource().getPlayerOrException()).unwrap());
         return 1;
     }
 
-    private static int openFFAGui(CommandContext<CommandSourceInfo> context){
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        PlayGUI.openMainGUI(CommandUtil.getPlayer(context).unwrap()).setFFALayout();
+    private static int openFFAGui(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
+        PlayGUI.openMainGUI(new NexiaPlayer(context.getSource().getPlayerOrException()).unwrap()).setFFALayout();
         return 1;
     }
 
-    private static int playNormalFFA(CommandContext<CommandSourceInfo> context) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        LobbyUtil.sendGame(CommandUtil.getPlayer(context), "classic ffa", true, true);
-        return 1;
+    private static int playGame(CommandContext<CommandSourceInfo> context, String game) throws CommandSyntaxException {
+        return playGame(new NexiaPlayer(context.getSource().getPlayerOrException()), game);
     }
 
-    private static int playKitFFA(CommandContext<CommandSourceInfo> context) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        LobbyUtil.sendGame(CommandUtil.getPlayer(context), "kits ffa", true, true);
+    private static int playGame(NexiaPlayer player, String game) {
+        LobbyUtil.sendGame(player, game, true, true);
         return 1;
     }
-
-    private static int playUhcFFA(CommandContext<CommandSourceInfo> context) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        LobbyUtil.sendGame(CommandUtil.getPlayer(context), "uhc ffa", true, true);
-        return 1;
-    }
-
-    private static int playSkyFFA(CommandContext<CommandSourceInfo> context) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        LobbyUtil.sendGame(CommandUtil.getPlayer(context), "sky ffa", true, true);
-        return 1;
-    }
-
-    private static int playBedWars(CommandContext<CommandSourceInfo> context) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        LobbyUtil.sendGame(CommandUtil.getPlayer(context), "bedwars", true, true);
-        return 1;
-    }
-
-    private static int playDuels(CommandContext<CommandSourceInfo> context) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        LobbyUtil.sendGame(CommandUtil.getPlayer(context), "duels", true, true);
-        return 1;
-    }
-
-    private static int playOITC(CommandContext<CommandSourceInfo> context) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        LobbyUtil.sendGame(CommandUtil.getPlayer(context), "oitc", true, true);
-        return 1;
-    }
-
-    private static int playFootball(CommandContext<CommandSourceInfo> context) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        LobbyUtil.sendGame(CommandUtil.getPlayer(context), "football", true, true);
-        return 1;
-    }
-
-    private static int playSkywars(CommandContext<CommandSourceInfo> context) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        LobbyUtil.sendGame(CommandUtil.getPlayer(context), "skywars", true, true);
-        return 1;
-    }
-
 }

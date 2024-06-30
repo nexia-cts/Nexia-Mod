@@ -1,10 +1,10 @@
 package com.nexia.minigames.games.duels;
 
-import com.nexia.nexus.api.world.types.Minecraft;
+import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.nexus.api.world.types.Minecraft;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.notcoded.codelib.util.item.ItemDisplayUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;

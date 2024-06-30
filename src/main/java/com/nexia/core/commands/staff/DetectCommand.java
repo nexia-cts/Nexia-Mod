@@ -28,9 +28,9 @@ public class DetectCommand {
     }
 
     public static int run(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
-        if(!enabled || CommandUtil.failIfNoPlayerInCommand(context)) return 0;
+        if(!enabled) return 0;
 
-        detect(CommandUtil.getPlayer(context));
+        detect(new NexiaPlayer(context.getSource().getPlayerOrException()));
         return 1;
     }
 

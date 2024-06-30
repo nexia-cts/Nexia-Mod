@@ -1,5 +1,6 @@
 package com.nexia.core.commands.player;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.nexus.api.command.CommandUtils;
 import com.nexia.nexus.api.world.types.Minecraft;
@@ -28,16 +29,14 @@ public class SpectateCommand {
         dispatcher.register(CommandUtils.literal("spectate")
                 .requires(commandSourceInfo -> {
                     try {
-                        if(!CommandUtil.checkPlayerInCommand(commandSourceInfo)) return false;
-                        NexiaPlayer player = CommandUtil.getPlayer(commandSourceInfo);
+                        NexiaPlayer player = new NexiaPlayer(commandSourceInfo.getPlayerOrException());
 
-                        assert player != null;
                         com.nexia.minigames.games.duels.util.player.PlayerData playerData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player);
                         PlayerData playerData1 = PlayerDataManager.get(player);
                         return (playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY) || (playerData1.gameMode == PlayerGameMode.FFA);
                     } catch (Exception ignored) {
+                        return false;
                     }
-                    return false;
                 })
                         .executes(SpectateCommand::gameModeSpectate)
                 .then(CommandUtils.argument("player", EntityArgument.player())
@@ -46,9 +45,8 @@ public class SpectateCommand {
         );
     }
 
-    public static int gameModeSpectate(CommandContext<CommandSourceInfo> context) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        NexiaPlayer executor = CommandUtil.getPlayer(context);
+    public static int gameModeSpectate(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
+        NexiaPlayer executor = new NexiaPlayer(context.getSource().getPlayerOrException());
 
         if(PlayerDataManager.get(executor).gameMode != PlayerGameMode.FFA) {
             executor.sendMessage(ChatFormat.nexiaMessage.append(
@@ -92,9 +90,8 @@ public class SpectateCommand {
         return 1;
     }
 
-    public static int spectate(CommandContext<CommandSourceInfo> context, ServerPlayer player) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        NexiaPlayer nexiaExecutor = new NexiaPlayer(CommandUtil.getPlayer(context));
+    public static int spectate(CommandContext<CommandSourceInfo> context, ServerPlayer player) throws CommandSyntaxException {
+        NexiaPlayer nexiaExecutor = new NexiaPlayer(context.getSource().getPlayerOrException());
         NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
         if(PlayerDataManager.get(nexiaPlayer).gameMode == PlayerGameMode.LOBBY) {

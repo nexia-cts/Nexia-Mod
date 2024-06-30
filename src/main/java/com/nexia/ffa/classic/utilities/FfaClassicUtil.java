@@ -14,8 +14,6 @@ import com.nexia.ffa.classic.utilities.player.PlayerDataManager;
 import com.nexia.ffa.classic.utilities.player.SavedPlayerData;
 import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
-import net.blumbo.blfscheduler.BlfRunnable;
-import net.blumbo.blfscheduler.BlfScheduler;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -72,7 +70,7 @@ public class FfaClassicUtil {
         }
 
         if(bot == null && !players.isEmpty()) {
-            ServerTime.factoryServer.runCommand("/function core:bot/bot", 4, false); // spawns the bot
+            ServerTime.nexusServer.runCommand("/function core:bot/bot", 4, false); // spawns the bot
             return false;
         }
 
@@ -111,12 +109,7 @@ public class FfaClassicUtil {
     }
 
     public static void calculateKill(NexiaPlayer attacker, NexiaPlayer player){
-        BlfScheduler.delay(5, new BlfRunnable() {
-            @Override
-            public void run() {
-                attacker.setHealth(attacker.unwrap().getMaxHealth());
-            }
-        });
+        ServerTime.scheduler.schedule(() -> attacker.setHealth(attacker.unwrap().getMaxHealth()), 5);
 
         if(player.hasTag("bot") || attacker.hasTag("bot")) return;
 

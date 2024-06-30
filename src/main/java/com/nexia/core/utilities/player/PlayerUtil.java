@@ -2,6 +2,8 @@ package com.nexia.core.utilities.player;
 
 import com.google.gson.JsonParser;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.nexus.api.util.http.HttpAPI;
+import com.nexia.nexus.api.util.minecraft.MinecraftAPI;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.TextComponent;
@@ -15,8 +17,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.notcoded.codelib.minecraft.MinecraftAPI;
-import net.notcoded.codelib.util.http.HttpAPI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

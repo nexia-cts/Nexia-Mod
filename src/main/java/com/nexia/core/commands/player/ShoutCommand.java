@@ -1,5 +1,6 @@
 package com.nexia.core.commands.player;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.nexus.api.command.CommandUtils;
 import com.nexia.nexus.api.world.entity.player.Player;
@@ -39,9 +40,8 @@ public class ShoutCommand {
     }
 
 
-    public static int shout(CommandContext<CommandSourceInfo> context, String message) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        NexiaPlayer executor = CommandUtil.getPlayer(context);
+    public static int shout(CommandContext<CommandSourceInfo> context, String message) throws CommandSyntaxException {
+        NexiaPlayer executor = new NexiaPlayer(context.getSource().getPlayerOrException());
 
         if (PlayerMutes.muted(executor)) return 0;
 

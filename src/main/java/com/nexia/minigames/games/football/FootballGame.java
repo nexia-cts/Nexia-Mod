@@ -1,6 +1,5 @@
 package com.nexia.minigames.games.football;
 
-import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -8,9 +7,11 @@ import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.core.utilities.time.TickUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.football.util.player.PlayerData;
 import com.nexia.minigames.games.football.util.player.PlayerDataManager;
+import com.nexia.nexus.api.world.types.Minecraft;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -34,7 +35,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.AABB;
-import net.notcoded.codelib.util.TickUtil;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 

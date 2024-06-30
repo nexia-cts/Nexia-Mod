@@ -1,11 +1,12 @@
 package com.nexia.core.commands.player;
 
-import com.nexia.nexus.api.command.CommandSourceInfo;
-import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.gui.RanksGUI;
-import com.nexia.core.utilities.commands.CommandUtil;
+import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.nexus.api.command.CommandSourceInfo;
+import com.nexia.nexus.api.command.CommandUtils;
 
 public class RanksCommand {
 
@@ -16,9 +17,8 @@ public class RanksCommand {
         dispatcher.register(CommandUtils.literal("role").executes(RanksCommand::run));
     }
 
-    public static int run(CommandContext<CommandSourceInfo> context) {
-        if(CommandUtil.failIfNoPlayerInCommand(context)) return 0;
-        RanksGUI.openMainGUI(CommandUtil.getPlayer(context).unwrap());
+    public static int run(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
+        RanksGUI.openMainGUI(new NexiaPlayer(context.getSource().getPlayerOrException()).unwrap());
         return 1;
     }
 
