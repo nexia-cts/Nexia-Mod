@@ -8,7 +8,6 @@ import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.classic.utilities.KillTracker;
 import com.nexia.ffa.kits.FfaKit;
 import com.nexia.ffa.kits.utilities.player.PlayerData;
 import com.nexia.ffa.kits.utilities.player.PlayerDataManager;
@@ -69,9 +68,6 @@ public class FfaKitsUtil {
             data.bestKillstreak = data.killstreak;
         }
         data.kills++;
-
-        // Increment kill count for attacker
-        KillTracker.incrementKillCount(attacker.getUUID(), player.getUUID());
 
         if (data.killstreak % 5 == 0) {
             for (ServerPlayer serverPlayer : ffaWorld.players()) {

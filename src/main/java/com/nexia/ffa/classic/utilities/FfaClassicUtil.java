@@ -138,6 +138,9 @@ public class FfaClassicUtil {
         }
         data.kills++;
 
+        // Increment kill count for attacker
+        KillTracker.incrementKillCount(attacker.getUUID(), player.getUUID());
+
         if(data.killstreak % 5 == 0){
             for(ServerPlayer serverPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()){
                 if(FfaClassicUtil.isFfaPlayer(serverPlayer)) {
