@@ -29,7 +29,7 @@ public class PingCommand {
     }
 
     public static int run(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
-        int ping = new NexiaPlayer(context.getSource().getPlayerOrException()).unwrap().latency;
+        int ping = new NexiaPlayer(context.getSource().getPlayerOrException()).getLatency();
 
         context.getSource().sendMessage(
                 ChatFormat.nexiaMessage

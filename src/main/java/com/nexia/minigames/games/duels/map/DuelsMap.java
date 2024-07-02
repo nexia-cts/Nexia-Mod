@@ -1,8 +1,8 @@
 package com.nexia.minigames.games.duels.map;
 
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.core.utilities.world.StructureMap;
 import com.nexia.nexus.api.util.Identifier;
+import com.nexia.nexus.builder.implementation.world.structure.StructureMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;

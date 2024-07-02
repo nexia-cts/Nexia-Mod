@@ -120,7 +120,7 @@ public class BwGame {
             invulnerabilityList.replace(player, invulnerabilityList.get(player) - 1);
             if (invulnerabilityList.get(player) <= 0) {
                 it.remove();
-                if (BwUtil.isBedWarsPlayer(player)) player.unwrap().setInvulnerable(false);
+                if (BwUtil.isBedWarsPlayer(player)) player.setInvulnerable(false);
             }
         }
     }

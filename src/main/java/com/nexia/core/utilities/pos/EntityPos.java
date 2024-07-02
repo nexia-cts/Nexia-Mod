@@ -1,5 +1,6 @@
 package com.nexia.core.utilities.pos;
 
+import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.nexus.api.world.World;
 import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.nexus.api.world.util.Location;
@@ -88,6 +89,10 @@ public class EntityPos {
 
     public void teleportPlayer(World world, Player player) {
         player.teleport(new Location(this.x, this.y, this.z, this.yaw, this.pitch, world));
+    }
+
+    public void teleportPlayer(ServerLevel level, Player player) {
+        teleportPlayer(WorldUtil.getWorld(level), player);
     }
 
     public void teleportPlayer(ServerLevel level, ServerPlayer player) {

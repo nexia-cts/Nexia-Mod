@@ -31,7 +31,7 @@ public class CommandUtil {
 
     public static boolean hasPermission(CommandSourceInfo context, @NotNull String permission, int defaultRequiredLevel)  {
         if(context.getExecutingEntity() instanceof Player player) {
-            return Permissions.check(new NexiaPlayer(player).unwrap(), permission);
+            return Permissions.check(new NexiaPlayer(player).unwrap(), permission, defaultRequiredLevel);
         }
 
         return Permissions.check(getCommandSourceStack(context), permission, defaultRequiredLevel);
@@ -47,8 +47,8 @@ public class CommandUtil {
 
     public static CommandSourceStack getCommandSourceStack(CommandSourceInfo info) {
 
-        if(info.getExecutingEntity() instanceof Player) {
-            return getCommandSourceStack(info, new NexiaPlayer((Player) info.getExecutingEntity()));
+        if(info.getExecutingEntity() instanceof Player player) {
+            return getCommandSourceStack(info, new NexiaPlayer(player));
         }
 
         CommandSourceStack commandSourceStack = new CommandSourceStack(new CommandSource() {

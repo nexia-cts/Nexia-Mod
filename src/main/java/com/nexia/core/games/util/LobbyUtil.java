@@ -1,14 +1,12 @@
 package com.nexia.core.games.util;
 
-import com.nexia.nexus.api.world.nbt.NBTObject;
-import com.nexia.nexus.api.world.nbt.NBTValue;
-import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.BanHandler;
 import com.nexia.core.utilities.player.GamemodeBanHandler;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.pos.EntityPos;
+import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.classic.utilities.FfaAreas;
@@ -24,7 +22,11 @@ import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.oitc.OitcGameMode;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.minigames.games.skywars.SkywarsGameMode;
-import me.lucko.fabric.api.permissions.v0.Permissions;
+import com.nexia.nexus.api.world.World;
+import com.nexia.nexus.api.world.nbt.NBTObject;
+import com.nexia.nexus.api.world.nbt.NBTValue;
+import com.nexia.nexus.api.world.types.Minecraft;
+import com.nexia.nexus.api.world.util.Location;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -42,18 +44,30 @@ public class LobbyUtil {
     public static String[] statsGameModes = {"FFA CLASSIC", "SKY FFA", "UHC FFA", "KIT FFA", "BEDWARS", "OITC", "DUELS", "SKYWARS", "FOOTBALL"};
 
     public static ServerLevel lobbyWorld = null;
+
+    public static World nexusLobbyWorld = null;
+    public static Location nexusLobbyLocation = null;
+
     public static EntityPos lobbySpawn = new EntityPos(0, 65, 0, 0, 0);
 
     public static boolean isLobbyWorld(Level level) {
         return level.dimension() == Level.OVERWORLD;
     }
 
+    public static boolean isLobbyWorld(World world) {
+        return world.getIdentifier().toString().equals("minecraft:overworld");
+    }
+
     public static void setLobbyWorld(MinecraftServer server) {
         for (ServerLevel level : server.getAllLevels()) {
             if (isLobbyWorld(level)) {
                 lobbyWorld = level;
+                nexusLobbyWorld = WorldUtil.getWorld(level);
+                break;
             }
         }
+
+        nexusLobbyLocation = new Location(lobbySpawn.x, lobbySpawn.y, lobbySpawn.z, lobbySpawn.yaw, lobbySpawn.pitch, nexusLobbyWorld);
     }
 
     // Players with the tag will not be affected by server rank teams given by server datapack
@@ -95,10 +109,10 @@ public class LobbyUtil {
         DuelGameHandler.leave(player, false);
 
         if (tp) {
-            player.unwrap().setRespawnPosition(lobbyWorld.dimension(), lobbySpawn.toBlockPos(), lobbySpawn.yaw, true, false);
-            player.unwrap().teleportTo(lobbyWorld, lobbySpawn.x, lobbySpawn.y, lobbySpawn.z, lobbySpawn.pitch, lobbySpawn.yaw);
+            player.setRespawnPosition(nexusLobbyLocation, lobbySpawn.yaw, true, false);
+            player.teleport(nexusLobbyLocation);
 
-            if(Permissions.check(player.unwrap(), "nexia.prefix.supporter")) {
+            if(player.hasPermission("nexia.prefix.supporter")) {
                 player.setAbleToFly(true);
             }
 
@@ -253,8 +267,8 @@ public class LobbyUtil {
             FfaClassicUtil.wasInSpawn.add(player.getUUID());
             PlayerDataManager.get(player).ffaGameMode = FfaGameMode.CLASSIC;
             if(tp){
-                player.unwrap().teleportTo(FfaAreas.ffaWorld, FfaAreas.spawn.x, FfaAreas.spawn.y, FfaAreas.spawn.z, FfaAreas.spawn.yaw, FfaAreas.spawn.pitch);
-                player.unwrap().setRespawnPosition(FfaAreas.ffaWorld.dimension(), FfaAreas.spawn.toBlockPos(), FfaAreas.spawn.yaw, true, false);
+                player.teleport(FfaAreas.nexusFfaLocation);
+                player.setRespawnPosition(FfaAreas.nexusFfaLocation, FfaAreas.spawn.yaw, true, false);
             }
 
             FfaClassicUtil.clearThrownTridents(player);
@@ -262,12 +276,12 @@ public class LobbyUtil {
         }
 
         if(game.equalsIgnoreCase("sky ffa")){
-            player.unwrap().addTag("ffa_sky");
+            player.addTag("ffa_sky");
             FfaSkyUtil.wasInSpawn.add(player.getUUID());
             PlayerDataManager.get(player).ffaGameMode = FfaGameMode.SKY;
             if(tp){
                 FfaSkyUtil.sendToSpawn(player);
-                player.unwrap().setRespawnPosition(com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld.dimension(), com.nexia.ffa.sky.utilities.FfaAreas.spawn.toBlockPos(), com.nexia.ffa.sky.utilities.FfaAreas.spawn.yaw, true, false);
+                player.setRespawnPosition(com.nexia.ffa.sky.utilities.FfaAreas.nexusFfaLocation, com.nexia.ffa.sky.utilities.FfaAreas.spawn.yaw, true, false);
             }
 
             FfaSkyUtil.joinOrRespawn(player);
@@ -279,7 +293,7 @@ public class LobbyUtil {
             PlayerDataManager.get(player).ffaGameMode = FfaGameMode.UHC;
             if(tp){
                 FfaUhcUtil.sendToSpawn(player);
-                player.unwrap().setRespawnPosition(com.nexia.ffa.uhc.utilities.FfaAreas.ffaWorld.dimension(), com.nexia.ffa.uhc.utilities.FfaAreas.spawn.toBlockPos(), com.nexia.ffa.uhc.utilities.FfaAreas.spawn.yaw, true, false);
+                player.setRespawnPosition(com.nexia.ffa.uhc.utilities.FfaAreas.nexusFfaLocation, com.nexia.ffa.uhc.utilities.FfaAreas.spawn.yaw, true, false);
             }
 
             FfaUhcUtil.clearArrows(player);
@@ -292,7 +306,7 @@ public class LobbyUtil {
             PlayerDataManager.get(player).ffaGameMode = FfaGameMode.KITS;
             if(tp){
                 FfaKitsUtil.sendToSpawn(player);
-                player.unwrap().setRespawnPosition(com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld.dimension(), com.nexia.ffa.kits.utilities.FfaAreas.spawn.toBlockPos(), com.nexia.ffa.kits.utilities.FfaAreas.spawn.yaw, true, false);
+                player.setRespawnPosition(com.nexia.ffa.kits.utilities.FfaAreas.nexusFfaLocation, com.nexia.ffa.kits.utilities.FfaAreas.spawn.yaw, true, false);
             }
 
             FfaKitsUtil.clearThrownTridents(player);
@@ -331,7 +345,7 @@ public class LobbyUtil {
         }
 
         if(game.equalsIgnoreCase("football")){
-            player.unwrap().addTag(FootballGame.FOOTBALL_TAG);
+            player.addTag(FootballGame.FOOTBALL_TAG);
             PlayerDataManager.get(player).gameMode = PlayerGameMode.FOOTBALL;
             com.nexia.minigames.games.football.util.player.PlayerDataManager.get(player).gameMode = FootballGameMode.LOBBY;
 
@@ -342,7 +356,7 @@ public class LobbyUtil {
 
 
         if(game.equalsIgnoreCase("skywars")){
-            player.unwrap().addTag(PlayerGameMode.SKYWARS.tag);
+            player.addTag(PlayerGameMode.SKYWARS.tag);
             PlayerDataManager.get(player).gameMode = PlayerGameMode.SKYWARS;
             SkywarsGame.death(player, player.unwrap().getLastDamageSource());
 

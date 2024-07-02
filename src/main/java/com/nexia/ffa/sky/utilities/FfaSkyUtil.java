@@ -96,7 +96,7 @@ public class FfaSkyUtil {
             if (item.getItem().toString().endsWith("_wool")) {
                 ogWoolItemSlot = i;
                 ogWoolItem = item;
-                player.unwrap().inventory.setItem(i, new ItemStack(Items.WHITE_WOOL, 64));
+                player.getInventory().setItemStack(i, com.nexia.nexus.api.world.item.ItemStack.create(Minecraft.Item.WHITE_WOOL, 64));
             }
         }
 
@@ -288,8 +288,8 @@ public class FfaSkyUtil {
         if(!FfaSkyUtil.isFfaPlayer(player)) return;
         int minHeal = 4;
         int maxHeal = 11;
-        float maxHealth = player.unwrap().getMaxHealth();
-        float lostHearts = maxHealth - player.unwrap().getHealth();
+        float maxHealth = player.getMaxHealth();
+        float lostHearts = maxHealth - player.getHealth();
 
         int heal = (int)(minHeal + (lostHearts - minHeal) * (maxHeal - minHeal) / (maxHealth - minHeal));
 

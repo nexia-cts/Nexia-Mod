@@ -1,5 +1,6 @@
 package com.nexia.core.commands.staff;
 
+import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
@@ -10,6 +11,7 @@ import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.nexus.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.util.Location;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.Registry;
@@ -75,7 +77,7 @@ public class MapCommand {
                             .setGameRule(GameRules.RULE_SPAWN_RADIUS, 0))).asWorld();
 
             if (player != null) {
-                player.unwrap().teleportTo(level, 0, 80, 0, 0, 0);
+                player.teleport(new Location(0, 80, 0, 0, 0, WorldUtil.getWorld(level)));
 
                 player.sendMessage(
                         ChatFormat.nexiaMessage
@@ -108,7 +110,7 @@ public class MapCommand {
             ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), null).asWorld();
 
             if(player != null) {
-                player.unwrap().teleportTo(level, 0, 80, 0, 0, 0);
+                player.teleport(new Location(0, 80, 0, 0, 0, WorldUtil.getWorld(level)));
 
                 player.sendMessage(
                         ChatFormat.nexiaMessage

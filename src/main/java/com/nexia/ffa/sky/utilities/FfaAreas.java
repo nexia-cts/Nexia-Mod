@@ -6,7 +6,9 @@ import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.pos.PositionUtil;
 import com.nexia.core.utilities.pos.ProtectionBlock;
 import com.nexia.core.utilities.pos.ProtectionMap;
-import com.nexia.ffa.Main;
+import com.nexia.core.utilities.world.WorldUtil;
+import com.nexia.nexus.api.world.World;
+import com.nexia.nexus.api.world.util.Location;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
@@ -17,7 +19,10 @@ import net.minecraft.world.level.block.Blocks;
 
 public class FfaAreas {
     public static ServerLevel ffaWorld = null;
-    public static EntityPos spawn = new EntityPos(Main.sky.spawnCoordinates[0], Main.sky.spawnCoordinates[1], Main.sky.spawnCoordinates[2], 0, 0);
+    public static World nexusFfaWorld = null;
+    public static Location nexusFfaLocation = null;
+
+    public static EntityPos spawn = new EntityPos(0.5, 80, 0.5, 0, 0);
 
     private static final int mapRadius = 30;
 
@@ -32,20 +37,23 @@ public class FfaAreas {
     }
 
     public static boolean isFfaWorld(Level level) {
-        return level.dimension().toString().contains(Main.sky.worldName);
+        return level.dimension().location().toString().equals("ffa:sky");
     }
 
     public static boolean isInFfaSpawn(NexiaPlayer player) {
-        return PositionUtil.isBetween(spawnCorner1, spawnCorner2, player.unwrap().blockPosition());
+        return PositionUtil.isBetween(spawnCorner1, spawnCorner2, player.getLocation());
     }
 
     public static void setFfaWorld(MinecraftServer server) {
         for (ServerLevel level : server.getAllLevels()) {
             if (isFfaWorld(level)) {
                 ffaWorld = level;
+                nexusFfaWorld = WorldUtil.getWorld(level);
                 break;
             }
         }
+
+        nexusFfaLocation = new Location(spawn.x, spawn.y, spawn.z, spawn.yaw, spawn.pitch, nexusFfaWorld);
     }
 
     public static float getVoidY() {

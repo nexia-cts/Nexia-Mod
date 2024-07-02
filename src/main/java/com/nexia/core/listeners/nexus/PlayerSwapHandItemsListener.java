@@ -10,7 +10,7 @@ public class PlayerSwapHandItemsListener {
 
             NexiaPlayer player = new NexiaPlayer(playerDropItemEvent.getPlayer());
 
-            if(LobbyUtil.isLobbyWorld(player.unwrap().getLevel())) {
+            if(LobbyUtil.isLobbyWorld(player.getWorld())) {
                 playerDropItemEvent.setCancelled(true);
                 return;
             }

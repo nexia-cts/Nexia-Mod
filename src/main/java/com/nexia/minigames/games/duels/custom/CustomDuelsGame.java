@@ -129,8 +129,8 @@ public class CustomDuelsGame { //implements Runnable{
 
         selectedMap.structureMap.pasteMap(duelLevel);
 
-        selectedMap.p1Pos.teleportPlayer(duelLevel, p1.unwrap());
-        selectedMap.p2Pos.teleportPlayer(duelLevel, p2.unwrap());
+        selectedMap.p1Pos.teleportPlayer(duelLevel, p1);
+        selectedMap.p2Pos.teleportPlayer(duelLevel, p2);
 
         p1.reset(true, Minecraft.GameMode.ADVENTURE);
         p2.reset(true, Minecraft.GameMode.ADVENTURE);
@@ -255,8 +255,8 @@ public class CustomDuelsGame { //implements Runnable{
 
             this.currentStartTime--;
 
-            this.map.p1Pos.teleportPlayer(this.level, p1.unwrap());
-            this.map.p2Pos.teleportPlayer(this.level, p2.unwrap());
+            this.map.p1Pos.teleportPlayer(this.level, p1);
+            this.map.p2Pos.teleportPlayer(this.level, p2);
 
             if (this.startTime - this.currentStartTime >= this.startTime) {
                 p1.sendSound(new EntityPos(p1.unwrap()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);

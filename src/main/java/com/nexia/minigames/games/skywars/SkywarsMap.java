@@ -3,10 +3,11 @@ package com.nexia.minigames.games.skywars;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.core.utilities.world.StructureMap;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.nexus.api.util.Identifier;
+import com.nexia.nexus.builder.implementation.world.structure.StructureMap;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 
@@ -149,7 +150,7 @@ public class SkywarsMap {
     }
 
     public static void deleteWorld(String id) {
-        WorldUtil.deleteWorld(new Identifier("skywars", id));
+        WorldUtil.deleteWorld(new ResourceLocation("skywars", id));
     }
 
     public SkywarsMap(String id, int maxPlayers, ArrayList<EntityPos> positions, StructureMap structureMap) {

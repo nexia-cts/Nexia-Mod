@@ -31,7 +31,7 @@ public class PlayerLeaveListener {
         /*
         if (BwUtil.isInBedWars(player)) BwPlayerEvents.leaveInBedWars(player);
         else if (FfaUtil.isFfaPlayer(player)) {
-            FfaUtil.leaveOrDie(player, player.unwrap().getLastDamageSource(), true);
+            FfaUtil.leaveOrDie(player, player.getLastDamageSource(), true);
         }
         else if (PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) DuelGameHandler.leave(player, true);
         else if (PlayerDataManager.get(player).gameMode == PlayerGameMode.SKYWARS) SkywarsGame.leave(player);

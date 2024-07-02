@@ -25,7 +25,7 @@ public class HealCommand {
 
     public static int run(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         NexiaPlayer executor = new NexiaPlayer(context.getSource().getPlayerOrException());
-        executor.setHealth(executor.unwrap().getMaxHealth());
+        executor.setHealth(executor.getMaxHealth());
 
         executor.sendMessage(
                 ChatFormat.nexiaMessage

@@ -1,8 +1,8 @@
 package com.nexia.minigames.games.duels.custom.kitroom.kitrooms;
 
 import com.nexia.core.utilities.player.NexiaPlayer;
-import com.nexia.core.utilities.world.StructureMap;
 import com.nexia.nexus.api.util.Identifier;
+import com.nexia.nexus.builder.implementation.world.structure.StructureMap;
 import net.minecraft.core.BlockPos;
 
 public class CustomKitRoom extends KitRoom {

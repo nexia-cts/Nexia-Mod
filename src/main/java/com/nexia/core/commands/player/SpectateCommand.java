@@ -1,11 +1,8 @@
 package com.nexia.core.commands.player;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.nexia.nexus.api.command.CommandSourceInfo;
-import com.nexia.nexus.api.command.CommandUtils;
-import com.nexia.nexus.api.world.types.Minecraft;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -16,7 +13,9 @@ import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
-import me.lucko.fabric.api.permissions.v0.Permissions;
+import com.nexia.nexus.api.command.CommandSourceInfo;
+import com.nexia.nexus.api.command.CommandUtils;
+import com.nexia.nexus.api.world.types.Minecraft;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -58,7 +57,7 @@ public class SpectateCommand {
             return 0;
         }
 
-        if(!Permissions.check(executor.unwrap(), "nexia.prefix.supporter")) {
+        if(!executor.hasPermission("nexia.prefix.supporter")) {
             executor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("This feature is only available for").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                             .append(Component.text("Supporters")
@@ -99,7 +98,7 @@ public class SpectateCommand {
             return 1;
         }
 
-        if(!Permissions.check(nexiaExecutor.unwrap(), "nexia.prefix.supporter")) {
+        if(!nexiaExecutor.hasPermission("nexia.prefix.supporter")) {
             nexiaExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                             Component.text("This feature is only available for").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                                     .append(Component.text("Supporters")

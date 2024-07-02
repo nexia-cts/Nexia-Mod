@@ -30,7 +30,7 @@ public class MultipleBlockMixins {
         NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
         PlayerData playerData = PlayerDataManager.get(nexiaPlayer);
 
-        if ((FfaUtil.isFfaPlayer(nexiaPlayer) || KitRoom.isInKitRoom(nexiaPlayer) || BwUtil.isInBedWars(nexiaPlayer) || (playerData.gameOptions != null && (playerData.gameOptions.duelsGame != null || playerData.gameOptions.teamDuelsGame != null || playerData.gameOptions.customTeamDuelsGame != null || playerData.gameOptions.customDuelsGame != null)) || LobbyUtil.isLobbyWorld(serverPlayer.getLevel())) && !player.isCreative()) {
+        if ((FfaUtil.isFfaPlayer(nexiaPlayer) || KitRoom.isInKitRoom(nexiaPlayer) || BwUtil.isInBedWars(nexiaPlayer) || (playerData.gameOptions != null && (playerData.gameOptions.duelsGame != null || playerData.gameOptions.teamDuelsGame != null || playerData.gameOptions.customTeamDuelsGame != null || playerData.gameOptions.customDuelsGame != null)) || LobbyUtil.isLobbyWorld(nexiaPlayer.getWorld())) && !player.isCreative()) {
             cir.setReturnValue(InteractionResult.FAIL);
             return;
         }

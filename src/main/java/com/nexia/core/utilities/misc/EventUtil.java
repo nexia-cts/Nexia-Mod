@@ -25,7 +25,7 @@ public class EventUtil {
         //return !FfaUtil.isFfaPlayer(player) || !LobbyUtil.isLobbyWorld(player.level) || !OitcGame.isOITCPlayer(player) || !FootballGame.isFootballPlayer(player);
 
         if(FfaUtil.isFfaPlayer(player)) return false;
-        if(LobbyUtil.isLobbyWorld(player.unwrap().level)) return false;
+        if(LobbyUtil.isLobbyWorld(player.getWorld())) return false;
         if(OitcGame.isOITCPlayer(player)) return false;
         if(FootballGame.isFootballPlayer(player)) return false;
 
@@ -37,7 +37,7 @@ public class EventUtil {
     public static boolean dropItem(NexiaPlayer player, com.nexia.nexus.api.world.item.ItemStack itemStack) {
 
         if(FfaUtil.isFfaPlayer(player)) return false;
-        if(LobbyUtil.isLobbyWorld(player.unwrap().level)) return false;
+        if(LobbyUtil.isLobbyWorld(player.getWorld())) return false;
         if(OitcGame.isOITCPlayer(player)) return false;
         if(FootballGame.isFootballPlayer(player)) return false;
 

@@ -24,16 +24,12 @@ import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
-import net.minecraft.network.protocol.game.ClientboundStopSoundPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 public class NexiaPlayer extends WrappedPlayer {
 
@@ -55,19 +51,17 @@ public class NexiaPlayer extends WrappedPlayer {
         this.getInventory().setCursorStack(ItemStack.create(Minecraft.Item.AIR));
 
         this.unwrap().getEnderChestInventory().clearContent();
-        this.unwrap().setGlowing(false);
-        this.unwrap().connection.send(new ClientboundStopSoundPacket());
+        this.setGlowing(false);
+        this.stopAllSounds();
 
-        this.unwrap().setGameMode(ObjectMappings.GAME_MODES.get(gameMode));
+        this.setGameMode(gameMode);
 
         if (heal) {
-            this.setHealth(this.unwrap().getMaxHealth());
+            this.setHealth(this.getMaxHealth());
             this.setFoodLevel(20);
         }
 
         this.setAbleToFly(false);
-
-        Objects.requireNonNull(this.unwrap().getAttribute(Attributes.KNOCKBACK_RESISTANCE)).setBaseValue(0.0);
         this.unwrap().onUpdateAbilities();
 
         ServerTime.minecraftServer.getPlayerList().sendPlayerPermissionLevel(this.unwrap());
@@ -85,16 +79,18 @@ public class NexiaPlayer extends WrappedPlayer {
         this.setInvulnerabilityTime(0);
         this.clearEffects();
         this.setRemainingFireTicks(0);
-        this.unwrap().setGlowing(false);
+        this.setGlowing(false);
 
         this.setGameMode(gameMode);
 
         if (heal) {
-            this.setHealth(this.unwrap().getMaxHealth());
+            this.setHealth(this.getMaxHealth());
             this.setFoodLevel(20);
         }
 
         this.setAbleToFly(false);
+        this.unwrap().onUpdateAbilities();
+
         ServerTime.minecraftServer.getPlayerList().sendPlayerPermissionLevel(this.unwrap());
     }
 

@@ -1,13 +1,13 @@
 package com.nexia.minigames.games.duels.custom.kitroom.kitrooms;
 
-import com.nexia.nexus.api.util.Identifier;
-import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.core.utilities.world.StructureMap;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import com.nexia.nexus.api.world.types.Minecraft;
+import com.nexia.nexus.api.world.util.Location;
+import com.nexia.nexus.builder.implementation.world.structure.StructureMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
@@ -95,7 +95,7 @@ public class KitRoom {
     public boolean teleport() {
         if(!this.hasBeenGenerated || this.level == null) return false;
 
-        this.player.unwrap().teleportTo(this.level, 0.5, 80, 0.5, 0, 0);
+        this.player.teleport(new Location(0.5, 80, 0.5, 0, 0, WorldUtil.getWorld(this.level)));
         this.player.reset(true, Minecraft.GameMode.ADVENTURE);
         this.player.addTag("in_kitroom");
 
@@ -111,6 +111,6 @@ public class KitRoom {
 
     private void delete() {
         if(this.level == null || this.handle == null) return;
-        WorldUtil.deleteWorld(new Identifier("kitroom", String.valueOf(uuid)));
+        WorldUtil.deleteWorld(new ResourceLocation("kitroom", String.valueOf(uuid)));
     }
 }

@@ -48,7 +48,7 @@ public class FfaKitsUtil {
 
     public static void calculateKill(NexiaPlayer attacker, NexiaPlayer player){
 
-        ServerTime.scheduler.schedule(() -> attacker.setHealth(attacker.unwrap().getMaxHealth()), 5);
+        ServerTime.scheduler.schedule(() -> attacker.setHealth(attacker.getMaxHealth()), 5);
 
         FfaKitsUtil.clearArrows(attacker);
         FfaKitsUtil.clearSpectralArrows(attacker);
@@ -225,7 +225,7 @@ public class FfaKitsUtil {
         FfaKitsUtil.wasInSpawn.add(player.getUUID());
 
         player.safeReset(true, Minecraft.GameMode.ADVENTURE);
-        FfaAreas.spawn.teleportPlayer(FfaAreas.ffaWorld, player.unwrap());
+        FfaAreas.spawn.teleportPlayer(nexusFfaWorld, player);
         if(data.kit != null) data.kit.giveKit(player, true);
         else ServerTime.scheduler.schedule(() -> KitGUI.openKitGUI(player.unwrap()), 20);
     }

@@ -62,7 +62,7 @@ public class FfaUhcUtil {
         }
         data.kills++;
 
-        ServerTime.scheduler.schedule(() -> player.setHealth(player.unwrap().getMaxHealth()), 5);
+        ServerTime.scheduler.schedule(() -> player.setHealth(player.getMaxHealth()), 5);
 
         FfaUhcUtil.clearArrows(player);
         FfaUhcUtil.clearTrident(player);
@@ -155,7 +155,7 @@ public class FfaUhcUtil {
     }
 
     public static boolean beforeBuild(NexiaPlayer player, BlockPos blockPos) {
-        if (player.unwrap().isCreative()) return true;
+        if (player.getGameMode().equals(Minecraft.GameMode.CREATIVE)) return true;
         if (wasInSpawn.contains(player.getUUID())) return false;
         return blockPos.getY() < FfaAreas.buildLimitY;
     }
@@ -258,7 +258,7 @@ public class FfaUhcUtil {
         FfaUhcUtil.setInventory(player);
         FfaUhcUtil.wasInSpawn.add(player.getUUID());
 
-        FfaAreas.spawn.teleportPlayer(FfaAreas.ffaWorld, player.unwrap());
+        FfaAreas.spawn.teleportPlayer(nexusFfaWorld, player);
 
         if(shouldResetMap) {
             ServerTime.scheduler.schedule(() -> FfaAreas.resetMap(true), 30);

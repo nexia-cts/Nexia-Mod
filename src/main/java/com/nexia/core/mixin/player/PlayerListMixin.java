@@ -12,6 +12,8 @@ import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.skywars.SkywarsGame;
+import com.nexia.nexus.api.world.World;
+import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import de.themoep.minedown.adventure.MineDown;
 import net.minecraft.ChatFormatting;
@@ -92,7 +94,7 @@ public abstract class PlayerListMixin {
     private void respawned(ServerPlayer oldPlayer, boolean bl, CallbackInfoReturnable<ServerPlayer> cir) {
         NexiaPlayer nexiaPlayer = new NexiaPlayer(oldPlayer);
 
-        ServerLevel respawn = ServerTime.minecraftServer.getLevel(nexiaPlayer.unwrap().getRespawnDimension());
+        World respawn = nexiaPlayer.getRespawnPosition().getWorld();
 
         if(FfaSkyUtil.isFfaPlayer(nexiaPlayer)) {
             FfaSkyUtil.joinOrRespawn(nexiaPlayer);
@@ -100,16 +102,16 @@ public abstract class PlayerListMixin {
         }
 
         if(respawn != null && LobbyUtil.isLobbyWorld(respawn)) {
-            nexiaPlayer.unwrap().inventory.clearContent();
+            nexiaPlayer.getInventory().clear();
             LobbyUtil.giveItems(nexiaPlayer);
-            nexiaPlayer.unwrap().setGameMode(GameType.ADVENTURE);
+            nexiaPlayer.setGameMode(Minecraft.GameMode.ADVENTURE);
 
             nexiaPlayer.runCommand("/hub", 0, false);
             return;
         }
 
         if (BwUtil.isInBedWars(nexiaPlayer)) { BwPlayerEvents.respawned(nexiaPlayer); }
-        if (SkywarsGame.world.equals(respawn) || SkywarsGame.isSkywarsPlayer(nexiaPlayer)) { nexiaPlayer.unwrap().setGameMode(GameType.SPECTATOR); }
+        if (SkywarsGame.world.equals(respawn) || SkywarsGame.isSkywarsPlayer(nexiaPlayer)) { nexiaPlayer.setGameMode(Minecraft.GameMode.SPECTATOR); }
     }
 
     @Unique

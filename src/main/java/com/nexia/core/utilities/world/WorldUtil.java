@@ -26,7 +26,7 @@ public class WorldUtil {
     private static final String templateWorldName = "template:void";
 
     public static boolean isTemplateVoidWorld(Level level) {
-        return getWorldName(level).equalsIgnoreCase(templateWorldName);
+        return level.dimension().location().toString().equals(templateWorldName);
     }
 
     public static ServerLevel templateWorld;
@@ -41,35 +41,22 @@ public class WorldUtil {
     }
 
     public static World getWorld(@NotNull Level level) {
-        return ServerTime.nexusServer.getWorld(WorldUtil.getIdentifierWorldName(level));
+        return ServerTime.nexusServer.getWorld(new Identifier(level.dimension().location().getNamespace(), level.dimension().location().getPath()));
     }
 
-    public static String getWorldName(@NotNull Level level) {
-        return level.dimension().toString().replaceAll("dimension / ", "").replaceAll("]", "").replaceAll("ResourceKey\\[minecraft:", "");
-    }
-
-    public static Identifier getIdentifierWorldName(@NotNull Level level) {
-        return getWorldName(getWorldName(level)); // why does this exist
-    }
-
-    public static Identifier getWorldName(String name) {
-        String[] splitName = name.split(":");
-        return new Identifier(splitName[0], splitName[1]);
-    }
-
-    public static void deleteWorld(Identifier identifier) {
+    public static void deleteWorld(ResourceLocation identifier) {
         RuntimeWorldHandle worldHandle;
         try {
             worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(
-                    ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(identifier.getNamespace(), identifier.getId())).location(),
+                    ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(identifier.getNamespace(), identifier.getPath())).location(),
                     new RuntimeWorldConfig());
-            FileUtils.forceDeleteOnExit(new File("/world/dimensions/" + identifier.getNamespace(), identifier.getId()));
-            ServerTime.nexusServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getId(), false);
+            FileUtils.forceDeleteOnExit(new File("/world/dimensions/" + identifier.getNamespace(), identifier.getPath()));
+            ServerTime.nexusServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getPath(), false);
         } catch (Exception e) {
-            Main.logger.error("Error occurred while deleting world: {}:{}", identifier.getNamespace(), identifier.getId());
+            Main.logger.error("Error occurred while deleting world: {}:{}", identifier.getNamespace(), identifier.getPath());
 
             try {
-                ServerTime.nexusServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getId(), false);
+                ServerTime.nexusServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getPath(), false);
             } catch (Exception ignored2) {
                 if(Main.config.debugMode) e.printStackTrace();
             }
@@ -90,19 +77,19 @@ public class WorldUtil {
 
     public static void deleteTempWorlds() {
         if(Main.config.debugMode) Main.logger.info("[DEBUG]: Deleting Temporary Worlds");
-        List<Identifier> delete = new ArrayList<>();
+        List<ResourceLocation> delete = new ArrayList<>();
 
         for (ServerLevel level : ServerTime.minecraftServer.getAllLevels()) {
-            Identifier split = WorldUtil.getIdentifierWorldName(level);
-            if (split.getNamespace().equalsIgnoreCase("duels") ||
-                    (split.getNamespace().equalsIgnoreCase("skywars") && !split.getId().equalsIgnoreCase(SkywarsGame.id)) ||
-                    split.getNamespace().equalsIgnoreCase("kitroom")
+            ResourceLocation name = level.dimension().location();
+            if (name.getNamespace().equalsIgnoreCase("duels") ||
+                    (name.getNamespace().equalsIgnoreCase("skywars") && !name.getPath().equalsIgnoreCase(SkywarsGame.id)) ||
+                    name.getNamespace().equalsIgnoreCase("kitroom")
             ) {
-                delete.add(split);
+                delete.add(name);
             }
         }
 
-        for (Identifier deletion : delete) {
+        for (ResourceLocation deletion : delete) {
             WorldUtil.deleteWorld(deletion);
         }
     }

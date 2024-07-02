@@ -1,6 +1,5 @@
 package com.nexia.minigames.games.duels;
 
-import com.nexia.nexus.api.util.Identifier;
 import com.google.gson.Gson;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -204,6 +203,6 @@ public class DuelGameHandler {
     }
 
     public static void deleteWorld(String id) {
-        WorldUtil.deleteWorld(new Identifier("duels", id));
+        WorldUtil.deleteWorld(new ResourceLocation("duels", id));
     }
 }

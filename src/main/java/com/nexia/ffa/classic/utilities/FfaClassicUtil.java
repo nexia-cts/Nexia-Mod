@@ -47,7 +47,7 @@ public class FfaClassicUtil {
 
     public static boolean canGoToSpawn(NexiaPlayer player) {
         if(!FfaClassicUtil.isFfaPlayer(player) || FfaClassicUtil.wasInSpawn.contains(player.getUUID())) return true;
-        return !(Math.round(player.unwrap().getHealth()) < 20);
+        return !(Math.round(player.getHealth()) < 20);
     }
 
     private static boolean checkWorld() {
@@ -109,7 +109,7 @@ public class FfaClassicUtil {
     }
 
     public static void calculateKill(NexiaPlayer attacker, NexiaPlayer player){
-        ServerTime.scheduler.schedule(() -> attacker.setHealth(attacker.unwrap().getMaxHealth()), 5);
+        ServerTime.scheduler.schedule(() -> attacker.setHealth(attacker.getMaxHealth()), 5);
 
         if(player.hasTag("bot") || attacker.hasTag("bot")) return;
 

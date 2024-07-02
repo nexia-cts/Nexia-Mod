@@ -122,7 +122,7 @@ public class OitcGame {
                     OitcGame.deathPlayers.forEach(((player, integer) -> {
                         int newInt = integer - 1;
 
-                        if(!player.unwrap().isSpectator()) player.setGameMode(Minecraft.GameMode.SPECTATOR);
+                        if(!player.getGameMode().equals(Minecraft.GameMode.SPECTATOR)) player.setGameMode(Minecraft.GameMode.SPECTATOR);
 
                         /*
                         OitcGame.deathPlayers.remove(player);
@@ -134,7 +134,7 @@ public class OitcGame {
                         Title title = getTitle(newInt);
 
                         player.sendTitle(title);
-                        player.sendSound(new EntityPos(player.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+                        player.sendSound(new EntityPos(player), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
 
 
                         if(newInt <= 1){
