@@ -58,7 +58,7 @@ public class StatsCommand {
             int deaths = data.deaths;
             int killstreak = data.killstreak;
             int bestKillstreak = data.bestKillstreak;
-            double rating = Math.round(data.rating * 100);
+            long rating = Math.round(data.rating * 100);
 
             if(playerData.ffaGameMode == FfaGameMode.KITS) {
                 message = ChatFormat.separatorLine("Kit FFA Stats");
@@ -110,10 +110,12 @@ public class StatsCommand {
                                                     .append(Component.text(bestKillstreak).color(ChatFormat.goldColor))
             );
 
-            player.sendMessage(start
-                    .append(Component.text(" Rating: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(rating).color(ChatFormat.goldColor))
-            );
+            if (playerData.ffaGameMode == FfaGameMode.CLASSIC) {
+                player.sendMessage(start
+                        .append(Component.text(" Rating: ").color(ChatFormat.brandColor2))
+                        .append(Component.text(rating).color(ChatFormat.goldColor))
+                );
+            }
         }
 
         if(playerData.gameMode == PlayerGameMode.LOBBY){
@@ -242,7 +244,7 @@ public class StatsCommand {
             int deaths = data.deaths;
             int killstreak = data.killstreak;
             int bestKillstreak = data.bestKillstreak;
-            double rating = Math.round(data.rating * 100);
+            long rating = Math.round(data.rating * 100);
 
             if(gamemode.equalsIgnoreCase("kit ffa")) {
                 message = ChatFormat.separatorLine("Kit FFA Stats");
@@ -294,10 +296,12 @@ public class StatsCommand {
                     .append(Component.text(bestKillstreak).color(ChatFormat.goldColor))
             );
 
-            source.sendMessage(start
-                    .append(Component.text(" Rating: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(rating).color(ChatFormat.goldColor))
-            );
+            if(gamemode.equalsIgnoreCase("ffa classic")) {
+                source.sendMessage(start
+                        .append(Component.text(" Rating: ").color(ChatFormat.brandColor2))
+                        .append(Component.text(rating).color(ChatFormat.goldColor))
+                );
+            }
         }
 
         if(gamemode.equalsIgnoreCase("duels")){

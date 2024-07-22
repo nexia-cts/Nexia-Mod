@@ -31,6 +31,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.dimension.DimensionType;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
@@ -52,7 +53,7 @@ public class SkywarsGame {
 
     public static RuntimeWorldConfig config = new RuntimeWorldConfig()
             .setDimensionType(DimensionType.OVERWORLD_LOCATION)
-            .setGenerator(getChunkGenerator())
+            .setGenerator(getChunkGenerator(Biomes.PLAINS))
             .setDifficulty(Difficulty.EASY)
             .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
             .setGameRule(GameRules.RULE_MOBGRIEFING, true)

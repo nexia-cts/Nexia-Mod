@@ -133,7 +133,7 @@ public class ServerGamePacketListenerMixin {
             }
         }
 
-        if (FfaUtil.isFfaPlayer(nexiaPlayer)) {
+        if (FfaUtil.isFfaPlayer(nexiaPlayer) || BwUtil.isBedWarsPlayer(nexiaPlayer)) {
             // If clicks on crafting slot
             if (containerId == 0 && slot >= 1 && slot <= 4) {
                 ci.cancel();
