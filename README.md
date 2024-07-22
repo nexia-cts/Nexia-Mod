@@ -15,9 +15,6 @@ The mod for the Nexia CTS server.
 - Java 21
 - Gradle 8.7
 
-### Documentation
-- Read [documentation](https://github.com/nexia-cts/Nexia-Mod/tree/documentation)
-
 ### Build
 - Clone the repository
   - `git clone https://github.com/nexia-cts/Nexia-Mod`
