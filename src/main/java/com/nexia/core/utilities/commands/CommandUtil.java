@@ -22,19 +22,11 @@ public class CommandUtil {
 
 
     public static boolean hasPermission(CommandSourceInfo context, @NotNull String permission) {
-        if(context.getExecutingEntity() instanceof Player player) {
-            return Permissions.check(new NexiaPlayer(player).unwrap(), permission);
-        }
-
-        return Permissions.check(getCommandSourceStack(context), permission);
+        return Permissions.check(getCommandSourceStack(context, true), permission);
     }
 
     public static boolean hasPermission(CommandSourceInfo context, @NotNull String permission, int defaultRequiredLevel)  {
-        if(context.getExecutingEntity() instanceof Player player) {
-            return Permissions.check(new NexiaPlayer(player).unwrap(), permission, defaultRequiredLevel);
-        }
-
-        return Permissions.check(getCommandSourceStack(context), permission, defaultRequiredLevel);
+        return Permissions.check(getCommandSourceStack(context, true), permission, defaultRequiredLevel);
     }
 
     public static boolean hasPermission(CommandContext<CommandSourceInfo> context, @NotNull String permission) throws CommandSyntaxException {
@@ -45,11 +37,12 @@ public class CommandUtil {
         return hasPermission(context.getSource(), permission, defaultRequiredLevel);
     }
 
-    public static CommandSourceStack getCommandSourceStack(CommandSourceInfo info) {
-
-        if(info.getExecutingEntity() instanceof Player player) {
-            return getCommandSourceStack(info, new NexiaPlayer(player));
-        }
+    public static CommandSourceStack getCommandSourceStack(@NotNull CommandSourceInfo info, boolean autoSetPlayer) {
+        try {
+            if(autoSetPlayer && info.getExecutingEntity() != null && info.getExecutingEntity() instanceof Player player) {
+                return getCommandSourceStack(info, new NexiaPlayer(player));
+            }
+        } catch (Exception ignored) { }
 
         CommandSourceStack commandSourceStack = new CommandSourceStack(new CommandSource() {
             @Override
@@ -76,7 +69,10 @@ public class CommandUtil {
         return commandSourceStack;
     }
 
-    public static CommandSourceStack getCommandSourceStack(CommandSourceInfo info, @NotNull NexiaPlayer player) {
+    public static CommandSourceStack getCommandSourceStack(@NotNull CommandSourceInfo info, NexiaPlayer player) {
+
+        if(player == null || player.unwrap() == null) return getCommandSourceStack(info, false);
+
         CommandSourceStack commandSourceStack = new CommandSourceStack(new CommandSource() {
             @Override
             public void sendMessage(Component component, UUID uUID) {

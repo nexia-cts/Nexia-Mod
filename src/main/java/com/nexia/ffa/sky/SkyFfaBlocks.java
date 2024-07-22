@@ -33,6 +33,7 @@ public class SkyFfaBlocks {
     private static final Block disappearingWoolType = Blocks.GRAY_WOOL;
 
     public static void tick() {
+        if(FfaAreas.ffaWorld == null) return;
         if(FfaAreas.ffaWorld.players().isEmpty()) return;
         ticks++;
 

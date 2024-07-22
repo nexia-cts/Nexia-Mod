@@ -11,9 +11,13 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.dimension.DimensionType;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
@@ -25,6 +29,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WorldUtil {
+
+    public static final RuntimeWorldConfig defaultWorldConfig = new RuntimeWorldConfig()
+            .setDimensionType(DimensionType.OVERWORLD_LOCATION)
+            .setGenerator(getChunkGenerator(Biomes.THE_VOID))
+            .setDifficulty(Difficulty.HARD)
+            .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
+            .setGameRule(GameRules.RULE_MOBGRIEFING, false)
+            .setGameRule(GameRules.RULE_WEATHER_CYCLE, false)
+            .setGameRule(GameRules.RULE_DAYLIGHT, false)
+            .setGameRule(GameRules.RULE_DO_IMMEDIATE_RESPAWN, false)
+            .setGameRule(GameRules.RULE_DOMOBSPAWNING, false)
+            .setGameRule(GameRules.RULE_SHOWDEATHMESSAGES, false)
+            .setGameRule(GameRules.RULE_SPAWN_RADIUS, 0);
 
     private static final String templateWorldName = "template:void";
 

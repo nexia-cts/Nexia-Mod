@@ -1,7 +1,5 @@
 package com.nexia.minigames.games.oitc;
 
-import com.nexia.core.utilities.time.TickUtil;
-import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -11,9 +9,12 @@ import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.core.utilities.time.TickUtil;
+import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.oitc.util.player.PlayerData;
 import com.nexia.minigames.games.oitc.util.player.PlayerDataManager;
+import com.nexia.nexus.api.world.types.Minecraft;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
@@ -33,7 +34,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
-import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -362,7 +362,7 @@ public class OitcGame {
 
         map = OitcMap.oitcMaps.get(RandomUtil.randomInt(OitcMap.oitcMaps.size()));
 
-        world = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("oitc", OitcGame.map.id), new RuntimeWorldConfig()).asWorld();
+        world = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("oitc", OitcGame.map.id), WorldUtil.defaultWorldConfig).asWorld();
 
         isStarted = false;
         queueTime = 15;
@@ -373,6 +373,8 @@ public class OitcGame {
     }
 
     public static void tick() {
+        if(OitcGame.world == null) return;
+        if(OitcGame.world.players().isEmpty()) return;
 
         AABB aabb = new AABB(OitcGame.map.corner1, OitcGame.map.corner2);
         Predicate<Entity> predicate = o -> true;

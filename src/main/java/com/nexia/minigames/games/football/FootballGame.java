@@ -8,6 +8,7 @@ import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.time.TickUtil;
+import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.football.util.player.PlayerData;
 import com.nexia.minigames.games.football.util.player.PlayerDataManager;
@@ -36,7 +37,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
-import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -460,7 +460,7 @@ public class FootballGame {
         spectator.clear();
 
         map = FootballMap.footballMaps.get(RandomUtil.randomInt(FootballMap.footballMaps.size()));
-        world = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("football", FootballGame.map.id), new RuntimeWorldConfig()).asWorld();
+        world = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("football", FootballGame.map.id), WorldUtil.defaultWorldConfig).asWorld();
 
         isStarted = false;
         queueTime = 15;
@@ -473,6 +473,8 @@ public class FootballGame {
     }
 
     public static void tick() {
+        if(FootballGame.world == null) return;
+        if(FootballGame.world.players().isEmpty()) return;
 
         AABB aabb = new AABB(FootballGame.map.corner1, FootballGame.map.corner2);
         Predicate<Entity> predicate = o -> true;
