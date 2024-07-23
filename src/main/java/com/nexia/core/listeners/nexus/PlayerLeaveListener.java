@@ -1,7 +1,7 @@
 package com.nexia.core.listeners.nexus;
 
+import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.utilities.player.NexiaPlayer;
-import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.nexus.api.event.player.PlayerDisconnectEvent;
 
 public class PlayerLeaveListener {
@@ -42,18 +42,6 @@ public class PlayerLeaveListener {
 
         player.leaveAllGames();
 
-        com.nexia.ffa.classic.utilities.player.PlayerDataManager.removePlayerData(player);
-        com.nexia.ffa.kits.utilities.player.PlayerDataManager.removePlayerData(player);
-        com.nexia.ffa.uhc.utilities.player.PlayerDataManager.removePlayerData(player);
-        com.nexia.ffa.sky.utilities.player.PlayerDataManager.removePlayerData(player);
-
-        com.nexia.discord.utilities.player.PlayerDataManager.removePlayerData(player.getUUID());
-        com.nexia.minigames.games.duels.util.player.PlayerDataManager.removePlayerData(player);
-        com.nexia.minigames.games.oitc.util.player.PlayerDataManager.removePlayerData(player);
-        com.nexia.minigames.games.football.util.player.PlayerDataManager.removePlayerData(player);
-        com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.removePlayerData(player);
-        com.nexia.minigames.games.skywars.util.player.PlayerDataManager.removePlayerData(player);
-
-        PlayerDataManager.removePlayerData(player);
+        PlayerDataManager.dataManagerMap.forEach((resourceLocation, playerDataManager) -> playerDataManager.removePlayerData(player));
     }
 }

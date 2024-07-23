@@ -1,10 +1,12 @@
 package com.nexia.minigames.games.bedwars.util;
 
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.Main;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
+import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.NexiaPlayer;
-import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.bedwars.BwGame;
@@ -382,7 +384,7 @@ public class BwUtil {
     }
 
     public static boolean isInBedWars(NexiaPlayer player) {
-        return PlayerDataManager.get(player).gameMode == PlayerGameMode.BEDWARS;
+        return ((CorePlayerData)PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player)).gameMode == PlayerGameMode.BEDWARS;
     }
 
     public static boolean isBedWarsPlayer(NexiaPlayer player) {

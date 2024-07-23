@@ -3,11 +3,11 @@ package com.nexia.discord.commands.minecraft;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.nexia.base.player.PlayerData;
+import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.discord.Main;
-import com.nexia.discord.utilities.player.PlayerData;
-import com.nexia.discord.utilities.player.PlayerDataManager;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.nexus.api.command.CommandUtils;
 import net.fabricmc.loader.api.FabricLoader;
@@ -23,7 +23,7 @@ public class UnLinkCommand {
         dispatcher.register(CommandUtils.literal("unlink")
                 .requires(commandSourceInfo -> {
                     try {
-                        return PlayerDataManager.get(commandSourceInfo.getPlayerOrException().getUUID()).savedData.isLinked;
+                        return PlayerDataManager.getDataManager(com.nexia.core.Main.DISCORD_DATA_MANAGER).get(commandSourceInfo.getPlayerOrException().getUUID()).savedData.get(Boolean.class, "isLinked");
                     } catch (Exception ignored) { }
                     return false;
                 })
@@ -34,21 +34,23 @@ public class UnLinkCommand {
     public static int run(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
 
-        PlayerData data = PlayerDataManager.get(player.getUUID());
+        PlayerData data = PlayerDataManager.getDataManager(com.nexia.core.Main.DISCORD_DATA_MANAGER).get(player.getUUID());
 
-        data.savedData.isLinked = false;
+        data.savedData.set(Boolean.class, "isLinked", false);
+
+        long discordID = data.savedData.get(Long.class, "discordID");
 
         try {
-            jda.getGuildById(Main.config.guildID).retrieveMemberById(data.savedData.discordID).complete();
+            jda.getGuildById(Main.config.guildID).retrieveMemberById(discordID).complete();
         } catch (Exception exception) {
-            new File(FabricLoader.getInstance().getConfigDir().toString() + "/nexia/discord/discorddata", data.savedData.discordID + ".json").delete();
+            new File(FabricLoader.getInstance().getConfigDir().toString() + "/nexia/discord/discorddata", discordID + ".json").delete();
         }
 
-        if(data.savedData.discordID != 0){
-            new File(FabricLoader.getInstance().getConfigDir().toString() + "/nexia/discord/discorddata", data.savedData.discordID + ".json").delete();
+        if( discordID != 0){
+            new File(FabricLoader.getInstance().getConfigDir().toString() + "/nexia/discord/discorddata", discordID + ".json").delete();
         }
 
-        data.savedData.discordID = 0;
+        data.savedData.set(Long.class, "discordID", 0L);
 
         player.sendMessage(
                 ChatFormat.nexiaMessage

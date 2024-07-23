@@ -3,9 +3,11 @@ package com.nexia.core.commands.staff.dev;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.Main;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
-import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
@@ -32,7 +34,7 @@ public class SkipQueueCommand {
 
     private static int currentGamemode(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        PlayerGameMode gameMode = PlayerDataManager.get(player.getUUID()).gameMode;
+        PlayerGameMode gameMode = ((CorePlayerData)PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player.getUUID())).gameMode;
 
         if(gameMode.equals(PlayerGameMode.SKYWARS)) return skywars(context);
         if(gameMode.equals(PlayerGameMode.BEDWARS)) return bedwars(context);

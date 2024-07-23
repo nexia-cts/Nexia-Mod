@@ -1,13 +1,14 @@
 package com.nexia.ffa.classic.utilities;
 
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.base.player.SavedPlayerData;
+import com.nexia.core.Main;
 import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.classic.utilities.player.PlayerDataManager;
-import com.nexia.ffa.classic.utilities.player.SavedPlayerData;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -33,11 +34,11 @@ public class RatingUtil {
     static List<Score> oldLeaderboardRating = null;
 
     public static void calculateRating(NexiaPlayer attacker, NexiaPlayer player) {
-        SavedPlayerData attackerData = PlayerDataManager.get(attacker).savedData;
-        SavedPlayerData playerData = PlayerDataManager.get(player).savedData;
+        SavedPlayerData attackerData = PlayerDataManager.getDataManager(Main.FFA_CLASSIC_DATA_MANAGER).get(attacker).savedData;
+        SavedPlayerData playerData = PlayerDataManager.getDataManager(Main.FFA_CLASSIC_DATA_MANAGER).get(player).savedData;
 
-        double A = attackerData.elo;
-        double B = playerData.elo;
+        double A = attackerData.get(Double.class, "elo");
+        double B = playerData.get(Double.class, "elo");
 
         int killCount = KillTracker.getKillCount(attacker.getUUID(), player.getUUID());
         int victimKillCount = KillTracker.getKillCount(player.getUUID(), attacker.getUUID());
@@ -51,15 +52,15 @@ public class RatingUtil {
         double attackerNewRating = A + ratingChange;
         double victimNewRating = B - ratingChange;
 
-        attackerData.elo = attackerNewRating;
-        playerData.elo = victimNewRating;
+        attackerData.set(Double.class, "elo", attackerNewRating);
+        playerData.set(Double.class, "elo", victimNewRating);
 
 
         double expectedA = 1 / (1 + Math.pow(10, (0 - attackerNewRating) / 400));
         double expectedB = 1 / (1 + Math.pow(10, (0 - victimNewRating) / 400));
 
-        attackerData.rating = expectedA / (1-expectedA);
-        playerData.rating = expectedB / (1-expectedB);
+        attackerData.set(Double.class, "rating", expectedA / (1-expectedA));
+        playerData.set(Double.class, "rating", expectedB / (1-expectedB));
 
         if (attacker.getServer() != null) {
             Scoreboard scoreboard = ServerTime.minecraftServer.getScoreboard();
@@ -67,8 +68,8 @@ public class RatingUtil {
             if (ratingObjective == null) {
                 ratingObjective = scoreboard.addObjective("Rating", ObjectiveCriteria.DUMMY, new TextComponent("Rating"), ObjectiveCriteria.RenderType.INTEGER);
             }
-            scoreboard.getOrCreatePlayerScore(attacker.getRawName(), ratingObjective).setScore((int) Math.round(attackerData.rating * 100));
-            scoreboard.getOrCreatePlayerScore(player.getRawName(), ratingObjective).setScore((int) Math.round(playerData.rating * 100));
+            scoreboard.getOrCreatePlayerScore(attacker.getRawName(), ratingObjective).setScore((int) Math.round(attackerData.get(Double.class, "rating") * 100));
+            scoreboard.getOrCreatePlayerScore(player.getRawName(), ratingObjective).setScore((int) Math.round(playerData.get(Double.class, "rating") * 100));
         }
     }
 

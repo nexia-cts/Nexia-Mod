@@ -6,7 +6,6 @@ import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.time.ServerType;
 import com.nexia.discord.Discord;
 import com.nexia.discord.Main;
-import com.nexia.discord.utilities.player.PlayerDataManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;

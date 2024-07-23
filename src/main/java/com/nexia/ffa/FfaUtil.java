@@ -1,10 +1,11 @@
 package com.nexia.ffa;
 
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.Main;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;
-import com.nexia.core.utilities.player.PlayerData;
-import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
@@ -30,7 +31,7 @@ public class FfaUtil {
                 || player.hasTag("ffa_kits")
                 || player.hasTag("ffa_sky")
                 || player.hasTag("ffa_uhc"))
-                && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.FFA;
+                && ((CorePlayerData)PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player)).gameMode == PlayerGameMode.FFA;
     }
 
     public static float calculateHealth(float health){
@@ -56,7 +57,7 @@ public class FfaUtil {
 
     public static void leaveOrDie(@NotNull NexiaPlayer player, @Nullable DamageSource source, boolean leaving) {
         player.unwrap().inventory.setCarried(ItemStack.EMPTY);
-        PlayerData data = PlayerDataManager.get(player);
+        CorePlayerData data = (CorePlayerData) PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player);
 
         if(data.ffaGameMode == FfaGameMode.CLASSIC) {
             FfaClassicUtil.leaveOrDie(player, source, leaving);

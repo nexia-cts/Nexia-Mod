@@ -1,16 +1,17 @@
 package com.nexia.core.listeners.nexus;
 
+import com.nexia.base.player.PlayerData;
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.ffa.classic.utilities.RatingUtil;
 import com.nexia.nexus.api.event.player.PlayerJoinEvent;
 import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;
-import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.discord.Main;
-import com.nexia.discord.utilities.player.PlayerData;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.kyori.adventure.text.Component;
@@ -86,12 +87,12 @@ public class PlayerJoinListener {
     }
 
     private static void checkBooster(NexiaPlayer player) {
-        PlayerData playerData = com.nexia.discord.utilities.player.PlayerDataManager.get(player.getUUID());
-        if(!playerData.savedData.isLinked) { return; }
+        PlayerData playerData = PlayerDataManager.getDataManager(com.nexia.core.Main.DISCORD_DATA_MANAGER).get(player.getUUID());
+        if(!playerData.savedData.get(Boolean.class, "isLinked")) { return; }
         Member discordUser = null;
 
         try {
-            discordUser = Objects.requireNonNull(jda.getGuildById(Main.config.guildID)).retrieveMemberById(playerData.savedData.discordID).complete(true);
+            discordUser = Objects.requireNonNull(jda.getGuildById(Main.config.guildID)).retrieveMemberById(playerData.savedData.get(Long.class, "discordID")).complete(true);
         } catch (Exception ignored) { }
 
         if(discordUser == null) {
@@ -125,19 +126,9 @@ public class PlayerJoinListener {
     }
 
     private static void processJoin(NexiaPlayer player) {
-        if(PlayerDataManager.get(player).clientType.equals(com.nexia.core.utilities.player.PlayerData.ClientType.VIAFABRICPLUS)) return;
+        if(((CorePlayerData)PlayerDataManager.getDataManager(com.nexia.core.Main.CORE_DATA_MANAGER).get(player)).clientType.equals(CorePlayerData.ClientType.VIAFABRICPLUS)) return;
 
-        com.nexia.ffa.classic.utilities.player.PlayerDataManager.addPlayerData(player);
-        com.nexia.ffa.kits.utilities.player.PlayerDataManager.addPlayerData(player);
-        com.nexia.ffa.uhc.utilities.player.PlayerDataManager.addPlayerData(player);
-        com.nexia.ffa.sky.utilities.player.PlayerDataManager.addPlayerData(player);
-
-        com.nexia.discord.utilities.player.PlayerDataManager.addPlayerData(player.getUUID());
-        com.nexia.minigames.games.duels.util.player.PlayerDataManager.addPlayerData(player);
-        com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.addPlayerData(player);
-        com.nexia.minigames.games.oitc.util.player.PlayerDataManager.addPlayerData(player);
-        com.nexia.minigames.games.football.util.player.PlayerDataManager.addPlayerData(player);
-        com.nexia.minigames.games.skywars.util.player.PlayerDataManager.addPlayerData(player);
+        PlayerDataManager.dataManagerMap.forEach((resourceLocation, playerDataManager) -> playerDataManager.addPlayerData(player));
 
         LobbyUtil.returnToLobby(player, true);
 

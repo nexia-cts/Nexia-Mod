@@ -1,5 +1,6 @@
 package com.nexia.minigames.games.duels.custom.team;
 
+import com.nexia.base.player.PlayerDataManager;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
@@ -14,8 +15,7 @@ import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.team.DuelsTeam;
 import com.nexia.minigames.games.duels.util.DuelOptions;
-import com.nexia.minigames.games.duels.util.player.PlayerData;
-import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.minecraft.server.level.ServerLevel;
@@ -137,7 +137,7 @@ public class CustomTeamDuelsGame { // implements Runnable{
             kitID = "";
         }
 
-        PlayerData team1LeaderData = PlayerDataManager.get(team1.getLeader());
+        DuelsPlayerData team1LeaderData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(team1.getLeader());
         if(team1LeaderData.inviteOptions.perCustomDuel && !DuelGameHandler.validCustomKit(team2.getLeader(), team1LeaderData.inviteOptions.inviteKit2)) {
             Main.logger.error(String.format("[Nexia]: Invalid per-custom (team 2) duel kit (%s) selected!", team1LeaderData.inviteOptions.inviteKit2));
         } else {
@@ -176,7 +176,7 @@ public class CustomTeamDuelsGame { // implements Runnable{
 
         for (NexiaPlayer player : team1.all) {
             ServerPlayer serverPlayer = player.unwrap();
-            PlayerData data = PlayerDataManager.get(player);
+            DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player);
 
             data.gameMode = DuelGameMode.CLASSIC;
             data.gameOptions = new DuelOptions.GameOptions(game, team2);
@@ -205,7 +205,7 @@ public class CustomTeamDuelsGame { // implements Runnable{
 
         for (NexiaPlayer player : team2.all) {
             ServerPlayer serverPlayer = player.unwrap();
-            PlayerData data = PlayerDataManager.get(player);
+            DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player);
 
             data.gameMode = DuelGameMode.CLASSIC;
             data.gameOptions = new DuelOptions.GameOptions(game, team1);
@@ -291,11 +291,11 @@ public class CustomTeamDuelsGame { // implements Runnable{
                 this.isEnding = false;
 
                 for (NexiaPlayer player : loserTeam.all) {
-                    PlayerDataManager.get(player).gameOptions = null;
+                    ((DuelsPlayerData)PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player)).gameOptions = null;
                     player.runCommand("/hub", 0, false);
                 }
                 for (NexiaPlayer player : winnerTeam.all) {
-                    PlayerDataManager.get(player).gameOptions = null;
+                    ((DuelsPlayerData)PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player)).gameOptions = null;
                     player.runCommand("/hub", 0, false);
                 }
 
@@ -403,20 +403,20 @@ public class CustomTeamDuelsGame { // implements Runnable{
                         .color(ChatFormat.brandColor2));
 
         for (NexiaPlayer player : loserTeam.all) {
-            PlayerDataManager.get(player).savedData.loss++;
+            PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player).savedData.incrementInteger("losses");
             player.sendTitle(Title.title(titleLose, subtitleLose));
             player.sendMessage(win);
         }
 
         for (NexiaPlayer player : winnerTeam.all) {
-            PlayerDataManager.get(player).savedData.wins++;
+            PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player).savedData.incrementInteger("wins");
             player.sendTitle(Title.title(titleWin, subtitleWin));
             player.sendMessage(win);
         }
     }
 
     public void death(@NotNull NexiaPlayer victim, @Nullable DamageSource source) {
-        PlayerData victimData = PlayerDataManager.get(victim);
+        DuelsPlayerData victimData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(victim);
         DuelsTeam victimTeam = victimData.duelOptions.duelsTeam;
 
         if (victimTeam == null || this.isEnding) return;
@@ -430,7 +430,7 @@ public class CustomTeamDuelsGame { // implements Runnable{
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim.unwrap());
 
         if (attacker != null) {
-            PlayerData attackerData = PlayerDataManager.get(attacker.getUUID());
+            DuelsPlayerData attackerData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(attacker.getUUID());
             if (attackerData.gameOptions.customTeamDuelsGame != null && attackerData.gameOptions.customTeamDuelsGame.equals(this) && isVictimTeamDead) {
                 this.endGame(victimTeam, attackerData.duelOptions.duelsTeam, true);
             }

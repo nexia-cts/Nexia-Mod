@@ -1,7 +1,8 @@
 package com.nexia.core.networking;
 
-import com.nexia.core.utilities.player.PlayerData;
-import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.Main;
+import com.nexia.core.utilities.player.CorePlayerData;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.chat.TextComponent;
@@ -14,21 +15,20 @@ public class NetworkingHandler {
 
     public NetworkingHandler() {
         ServerPlayConnectionEvents.JOIN.register(detectionNetworkChannel,(handler, sender, server) -> {
-            PlayerDataManager.addPlayerData(handler.player.getUUID());
+            PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).addPlayerData(handler.player.getUUID());
 
             if(!ServerPlayNetworking.canSend(handler.player, detectCombatify)) {
                 if(ServerPlayNetworking.canSend(handler.player, new ResourceLocation("fabric", "registry/sync/direct"))) {
-                    PlayerDataManager.get(handler.player.getUUID()).clientType = PlayerData.ClientType.VIAFABRICPLUS;
+                    ((CorePlayerData)PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(handler.player.getUUID())).clientType = CorePlayerData.ClientType.VIAFABRICPLUS;
                     handler.player.connection.disconnect(new TextComponent("§5§lNexia\n§7You need to install §c§lCombatify§7 in order to join the server.\n\n§chttps://modrinth.com/mod/combatify"));
                     return;
                 }
 
-                PlayerDataManager.get(handler.player.getUUID()).clientType = PlayerData.ClientType.COMBAT_TEST;
+                ((CorePlayerData)PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(handler.player.getUUID())).clientType = CorePlayerData.ClientType.COMBAT_TEST;
                 return;
             }
 
-            PlayerDataManager.get(handler.player.getUUID()).clientType = PlayerData.ClientType.COMBATIFY;
-            return;
+            ((CorePlayerData)PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(handler.player.getUUID())).clientType = CorePlayerData.ClientType.COMBATIFY;
         });
     }
 }

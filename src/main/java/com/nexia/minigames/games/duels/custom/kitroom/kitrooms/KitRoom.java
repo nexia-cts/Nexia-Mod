@@ -1,10 +1,11 @@
 package com.nexia.minigames.games.duels.custom.kitroom.kitrooms;
 
+import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.world.WorldUtil;
-import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.nexus.api.world.util.Location;
 import com.nexia.nexus.builder.implementation.world.structure.StructureMap;
@@ -50,7 +51,7 @@ public class KitRoom {
     }
 
     public static boolean isInKitRoom(NexiaPlayer player) {
-        return PlayerDataManager.get(player).kitRoom != null && !PlayerDataManager.get(player).editingKit.isEmpty();
+        return ((DuelsPlayerData)PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player)).kitRoom != null && !((DuelsPlayerData)PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player)).editingKit.isEmpty();
     }
 
     public StructureMap getKitRoom() {
@@ -104,7 +105,7 @@ public class KitRoom {
     }
 
     public void leave() {
-        PlayerDataManager.get(this.player).kitRoom = null;
+        ((DuelsPlayerData)PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(this.player)).kitRoom = null;
         this.player.reset(true, Minecraft.GameMode.ADVENTURE);
         this.delete();
     }

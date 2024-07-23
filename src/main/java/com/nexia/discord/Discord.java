@@ -1,13 +1,14 @@
 package com.nexia.discord;
 
+import com.nexia.base.player.PlayerData;
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.time.ServerType;
 import com.nexia.discord.utilities.discord.DiscordData;
 import com.nexia.discord.utilities.discord.DiscordDataManager;
-import com.nexia.discord.utilities.player.PlayerData;
-import com.nexia.discord.utilities.player.PlayerDataManager;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -66,10 +67,10 @@ public class Discord extends ListenerAdapter {
 
             event.deferReply(true).queue();
 
-            PlayerData playerData = PlayerDataManager.get(uuid);
+            PlayerData playerData = PlayerDataManager.getDataManager(Main.DISCORD_DATA_MANAGER).get(uuid);
 
-            playerData.savedData.isLinked = true;
-            playerData.savedData.discordID = discordID;
+            playerData.savedData.set(Boolean.class, "isLinked", true);
+            playerData.savedData.set(Long.class, "discordID", discordID);
 
             discordData.savedData.isLinked = true;
             discordData.savedData.minecraftUUID = uuid.toString();
@@ -89,7 +90,7 @@ public class Discord extends ListenerAdapter {
                                 )
                 );
             } else {
-                PlayerDataManager.removePlayerData(uuid);
+                PlayerDataManager.getDataManager(Main.DISCORD_DATA_MANAGER).removePlayerData(uuid);
             }
             event.getHook().editOriginal("Your account has been linked!").queue();
 

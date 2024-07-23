@@ -1,5 +1,6 @@
 package com.nexia.minigames.games.bedwars;
 
+import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -19,7 +20,6 @@ import com.nexia.minigames.games.bedwars.util.BwGen;
 import com.nexia.minigames.games.bedwars.util.BwPlayerTracker;
 import com.nexia.minigames.games.bedwars.util.BwScoreboard;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
-import com.nexia.minigames.games.bedwars.util.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.minecraft.sounds.SoundEvents;
@@ -295,12 +295,12 @@ public class BwGame {
             BwTeam winnerTeam = aliveTeams.getFirst();
             String whoWon;
             if (winnerTeam.players.size() == 1) {
-                PlayerDataManager.get(winnerTeam.players.stream().findFirst().get()).savedData.wins++;
+                PlayerDataManager.getDataManager(Main.BEDWARS_DATA_MANAGER).get(winnerTeam.players.stream().findFirst().get()).savedData.incrementInteger("wins");
                 whoWon = winnerTeam.textColor + winnerTeam.players.getFirst().getRawName();
             } else {
                 whoWon = winnerTeam.textColor + winnerTeam.displayName + " team";
                 for(NexiaPlayer player : winnerTeam.players) {
-                    PlayerDataManager.get(player).savedData.wins++;
+                    PlayerDataManager.getDataManager(Main.BEDWARS_DATA_MANAGER).get(player).savedData.incrementInteger("wins");
                 }
             }
 

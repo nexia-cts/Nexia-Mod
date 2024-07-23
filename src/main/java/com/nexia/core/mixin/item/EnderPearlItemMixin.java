@@ -5,7 +5,6 @@ import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.ffa.sky.utilities.FfaAreas;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
-import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;

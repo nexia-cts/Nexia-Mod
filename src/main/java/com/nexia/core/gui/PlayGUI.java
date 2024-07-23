@@ -1,5 +1,8 @@
 package com.nexia.core.gui;
 
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.Main;
+import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -9,7 +12,6 @@ import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.classic.utilities.FfaAreas;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.duels.DuelGameMode;
-import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
@@ -90,7 +92,7 @@ public class PlayGUI extends SimpleGui {
 
         int duelsPlayers = 0;
         for(ServerPlayer serverPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()) {
-            DuelGameMode gameMode = PlayerDataManager.get(serverPlayer.getUUID()).gameMode;
+            DuelGameMode gameMode = ((DuelsPlayerData)PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(serverPlayer.getUUID())).gameMode;
             if(gameMode != null && (gameMode != DuelGameMode.LOBBY && gameMode != DuelGameMode.SPECTATING)) duelsPlayers++;
         }
 

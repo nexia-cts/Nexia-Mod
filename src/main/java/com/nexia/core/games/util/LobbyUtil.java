@@ -1,10 +1,12 @@
 package com.nexia.core.games.util;
 
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.BanHandler;
+import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.GamemodeBanHandler;
 import com.nexia.core.utilities.player.NexiaPlayer;
-import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.ffa.FfaGameMode;
@@ -18,10 +20,13 @@ import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.football.FootballGameMode;
+import com.nexia.minigames.games.football.util.player.FootballPlayerData;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.oitc.OitcGameMode;
+import com.nexia.minigames.games.oitc.util.player.OITCPlayerData;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.minigames.games.skywars.SkywarsGameMode;
+import com.nexia.minigames.games.skywars.util.player.SkywarsPlayerData;
 import com.nexia.nexus.api.world.World;
 import com.nexia.nexus.api.world.nbt.NBTObject;
 import com.nexia.nexus.api.world.nbt.NBTValue;
@@ -121,7 +126,7 @@ public class LobbyUtil {
 
 
 
-        PlayerDataManager.get(player).gameMode = PlayerGameMode.LOBBY;
+        ((CorePlayerData)PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player)).gameMode = PlayerGameMode.LOBBY;
     }
 
     public static void giveItems(NexiaPlayer player) {
@@ -258,14 +263,14 @@ public class LobbyUtil {
                 game.equalsIgnoreCase("sky ffa") ||
                 game.equalsIgnoreCase("uhc ffa")) {
             player.addTag(FfaUtil.FFA_TAG);
-            PlayerDataManager.get(player).gameMode = PlayerGameMode.FFA;
+            ((CorePlayerData)PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player)).gameMode = PlayerGameMode.FFA;
             if(message){ player.sendActionBarMessage(Component.text("You have joined §8🗡 §7§lFFA §b🔱")); }
         }
 
         if(game.equalsIgnoreCase("classic ffa")){
             player.addTag("ffa_classic");
             FfaClassicUtil.wasInSpawn.add(player.getUUID());
-            PlayerDataManager.get(player).ffaGameMode = FfaGameMode.CLASSIC;
+            ((CorePlayerData)PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player)).ffaGameMode = FfaGameMode.CLASSIC;
             if(tp){
                 player.teleport(FfaAreas.nexusFfaLocation);
                 player.setRespawnPosition(FfaAreas.nexusFfaLocation, FfaAreas.spawn.yaw, true, false);
@@ -278,7 +283,7 @@ public class LobbyUtil {
         if(game.equalsIgnoreCase("sky ffa")){
             player.addTag("ffa_sky");
             FfaSkyUtil.wasInSpawn.add(player.getUUID());
-            PlayerDataManager.get(player).ffaGameMode = FfaGameMode.SKY;
+            ((CorePlayerData)PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player)).ffaGameMode = FfaGameMode.SKY;
             if(tp){
                 FfaSkyUtil.sendToSpawn(player);
                 player.setRespawnPosition(com.nexia.ffa.sky.utilities.FfaAreas.nexusFfaLocation, com.nexia.ffa.sky.utilities.FfaAreas.spawn.yaw, true, false);
@@ -290,7 +295,7 @@ public class LobbyUtil {
         if(game.equalsIgnoreCase("uhc ffa")){
             player.addTag("ffa_uhc");
             FfaUhcUtil.wasInSpawn.add(player.getUUID());
-            PlayerDataManager.get(player).ffaGameMode = FfaGameMode.UHC;
+            ((CorePlayerData)PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player)).ffaGameMode = FfaGameMode.UHC;
             if(tp){
                 FfaUhcUtil.sendToSpawn(player);
                 player.setRespawnPosition(com.nexia.ffa.uhc.utilities.FfaAreas.nexusFfaLocation, com.nexia.ffa.uhc.utilities.FfaAreas.spawn.yaw, true, false);
@@ -303,7 +308,7 @@ public class LobbyUtil {
         if(game.equalsIgnoreCase("kits ffa")){
             player.addTag("ffa_kits");
             FfaKitsUtil.wasInSpawn.add(player.getUUID());
-            PlayerDataManager.get(player).ffaGameMode = FfaGameMode.KITS;
+            ((CorePlayerData)PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player)).ffaGameMode = FfaGameMode.KITS;
             if(tp){
                 FfaKitsUtil.sendToSpawn(player);
                 player.setRespawnPosition(com.nexia.ffa.kits.utilities.FfaAreas.nexusFfaLocation, com.nexia.ffa.kits.utilities.FfaAreas.spawn.yaw, true, false);
@@ -334,10 +339,10 @@ public class LobbyUtil {
 
         if(game.equalsIgnoreCase("oitc")){
             player.addTag(OitcGame.OITC_TAG);
-            PlayerDataManager.get(player).gameMode = PlayerGameMode.OITC;
+            ((CorePlayerData)PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player)).gameMode = PlayerGameMode.OITC;
             OitcGame.death(player, player.unwrap().getLastDamageSource());
 
-            com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(player).gameMode = OitcGameMode.LOBBY;
+            ((OITCPlayerData)PlayerDataManager.getDataManager(Main.OITC_DATA_MANAGER).get(player)).gameMode = OitcGameMode.LOBBY;
 
             OitcGame.joinQueue(player);
 
@@ -346,8 +351,8 @@ public class LobbyUtil {
 
         if(game.equalsIgnoreCase("football")){
             player.addTag(FootballGame.FOOTBALL_TAG);
-            PlayerDataManager.get(player).gameMode = PlayerGameMode.FOOTBALL;
-            com.nexia.minigames.games.football.util.player.PlayerDataManager.get(player).gameMode = FootballGameMode.LOBBY;
+            ((CorePlayerData)PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player)).gameMode = PlayerGameMode.FOOTBALL;
+            ((FootballPlayerData)PlayerDataManager.getDataManager(Main.FOOTBALL_DATA_MANAGER).get(player)).gameMode = FootballGameMode.LOBBY;
 
             FootballGame.joinQueue(player);
 
@@ -357,10 +362,10 @@ public class LobbyUtil {
 
         if(game.equalsIgnoreCase("skywars")){
             player.addTag(PlayerGameMode.SKYWARS.tag);
-            PlayerDataManager.get(player).gameMode = PlayerGameMode.SKYWARS;
+            ((CorePlayerData)PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player)).gameMode = PlayerGameMode.SKYWARS;
             SkywarsGame.death(player, player.unwrap().getLastDamageSource());
 
-            com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(player).gameMode = SkywarsGameMode.LOBBY;
+            ((SkywarsPlayerData)PlayerDataManager.getDataManager(Main.SKYWARS_DATA_MANAGER).get(player)).gameMode = SkywarsGameMode.LOBBY;
 
             SkywarsGame.joinQueue(player);
 

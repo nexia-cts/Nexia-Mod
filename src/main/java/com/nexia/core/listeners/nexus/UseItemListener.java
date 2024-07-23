@@ -1,10 +1,12 @@
 package com.nexia.core.listeners.nexus;
 
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.Main;
+import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.nexus.api.event.player.PlayerUseItemEvent;
 import com.nexia.nexus.api.world.item.ItemStack;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.player.NexiaPlayer;
-import com.nexia.core.utilities.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
 
 public class UseItemListener {
@@ -17,7 +19,7 @@ public class UseItemListener {
 
             Component name = itemStack.getDisplayName();
 
-            PlayerGameMode gameMode = PlayerDataManager.get(player).gameMode;
+            PlayerGameMode gameMode = ((CorePlayerData)PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player)).gameMode;
             String sName = name.toString().toLowerCase();
 
             if(gameMode == PlayerGameMode.LOBBY) {

@@ -1,10 +1,13 @@
 package com.nexia.minigames.games.oitc;
 
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.misc.RandomUtil;
+import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
@@ -12,8 +15,7 @@ import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.time.TickUtil;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
-import com.nexia.minigames.games.oitc.util.player.PlayerData;
-import com.nexia.minigames.games.oitc.util.player.PlayerDataManager;
+import com.nexia.minigames.games.oitc.util.player.OITCPlayerData;
 import com.nexia.nexus.api.world.types.Minecraft;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -75,7 +77,7 @@ public class OitcGame {
     public static void leave(NexiaPlayer player) {
         OitcGame.death(player, player.unwrap().getLastDamageSource());
 
-        PlayerData data = PlayerDataManager.get(player);
+        OITCPlayerData data = (OITCPlayerData) PlayerDataManager.getDataManager(Main.OITC_DATA_MANAGER).get(player);
         OitcGame.spectator.remove(player);
         OitcGame.queue.remove(player);
         OitcGame.players.remove(player);
@@ -93,7 +95,7 @@ public class OitcGame {
         player.reset(true, Minecraft.GameMode.ADVENTURE);
 
         if(data.gameMode.equals(OitcGameMode.PLAYING) && winner != player) {
-            data.savedData.loss++;
+            data.savedData.incrementInteger("losses");
         }
 
         player.removeTag("oitc");
@@ -159,8 +161,8 @@ public class OitcGame {
                     HashMap<Integer, NexiaPlayer> kills = new HashMap<>();
 
                     for(NexiaPlayer player : OitcGame.players) {
-                        intKills.add(PlayerDataManager.get(player).kills);
-                        kills.put(PlayerDataManager.get(player).kills, player);
+                        intKills.add(((OITCPlayerData)PlayerDataManager.getDataManager(Main.OITC_DATA_MANAGER).get(player)).kills);
+                        kills.put(((OITCPlayerData)PlayerDataManager.getDataManager(Main.OITC_DATA_MANAGER).get(player)).kills, player);
                     }
 
                     endGame(kills.get(Collections.max(intKills)));
@@ -221,12 +223,12 @@ public class OitcGame {
     }
 
     public static void joinQueue(NexiaPlayer player) {
-        PlayerData data = PlayerDataManager.get(player);
+        OITCPlayerData data = (OITCPlayerData) PlayerDataManager.getDataManager(Main.OITC_DATA_MANAGER).get(player);
         data.kills = 0;
         player.setHealth(player.unwrap().getMaxHealth());
         if(OitcGame.isStarted || OitcGame.queue.size() >= OitcGame.map.maxPlayers){
             OitcGame.spectator.add(player);
-            PlayerDataManager.get(player).gameMode = OitcGameMode.SPECTATOR;
+            ((OITCPlayerData)PlayerDataManager.getDataManager(Main.OITC_DATA_MANAGER).get(player)).gameMode = OitcGameMode.SPECTATOR;
             player.setGameMode(Minecraft.GameMode.SPECTATOR);
         } else {
             OitcGame.queue.add(player);
@@ -240,12 +242,12 @@ public class OitcGame {
     public static void endGame(NexiaPlayer player) {
         OitcGame.isEnding = true;
         if(player == null || player.unwrap() == null) return;
-        PlayerData data = PlayerDataManager.get(player);
+        OITCPlayerData data = (OITCPlayerData) PlayerDataManager.getDataManager(Main.OITC_DATA_MANAGER).get(player);
         OitcGame.winner = player;
 
         player.sendTitle(Title.title(Component.text("You won!").color(ChatFormat.greenColor), Component.text("")));
 
-        data.savedData.wins++;
+        data.savedData.incrementInteger("wins");
 
         for(NexiaPlayer viewer : OitcGame.getViewers()){
             viewer.sendTitle(Title.title(Component.text(player.getRawName()).color(ChatFormat.brandColor2), Component.text("has won the game! (" + data.kills + " kills)").color(ChatFormat.normalColor)));
@@ -263,7 +265,7 @@ public class OitcGame {
                             .append(Component.text(timer[0] + ":" + timer[1]).color(ChatFormat.brandColor2))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
                             .append(Component.text("Kills » ").color(TextColor.fromHexString("#b3b3b3")))
-                            .append(Component.text(PlayerDataManager.get(player).kills).color(ChatFormat.brandColor2))
+                            .append(Component.text(((OITCPlayerData)PlayerDataManager.getDataManager(Main.OITC_DATA_MANAGER).get(player)).kills).color(ChatFormat.brandColor2))
             );
         }
     }
@@ -307,7 +309,7 @@ public class OitcGame {
                 player.unwrap().inventory.setItem(1, bow);
                 player.unwrap().inventory.setItem(2, new ItemStack(Items.ARROW));
 
-                PlayerDataManager.get(player).gameMode = OitcGameMode.PLAYING;
+                ((OITCPlayerData)PlayerDataManager.getDataManager(Main.OITC_DATA_MANAGER).get(player)).gameMode = OitcGameMode.PLAYING;
 
                 player.addTag("in_oitc_game");
                 player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
@@ -330,25 +332,25 @@ public class OitcGame {
     }
 
     public static boolean isOITCPlayer(NexiaPlayer player){
-        return com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.OITC || player.hasTag("oitc") || player.hasTag("in_oitc_game");
+        return ((CorePlayerData)PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player)).gameMode == PlayerGameMode.OITC || player.hasTag("oitc") || player.hasTag("in_oitc_game");
     }
 
     public static void death(NexiaPlayer victim, DamageSource source){
-        PlayerData victimData = PlayerDataManager.get(victim);
+        OITCPlayerData victimData = (OITCPlayerData) PlayerDataManager.getDataManager(Main.OITC_DATA_MANAGER).get(victim);
         if(OitcGame.isStarted && !OitcGame.deathPlayers.containsKey(victim) && victimData.gameMode == OitcGameMode.PLAYING) {
             ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim.unwrap());
             if(attacker != null) {
                 NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
                 if(!nexiaAttacker.equals(victim)) {
-                    PlayerData attackerData = PlayerDataManager.get(nexiaAttacker);
+                    OITCPlayerData attackerData = (OITCPlayerData) PlayerDataManager.getDataManager(Main.OITC_DATA_MANAGER).get(nexiaAttacker);
                     attackerData.kills++;
-                    attackerData.savedData.kills++;
+                    attackerData.savedData.incrementInteger("kills");
                     attacker.setHealth(attacker.getMaxHealth());
                     attacker.addItem(new ItemStack(Items.ARROW));
                 }
             }
 
-            PlayerDataManager.get(victim).hasDied = true;
+            ((OITCPlayerData)PlayerDataManager.getDataManager(Main.OITC_DATA_MANAGER).get(victim)).hasDied = true;
             OitcGame.deathPlayers.remove(victim);
             OitcGame.deathPlayers.put(victim, 4); // 3 seconds
         }

@@ -1,16 +1,18 @@
 package com.nexia.ffa.uhc.utilities;
 
 import com.google.gson.Gson;
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.base.player.SavedPlayerData;
+import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.uhc.utilities.player.PlayerDataManager;
-import com.nexia.ffa.uhc.utilities.player.SavedPlayerData;
 import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.nexus.api.world.types.Minecraft;
 import io.github.blumbo.inventorymerger.InventoryMerger;
@@ -36,14 +38,13 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 import static com.nexia.ffa.uhc.utilities.FfaAreas.*;
-import static com.nexia.ffa.uhc.utilities.player.PlayerDataManager.dataDirectory;
 
 public class FfaUhcUtil {
 
     public static ArrayList<UUID> wasInSpawn = new ArrayList<>();
 
     public static boolean isFfaPlayer(NexiaPlayer player) {
-        com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
+        CorePlayerData data = (CorePlayerData) PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player);
         return player.hasTag("ffa_uhc") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.UHC;
     }
 
@@ -54,20 +55,20 @@ public class FfaUhcUtil {
     }
 
 
-    public static void calculateKill(NexiaPlayer player){
-        SavedPlayerData data = PlayerDataManager.get(player).savedData;
-        data.killstreak++;
-        if(data.killstreak > data.bestKillstreak){
-            data.bestKillstreak = data.killstreak;
-        }
-        data.kills++;
+    public static void calculateKill(NexiaPlayer player) {
+        SavedPlayerData data = PlayerDataManager.getDataManager(Main.FFA_UHC_DATA_MANAGER).get(player).savedData;
+        data.incrementInteger("killstreak");
+        int killstreak = data.get(Integer.class, "killstreak");
+        if (killstreak > data.get(Integer.class, "bestKillstreak"))
+            data.set(Integer.class, "bestKillstreak", killstreak);
+        data.incrementInteger("kills");
 
         ServerTime.scheduler.schedule(() -> player.setHealth(player.getMaxHealth()), 5);
 
         FfaUhcUtil.clearArrows(player);
         FfaUhcUtil.clearTrident(player);
 
-        if(data.killstreak % 5 == 0) {
+        if(killstreak % 5 == 0) {
             for (ServerPlayer serverPlayer : FfaAreas.ffaWorld.players()) {
                 new NexiaPlayer(serverPlayer).sendMessage(
                         Component.text("[").color(ChatFormat.lineColor)
@@ -75,7 +76,7 @@ public class FfaUhcUtil {
                                 .append(Component.text("] ").color(ChatFormat.lineColor))
                                 .append(Component.text(player.getRawName()).color(ChatFormat.normalColor))
                                 .append(Component.text(" now has a killstreak of ").color(ChatFormat.chatColor2))
-                                .append(Component.text(data.killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
+                                .append(Component.text(killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
                                 .append(Component.text("!").color(ChatFormat.chatColor2))
                 );
             }
@@ -103,14 +104,13 @@ public class FfaUhcUtil {
         String stringInventory = savableInventory.toSave();
 
         try {
-            String file = dataDirectory + "/inventory/savedInventories/" + player.getUUID() + ".json";
+            String file = PlayerDataManager.getDataManager(Main.FFA_UHC_DATA_MANAGER).getDataDirectory() + "/inventory/savedInventories/" + player.getUUID() + ".json";
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(stringInventory);
             fileWriter.close();
         } catch (Exception var6) {
             LobbyUtil.returnToLobby(player, true);
             player.sendMessage(Component.text("Failed to set UHC FFA inventory. Please try again or contact a developer.", ChatFormat.failColor));
-            return;
         }
     }
 
@@ -125,7 +125,7 @@ public class FfaUhcUtil {
         SavableInventory layout = null;
 
         try {
-            String file = dataDirectory + "/inventory";
+            String file = PlayerDataManager.getDataManager(Main.FFA_UHC_DATA_MANAGER).getDataDirectory() + "/inventory";
             String defaultJson = Files.readString(Path.of(file + "/default.json"));
             Gson gson = new Gson();
             defaultInventory = gson.fromJson(defaultJson, SavableInventory.class);
@@ -162,13 +162,13 @@ public class FfaUhcUtil {
 
 
     public static void calculateDeath(NexiaPlayer player){
-        SavedPlayerData data = PlayerDataManager.get(player).savedData;
-        data.deaths++;
-        if(data.killstreak > data.bestKillstreak){
-            data.bestKillstreak = data.killstreak;
-        }
+        SavedPlayerData data = PlayerDataManager.getDataManager(Main.FFA_UHC_DATA_MANAGER).get(player).savedData;
+        data.incrementInteger("deaths");
+        int killstreak = data.get(Integer.class, "killstreak");
+        if (killstreak > data.get(Integer.class, "bestKillstreak"))
+            data.set(Integer.class, "bestKillstreak", killstreak);
 
-        if(data.killstreak >= 5) {
+        if(killstreak >= 5) {
             for (ServerPlayer serverPlayer : FfaAreas.ffaWorld.players()) {
                 new NexiaPlayer(serverPlayer).sendMessage(
                         Component.text("[").color(ChatFormat.lineColor)
@@ -176,12 +176,12 @@ public class FfaUhcUtil {
                                 .append(Component.text("] ").color(ChatFormat.lineColor))
                                 .append(Component.text(player.getRawName()).color(ChatFormat.normalColor))
                                 .append(Component.text(" has lost their killstreak of ").color(ChatFormat.chatColor2))
-                                .append(Component.text(data.killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
+                                .append(Component.text(killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
                                 .append(Component.text(".").color(ChatFormat.chatColor2))
                 );
             }
         }
-        data.killstreak = 0;
+        data.set(Integer.class, "killstreak", 0);
     }
 
     public static void clearArrows(NexiaPlayer player) {

@@ -1,22 +1,19 @@
 package com.nexia.minigames.games.skywars.util.player;
 
+import com.nexia.base.player.PlayerData;
+import com.nexia.base.player.SavedPlayerData;
 import com.nexia.minigames.games.skywars.SkywarsGameMode;
 
-public class PlayerData {
-
-    // Stuff saved into files
-    public SavedPlayerData savedData;
+public class SkywarsPlayerData extends PlayerData {
 
     // Stuff not saved in files
     public SkywarsGameMode gameMode;
 
     public int kills;
-
-    public PlayerData(SavedPlayerData savedData) {
-        this.savedData = savedData;
+    public SkywarsPlayerData(SavedPlayerData savedData) {
+        super(savedData);
 
         this.gameMode = SkywarsGameMode.LOBBY;
         this.kills = 0;
     }
-
 }

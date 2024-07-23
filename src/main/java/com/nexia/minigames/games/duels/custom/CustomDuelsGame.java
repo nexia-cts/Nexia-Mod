@@ -1,5 +1,6 @@
 package com.nexia.minigames.games.duels.custom;
 
+import com.nexia.base.player.PlayerDataManager;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
@@ -15,8 +16,7 @@ import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.util.DuelOptions;
-import com.nexia.minigames.games.duels.util.player.PlayerData;
-import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.minecraft.server.level.ServerLevel;
@@ -104,8 +104,8 @@ public class CustomDuelsGame { //implements Runnable{
             kitID = "";
         }
 
-        PlayerData invitorData = PlayerDataManager.get(p1);
-        PlayerData playerData = PlayerDataManager.get(p2);
+        DuelsPlayerData invitorData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(p1);
+        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(p2);
 
         if(invitorData.inviteOptions.perCustomDuel && !DuelGameHandler.validCustomKit(p1, invitorData.inviteOptions.inviteKit2)) {
             Main.logger.error(String.format("[Nexia]: Invalid per-custom (2) duel kit (%s) selected!", invitorData.inviteOptions.inviteKit2));
@@ -207,8 +207,8 @@ public class CustomDuelsGame { //implements Runnable{
                 NexiaPlayer attacker = this.winner;
                 NexiaPlayer victim = this.loser;
 
-                PlayerData victimData = PlayerDataManager.get(victim);
-                PlayerData attackerData = PlayerDataManager.get(attacker);
+                DuelsPlayerData victimData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(victim);
+                DuelsPlayerData attackerData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(attacker);
 
                 for(NexiaPlayer spectator : this.spectators) {
                     spectator.runCommand("/hub", 0, false);
@@ -228,8 +228,8 @@ public class CustomDuelsGame { //implements Runnable{
                 attackerData.inviteOptions.reset();
                 attackerData.duelOptions.spectatingPlayer = null;
 
-                attackerData.savedData.wins++;
-                victimData.savedData.loss++;
+                attackerData.savedData.incrementInteger("wins");
+                victimData.savedData.incrementInteger("losses");
 
                 this.isEnding = false;
 
@@ -345,7 +345,7 @@ public class CustomDuelsGame { //implements Runnable{
     }
 
     public void death(@NotNull NexiaPlayer victim, @Nullable DamageSource source){
-        PlayerData victimData = PlayerDataManager.get(victim);
+        DuelsPlayerData victimData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(victim);
         if(victimData.gameOptions == null || victimData.gameOptions.customDuelsGame == null || victimData.gameOptions.customDuelsGame.isEnding) return;
 
         victim.unwrap().destroyVanishingCursedItems();
@@ -355,7 +355,7 @@ public class CustomDuelsGame { //implements Runnable{
 
         if(attacker != null){
             NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
-            PlayerData attackerData = PlayerDataManager.get(nexiaAttacker);
+            DuelsPlayerData attackerData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(nexiaAttacker);
 
             if((victimData.inDuel && attackerData.inDuel) && victimData.gameOptions.customDuelsGame == attackerData.gameOptions.customDuelsGame){
                 this.endGame(victim, nexiaAttacker, true);
@@ -364,7 +364,7 @@ public class CustomDuelsGame { //implements Runnable{
         }
         if(victimData.gameOptions.duelPlayer != null) {
             NexiaPlayer duelAttacker = victimData.gameOptions.duelPlayer;
-            PlayerData attackerData = PlayerDataManager.get(duelAttacker);
+            DuelsPlayerData attackerData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(duelAttacker);
 
             if ((victimData.inDuel && attackerData.inDuel) && duelAttacker.equals(victimData.gameOptions.duelPlayer)) {
                 this.endGame(victim, duelAttacker, true);

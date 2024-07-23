@@ -6,7 +6,6 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.misc.EventUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
-import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;

@@ -1,6 +1,9 @@
 package com.nexia.core.commands.player;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.base.player.SavedPlayerData;
+import com.nexia.core.Main;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
@@ -11,10 +14,8 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
-import com.nexia.core.utilities.player.PlayerData;
+import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.ffa.FfaGameMode;
-import com.nexia.ffa.classic.utilities.player.PlayerDataManager;
-import com.nexia.ffa.classic.utilities.player.SavedPlayerData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -36,7 +37,7 @@ public class StatsCommand {
 
     public static int run(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
-        PlayerData playerData = com.nexia.core.utilities.player.PlayerDataManager.get(player);
+        CorePlayerData playerData = (CorePlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player);
 
 
         Component start = Component.text("  »").color(NamedTextColor.GRAY);
@@ -49,43 +50,31 @@ public class StatsCommand {
 
         Component message;
 
-        if(playerData.gameMode == PlayerGameMode.FFA){
-
+        if (playerData.gameMode == PlayerGameMode.FFA) {
             message = ChatFormat.separatorLine("FFA Classic Stats");
-            SavedPlayerData data = PlayerDataManager.get(player).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(Main.FFA_CLASSIC_DATA_MANAGER).get(player).savedData;
 
-            int kills = data.kills;
-            int deaths = data.deaths;
-            int killstreak = data.killstreak;
-            int bestKillstreak = data.bestKillstreak;
-            long rating = Math.round(data.rating * 100);
+            long rating = Math.round(data.get(Double.class, "rating") * 100);
 
-            if(playerData.ffaGameMode == FfaGameMode.KITS) {
+            if (playerData.ffaGameMode == FfaGameMode.KITS) {
                 message = ChatFormat.separatorLine("Kit FFA Stats");
-                com.nexia.ffa.kits.utilities.player.SavedPlayerData kData = com.nexia.ffa.kits.utilities.player.PlayerDataManager.get(player).savedData;
-                kills = kData.kills;
-                deaths = kData.deaths;
-                killstreak = kData.killstreak;
-                bestKillstreak = kData.bestKillstreak;
+                data = PlayerDataManager.getDataManager(Main.FFA_KITS_DATA_MANAGER).get(player).savedData;
             }
 
-            if(playerData.ffaGameMode == FfaGameMode.UHC) {
+            if (playerData.ffaGameMode == FfaGameMode.UHC) {
                 message = ChatFormat.separatorLine("UHC FFA Stats");
-                com.nexia.ffa.uhc.utilities.player.SavedPlayerData kData = com.nexia.ffa.uhc.utilities.player.PlayerDataManager.get(player).savedData;
-                kills = kData.kills;
-                deaths = kData.deaths;
-                killstreak = kData.killstreak;
-                bestKillstreak = kData.bestKillstreak;
+                data = PlayerDataManager.getDataManager(Main.FFA_UHC_DATA_MANAGER).get(player).savedData;
             }
 
-            if(playerData.ffaGameMode == FfaGameMode.SKY) {
+            if (playerData.ffaGameMode == FfaGameMode.SKY) {
                 message = ChatFormat.separatorLine("Sky FFA Stats");
-                com.nexia.ffa.sky.utilities.player.SavedPlayerData kData = com.nexia.ffa.sky.utilities.player.PlayerDataManager.get(player).savedData;
-                kills = kData.kills;
-                deaths = kData.deaths;
-                killstreak = kData.killstreak;
-                bestKillstreak = kData.bestKillstreak;
+                data = PlayerDataManager.getDataManager(Main.FFA_SKY_DATA_MANAGER).get(player).savedData;
             }
+
+            int kills = data.get(Integer.class, "kills");
+            int deaths = data.get(Integer.class, "deaths");
+            int killstreak = data.get(Integer.class, "killstreak");
+            int bestKillstreak = data.get(Integer.class, "bestKillstreak");
 
             player.sendMessage(message);
             player.sendMessage(user);
@@ -120,96 +109,96 @@ public class StatsCommand {
 
         if(playerData.gameMode == PlayerGameMode.LOBBY){
             message = ChatFormat.separatorLine("Duels Stats");
-            com.nexia.minigames.games.duels.util.player.SavedPlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(player).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player).savedData;
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
                     .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.wins).color(ChatFormat.greenColor))
+                    .append(Component.text(data.get(Integer.class, "wins")).color(ChatFormat.greenColor))
             );
             player.sendMessage(start
                     .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.loss).color(ChatFormat.failColor))
+                    .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
             );
         }
 
 
         if(playerData.gameMode == PlayerGameMode.BEDWARS){
             message = ChatFormat.separatorLine("Bedwars Stats");
-            com.nexia.minigames.games.bedwars.util.player.SavedPlayerData data = com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.get(player).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(Main.BEDWARS_DATA_MANAGER).get(player).savedData;
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
                     .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.wins).color(ChatFormat.greenColor))
+                    .append(Component.text(data.get(Integer.class, "wins")).color(ChatFormat.greenColor))
             );
             player.sendMessage(start
                     .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.loss).color(ChatFormat.failColor))
+                    .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
             );
             player.sendMessage(start
                     .append(Component.text(" Beds broken: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.bedsBroken).color(ChatFormat.failColor))
+                    .append(Component.text(data.get(Integer.class, "bedsBroken")).color(ChatFormat.failColor))
             );
         }
 
         if(playerData.gameMode == PlayerGameMode.OITC){
             message = ChatFormat.separatorLine("OITC Stats");
-            com.nexia.minigames.games.oitc.util.player.SavedPlayerData data = com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(player).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(Main.OITC_DATA_MANAGER).get(player).savedData;
 
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
                     .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.wins).color(ChatFormat.greenColor))
+                    .append(Component.text(data.get(Integer.class, "wins")).color(ChatFormat.greenColor))
             );
             player.sendMessage(start
                     .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.loss).color(ChatFormat.failColor))
+                    .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
             );
             player.sendMessage(start
                     .append(Component.text(" Kills: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.kills).color(ChatFormat.failColor))
+                    .append(Component.text(data.get(Integer.class, "kills")).color(ChatFormat.failColor))
             );
         }
 
         if(playerData.gameMode == PlayerGameMode.FOOTBALL){
             message = ChatFormat.separatorLine("Football Stats");
-            com.nexia.minigames.games.football.util.player.SavedPlayerData data = com.nexia.minigames.games.football.util.player.PlayerDataManager.get(player).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(Main.FOOTBALL_DATA_MANAGER).get(player).savedData;
 
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
                     .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.wins).color(ChatFormat.greenColor))
+                    .append(Component.text(data.get(Integer.class, "wins")).color(ChatFormat.greenColor))
             );
             player.sendMessage(start
                     .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.loss).color(ChatFormat.failColor))
+                    .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
             );
             player.sendMessage(start
                     .append(Component.text(" Goals: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.goals).color(ChatFormat.failColor))
+                    .append(Component.text(data.get(Integer.class, "goals")).color(ChatFormat.failColor))
             );
         }
 
         if(playerData.gameMode == PlayerGameMode.SKYWARS){
             message = ChatFormat.separatorLine("SkyWars Stats");
-            com.nexia.minigames.games.skywars.util.player.SavedPlayerData data = com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(player).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(Main.SKYWARS_DATA_MANAGER).get(player).savedData;
 
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
                     .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.wins).color(ChatFormat.greenColor))
+                    .append(Component.text(data.get(Integer.class, "wins")).color(ChatFormat.greenColor))
             );
             player.sendMessage(start
                     .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.losses).color(ChatFormat.failColor))
+                    .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
             );
             player.sendMessage(start
                     .append(Component.text(" Kills: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.kills).color(ChatFormat.failColor))
+                    .append(Component.text(data.get(Integer.class, "kills")).color(ChatFormat.failColor))
             );
         }
         player.sendMessage(ChatFormat.separatorLine(null));
@@ -236,42 +225,31 @@ public class StatsCommand {
 
         Component message;
 
-        if(gamemode.equalsIgnoreCase("ffa classic") || gamemode.equalsIgnoreCase("kit ffa") || gamemode.equalsIgnoreCase("sky ffa") || gamemode.equalsIgnoreCase("uhc ffa")){
+        if (gamemode.equalsIgnoreCase("ffa classic") || gamemode.equalsIgnoreCase("kit ffa") || gamemode.equalsIgnoreCase("sky ffa") || gamemode.equalsIgnoreCase("uhc ffa")){
             message = ChatFormat.separatorLine("FFA Classic Stats");
-            SavedPlayerData data = PlayerDataManager.get(otherPlayer.getUUID()).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(Main.FFA_CLASSIC_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
 
-            int kills = data.kills;
-            int deaths = data.deaths;
-            int killstreak = data.killstreak;
-            int bestKillstreak = data.bestKillstreak;
-            long rating = Math.round(data.rating * 100);
+            long rating = Math.round(data.get(Double.class, "rating") * 100);
 
-            if(gamemode.equalsIgnoreCase("kit ffa")) {
+            if (gamemode.equalsIgnoreCase("kit ffa")) {
                 message = ChatFormat.separatorLine("Kit FFA Stats");
-                com.nexia.ffa.kits.utilities.player.SavedPlayerData kData = com.nexia.ffa.kits.utilities.player.PlayerDataManager.get(otherPlayer.getUUID()).savedData;
-                kills = kData.kills;
-                deaths = kData.deaths;
-                killstreak = kData.killstreak;
-                bestKillstreak = kData.bestKillstreak;
+                data = PlayerDataManager.getDataManager(Main.FFA_KITS_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
             }
 
-            if(gamemode.equalsIgnoreCase("sky ffa")) {
+            if (gamemode.equalsIgnoreCase("sky ffa")) {
                 message = ChatFormat.separatorLine("Sky FFA Stats");
-                com.nexia.ffa.sky.utilities.player.SavedPlayerData kData = com.nexia.ffa.sky.utilities.player.PlayerDataManager.get(otherPlayer.getUUID()).savedData;
-                kills = kData.kills;
-                deaths = kData.deaths;
-                killstreak = kData.killstreak;
-                bestKillstreak = kData.bestKillstreak;
+                data = PlayerDataManager.getDataManager(Main.FFA_SKY_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
             }
 
-            if(gamemode.equalsIgnoreCase("uhc ffa")) {
+            if (gamemode.equalsIgnoreCase("uhc ffa")) {
                 message = ChatFormat.separatorLine("UHC FFA Stats");
-                com.nexia.ffa.uhc.utilities.player.SavedPlayerData kData = com.nexia.ffa.uhc.utilities.player.PlayerDataManager.get(otherPlayer.getUUID()).savedData;
-                kills = kData.kills;
-                deaths = kData.deaths;
-                killstreak = kData.killstreak;
-                bestKillstreak = kData.bestKillstreak;
+                data = PlayerDataManager.getDataManager(Main.FFA_UHC_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
             }
+
+            int kills = data.get(Integer.class, "kills");
+            int deaths = data.get(Integer.class, "deaths");
+            int killstreak = data.get(Integer.class, "killstreak");
+            int bestKillstreak = data.get(Integer.class, "bestKillstreak");
 
             source.sendMessage(message);
             source.sendMessage(user);
@@ -306,96 +284,96 @@ public class StatsCommand {
 
         if(gamemode.equalsIgnoreCase("duels")){
             message = ChatFormat.separatorLine("Duels Stats");
-            com.nexia.minigames.games.duels.util.player.SavedPlayerData data = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(otherPlayer.getUUID()).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
             source.sendMessage(message);
             source.sendMessage(user);
             source.sendMessage(start
                     .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.wins).color(ChatFormat.greenColor))
+                    .append(Component.text(data.get(Integer.class, "wins")).color(ChatFormat.greenColor))
             );
             source.sendMessage(start
                     .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.loss).color(ChatFormat.failColor))
+                    .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
             );
         }
 
 
         if(gamemode.equalsIgnoreCase("bedwars")){
             message = ChatFormat.separatorLine("Bedwars Stats");
-            com.nexia.minigames.games.bedwars.util.player.SavedPlayerData data = com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.get(otherPlayer.getUUID()).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(Main.BEDWARS_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
             source.sendMessage(message);
             source.sendMessage(user);
             source.sendMessage(start
                     .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.wins).color(ChatFormat.greenColor))
+                    .append(Component.text(data.get(Integer.class, "wins")).color(ChatFormat.greenColor))
             );
             source.sendMessage(start
                     .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.loss).color(ChatFormat.failColor))
+                    .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
             );
             source.sendMessage(start
                     .append(Component.text(" Beds broken: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.bedsBroken).color(ChatFormat.failColor))
+                    .append(Component.text(data.get(Integer.class, "bedsBroken")).color(ChatFormat.failColor))
             );
         }
 
         if(gamemode.equalsIgnoreCase("oitc")){
             message = ChatFormat.separatorLine("OITC Stats");
-            com.nexia.minigames.games.oitc.util.player.SavedPlayerData data = com.nexia.minigames.games.oitc.util.player.PlayerDataManager.get(otherPlayer.getUUID()).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(Main.OITC_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
 
             source.sendMessage(message);
             source.sendMessage(user);
             source.sendMessage(start
                     .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.wins).color(ChatFormat.greenColor))
+                    .append(Component.text(data.get(Integer.class, "wins")).color(ChatFormat.greenColor))
             );
             source.sendMessage(start
                     .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.loss).color(ChatFormat.failColor))
+                    .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
             );
             source.sendMessage(start
                     .append(Component.text(" Kills: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.kills).color(ChatFormat.failColor))
+                    .append(Component.text(data.get(Integer.class, "kills")).color(ChatFormat.failColor))
             );
         }
 
         if(gamemode.equalsIgnoreCase("football")){
             message = ChatFormat.separatorLine("Football Stats");
-            com.nexia.minigames.games.football.util.player.SavedPlayerData data = com.nexia.minigames.games.football.util.player.PlayerDataManager.get(otherPlayer.getUUID()).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(Main.FOOTBALL_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
 
             source.sendMessage(message);
             source.sendMessage(user);
             source.sendMessage(start
                     .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.wins).color(ChatFormat.greenColor))
+                    .append(Component.text(data.get(Integer.class, "wins")).color(ChatFormat.greenColor))
             );
             source.sendMessage(start
                     .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.loss).color(ChatFormat.failColor))
+                    .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
             );
             source.sendMessage(start
                     .append(Component.text(" Goals: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.goals).color(ChatFormat.failColor))
+                    .append(Component.text(data.get(Integer.class, "goals")).color(ChatFormat.failColor))
             );
         }
 
         if(gamemode.equalsIgnoreCase("skywars")){
             message = ChatFormat.separatorLine("SkyWars Stats");
-            com.nexia.minigames.games.skywars.util.player.SavedPlayerData data = com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(otherPlayer.getUUID()).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(Main.SKYWARS_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
 
             source.sendMessage(message);
             source.sendMessage(user);
             source.sendMessage(start
                     .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.wins).color(ChatFormat.greenColor))
+                    .append(Component.text(data.get(Integer.class, "wins")).color(ChatFormat.greenColor))
             );
             source.sendMessage(start
                     .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.losses).color(ChatFormat.failColor))
+                    .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
             );
             source.sendMessage(start
                     .append(Component.text(" Kills: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.kills).color(ChatFormat.failColor))
+                    .append(Component.text(data.get(Integer.class, "kills")).color(ChatFormat.failColor))
             );
         }
         source.sendMessage(ChatFormat.separatorLine(null));

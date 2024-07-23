@@ -1,17 +1,19 @@
 package com.nexia.ffa.classic.utilities;
 
-import com.nexia.nexus.api.world.entity.player.Player;
 import com.google.gson.Gson;
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.base.player.SavedPlayerData;
+import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.classic.utilities.player.PlayerDataManager;
-import com.nexia.ffa.classic.utilities.player.SavedPlayerData;
+import com.nexia.nexus.api.world.entity.player.Player;
 import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.kyori.adventure.text.Component;
@@ -35,13 +37,12 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 import static com.nexia.ffa.classic.utilities.FfaAreas.*;
-import static com.nexia.ffa.classic.utilities.player.PlayerDataManager.dataDirectory;
 
 public class FfaClassicUtil {
     public static ArrayList<UUID> wasInSpawn = new ArrayList<>();
 
     public static boolean isFfaPlayer(NexiaPlayer player) {
-        com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
+        CorePlayerData data = (CorePlayerData) PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player);
         return player.hasTag("ffa_classic") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.CLASSIC;
     }
 
@@ -97,7 +98,7 @@ public class FfaClassicUtil {
         String stringInventory = savableInventory.toSave();
 
         try {
-            String file = dataDirectory + "/inventory/savedInventories/" + player.getUUID() + ".json";
+            String file = PlayerDataManager.getDataManager(Main.FFA_CLASSIC_DATA_MANAGER).getDataDirectory() + "/inventory/savedInventories/" + player.getUUID() + ".json";
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(stringInventory);
             fileWriter.close();
@@ -113,21 +114,21 @@ public class FfaClassicUtil {
 
         if(player.hasTag("bot") || attacker.hasTag("bot")) return;
 
-        SavedPlayerData data = PlayerDataManager.get(attacker).savedData;
+        SavedPlayerData data = PlayerDataManager.getDataManager(Main.FFA_CLASSIC_DATA_MANAGER).get(attacker).savedData;
 
         RatingUtil.calculateRating(attacker, player);
         RatingUtil.updateLeaderboard();
 
-        data.killstreak++;
-        if(data.killstreak > data.bestKillstreak){
-            data.bestKillstreak = data.killstreak;
-        }
-        data.kills++;
+        data.incrementInteger("killstreak");
+        int killstreak = data.get(Integer.class, "killstreak");
+        if (killstreak > data.get(Integer.class, "bestKillstreak"))
+            data.set(Integer.class, "bestKillstreak", killstreak);
+        data.incrementInteger("kills");
 
         // Increment kill count for attacker
         KillTracker.incrementKillCount(attacker.getUUID(), player.getUUID());
 
-        if(data.killstreak % 5 == 0){
+        if(killstreak % 5 == 0){
             for(ServerPlayer serverPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()){
                 NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
                 if(FfaClassicUtil.isFfaPlayer(nexiaPlayer)) {
@@ -137,7 +138,7 @@ public class FfaClassicUtil {
                                     .append(Component.text("] ").color(ChatFormat.lineColor))
                                     .append(Component.text(attacker.getRawName()).color(ChatFormat.normalColor))
                                     .append(Component.text(" now has a killstreak of ").color(ChatFormat.chatColor2))
-                                    .append(Component.text(data.killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
+                                    .append(Component.text(killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
                                     .append(Component.text("!").color(ChatFormat.chatColor2))
                     );
                 }
@@ -149,13 +150,13 @@ public class FfaClassicUtil {
 
         if(player.hasTag("bot")) return;
 
-        SavedPlayerData data = PlayerDataManager.get(player).savedData;
-        data.deaths++;
-        if(data.killstreak > data.bestKillstreak){
-            data.bestKillstreak = data.killstreak;
-        }
+        SavedPlayerData data = PlayerDataManager.getDataManager(Main.FFA_CLASSIC_DATA_MANAGER).get(player).savedData;
+        data.incrementInteger("deaths");
+        int killstreak = data.get(Integer.class, "killstreak");
+        if (killstreak > data.get(Integer.class, "bestKillstreak"))
+            data.set(Integer.class, "bestKillstreak", killstreak);
 
-        if(data.killstreak >= 5) {
+        if (killstreak >= 5) {
             for (ServerPlayer serverPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()) {
                 NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
                 if (FfaClassicUtil.isFfaPlayer(nexiaPlayer)) {
@@ -165,13 +166,13 @@ public class FfaClassicUtil {
                                     .append(Component.text("] ").color(ChatFormat.lineColor))
                                     .append(Component.text(player.getRawName()).color(ChatFormat.normalColor))
                                     .append(Component.text(" has lost their killstreak of ").color(ChatFormat.chatColor2))
-                                    .append(Component.text(data.killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
+                                    .append(Component.text(killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
                                     .append(Component.text(".").color(ChatFormat.chatColor2))
                     );
                 }
             }
         }
-        data.killstreak = 0;
+        data.set(Integer.class, "killstreak", 0);
     }
 
     public static boolean beforeDamage(NexiaPlayer player, DamageSource damageSource) {
@@ -194,13 +195,13 @@ public class FfaClassicUtil {
                 Component component = FfaUtil.returnClassicDeathMessage(player, nexiaAttacker);
                 if(component != null) msg = component;
 
-                double attackerOldRating = PlayerDataManager.get(nexiaAttacker).savedData.rating;
-                double victimOldRating = PlayerDataManager.get(player).savedData.rating;
+                double attackerOldRating = PlayerDataManager.getDataManager(Main.FFA_CLASSIC_DATA_MANAGER).get(nexiaAttacker).savedData.get(Double.class, "rating");
+                double victimOldRating = PlayerDataManager.getDataManager(Main.FFA_CLASSIC_DATA_MANAGER).get(player).savedData.get(Double.class, "rating");
 
                 calculateKill(nexiaAttacker, player);
 
-                double attackerNewRating = PlayerDataManager.get(nexiaAttacker).savedData.rating;
-                double victimNewRating = PlayerDataManager.get(player).savedData.rating;
+                double attackerNewRating = PlayerDataManager.getDataManager(Main.FFA_CLASSIC_DATA_MANAGER).get(nexiaAttacker).savedData.get(Double.class, "rating");
+                double victimNewRating = PlayerDataManager.getDataManager(Main.FFA_CLASSIC_DATA_MANAGER).get(player).savedData.get(Double.class, "rating");
 
                 if(component != null) {
                     msg = msg.append(Component.text(" (")
@@ -235,7 +236,7 @@ public class FfaClassicUtil {
         SavableInventory layout = null;
 
         try {
-            String file = dataDirectory + "/inventory";
+            String file = PlayerDataManager.getDataManager(Main.FFA_CLASSIC_DATA_MANAGER).getDataDirectory() + "/inventory";
             String defaultJson = Files.readString(Path.of(file + "/default.json"));
             Gson gson = new Gson();
             defaultInventory = gson.fromJson(defaultJson, SavableInventory.class);

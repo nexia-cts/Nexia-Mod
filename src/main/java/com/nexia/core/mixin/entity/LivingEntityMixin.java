@@ -1,7 +1,6 @@
 package com.nexia.core.mixin.entity;
 
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.player.PlayerDataManager;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.server.level.ServerPlayer;

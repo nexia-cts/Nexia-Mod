@@ -1,5 +1,8 @@
 package com.nexia.core.commands.staff;
 
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.Main;
+import com.nexia.core.utilities.player.CoreSavedPlayerData;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.Command;
@@ -8,8 +11,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
-import com.nexia.core.utilities.player.PlayerData;
-import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.core.utilities.player.CorePlayerData;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -29,14 +31,14 @@ public class StaffReportCommand {
                                     ServerPlayer mcOtherPlayer = context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()));
                                     NexiaPlayer otherPlayer = new NexiaPlayer(mcOtherPlayer);
 
-                                    PlayerData data = PlayerDataManager.get(mcOtherPlayer.getUUID());
+                                    CorePlayerData data = (CorePlayerData) PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(mcOtherPlayer.getUUID());
 
                                     if(type.equalsIgnoreCase("ban")) {
-                                        if(data.savedData.isReportBanned()) {
+                                        if(((CoreSavedPlayerData)data.savedData).isReportBanned()) {
                                             context.getSource().sendMessage(Component.text("That player is already report banned!").color(ChatFormat.failColor));
                                             return 0;
                                         }
-                                        data.savedData.setReportBanned(true);
+                                        ((CoreSavedPlayerData)data.savedData).setReportBanned(true);
                                         context.getSource().sendMessage(
                                                 ChatFormat.nexiaMessage
                                                         .append(Component.text("You have report banned ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
@@ -48,11 +50,11 @@ public class StaffReportCommand {
                                     }
 
                                     if(type.equalsIgnoreCase("unban") || type.equalsIgnoreCase("pardon")) {
-                                        if(!data.savedData.isReportBanned()) {
+                                        if(!((CoreSavedPlayerData)data.savedData).isReportBanned()) {
                                             context.getSource().sendMessage(Component.text("That player is not report banned!").color(ChatFormat.failColor));
                                             return 0;
                                         }
-                                        data.savedData.setReportBanned(false);
+                                        ((CoreSavedPlayerData)data.savedData).setReportBanned(false);
                                         context.getSource().sendMessage(
                                                 ChatFormat.nexiaMessage
                                                         .append(Component.text("You have report unbanned ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)

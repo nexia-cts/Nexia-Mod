@@ -1,5 +1,9 @@
 package com.nexia.core.listeners.nexus;
 
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.Main;
+import com.nexia.core.utilities.player.CorePlayerData;
+import com.nexia.minigames.games.skywars.util.player.SkywarsPlayerData;
 import com.nexia.nexus.api.event.player.PlayerRespawnEvent;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.nexus.api.world.util.Location;
@@ -12,8 +16,7 @@ import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.custom.CustomDuelsGame;
 import com.nexia.minigames.games.duels.custom.team.CustomTeamDuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
-import com.nexia.minigames.games.duels.util.player.PlayerData;
-import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.minigames.games.skywars.SkywarsGameMode;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,8 +28,8 @@ public class PlayerRespawnListener {
         PlayerRespawnEvent.BACKEND.register((respawnEvent) -> {
             NexiaPlayer player = new NexiaPlayer(respawnEvent.getPlayer());
 
-            PlayerData duelsData = PlayerDataManager.get(player);
-            com.nexia.core.utilities.player.PlayerData data = com.nexia.core.utilities.player.PlayerDataManager.get(player);
+            DuelsPlayerData duelsData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player);
+            CorePlayerData data = (CorePlayerData) PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player);
 
             if(duelsData.gameOptions == null) return;
 
@@ -40,7 +43,7 @@ public class PlayerRespawnListener {
             if(data.gameMode == PlayerGameMode.SKYWARS) {
                 Location respawn = new Location(0,100, 0, WorldUtil.getWorld(SkywarsGame.world));
 
-                boolean isPlaying = com.nexia.minigames.games.skywars.util.player.PlayerDataManager.get(player).gameMode == SkywarsGameMode.PLAYING;
+                boolean isPlaying = ((SkywarsPlayerData)PlayerDataManager.getDataManager(Main.SKYWARS_DATA_MANAGER).get(player)).gameMode == SkywarsGameMode.PLAYING;
                 ServerPlayer serverPlayer = PlayerUtil.getPlayerAttacker(player.unwrap());
                 if(serverPlayer != null && serverPlayer != player.unwrap() && isPlaying) {
                     respawn.setX(serverPlayer.getX());

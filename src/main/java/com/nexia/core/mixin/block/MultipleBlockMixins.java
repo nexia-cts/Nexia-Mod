@@ -5,8 +5,7 @@ import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.KitRoom;
-import com.nexia.minigames.games.duels.util.player.PlayerData;
-import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -28,7 +27,7 @@ public class MultipleBlockMixins {
     private void use(BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult, CallbackInfoReturnable<InteractionResult> cir) {
         if (!(player instanceof ServerPlayer serverPlayer)) return;
         NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
-        PlayerData playerData = PlayerDataManager.get(nexiaPlayer);
+        DuelsPlayerData playerData = PlayerDataManager.get(nexiaPlayer);
 
         if ((FfaUtil.isFfaPlayer(nexiaPlayer) || KitRoom.isInKitRoom(nexiaPlayer) || BwUtil.isInBedWars(nexiaPlayer) || (playerData.gameOptions != null && (playerData.gameOptions.duelsGame != null || playerData.gameOptions.teamDuelsGame != null || playerData.gameOptions.customTeamDuelsGame != null || playerData.gameOptions.customDuelsGame != null)) || LobbyUtil.isLobbyWorld(nexiaPlayer.getWorld())) && !player.isCreative()) {
             cir.setReturnValue(InteractionResult.FAIL);

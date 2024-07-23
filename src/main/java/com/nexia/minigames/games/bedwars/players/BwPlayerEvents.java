@@ -1,5 +1,8 @@
 package com.nexia.minigames.games.bedwars.players;
 
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.Main;
+import com.nexia.minigames.games.bedwars.util.player.BedwarsPlayerData;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -19,7 +22,6 @@ import com.nexia.minigames.games.bedwars.shop.BwShopUpgradeables;
 import com.nexia.minigames.games.bedwars.upgrades.BwUpgradeShop;
 import com.nexia.minigames.games.bedwars.util.BwScoreboard;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
-import com.nexia.minigames.games.bedwars.util.player.PlayerDataManager;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -94,8 +96,8 @@ public class BwPlayerEvents {
     public static void afterHurt(NexiaPlayer player, DamageSource damageSource) {
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player.unwrap());
         if (attacker != null) {
-            PlayerDataManager.get(player).combatTagPlayer = attacker;
-            PlayerDataManager.get(attacker.getUUID()).combatTagPlayer = player.unwrap();
+            ((BedwarsPlayerData)PlayerDataManager.getDataManager(Main.BEDWARS_DATA_MANAGER).get(player)).combatTagPlayer = attacker;
+            ((BedwarsPlayerData)PlayerDataManager.getDataManager(Main.BEDWARS_DATA_MANAGER).get(attacker.getUUID())).combatTagPlayer = player.unwrap();
             if (player.unwrap().hasEffect(MobEffects.INVISIBILITY)) {
                 player.unwrap().removeEffect(MobEffects.INVISIBILITY);
             }
@@ -212,7 +214,7 @@ public class BwPlayerEvents {
 
             if (new EntityPos(team.bedLocation).isInRadius(new EntityPos(blockPos), 1)) {
                 team.announceBedBreak(player, blockPos);
-                com.nexia.minigames.games.bedwars.util.player.PlayerDataManager.get(player).savedData.bedsBroken++;
+                PlayerDataManager.getDataManager(Main.BEDWARS_DATA_MANAGER).get(player).savedData.incrementInteger("bedsBroken");
                 break;
             }
         }

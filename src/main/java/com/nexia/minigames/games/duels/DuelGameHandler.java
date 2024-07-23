@@ -1,6 +1,7 @@
 package com.nexia.minigames.games.duels;
 
 import com.google.gson.Gson;
+import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.Main;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
@@ -12,8 +13,7 @@ import com.nexia.minigames.games.duels.custom.CustomDuelsGame;
 import com.nexia.minigames.games.duels.custom.team.CustomTeamDuelsGame;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
-import com.nexia.minigames.games.duels.util.player.PlayerData;
-import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.kyori.adventure.text.Component;
@@ -108,7 +108,7 @@ public class DuelGameHandler {
     }
 
     public static void leave(NexiaPlayer player, boolean leaveTeam) {
-        PlayerData data = PlayerDataManager.get(player);
+        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player);
         data.gameMode = DuelGameMode.LOBBY;
         if (data.gameOptions != null && data.gameOptions.duelsGame != null) {
             data.gameOptions.duelsGame.death(player, player.unwrap().getLastDamageSource());

@@ -1,5 +1,7 @@
 package com.nexia.core.utilities.player;
 
+import com.nexia.base.player.PlayerData;
+import com.nexia.base.player.SavedPlayerData;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.pos.EntityPos;
@@ -9,10 +11,7 @@ import net.minecraft.world.level.Level;
 
 import java.time.LocalDateTime;
 
-public class PlayerData {
-
-    // Stuff saved into files
-    public SavedPlayerData savedData;
+public class CorePlayerData extends PlayerData {
 
     // Stuff not saved in files
     public PlayerGameMode gameMode;
@@ -27,8 +26,8 @@ public class PlayerData {
 
     public ClientType clientType;
 
-    public PlayerData(SavedPlayerData savedData) {
-        this.savedData = savedData;
+    public CorePlayerData(SavedPlayerData savedData) {
+        super(savedData);
 
         this.combatTagEnd = LocalDateTime.now();
 

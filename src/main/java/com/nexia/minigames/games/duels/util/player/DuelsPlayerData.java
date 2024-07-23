@@ -1,15 +1,12 @@
 package com.nexia.minigames.games.duels.util.player;
 
+import com.nexia.base.player.PlayerData;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.KitRoom;
 import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.util.DuelOptions;
 
-public class PlayerData {
-
-    // Stuff saved into files
-    public SavedPlayerData savedData;
-
+public class DuelsPlayerData extends PlayerData {
     // Stuff not saved in files
 
     // Global
@@ -28,8 +25,8 @@ public class PlayerData {
     public DuelOptions.GameOptions gameOptions;
     public DuelOptions.InviteOptions inviteOptions;
 
-    public PlayerData(SavedPlayerData savedData) {
-        this.savedData = savedData;
+    public DuelsPlayerData(DuelsSavedPlayerData savedData) {
+        super(savedData);
 
         this.gameMode = DuelGameMode.LOBBY;
         this.inDuel = false;

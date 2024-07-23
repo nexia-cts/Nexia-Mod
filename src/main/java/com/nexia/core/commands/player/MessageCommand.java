@@ -1,5 +1,7 @@
 package com.nexia.core.commands.player;
 
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.Main;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
@@ -10,8 +12,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
-import com.nexia.core.utilities.player.PlayerData;
-import com.nexia.core.utilities.player.PlayerDataManager;
+import com.nexia.core.utilities.player.CorePlayerData;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
@@ -62,7 +63,7 @@ public class MessageCommand {
 
     private static int replyCommand(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         NexiaPlayer sender = new NexiaPlayer(context.getSource().getPlayerOrException());
-        PlayerData senderData = PlayerDataManager.get(sender);
+        CorePlayerData senderData = (CorePlayerData) PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(sender);
         NexiaPlayer receiver = senderData.lastMessageSender;
 
         if (receiver == null) {
@@ -93,7 +94,7 @@ public class MessageCommand {
 
                         ));
 
-        PlayerDataManager.get(receiver).lastMessageSender = sender;
+        ((CorePlayerData) PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(receiver)).lastMessageSender = sender;
     }
 
 }

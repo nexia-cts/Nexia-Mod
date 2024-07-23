@@ -1,5 +1,6 @@
 package com.nexia.minigames.games.duels;
 
+import com.nexia.base.player.PlayerDataManager;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.Main;
 import com.nexia.core.games.util.LobbyUtil;
@@ -12,8 +13,7 @@ import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.util.DuelOptions;
-import com.nexia.minigames.games.duels.util.player.PlayerData;
-import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
+import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.minecraft.server.level.ServerLevel;
@@ -80,8 +80,8 @@ public class DuelsGame {
             stringGameMode = "CLASSIC";
         }
 
-        PlayerData invitorData = PlayerDataManager.get(p1);
-        PlayerData playerData = PlayerDataManager.get(p2);
+        DuelsPlayerData invitorData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(p1);
+        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(p2);
 
         if(invitorData.duelOptions.spectatingPlayer != null) {
             GamemodeHandler.unspectatePlayer(p1, invitorData.duelOptions.spectatingPlayer, false);
@@ -160,8 +160,8 @@ public class DuelsGame {
                 NexiaPlayer attacker = this.winner;
                 NexiaPlayer victim = this.loser;
 
-                PlayerData victimData = PlayerDataManager.get(victim);
-                PlayerData attackerData = PlayerDataManager.get(attacker);
+                DuelsPlayerData victimData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(victim);
+                DuelsPlayerData attackerData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(attacker);
 
                 for(NexiaPlayer spectator : this.spectators) {
                     spectator.runCommand("/hub", 0, false);
@@ -181,8 +181,8 @@ public class DuelsGame {
                 attackerData.inviteOptions.reset();
                 attackerData.duelOptions.spectatingPlayer = null;
 
-                attackerData.savedData.wins++;
-                victimData.savedData.loss++;
+                attackerData.savedData.incrementInteger("wins");
+                victimData.savedData.incrementInteger("losses");
 
                 this.isEnding = false;
 
@@ -299,7 +299,7 @@ public class DuelsGame {
     }
 
     public void death(@NotNull NexiaPlayer victim, @Nullable DamageSource source){
-        PlayerData victimData = PlayerDataManager.get(victim);
+        DuelsPlayerData victimData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(victim);
         if(victimData.gameOptions == null || victimData.gameOptions.duelsGame == null || victimData.gameOptions.duelsGame.isEnding) return;
 
         victim.unwrap().destroyVanishingCursedItems();
@@ -311,7 +311,7 @@ public class DuelsGame {
 
             NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
 
-            PlayerData attackerData = PlayerDataManager.get(nexiaAttacker);
+            DuelsPlayerData attackerData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(nexiaAttacker);
             if((victimData.inDuel && attackerData.inDuel) && victimData.gameOptions.duelsGame == attackerData.gameOptions.duelsGame){
                 this.endGame(victim, nexiaAttacker, true);
                 return;
@@ -319,7 +319,7 @@ public class DuelsGame {
         }
         if(victimData.gameOptions.duelPlayer != null) {
             NexiaPlayer accurateAttacker = victimData.gameOptions.duelPlayer;
-            PlayerData attackerData = PlayerDataManager.get(accurateAttacker);
+            DuelsPlayerData attackerData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(accurateAttacker);
 
             if ((victimData.inDuel && attackerData.inDuel) && accurateAttacker.equals(victimData.gameOptions.duelPlayer)) {
                 this.endGame(victim, accurateAttacker, true);

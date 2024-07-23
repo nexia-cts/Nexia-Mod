@@ -8,7 +8,6 @@ import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
-import com.nexia.minigames.games.duels.util.player.PlayerDataManager;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;

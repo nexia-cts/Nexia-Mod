@@ -2,8 +2,7 @@ package com.nexia.core.utilities.chat;
 
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.core.utilities.player.NexiaPlayer;
-import com.nexia.core.utilities.player.PlayerDataManager;
-import com.nexia.core.utilities.player.SavedPlayerData;
+import com.nexia.core.utilities.player.CoreSavedPlayerData;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,7 +19,7 @@ public class PlayerMutes {
             return;
         }
 
-        SavedPlayerData mutedData = PlayerDataManager.get(muted.getUUID()).savedData;
+        CoreSavedPlayerData mutedData = PlayerDataManager.get(muted.getUUID()).savedData;
         LocalDateTime currentMuteTime = mutedData.getMuteEnd();
 
         if (LocalDateTime.now().isBefore(currentMuteTime)) {
@@ -60,7 +59,7 @@ public class PlayerMutes {
     }
 
     public static void unMute(CommandSourceInfo sender, ServerPlayer unMuted) {
-        SavedPlayerData unMutedData = PlayerDataManager.get(unMuted.getUUID()).savedData;
+        CoreSavedPlayerData unMutedData = PlayerDataManager.get(unMuted.getUUID()).savedData;
         LocalDateTime currentMuteTime = unMutedData.getMuteEnd();
 
         if (LocalDateTime.now().isAfter(currentMuteTime)) {
@@ -83,7 +82,7 @@ public class PlayerMutes {
     }
 
     public static boolean muted(NexiaPlayer player) {
-        SavedPlayerData savedData = PlayerDataManager.get(player).savedData;
+        CoreSavedPlayerData savedData = PlayerDataManager.get(player).savedData;
         LocalDateTime muteTime = savedData.getMuteEnd();
         String reason = savedData.getMuteReason();
 
