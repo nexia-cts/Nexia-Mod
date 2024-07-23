@@ -37,6 +37,36 @@ public class CommandUtil {
         return hasPermission(context.getSource(), permission, defaultRequiredLevel);
     }
 
+    public static CommandSourceStack getCommandSourceStack(@NotNull CommandSourceInfo info) {
+        try {
+            if(info.getExecutingEntity() != null && info.getExecutingEntity() instanceof Player player) {
+                return getCommandSourceStack(info, new NexiaPlayer(player));
+            }
+        } catch (Exception ignored) { }
+
+        return new CommandSourceStack(new CommandSource() {
+            @Override
+            public void sendMessage(Component component, UUID uUID) {
+                info.sendMessage(ObjectMappings.convertComponent(component));
+            }
+
+            @Override
+            public boolean acceptsSuccess() {
+                return false;
+            }
+
+            @Override
+            public boolean acceptsFailure() {
+                return false;
+            }
+
+            @Override
+            public boolean shouldInformAdmins() {
+                return false;
+            }
+        }, new Vec3(0, 0, 0), new Vec2(0, 0), ServerTime.minecraftServer.overworld(), info.getSender().getPermissionLevel(), null, null, ServerTime.minecraftServer, null);
+    }
+
     public static CommandSourceStack getCommandSourceStack(@NotNull CommandSourceInfo info, boolean autoSetPlayer) {
         try {
             if(autoSetPlayer && info.getExecutingEntity() != null && info.getExecutingEntity() instanceof Player player) {
