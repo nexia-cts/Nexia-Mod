@@ -1,6 +1,7 @@
 package com.nexia.minigames.games.duels.util.player;
 
 import com.nexia.base.player.PlayerData;
+import com.nexia.base.player.SavedPlayerData;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.KitRoom;
 import com.nexia.minigames.games.duels.map.DuelsMap;
@@ -25,7 +26,7 @@ public class DuelsPlayerData extends PlayerData {
     public DuelOptions.GameOptions gameOptions;
     public DuelOptions.InviteOptions inviteOptions;
 
-    public DuelsPlayerData(DuelsSavedPlayerData savedData) {
+    public DuelsPlayerData(SavedPlayerData savedData) {
         super(savedData);
 
         this.gameMode = DuelGameMode.LOBBY;

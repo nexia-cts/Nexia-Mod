@@ -41,10 +41,7 @@ public abstract class SavedPlayerData {
         public <T> void append(Class<T> type, String name, T value, Field field) {
             if (field != null) {
                 try {
-                    var val = field.get(SavedPlayerData.this);
-                    if (type.isInstance(val))
-                        field.set(SavedPlayerData.this, value);
-                    else throw new ClassCastException("The field " + name + " in " + SavedPlayerData.this.getClass().getSimpleName() + " is not a " + type.getSimpleName());
+                    field.set(SavedPlayerData.this, value);
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
