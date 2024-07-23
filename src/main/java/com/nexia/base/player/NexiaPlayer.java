@@ -1,8 +1,10 @@
 package com.nexia.base.player;
 
+import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.item.ItemStackUtil;
+import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.ranks.NexiaRank;
@@ -68,8 +70,12 @@ public class NexiaPlayer extends WrappedPlayer {
         ServerTime.minecraftServer.getPlayerList().sendPlayerPermissionLevel(this.unwrap());
     }
 
+    public PlayerGameMode getCurrentGameMode() {
+        return ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(this)).gameMode;
+    }
+
     public boolean isInGameMode(PlayerGameMode gameMode) {
-        return PlayerDataManager.get(this).gameMode.equals(gameMode);
+        return this.getCurrentGameMode().equals(gameMode);
     }
 
     public void setGameMode(Minecraft.GameMode gameMode) {
@@ -118,13 +124,13 @@ public class NexiaPlayer extends WrappedPlayer {
             BwPlayerEvents.leaveInBedWars(this);
         } else if (FfaUtil.isFfaPlayer(this)) {
             FfaUtil.leaveOrDie(this, this.unwrap().getLastDamageSource(), true);
-        } else if (PlayerDataManager.get(this).gameMode == PlayerGameMode.LOBBY) {
+        } else if (this.isInGameMode(PlayerGameMode.LOBBY)) {
             DuelGameHandler.leave(this, false);
-        } else if (PlayerDataManager.get(this).gameMode == PlayerGameMode.OITC) {
+        } else if (this.isInGameMode(PlayerGameMode.OITC)) {
             OitcGame.leave(this);
-        } else if (PlayerDataManager.get(this).gameMode == PlayerGameMode.SKYWARS) {
+        } else if (this.isInGameMode(PlayerGameMode.SKYWARS)) {
             SkywarsGame.leave(this);
-        } else if (PlayerDataManager.get(this).gameMode == PlayerGameMode.FOOTBALL) {
+        } else if (this.isInGameMode(PlayerGameMode.FOOTBALL)) {
             FootballGame.leave(this);
         }
 

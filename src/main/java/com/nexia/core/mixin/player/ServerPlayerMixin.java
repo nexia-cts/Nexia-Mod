@@ -14,6 +14,7 @@ import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
+import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
@@ -115,7 +116,7 @@ public abstract class ServerPlayerMixin extends Player {
         ServerPlayer player = (ServerPlayer)(Object)this;
         NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
         PlayerGameMode gameMode = ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(nexiaPlayer)).gameMode;
-        DuelsPlayerData duelsData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(nexiaPlayer);
+        DuelsPlayerData duelsData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(nexiaPlayer);
 
         if (FfaUtil.isFfaPlayer(nexiaPlayer)) {
             FfaUtil.leaveOrDie(nexiaPlayer, damageSource, false);

@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class OitcGame {
+    public static final ResourceLocation OITC_DATA_MANAGER = NexiaCore.id("oitc");
     public static ArrayList<NexiaPlayer> players = new ArrayList<>();
 
     public static ArrayList<NexiaPlayer> spectator = new ArrayList<>();
@@ -77,7 +78,7 @@ public class OitcGame {
     public static void leave(NexiaPlayer player) {
         OitcGame.death(player, player.unwrap().getLastDamageSource());
 
-        OITCPlayerData data = (OITCPlayerData) PlayerDataManager.getDataManager(NexiaCore.OITC_DATA_MANAGER).get(player);
+        OITCPlayerData data = (OITCPlayerData) PlayerDataManager.getDataManager(OITC_DATA_MANAGER).get(player);
         OitcGame.spectator.remove(player);
         OitcGame.queue.remove(player);
         OitcGame.players.remove(player);
@@ -161,8 +162,8 @@ public class OitcGame {
                     HashMap<Integer, NexiaPlayer> kills = new HashMap<>();
 
                     for(NexiaPlayer player : OitcGame.players) {
-                        intKills.add(((OITCPlayerData)PlayerDataManager.getDataManager(NexiaCore.OITC_DATA_MANAGER).get(player)).kills);
-                        kills.put(((OITCPlayerData)PlayerDataManager.getDataManager(NexiaCore.OITC_DATA_MANAGER).get(player)).kills, player);
+                        intKills.add(((OITCPlayerData)PlayerDataManager.getDataManager(OITC_DATA_MANAGER).get(player)).kills);
+                        kills.put(((OITCPlayerData)PlayerDataManager.getDataManager(OITC_DATA_MANAGER).get(player)).kills, player);
                     }
 
                     endGame(kills.get(Collections.max(intKills)));
@@ -223,12 +224,12 @@ public class OitcGame {
     }
 
     public static void joinQueue(NexiaPlayer player) {
-        OITCPlayerData data = (OITCPlayerData) PlayerDataManager.getDataManager(NexiaCore.OITC_DATA_MANAGER).get(player);
+        OITCPlayerData data = (OITCPlayerData) PlayerDataManager.getDataManager(OITC_DATA_MANAGER).get(player);
         data.kills = 0;
         player.setHealth(player.unwrap().getMaxHealth());
         if(OitcGame.isStarted || OitcGame.queue.size() >= OitcGame.map.maxPlayers){
             OitcGame.spectator.add(player);
-            ((OITCPlayerData)PlayerDataManager.getDataManager(NexiaCore.OITC_DATA_MANAGER).get(player)).gameMode = OitcGameMode.SPECTATOR;
+            ((OITCPlayerData)PlayerDataManager.getDataManager(OITC_DATA_MANAGER).get(player)).gameMode = OitcGameMode.SPECTATOR;
             player.setGameMode(Minecraft.GameMode.SPECTATOR);
         } else {
             OitcGame.queue.add(player);
@@ -242,7 +243,7 @@ public class OitcGame {
     public static void endGame(NexiaPlayer player) {
         OitcGame.isEnding = true;
         if(player == null || player.unwrap() == null) return;
-        OITCPlayerData data = (OITCPlayerData) PlayerDataManager.getDataManager(NexiaCore.OITC_DATA_MANAGER).get(player);
+        OITCPlayerData data = (OITCPlayerData) PlayerDataManager.getDataManager(OITC_DATA_MANAGER).get(player);
         OitcGame.winner = player;
 
         player.sendTitle(Title.title(Component.text("You won!").color(ChatFormat.greenColor), Component.text("")));
@@ -265,7 +266,7 @@ public class OitcGame {
                             .append(Component.text(timer[0] + ":" + timer[1]).color(ChatFormat.brandColor2))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
                             .append(Component.text("Kills » ").color(TextColor.fromHexString("#b3b3b3")))
-                            .append(Component.text(((OITCPlayerData)PlayerDataManager.getDataManager(NexiaCore.OITC_DATA_MANAGER).get(player)).kills).color(ChatFormat.brandColor2))
+                            .append(Component.text(((OITCPlayerData)PlayerDataManager.getDataManager(OITC_DATA_MANAGER).get(player)).kills).color(ChatFormat.brandColor2))
             );
         }
     }
@@ -309,7 +310,7 @@ public class OitcGame {
                 player.unwrap().inventory.setItem(1, bow);
                 player.unwrap().inventory.setItem(2, new ItemStack(Items.ARROW));
 
-                ((OITCPlayerData)PlayerDataManager.getDataManager(NexiaCore.OITC_DATA_MANAGER).get(player)).gameMode = OitcGameMode.PLAYING;
+                ((OITCPlayerData)PlayerDataManager.getDataManager(OITC_DATA_MANAGER).get(player)).gameMode = OitcGameMode.PLAYING;
 
                 player.addTag("in_oitc_game");
                 player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
@@ -336,13 +337,13 @@ public class OitcGame {
     }
 
     public static void death(NexiaPlayer victim, DamageSource source){
-        OITCPlayerData victimData = (OITCPlayerData) PlayerDataManager.getDataManager(NexiaCore.OITC_DATA_MANAGER).get(victim);
+        OITCPlayerData victimData = (OITCPlayerData) PlayerDataManager.getDataManager(OITC_DATA_MANAGER).get(victim);
         if(OitcGame.isStarted && !OitcGame.deathPlayers.containsKey(victim) && victimData.gameMode == OitcGameMode.PLAYING) {
             ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim.unwrap());
             if(attacker != null) {
                 NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
                 if(!nexiaAttacker.equals(victim)) {
-                    OITCPlayerData attackerData = (OITCPlayerData) PlayerDataManager.getDataManager(NexiaCore.OITC_DATA_MANAGER).get(nexiaAttacker);
+                    OITCPlayerData attackerData = (OITCPlayerData) PlayerDataManager.getDataManager(OITC_DATA_MANAGER).get(nexiaAttacker);
                     attackerData.kills++;
                     attackerData.savedData.incrementInteger("kills");
                     attacker.setHealth(attacker.getMaxHealth());
@@ -350,7 +351,7 @@ public class OitcGame {
                 }
             }
 
-            ((OITCPlayerData)PlayerDataManager.getDataManager(NexiaCore.OITC_DATA_MANAGER).get(victim)).hasDied = true;
+            ((OITCPlayerData)PlayerDataManager.getDataManager(OITC_DATA_MANAGER).get(victim)).hasDied = true;
             OitcGame.deathPlayers.remove(victim);
             OitcGame.deathPlayers.put(victim, 4); // 3 seconds
         }

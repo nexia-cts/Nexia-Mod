@@ -3,6 +3,7 @@ package com.nexia.core.commands.player.duels;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
+import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.nexus.api.command.CommandUtils;
@@ -32,7 +33,7 @@ public class PartyCommand {
                     try {
                         NexiaPlayer player = new NexiaPlayer(commandSourceInfo.getPlayerOrException());
 
-                        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+                        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
                         CorePlayerData playerData1 = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player);
                         return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
                     } catch (Exception ignored) {
@@ -64,7 +65,7 @@ public class PartyCommand {
     public static int invitePlayer(CommandContext<CommandSourceInfo> context, ServerPlayer player) throws CommandSyntaxException {
         NexiaPlayer invitor = new NexiaPlayer(context.getSource().getPlayerOrException());
 
-        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(invitor);
+        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(invitor);
 
         if(data.duelOptions.duelsTeam == null) {
             DuelsTeam.createTeam(invitor, false);
@@ -76,14 +77,14 @@ public class PartyCommand {
     public static int joinTeam(CommandContext<CommandSourceInfo> context, ServerPlayer player) throws CommandSyntaxException {
         NexiaPlayer executor = new NexiaPlayer(context.getSource().getPlayerOrException());
 
-        ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player.getUUID())).duelOptions.duelsTeam.joinTeam(executor);
+        ((DuelsPlayerData)PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player.getUUID())).duelOptions.duelsTeam.joinTeam(executor);
         return 1;
     }
 
     public static int listTeam(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         NexiaPlayer executor = new NexiaPlayer(context.getSource().getPlayerOrException());
 
-        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(executor);
+        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(executor);
 
         if(data.duelOptions.duelsTeam == null) {
             executor.sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
@@ -97,7 +98,7 @@ public class PartyCommand {
     public static int declinePlayer(CommandContext<CommandSourceInfo> context, ServerPlayer player) throws CommandSyntaxException {
         NexiaPlayer executor = new NexiaPlayer(context.getSource().getPlayerOrException());
 
-        ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player.getUUID())).duelOptions.duelsTeam.declineTeam(executor);
+        ((DuelsPlayerData)PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player.getUUID())).duelOptions.duelsTeam.declineTeam(executor);
         return 1;
     }
 
@@ -111,7 +112,7 @@ public class PartyCommand {
     public static int promotePlayer(CommandContext<CommandSourceInfo> context, ServerPlayer player) throws CommandSyntaxException {
         NexiaPlayer executor = new NexiaPlayer(context.getSource().getPlayerOrException());
 
-        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(executor);
+        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(executor);
 
         if(data.duelOptions.duelsTeam == null) {
             executor.sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
@@ -125,7 +126,7 @@ public class PartyCommand {
     public static int kickPlayer(CommandContext<CommandSourceInfo> context, ServerPlayer player) throws CommandSyntaxException {
         NexiaPlayer executor = new NexiaPlayer(context.getSource().getPlayerOrException());
 
-        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(executor);
+        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(executor);
 
         if(data.duelOptions.duelsTeam == null) {
             executor.sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
@@ -139,27 +140,27 @@ public class PartyCommand {
     public static int disbandTeam(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
 
-        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
 
         if(data.duelOptions.duelsTeam == null) {
             player.sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
             return 1;
         }
 
-        ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).duelOptions.duelsTeam.disbandTeam(player, true);
+        ((DuelsPlayerData)PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player)).duelOptions.duelsTeam.disbandTeam(player, true);
         return 1;
     }
     public static int leaveTeam(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
 
-        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
 
         if(data.duelOptions.duelsTeam == null) {
             player.sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
             return 1;
         }
 
-        ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).duelOptions.duelsTeam.leaveTeam(player, true);
+        ((DuelsPlayerData)PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player)).duelOptions.duelsTeam.leaveTeam(player, true);
         return 1;
     }
 }

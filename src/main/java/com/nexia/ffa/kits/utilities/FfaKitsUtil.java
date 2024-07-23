@@ -4,6 +4,7 @@ import com.nexia.base.player.PlayerDataManager;
 import com.nexia.base.player.SavedPlayerData;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.player.CorePlayerData;
+import com.nexia.ffa.NexiaFfa;
 import com.nexia.ffa.kits.utilities.player.KitFFAPlayerData;
 import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.nexus.api.world.types.Minecraft;
@@ -58,7 +59,7 @@ public class FfaKitsUtil {
 
         if(player.hasTag("bot") || attacker.hasTag("bot")) return;
 
-        SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.FFA_KITS_DATA_MANAGER).get(attacker).savedData;
+        SavedPlayerData data = PlayerDataManager.getDataManager(NexiaFfa.FFA_KITS_DATA_MANAGER).get(attacker).savedData;
         data.incrementInteger("killstreak");
         int killstreak = data.get(Integer.class, "killstreak");
         if (killstreak > data.get(Integer.class, "bestKillstreak"))
@@ -95,7 +96,7 @@ public class FfaKitsUtil {
 
             if(!isFfaPlayer(player)) continue;
 
-            if(!FfaAreas.isInFfaSpawn(player) && ((KitFFAPlayerData) PlayerDataManager.getDataManager(NexiaCore.FFA_KITS_DATA_MANAGER).get(player)).kit == null) {
+            if(!FfaAreas.isInFfaSpawn(player) && ((KitFFAPlayerData) PlayerDataManager.getDataManager(NexiaFfa.FFA_KITS_DATA_MANAGER).get(player)).kit == null) {
                 player.sendTitle(Title.title(Component.text("No kit selected!").color(ChatFormat.failColor), Component.text("You need to select a kit!").color(ChatFormat.failColor)));
                 player.sendSound(new EntityPos(minecraftPlayer), SoundEvents.NOTE_BLOCK_DIDGERIDOO, SoundSource.BLOCKS, 10, 1);
                 FfaKitsUtil.sendToSpawn(player);
@@ -112,7 +113,7 @@ public class FfaKitsUtil {
     public static void calculateDeath(NexiaPlayer player){
         if(player.hasTag("bot")) return;
 
-        SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.FFA_KITS_DATA_MANAGER).get(player).savedData;
+        SavedPlayerData data = PlayerDataManager.getDataManager(NexiaFfa.FFA_KITS_DATA_MANAGER).get(player).savedData;
         data.incrementInteger("deaths");
         int killstreak = data.get(Integer.class, "killstreak");
         if (killstreak > data.get(Integer.class, "bestKillstreak"))
@@ -182,7 +183,7 @@ public class FfaKitsUtil {
             FfaKitsUtil.clearThrownTridents(nexiaAttacker);
             FfaKitsUtil.clearArrows(nexiaAttacker);
             FfaKitsUtil.clearSpectralArrows(nexiaAttacker);
-            FfaKit ffaKit = ((KitFFAPlayerData) PlayerDataManager.getDataManager(NexiaCore.FFA_KITS_DATA_MANAGER).get(nexiaAttacker)).kit;
+            FfaKit ffaKit = ((KitFFAPlayerData) PlayerDataManager.getDataManager(NexiaFfa.FFA_KITS_DATA_MANAGER).get(nexiaAttacker)).kit;
             if(ffaKit != null) ffaKit.giveKit(nexiaAttacker, false);
         }
 
@@ -218,7 +219,7 @@ public class FfaKitsUtil {
     }
 
     public static void sendToSpawn(NexiaPlayer player) {
-        KitFFAPlayerData data = (KitFFAPlayerData) PlayerDataManager.getDataManager(NexiaCore.FFA_KITS_DATA_MANAGER).get(player);
+        KitFFAPlayerData data = (KitFFAPlayerData) PlayerDataManager.getDataManager(NexiaFfa.FFA_KITS_DATA_MANAGER).get(player);
 
         player.getInventory().clear();
         FfaKitsUtil.clearThrownTridents(player);

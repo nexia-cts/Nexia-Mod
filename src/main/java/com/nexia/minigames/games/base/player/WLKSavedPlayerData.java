@@ -9,6 +9,7 @@ public class WLKSavedPlayerData extends SavedPlayerData {
     public int losses;
 
     public int kills;
+
     public WLKSavedPlayerData() {
         super();
         this.wins = 0;

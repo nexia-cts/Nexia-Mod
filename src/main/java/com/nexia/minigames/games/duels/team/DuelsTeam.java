@@ -7,6 +7,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.base.player.NexiaPlayer;
+import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -115,7 +116,7 @@ public class DuelsTeam {
         Component msg = Component.text("The duels team has been disbanded.").color(ChatFormat.failColor);
 
         for(NexiaPlayer player : all) {
-            ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).duelOptions.duelsTeam = null;
+            ((DuelsPlayerData)PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player)).duelOptions.duelsTeam = null;
             if(message) player.sendMessage(msg);
         }
         this.getPeople().clear();
@@ -127,7 +128,7 @@ public class DuelsTeam {
     }
 
     public void leaveTeam(NexiaPlayer player, boolean message) {
-        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
 
         if(this.isLeader(player) && this.getPeople().isEmpty()) {
             this.disbandTeam(player, message);
@@ -167,7 +168,7 @@ public class DuelsTeam {
             return;
         }
 
-        if(((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).duelOptions.duelsTeam != null) {
+        if(((DuelsPlayerData)PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player)).duelOptions.duelsTeam != null) {
             invitor.sendMessage(Component.text("That player is already in a team!").color(ChatFormat.failColor));
             return;
         }
@@ -219,7 +220,7 @@ public class DuelsTeam {
     }
 
     public void kickPlayer(NexiaPlayer executor, NexiaPlayer player) {
-        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
 
         if(!this.isLeader(executor)) {
             executor.sendMessage(Component.text("You are not the leader!").color(ChatFormat.failColor));
@@ -250,7 +251,7 @@ public class DuelsTeam {
     }
 
     public void joinTeam(NexiaPlayer player) {
-        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
 
         if(data.duelOptions.duelsTeam != null) {
             player.sendMessage(Component.text("You are currently in a team!").color(ChatFormat.failColor));
@@ -274,7 +275,7 @@ public class DuelsTeam {
     }
 
     public void declineTeam(NexiaPlayer player) {
-        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
 
         if(data.duelOptions.duelsTeam != null) {
             player.sendMessage(Component.text("You are currently in a team!").color(ChatFormat.failColor));
@@ -292,7 +293,7 @@ public class DuelsTeam {
     }
 
     public static DuelsTeam createTeam(NexiaPlayer player, boolean message) {
-        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
 
         if(data.duelOptions.duelsTeam != null) {
             if(message) {
