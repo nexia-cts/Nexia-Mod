@@ -25,7 +25,7 @@ public abstract class SavedPlayerData {
         data.append(type, name, value, null);
     }
 
-    public <T> void buildField(Class<T> type, String name, T value) throws NoSuchFieldException {
+    protected <T> void buildField(Class<T> type, String name, T value) throws NoSuchFieldException {
         data.append(type, name, value, getClass().getField(name));
     }
 
