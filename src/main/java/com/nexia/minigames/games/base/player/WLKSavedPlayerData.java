@@ -14,13 +14,9 @@ public class WLKSavedPlayerData extends SavedPlayerData {
         this.wins = 0;
         this.losses = 0;
         this.kills = 0;
-        try {
-            buildField(Integer.class, "wins", wins);
-            buildField(Integer.class, "losses", losses);
-            buildField(Integer.class, "kills", kills);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
+        set(Integer.class, "wins", wins);
+        set(Integer.class, "losses", losses);
+        set(Integer.class, "kills", kills);
     }
 
 }

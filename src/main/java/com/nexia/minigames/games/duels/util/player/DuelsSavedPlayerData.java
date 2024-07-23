@@ -11,12 +11,8 @@ public class DuelsSavedPlayerData extends SavedPlayerData {
     public DuelsSavedPlayerData() {
         this.wins = 0;
         this.losses = 0;
-        try {
-            buildField(Integer.class, "wins", wins);
-            buildField(Integer.class, "losses", losses);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
+        set(Integer.class, "wins", wins);
+        set(Integer.class, "losses", losses);
     }
 
 }

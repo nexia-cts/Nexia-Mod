@@ -22,14 +22,10 @@ public class CoreSavedPlayerData extends SavedPlayerData {
         this.muteReason = null;
         this.isReportBanned = false;
         this.sprintFix = true;
-        try {
-            buildField(String.class, "muteEnd", muteEnd);
-            buildField(String.class, "muteReason", muteReason);
-            buildField(Boolean.class, "isReportBanned", isReportBanned);
-            buildField(Boolean.class, "sprintFix", sprintFix);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
+        set(String.class, "muteEnd", muteEnd);
+        set(String.class, "muteReason", muteReason);
+        set(Boolean.class, "isReportBanned", isReportBanned);
+        set(Boolean.class, "sprintFix", sprintFix);
     }
 
     public LocalDateTime getMuteEnd() {

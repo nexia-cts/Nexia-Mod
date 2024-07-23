@@ -11,11 +11,7 @@ public class DiscordSavedPlayerData extends SavedPlayerData {
         super();
         this.discordID = 0;
         this.isLinked = false;
-        try {
-            buildField(Long.class, "discordID", discordID);
-            buildField(Boolean.class, "isLinked", isLinked);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
+        set(Long.class, "discordID", discordID);
+        set(Boolean.class, "isLinked", isLinked);
     }
 }

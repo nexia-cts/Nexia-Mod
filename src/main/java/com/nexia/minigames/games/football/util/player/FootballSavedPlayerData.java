@@ -15,13 +15,9 @@ public class FootballSavedPlayerData extends SavedPlayerData {
         this.wins = 0;
         this.losses = 0;
         this.goals = 0;
-        try {
-            buildField(Integer.class, "wins", wins);
-            buildField(Integer.class, "losses", losses);
-            buildField(Integer.class, "goals", goals);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
+        set(Integer.class, "wins", wins);
+        set(Integer.class, "losses", losses);
+        set(Integer.class, "goals", goals);
     }
 
 }
