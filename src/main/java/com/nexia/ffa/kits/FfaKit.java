@@ -1,10 +1,10 @@
 package com.nexia.ffa.kits;
 
 import com.nexia.base.player.PlayerDataManager;
-import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.base.player.NexiaPlayer;
+import com.nexia.ffa.NexiaFfa;
 import com.nexia.ffa.kits.utilities.player.KitFFAPlayerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -50,7 +50,7 @@ public class FfaKit {
     }
 
     public void giveKit(NexiaPlayer player, boolean clearEffect) {
-        ((KitFFAPlayerData)PlayerDataManager.getDataManager(NexiaCore.FFA_KITS_DATA_MANAGER).get(player)).kit = this;
+        ((KitFFAPlayerData)PlayerDataManager.getDataManager(NexiaFfa.FFA_KITS_DATA_MANAGER).get(player)).kit = this;
 
         if (clearEffect) player.clearEffects();
 

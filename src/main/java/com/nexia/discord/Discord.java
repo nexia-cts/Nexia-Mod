@@ -2,7 +2,6 @@ package com.nexia.discord;
 
 import com.nexia.base.player.PlayerData;
 import com.nexia.base.player.PlayerDataManager;
-import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
@@ -67,7 +66,7 @@ public class Discord extends ListenerAdapter {
 
             event.deferReply(true).queue();
 
-            PlayerData playerData = PlayerDataManager.getDataManager(NexiaCore.DISCORD_DATA_MANAGER).get(uuid);
+            PlayerData playerData = PlayerDataManager.getDataManager(NexiaDiscord.DISCORD_DATA_MANAGER).get(uuid);
 
             playerData.savedData.set(Boolean.class, "isLinked", true);
             playerData.savedData.set(Long.class, "discordID", discordID);
@@ -90,7 +89,7 @@ public class Discord extends ListenerAdapter {
                                 )
                 );
             } else {
-                PlayerDataManager.getDataManager(NexiaCore.DISCORD_DATA_MANAGER).removePlayerData(uuid);
+                PlayerDataManager.getDataManager(NexiaDiscord.DISCORD_DATA_MANAGER).removePlayerData(uuid);
             }
             event.getHook().editOriginal("Your account has been linked!").queue();
 

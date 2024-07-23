@@ -44,6 +44,7 @@ import java.util.UUID;
 import static com.nexia.core.utilities.world.WorldUtil.getChunkGenerator;
 
 public class SkywarsGame {
+    public static final ResourceLocation SKYWARS_DATA_MANAGER = NexiaCore.id("skywars");
     public static ArrayList<NexiaPlayer> alive = new ArrayList<>();
 
     public static ArrayList<NexiaPlayer> spectator = new ArrayList<>();
@@ -94,7 +95,7 @@ public class SkywarsGame {
     public static void leave(NexiaPlayer player) {
         SkywarsGame.death(player, player.unwrap().getLastDamageSource());
 
-        SkywarsPlayerData data = (SkywarsPlayerData) PlayerDataManager.getDataManager(NexiaCore.SKYWARS_DATA_MANAGER).get(player);
+        SkywarsPlayerData data = (SkywarsPlayerData) PlayerDataManager.getDataManager(SKYWARS_DATA_MANAGER).get(player);
         SkywarsGame.spectator.remove(player);
 
         if(!SkywarsGame.isStarted && SkywarsGame.queue.contains(player)) {
@@ -199,13 +200,13 @@ public class SkywarsGame {
     }
 
     public static void joinQueue(NexiaPlayer player) {
-        SkywarsPlayerData data = (SkywarsPlayerData) PlayerDataManager.getDataManager(NexiaCore.SKYWARS_DATA_MANAGER).get(player);
+        SkywarsPlayerData data = (SkywarsPlayerData) PlayerDataManager.getDataManager(SKYWARS_DATA_MANAGER).get(player);
         data.kills = 0;
         player.reset(true, Minecraft.GameMode.ADVENTURE);
 
         if(SkywarsGame.isStarted || SkywarsGame.queue.size() >= SkywarsMap.maxJoinablePlayers){
             SkywarsGame.spectator.add(player);
-            ((SkywarsPlayerData)PlayerDataManager.getDataManager(NexiaCore.SKYWARS_DATA_MANAGER).get(player)).gameMode = SkywarsGameMode.SPECTATOR;
+            ((SkywarsPlayerData)PlayerDataManager.getDataManager(SKYWARS_DATA_MANAGER).get(player)).gameMode = SkywarsGameMode.SPECTATOR;
             PlayerUtil.sendBossbar(SkywarsGame.BOSSBAR, player, false);
             player.setGameMode(Minecraft.GameMode.SPECTATOR);
         } else {
@@ -269,7 +270,7 @@ public class SkywarsGame {
         for (NexiaPlayer player : SkywarsGame.alive) {
             EntityPos pos = positions.get(RandomUtil.randomInt(positions.size()));
 
-            ((SkywarsPlayerData)PlayerDataManager.getDataManager(NexiaCore.SKYWARS_DATA_MANAGER).get(player)).gameMode = SkywarsGameMode.PLAYING;
+            ((SkywarsPlayerData)PlayerDataManager.getDataManager(SKYWARS_DATA_MANAGER).get(player)).gameMode = SkywarsGameMode.PLAYING;
             player.addTag(SKYWARS_TAG);
             player.addTag(LobbyUtil.NO_SATURATION_TAG);
             player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
@@ -312,7 +313,7 @@ public class SkywarsGame {
 
         SkywarsGame.winner = player;
 
-        PlayerDataManager.getDataManager(NexiaCore.SKYWARS_DATA_MANAGER).get(player).savedData.incrementInteger("wins");
+        PlayerDataManager.getDataManager(SKYWARS_DATA_MANAGER).get(player).savedData.incrementInteger("wins");
 
         for(NexiaPlayer serverPlayer : SkywarsGame.getViewers()){
             serverPlayer.sendTitle(Title.title(Component.text(player.getRawName()).color(ChatFormat.brandColor2), Component.text("has won the game!").color(ChatFormat.normalColor)
@@ -407,13 +408,13 @@ public class SkywarsGame {
     }
 
     public static void death(NexiaPlayer victim, DamageSource source){
-        SkywarsPlayerData victimData = (SkywarsPlayerData) PlayerDataManager.getDataManager(NexiaCore.SKYWARS_DATA_MANAGER).get(victim);
+        SkywarsPlayerData victimData = (SkywarsPlayerData) PlayerDataManager.getDataManager(SKYWARS_DATA_MANAGER).get(victim);
         if(SkywarsGame.isStarted && SkywarsGame.alive.contains(victim) && victimData.gameMode == SkywarsGameMode.PLAYING) {
             ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim.unwrap());
 
             if(attacker != null){
                 NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
-                SkywarsPlayerData attackerData = (SkywarsPlayerData) PlayerDataManager.getDataManager(NexiaCore.SKYWARS_DATA_MANAGER).get(nexiaAttacker);
+                SkywarsPlayerData attackerData = (SkywarsPlayerData) PlayerDataManager.getDataManager(SKYWARS_DATA_MANAGER).get(nexiaAttacker);
                 attackerData.kills++;
                 attackerData.savedData.incrementInteger("kills");
             }
@@ -424,7 +425,7 @@ public class SkywarsGame {
             if(SkywarsGame.winner != victim) victimData.savedData.incrementInteger("losses");
             SkywarsGame.alive.remove(victim);
             SkywarsGame.spectator.add(victim);
-            ((SkywarsPlayerData)PlayerDataManager.getDataManager(NexiaCore.SKYWARS_DATA_MANAGER).get(victim)).gameMode = SkywarsGameMode.SPECTATOR;
+            ((SkywarsPlayerData)PlayerDataManager.getDataManager(SKYWARS_DATA_MANAGER).get(victim)).gameMode = SkywarsGameMode.SPECTATOR;
 
             Component message = Component.text(victim.unwrap().getCombatTracker().getDeathMessage().getString(), ChatFormat.systemColor);
 

@@ -13,6 +13,7 @@ import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
+import com.nexia.ffa.NexiaFfa;
 import com.nexia.nexus.api.world.entity.player.Player;
 import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
@@ -98,7 +99,7 @@ public class FfaClassicUtil {
         String stringInventory = savableInventory.toSave();
 
         try {
-            String file = PlayerDataManager.getDataManager(NexiaCore.FFA_CLASSIC_DATA_MANAGER).getDataDirectory() + "/inventory/savedInventories/" + player.getUUID() + ".json";
+            String file = PlayerDataManager.getDataManager(NexiaFfa.FFA_CLASSIC_DATA_MANAGER).getDataDirectory() + "/inventory/savedInventories/" + player.getUUID() + ".json";
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(stringInventory);
             fileWriter.close();
@@ -114,7 +115,7 @@ public class FfaClassicUtil {
 
         if(player.hasTag("bot") || attacker.hasTag("bot")) return;
 
-        SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.FFA_CLASSIC_DATA_MANAGER).get(attacker).savedData;
+        SavedPlayerData data = PlayerDataManager.getDataManager(NexiaFfa.FFA_CLASSIC_DATA_MANAGER).get(attacker).savedData;
 
         RatingUtil.calculateRating(attacker, player);
         RatingUtil.updateLeaderboard();
@@ -150,7 +151,7 @@ public class FfaClassicUtil {
 
         if(player.hasTag("bot")) return;
 
-        SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.FFA_CLASSIC_DATA_MANAGER).get(player).savedData;
+        SavedPlayerData data = PlayerDataManager.getDataManager(NexiaFfa.FFA_CLASSIC_DATA_MANAGER).get(player).savedData;
         data.incrementInteger("deaths");
         int killstreak = data.get(Integer.class, "killstreak");
         if (killstreak > data.get(Integer.class, "bestKillstreak"))
@@ -195,13 +196,13 @@ public class FfaClassicUtil {
                 Component component = FfaUtil.returnClassicDeathMessage(player, nexiaAttacker);
                 if(component != null) msg = component;
 
-                double attackerOldRating = PlayerDataManager.getDataManager(NexiaCore.FFA_CLASSIC_DATA_MANAGER).get(nexiaAttacker).savedData.get(Double.class, "rating");
-                double victimOldRating = PlayerDataManager.getDataManager(NexiaCore.FFA_CLASSIC_DATA_MANAGER).get(player).savedData.get(Double.class, "rating");
+                double attackerOldRating = PlayerDataManager.getDataManager(NexiaFfa.FFA_CLASSIC_DATA_MANAGER).get(nexiaAttacker).savedData.get(Double.class, "rating");
+                double victimOldRating = PlayerDataManager.getDataManager(NexiaFfa.FFA_CLASSIC_DATA_MANAGER).get(player).savedData.get(Double.class, "rating");
 
                 calculateKill(nexiaAttacker, player);
 
-                double attackerNewRating = PlayerDataManager.getDataManager(NexiaCore.FFA_CLASSIC_DATA_MANAGER).get(nexiaAttacker).savedData.get(Double.class, "rating");
-                double victimNewRating = PlayerDataManager.getDataManager(NexiaCore.FFA_CLASSIC_DATA_MANAGER).get(player).savedData.get(Double.class, "rating");
+                double attackerNewRating = PlayerDataManager.getDataManager(NexiaFfa.FFA_CLASSIC_DATA_MANAGER).get(nexiaAttacker).savedData.get(Double.class, "rating");
+                double victimNewRating = PlayerDataManager.getDataManager(NexiaFfa.FFA_CLASSIC_DATA_MANAGER).get(player).savedData.get(Double.class, "rating");
 
                 if(component != null) {
                     msg = msg.append(Component.text(" (")
@@ -236,7 +237,7 @@ public class FfaClassicUtil {
         SavableInventory layout = null;
 
         try {
-            String file = PlayerDataManager.getDataManager(NexiaCore.FFA_CLASSIC_DATA_MANAGER).getDataDirectory() + "/inventory";
+            String file = PlayerDataManager.getDataManager(NexiaFfa.FFA_CLASSIC_DATA_MANAGER).getDataDirectory() + "/inventory";
             String defaultJson = Files.readString(Path.of(file + "/default.json"));
             Gson gson = new Gson();
             defaultInventory = gson.fromJson(defaultJson, SavableInventory.class);

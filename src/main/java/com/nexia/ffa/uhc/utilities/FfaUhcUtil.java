@@ -13,6 +13,7 @@ import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
+import com.nexia.ffa.NexiaFfa;
 import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.nexus.api.world.types.Minecraft;
 import io.github.blumbo.inventorymerger.InventoryMerger;
@@ -56,7 +57,7 @@ public class FfaUhcUtil {
 
 
     public static void calculateKill(NexiaPlayer player) {
-        SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.FFA_UHC_DATA_MANAGER).get(player).savedData;
+        SavedPlayerData data = PlayerDataManager.getDataManager(NexiaFfa.FFA_UHC_DATA_MANAGER).get(player).savedData;
         data.incrementInteger("killstreak");
         int killstreak = data.get(Integer.class, "killstreak");
         if (killstreak > data.get(Integer.class, "bestKillstreak"))
@@ -104,7 +105,7 @@ public class FfaUhcUtil {
         String stringInventory = savableInventory.toSave();
 
         try {
-            String file = PlayerDataManager.getDataManager(NexiaCore.FFA_UHC_DATA_MANAGER).getDataDirectory() + "/inventory/savedInventories/" + player.getUUID() + ".json";
+            String file = PlayerDataManager.getDataManager(NexiaFfa.FFA_UHC_DATA_MANAGER).getDataDirectory() + "/inventory/savedInventories/" + player.getUUID() + ".json";
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(stringInventory);
             fileWriter.close();
@@ -125,7 +126,7 @@ public class FfaUhcUtil {
         SavableInventory layout = null;
 
         try {
-            String file = PlayerDataManager.getDataManager(NexiaCore.FFA_UHC_DATA_MANAGER).getDataDirectory() + "/inventory";
+            String file = PlayerDataManager.getDataManager(NexiaFfa.FFA_UHC_DATA_MANAGER).getDataDirectory() + "/inventory";
             String defaultJson = Files.readString(Path.of(file + "/default.json"));
             Gson gson = new Gson();
             defaultInventory = gson.fromJson(defaultJson, SavableInventory.class);
@@ -162,7 +163,7 @@ public class FfaUhcUtil {
 
 
     public static void calculateDeath(NexiaPlayer player){
-        SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.FFA_UHC_DATA_MANAGER).get(player).savedData;
+        SavedPlayerData data = PlayerDataManager.getDataManager(NexiaFfa.FFA_UHC_DATA_MANAGER).get(player).savedData;
         data.incrementInteger("deaths");
         int killstreak = data.get(Integer.class, "killstreak");
         if (killstreak > data.get(Integer.class, "bestKillstreak"))

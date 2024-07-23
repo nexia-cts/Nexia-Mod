@@ -46,6 +46,7 @@ import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQu
 public class DuelGameHandler {
 
 
+    public static final ResourceLocation DUELS_DATA_MANAGER = NexiaCore.id("duels");
     public static List<DuelsGame> duelsGames = new ArrayList<>();
     public static List<TeamDuelsGame> teamDuelsGames = new ArrayList<>();
 
@@ -108,7 +109,7 @@ public class DuelGameHandler {
     }
 
     public static void leave(NexiaPlayer player, boolean leaveTeam) {
-        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(DUELS_DATA_MANAGER).get(player);
         data.gameMode = DuelGameMode.LOBBY;
         if (data.gameOptions != null && data.gameOptions.duelsGame != null) {
             data.gameOptions.duelsGame.death(player, player.unwrap().getLastDamageSource());

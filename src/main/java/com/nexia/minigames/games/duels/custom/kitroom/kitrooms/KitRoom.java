@@ -5,6 +5,7 @@ import com.nexia.core.NexiaCore;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.world.WorldUtil;
+import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.nexus.api.world.util.Location;
@@ -51,7 +52,7 @@ public class KitRoom {
     }
 
     public static boolean isInKitRoom(NexiaPlayer player) {
-        return ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).kitRoom != null && !((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).editingKit.isEmpty();
+        return ((DuelsPlayerData)PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player)).kitRoom != null && !((DuelsPlayerData)PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player)).editingKit.isEmpty();
     }
 
     public StructureMap getKitRoom() {
@@ -105,7 +106,7 @@ public class KitRoom {
     }
 
     public void leave() {
-        ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(this.player)).kitRoom = null;
+        ((DuelsPlayerData)PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(this.player)).kitRoom = null;
         this.player.reset(true, Minecraft.GameMode.ADVENTURE);
         this.delete();
     }

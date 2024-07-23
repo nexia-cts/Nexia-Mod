@@ -29,23 +29,6 @@ public class NexiaCore implements ModInitializer, NexusPlugin {
 
 	public static final ResourceLocation CORE_DATA_MANAGER = id("core");
 
-	public static final ResourceLocation DISCORD_DATA_MANAGER = id("discord");
-
-	public static final ResourceLocation FFA_CLASSIC_DATA_MANAGER = id("ffa_classic");
-	public static final ResourceLocation FFA_KITS_DATA_MANAGER = id("ffa_kits");
-	public static final ResourceLocation FFA_UHC_DATA_MANAGER = id("ffa_uhc");
-	public static final ResourceLocation FFA_SKY_DATA_MANAGER = id("ffa_sky");
-
-	public static final ResourceLocation BEDWARS_DATA_MANAGER = id("skywars");
-
-	public static final ResourceLocation DUELS_DATA_MANAGER = id("duels");
-
-	public static final ResourceLocation FOOTBALL_DATA_MANAGER = id("football");
-
-	public static final ResourceLocation OITC_DATA_MANAGER = id("oitc");
-
-	public static final ResourceLocation SKYWARS_DATA_MANAGER = id("skywars");
-
 	@Override
 	public void onInitialize() {
 		AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);

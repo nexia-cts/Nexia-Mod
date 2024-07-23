@@ -57,7 +57,7 @@ public class GamemodeHandler {
             return;
         }
 
-        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
 
         if (data.duelOptions.duelsTeam != null) {
             if (!silent) player.sendMessage(Component.text("You are in a team!").color(ChatFormat.failColor));
@@ -116,7 +116,7 @@ public class GamemodeHandler {
             return;
         }
 
-        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
 
         if (playerData.gameOptions == null || (!playerData.inDuel && playerData.gameOptions.teamDuelsGame == null && playerData.gameOptions.duelsGame == null && playerData.gameOptions.customTeamDuelsGame == null && playerData.gameOptions.customDuelsGame == null)) {
             executor.sendMessage(Component.text("That player is not in a duel!").color(ChatFormat.failColor));
@@ -124,7 +124,7 @@ public class GamemodeHandler {
         }
 
 
-        DuelsPlayerData executorData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(executor);
+        DuelsPlayerData executorData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(executor);
 
         if (executorData.gameMode == DuelGameMode.SPECTATING) {
             unspectatePlayer(executor, player, false);
@@ -193,7 +193,7 @@ public class GamemodeHandler {
         DuelsPlayerData playerData = null;
 
         if (player != null && player.unwrap() != null) {
-            playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+            playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
         }
 
         DuelsGame duelsGame = null;
@@ -209,7 +209,7 @@ public class GamemodeHandler {
             else if(playerData.gameOptions.customTeamDuelsGame != null) customTeamDuelsGame = playerData.gameOptions.customTeamDuelsGame;
         }
 
-        DuelsPlayerData executorData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(executor);
+        DuelsPlayerData executorData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(executor);
         Component spectateMSG = Component.text(String.format("(%s started spectating)", executor.getRawName())).color(ChatFormat.systemColor).decorate(ChatFormat.bold);
 
         if (duelsGame != null || teamDuelsGame != null || customDuelsGame != null || customTeamDuelsGame != null) {
@@ -271,8 +271,8 @@ public class GamemodeHandler {
             }
             return;
         }
-        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(invitor);
-        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(invitor);
+        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
 
         if (data.duelOptions.duelsTeam != null && data.duelOptions.duelsTeam.getPeople().contains(player)) {
             if (!silent) {
@@ -311,8 +311,8 @@ public class GamemodeHandler {
             return;
         }
 
-        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(invitor);
-        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(invitor);
+        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
 
         if(data.inviteOptions.inviteKit2 != null && !DuelGameHandler.validCustomKit(player, data.inviteOptions.inviteKit2)) {
             if (!silent) {
@@ -353,8 +353,8 @@ public class GamemodeHandler {
 
     public static void acceptDuel(@NotNull NexiaPlayer executor, @NotNull NexiaPlayer player) {
 
-        DuelsPlayerData executorData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(executor);
-        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+        DuelsPlayerData executorData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(executor);
+        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
 
         if (executor.equals(player)) {
             executor.sendMessage(Component.text("You cannot duel yourself!").color(ChatFormat.failColor));
@@ -384,7 +384,7 @@ public class GamemodeHandler {
 
     public static void declineDuel(@NotNull NexiaPlayer executor, @NotNull NexiaPlayer player) {
         //KitFFAPlayerData executorData = PlayerDataManager.get(executor);
-        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
 
         if (executor.equals(player)) {
             executor.sendMessage(Component.text("You cannot duel yourself!").color(ChatFormat.failColor));
@@ -433,8 +433,8 @@ public class GamemodeHandler {
             return;
         }
 
-        DuelsPlayerData executorData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(executor);
-        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+        DuelsPlayerData executorData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(executor);
+        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
 
         if (executorData.inDuel || playerData.inDuel) {
             executor.sendMessage(Component.text("That player is currently dueling someone.").color(ChatFormat.failColor));
@@ -541,10 +541,10 @@ public class GamemodeHandler {
     }
 
     public static void customChallengePlayer(NexiaPlayer executor, NexiaPlayer player, String customKit, @Nullable DuelsMap selectedmap) {
-        DuelsPlayerData executorData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(executor);
+        DuelsPlayerData executorData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(executor);
         DuelOptions.InviteOptions inviteOptions = executorData.inviteOptions;
 
-        if(customKit.equalsIgnoreCase("vanilla") || customKit.equalsIgnoreCase("smp")) ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(executor)).inviteOptions.inviteKit2 = customKit;
+        if(customKit.equalsIgnoreCase("vanilla") || customKit.equalsIgnoreCase("smp")) ((DuelsPlayerData)PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(executor)).inviteOptions.inviteKit2 = customKit;
 
         if (!DuelGameHandler.validCustomKit(executor, customKit)) {
             executor.sendMessage(Component.text("Invalid kit!").color(ChatFormat.failColor));
@@ -562,7 +562,7 @@ public class GamemodeHandler {
             return;
         }
         
-        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
 
         if (executorData.inDuel || playerData.inDuel) {
             executor.sendMessage(Component.text("That player is currently dueling someone.").color(ChatFormat.failColor));

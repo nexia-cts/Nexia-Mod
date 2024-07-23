@@ -88,7 +88,7 @@ public class PlayerJoinListener {
     }
 
     private static void checkBooster(NexiaPlayer player) {
-        PlayerData playerData = PlayerDataManager.getDataManager(NexiaCore.DISCORD_DATA_MANAGER).get(player.getUUID());
+        PlayerData playerData = PlayerDataManager.getDataManager(NexiaDiscord.DISCORD_DATA_MANAGER).get(player.getUUID());
         if(!playerData.savedData.get(Boolean.class, "isLinked")) { return; }
         Member discordUser = null;
 

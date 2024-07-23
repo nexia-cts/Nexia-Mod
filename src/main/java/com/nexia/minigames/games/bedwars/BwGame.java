@@ -22,6 +22,7 @@ import com.nexia.minigames.games.bedwars.util.BwScoreboard;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -37,6 +38,7 @@ import java.util.function.Predicate;
 public class BwGame {
 
     public static final String bedWarsDirectory = NxFileUtil.addConfigDir("bedwars");
+    public static final ResourceLocation BEDWARS_DATA_MANAGER = NexiaCore.id("skywars");
 
     public static boolean isGameActive = false;
     public static int gameTicks = 0;
@@ -295,12 +297,12 @@ public class BwGame {
             BwTeam winnerTeam = aliveTeams.getFirst();
             String whoWon;
             if (winnerTeam.players.size() == 1) {
-                PlayerDataManager.getDataManager(NexiaCore.BEDWARS_DATA_MANAGER).get(winnerTeam.players.stream().findFirst().get()).savedData.incrementInteger("wins");
+                PlayerDataManager.getDataManager(BEDWARS_DATA_MANAGER).get(winnerTeam.players.stream().findFirst().get()).savedData.incrementInteger("wins");
                 whoWon = winnerTeam.textColor + winnerTeam.players.getFirst().getRawName();
             } else {
                 whoWon = winnerTeam.textColor + winnerTeam.displayName + " team";
                 for(NexiaPlayer player : winnerTeam.players) {
-                    PlayerDataManager.getDataManager(NexiaCore.BEDWARS_DATA_MANAGER).get(player).savedData.incrementInteger("wins");
+                    PlayerDataManager.getDataManager(BEDWARS_DATA_MANAGER).get(player).savedData.incrementInteger("wins");
                 }
             }
 
