@@ -49,10 +49,7 @@ public abstract class SavedPlayerData {
         }
         public <T> T retrieve(Class<T> type, String name, Field field, SavedPlayerData data) throws IllegalAccessException, NoSuchFieldException {
             if (field != null) {
-                var val = field.get(data);
-                if (type.isInstance(val))
-                    return (T) val;
-                else throw new ClassCastException("The field " + name + " in " + data.getClass().getSimpleName() + " is not a " + type.getSimpleName());
+                return (T) field.get(data);
             } else throw new NullPointerException("The field " + name + " in " + data.getClass().getSimpleName() + " must not be null!");
         }
     }
