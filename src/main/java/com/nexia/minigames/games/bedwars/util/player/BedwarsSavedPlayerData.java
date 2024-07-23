@@ -8,7 +8,7 @@ public class BedwarsSavedPlayerData extends SavedPlayerData {
     public int losses;
     public int bedsBroken;
     public BedwarsSavedPlayerData() {
-        super(new Data());
+        super();
         this.wins = 0;
         this.losses = 0;
         this.bedsBroken = 0;

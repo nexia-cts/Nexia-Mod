@@ -1,5 +1,7 @@
 package com.nexia.core.utilities.chat;
 
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.Main;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.CoreSavedPlayerData;
@@ -19,7 +21,7 @@ public class PlayerMutes {
             return;
         }
 
-        CoreSavedPlayerData mutedData = PlayerDataManager.get(muted.getUUID()).savedData;
+        CoreSavedPlayerData mutedData = (CoreSavedPlayerData) PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(muted.getUUID()).savedData;
         LocalDateTime currentMuteTime = mutedData.getMuteEnd();
 
         if (LocalDateTime.now().isBefore(currentMuteTime)) {
@@ -59,7 +61,7 @@ public class PlayerMutes {
     }
 
     public static void unMute(CommandSourceInfo sender, ServerPlayer unMuted) {
-        CoreSavedPlayerData unMutedData = PlayerDataManager.get(unMuted.getUUID()).savedData;
+        CoreSavedPlayerData unMutedData = (CoreSavedPlayerData) PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(unMuted.getUUID()).savedData;
         LocalDateTime currentMuteTime = unMutedData.getMuteEnd();
 
         if (LocalDateTime.now().isAfter(currentMuteTime)) {
@@ -82,7 +84,7 @@ public class PlayerMutes {
     }
 
     public static boolean muted(NexiaPlayer player) {
-        CoreSavedPlayerData savedData = PlayerDataManager.get(player).savedData;
+        CoreSavedPlayerData savedData = (CoreSavedPlayerData) PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player).savedData;
         LocalDateTime muteTime = savedData.getMuteEnd();
         String reason = savedData.getMuteReason();
 
