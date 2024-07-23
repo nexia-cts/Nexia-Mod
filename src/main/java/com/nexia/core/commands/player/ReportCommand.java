@@ -12,7 +12,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.http.DiscordWebhook;
 import com.nexia.core.utilities.commands.CommandUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.discord.NexiaDiscord;
 import me.lucko.fabric.api.permissions.v0.Permissions;

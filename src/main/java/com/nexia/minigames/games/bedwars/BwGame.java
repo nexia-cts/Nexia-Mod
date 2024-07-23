@@ -5,7 +5,7 @@ import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.NxFileUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.time.ServerTime;

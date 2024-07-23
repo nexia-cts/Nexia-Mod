@@ -4,7 +4,7 @@ import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.misc.RandomUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.ffa.kits.utilities.player.KitFFAPlayerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;

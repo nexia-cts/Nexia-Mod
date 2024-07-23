@@ -1,7 +1,7 @@
 package com.nexia.minigames.games.duels;
 
 import com.nexia.core.utilities.item.ItemDisplayUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.nexus.api.world.types.Minecraft;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;

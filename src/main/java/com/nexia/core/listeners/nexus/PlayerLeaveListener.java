@@ -1,7 +1,7 @@
 package com.nexia.core.listeners.nexus;
 
 import com.nexia.base.player.PlayerDataManager;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.nexus.api.event.player.PlayerDisconnectEvent;
 
 public class PlayerLeaveListener {

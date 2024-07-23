@@ -12,7 +12,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.duels.DuelGUI;
 import com.nexia.core.utilities.commands.CommandUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;

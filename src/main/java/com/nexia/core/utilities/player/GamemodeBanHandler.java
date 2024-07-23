@@ -1,5 +1,6 @@
 package com.nexia.core.utilities.player;
 
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;

@@ -1,7 +1,7 @@
 package com.nexia.core.mixin.misc;
 
 import com.nexia.core.utilities.misc.EventUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.base.player.NexiaPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;

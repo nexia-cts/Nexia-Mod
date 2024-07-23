@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.bedwars.custom;
 
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import net.minecraft.core.BlockPos;

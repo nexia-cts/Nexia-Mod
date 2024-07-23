@@ -1,6 +1,6 @@
 package com.nexia.core.mixin.item;
 
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import net.minecraft.server.level.ServerPlayer;

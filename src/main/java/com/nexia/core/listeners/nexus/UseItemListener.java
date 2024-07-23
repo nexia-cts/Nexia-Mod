@@ -6,7 +6,7 @@ import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.nexus.api.event.player.PlayerUseItemEvent;
 import com.nexia.nexus.api.world.item.ItemStack;
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.base.player.NexiaPlayer;
 import net.kyori.adventure.text.Component;
 
 public class UseItemListener {

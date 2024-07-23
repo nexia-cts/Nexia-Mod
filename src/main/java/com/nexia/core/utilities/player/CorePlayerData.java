@@ -1,5 +1,6 @@
 package com.nexia.core.utilities.player;
 
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerData;
 import com.nexia.base.player.SavedPlayerData;
 import com.nexia.core.games.util.LobbyUtil;

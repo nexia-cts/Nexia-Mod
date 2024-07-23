@@ -1,6 +1,6 @@
 package com.nexia.minigames.games.football;
 
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import org.jetbrains.annotations.NotNull;
 

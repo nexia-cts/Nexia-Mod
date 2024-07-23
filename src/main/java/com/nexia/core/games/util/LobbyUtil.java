@@ -6,7 +6,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.BanHandler;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.GamemodeBanHandler;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.ffa.FfaGameMode;

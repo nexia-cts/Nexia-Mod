@@ -1,6 +1,7 @@
 package com.nexia.core.utilities.player;
 
 import com.google.gson.JsonParser;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.nexus.api.util.http.HttpAPI;
 import com.nexia.nexus.api.util.minecraft.MinecraftAPI;

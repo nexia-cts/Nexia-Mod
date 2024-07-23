@@ -2,7 +2,7 @@ package com.nexia.core.utilities.commands;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.nexus.api.world.entity.player.Player;

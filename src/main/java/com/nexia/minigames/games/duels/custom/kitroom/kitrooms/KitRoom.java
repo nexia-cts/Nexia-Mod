@@ -2,7 +2,7 @@ package com.nexia.minigames.games.duels.custom.kitroom.kitrooms;
 
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;

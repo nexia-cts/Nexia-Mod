@@ -2,7 +2,7 @@ package com.nexia.core.utilities.misc;
 
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.gui.ffa.KitGUI;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.football.FootballGame;

@@ -1,7 +1,7 @@
 package com.nexia.minigames.games.bedwars.upgrades;
 
 import com.nexia.core.utilities.item.ItemStackUtil;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.minigames.games.bedwars.players.BwTeam;
 import com.nexia.minigames.games.bedwars.util.BwUtil;

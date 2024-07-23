@@ -4,7 +4,7 @@ import com.nexia.base.player.PlayerDataManager;
 import com.nexia.base.player.SavedPlayerData;
 import com.nexia.core.NexiaCore;
 import com.nexia.nexus.builder.implementation.util.ObjectMappings;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.time.ServerTime;

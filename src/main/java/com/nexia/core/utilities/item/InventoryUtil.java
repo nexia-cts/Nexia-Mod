@@ -1,7 +1,7 @@
 package com.nexia.core.utilities.item;
 
 import com.natamus.collective_fabric.functions.PlayerFunctions;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.base.player.NexiaPlayer;
 import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.NotNull;
 

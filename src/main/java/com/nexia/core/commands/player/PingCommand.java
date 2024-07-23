@@ -1,7 +1,7 @@
 package com.nexia.core.commands.player;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.nexia.core.utilities.player.NexiaPlayer;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
