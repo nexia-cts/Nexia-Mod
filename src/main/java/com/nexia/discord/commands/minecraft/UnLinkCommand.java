@@ -5,6 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.base.player.PlayerData;
 import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.discord.NexiaDiscord;
@@ -23,7 +24,7 @@ public class UnLinkCommand {
         dispatcher.register(CommandUtils.literal("unlink")
                 .requires(commandSourceInfo -> {
                     try {
-                        return PlayerDataManager.getDataManager(NexiaDiscord.DISCORD_DATA_MANAGER).get(commandSourceInfo.getPlayerOrException().getUUID()).savedData.get(Boolean.class, "isLinked");
+                        return PlayerDataManager.getDataManager(NexiaCore.DISCORD_DATA_MANAGER).get(commandSourceInfo.getPlayerOrException().getUUID()).savedData.get(Boolean.class, "isLinked");
                     } catch (Exception ignored) { }
                     return false;
                 })
@@ -34,7 +35,7 @@ public class UnLinkCommand {
     public static int run(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
 
-        PlayerData data = PlayerDataManager.getDataManager(NexiaDiscord.DISCORD_DATA_MANAGER).get(player.getUUID());
+        PlayerData data = PlayerDataManager.getDataManager(NexiaCore.DISCORD_DATA_MANAGER).get(player.getUUID());
 
         data.savedData.set(Boolean.class, "isLinked", false);
 

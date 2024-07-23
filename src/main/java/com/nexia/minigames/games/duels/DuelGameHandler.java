@@ -40,13 +40,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static com.nexia.core.NexiaCore.DUELS_DATA_MANAGER;
 import static com.nexia.core.utilities.world.WorldUtil.getChunkGenerator;
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 
 public class DuelGameHandler {
-
-
-    public static final ResourceLocation DUELS_DATA_MANAGER = NexiaCore.id("duels");
     public static List<DuelsGame> duelsGames = new ArrayList<>();
     public static List<TeamDuelsGame> teamDuelsGames = new ArrayList<>();
 

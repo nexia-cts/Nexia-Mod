@@ -35,10 +35,11 @@ import java.time.Duration;
 import java.util.*;
 import java.util.function.Predicate;
 
+import static com.nexia.core.NexiaCore.BEDWARS_DATA_MANAGER;
+
 public class BwGame {
 
     public static final String bedWarsDirectory = NxFileUtil.addConfigDir("bedwars");
-    public static final ResourceLocation BEDWARS_DATA_MANAGER = NexiaCore.id("bedwars");
 
     public static boolean isGameActive = false;
     public static int gameTicks = 0;

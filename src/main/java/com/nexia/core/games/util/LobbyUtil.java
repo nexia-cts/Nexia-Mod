@@ -342,7 +342,7 @@ public class LobbyUtil {
             ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).gameMode = PlayerGameMode.OITC;
             OitcGame.death(player, player.unwrap().getLastDamageSource());
 
-            ((OITCPlayerData)PlayerDataManager.getDataManager(OitcGame.OITC_DATA_MANAGER).get(player)).gameMode = OitcGameMode.LOBBY;
+            ((OITCPlayerData)PlayerDataManager.getDataManager(NexiaCore.OITC_DATA_MANAGER).get(player)).gameMode = OitcGameMode.LOBBY;
 
             OitcGame.joinQueue(player);
 
@@ -352,7 +352,7 @@ public class LobbyUtil {
         if(game.equalsIgnoreCase("football")){
             player.addTag(FootballGame.FOOTBALL_TAG);
             ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).gameMode = PlayerGameMode.FOOTBALL;
-            ((FootballPlayerData)PlayerDataManager.getDataManager(FootballGame.FOOTBALL_DATA_MANAGER).get(player)).gameMode = FootballGameMode.LOBBY;
+            ((FootballPlayerData)PlayerDataManager.getDataManager(NexiaCore.FOOTBALL_DATA_MANAGER).get(player)).gameMode = FootballGameMode.LOBBY;
 
             FootballGame.joinQueue(player);
 
@@ -365,7 +365,7 @@ public class LobbyUtil {
             ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).gameMode = PlayerGameMode.SKYWARS;
             SkywarsGame.death(player, player.unwrap().getLastDamageSource());
 
-            ((SkywarsPlayerData)PlayerDataManager.getDataManager(SkywarsGame.SKYWARS_DATA_MANAGER).get(player)).gameMode = SkywarsGameMode.LOBBY;
+            ((SkywarsPlayerData)PlayerDataManager.getDataManager(NexiaCore.SKYWARS_DATA_MANAGER).get(player)).gameMode = SkywarsGameMode.LOBBY;
 
             SkywarsGame.joinQueue(player);
 

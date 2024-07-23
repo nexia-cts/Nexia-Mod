@@ -22,10 +22,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin {
 
-    @Shadow public abstract int getMaxPlayers();
-
-    @Shadow public abstract int getPlayerCount();
-
     @Shadow public abstract PlayerList getPlayerList();
 
     @Unique
@@ -35,7 +31,7 @@ public abstract class MinecraftServerMixin {
     private void tickHead(CallbackInfo ci) {
         if (!firstTickPassed) {
             firstTickPassed = true;
-            ServerTime.firstTick((MinecraftServer)(Object)this);
+            ServerTime.firstTick(MinecraftServer.class.cast(this));
         }
     }
 

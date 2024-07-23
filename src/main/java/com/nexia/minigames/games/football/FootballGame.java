@@ -44,8 +44,9 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.function.Predicate;
 
+import static com.nexia.core.NexiaCore.FOOTBALL_DATA_MANAGER;
+
 public class FootballGame {
-    public static final ResourceLocation FOOTBALL_DATA_MANAGER = NexiaCore.id("football");
     public static ArrayList<NexiaPlayer> players = new ArrayList<>();
 
     public static ArrayList<NexiaPlayer> spectator = new ArrayList<>();

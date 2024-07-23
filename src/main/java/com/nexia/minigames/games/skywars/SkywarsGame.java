@@ -41,10 +41,10 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import static com.nexia.core.NexiaCore.SKYWARS_DATA_MANAGER;
 import static com.nexia.core.utilities.world.WorldUtil.getChunkGenerator;
 
 public class SkywarsGame {
-    public static final ResourceLocation SKYWARS_DATA_MANAGER = NexiaCore.id("skywars");
     public static ArrayList<NexiaPlayer> alive = new ArrayList<>();
 
     public static ArrayList<NexiaPlayer> spectator = new ArrayList<>();

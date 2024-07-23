@@ -1,14 +1,14 @@
 package com.nexia.ffa.classic.utilities;
 
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.base.player.SavedPlayerData;
-import com.nexia.ffa.NexiaFfa;
-import com.nexia.nexus.builder.implementation.util.ObjectMappings;
-import com.nexia.base.player.NexiaPlayer;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaUtil;
+import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -34,8 +34,8 @@ public class RatingUtil {
     static List<Score> oldLeaderboardRating = null;
 
     public static void calculateRating(NexiaPlayer attacker, NexiaPlayer player) {
-        SavedPlayerData attackerData = PlayerDataManager.getDataManager(NexiaFfa.FFA_CLASSIC_DATA_MANAGER).get(attacker).savedData;
-        SavedPlayerData playerData = PlayerDataManager.getDataManager(NexiaFfa.FFA_CLASSIC_DATA_MANAGER).get(player).savedData;
+        SavedPlayerData attackerData = PlayerDataManager.getDataManager(NexiaCore.FFA_CLASSIC_DATA_MANAGER).get(attacker).savedData;
+        SavedPlayerData playerData = PlayerDataManager.getDataManager(NexiaCore.FFA_CLASSIC_DATA_MANAGER).get(player).savedData;
 
         double A = attackerData.get(Double.class, "elo");
         double B = playerData.get(Double.class, "elo");

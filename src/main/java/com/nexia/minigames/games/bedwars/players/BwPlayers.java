@@ -71,7 +71,7 @@ public class BwPlayers {
                 nexiaPlayers.sendMessage(eliminationMessage);
             }
 
-            PlayerDataManager.getDataManager(BwGame.BEDWARS_DATA_MANAGER).get(player).savedData.incrementInteger("losses");
+            PlayerDataManager.getDataManager(NexiaCore.BEDWARS_DATA_MANAGER).get(player).savedData.incrementInteger("losses");
             team.players.remove(player);
 
             ServerLevel world = BwAreas.bedWarsWorld;

@@ -16,8 +16,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
 public class NexiaDiscord implements ModInitializer {
-
-    public static final ResourceLocation DISCORD_DATA_MANAGER = NexiaCore.id("discord");
     public static ModConfig config;
 
     public static JDA jda;

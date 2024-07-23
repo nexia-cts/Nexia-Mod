@@ -4,26 +4,19 @@ import com.google.gson.Gson;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.CoreSavedPlayerData;
-import com.nexia.discord.NexiaDiscord;
 import com.nexia.discord.utilities.player.DiscordSavedPlayerData;
-import com.nexia.ffa.NexiaFfa;
 import com.nexia.ffa.base.player.FFASavedPlayerData;
 import com.nexia.ffa.classic.utilities.player.ClassicFFASavedPlayerData;
 import com.nexia.ffa.kits.utilities.player.KitFFAPlayerData;
-import com.nexia.minigames.games.bedwars.BwGame;
+import com.nexia.minigames.games.base.player.WLKSavedPlayerData;
 import com.nexia.minigames.games.bedwars.util.player.BedwarsPlayerData;
 import com.nexia.minigames.games.bedwars.util.player.BedwarsSavedPlayerData;
-import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.minigames.games.duels.util.player.DuelsSavedPlayerData;
-import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.football.util.player.FootballPlayerData;
 import com.nexia.minigames.games.football.util.player.FootballSavedPlayerData;
-import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.oitc.util.player.OITCPlayerData;
-import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.minigames.games.skywars.util.player.SkywarsPlayerData;
-import com.nexia.minigames.games.base.player.WLKSavedPlayerData;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.ResourceLocation;
 
@@ -64,28 +57,28 @@ public class PlayerDataManager {
         new PlayerDataManager(NexiaCore.CORE_DATA_MANAGER, "/nexia/core", CoreSavedPlayerData.class, CorePlayerData.class);
 
         // <-----------  Discord --------------->
-        new PlayerDataManager(NexiaDiscord.DISCORD_DATA_MANAGER, "/nexia/discord", DiscordSavedPlayerData.class, PlayerData.class);
+        new PlayerDataManager(NexiaCore.DISCORD_DATA_MANAGER, "/nexia/discord", DiscordSavedPlayerData.class, PlayerData.class);
 
         // <-----------  FFAs --------------->
-        new PlayerDataManager(NexiaFfa.FFA_CLASSIC_DATA_MANAGER, "/nexia/ffa/classic", ClassicFFASavedPlayerData.class, PlayerData.class);
-        new PlayerDataManager(NexiaFfa.FFA_KITS_DATA_MANAGER, "/nexia/ffa/kits", FFASavedPlayerData.class, KitFFAPlayerData.class);
-        new PlayerDataManager(NexiaFfa.FFA_SKY_DATA_MANAGER, "/nexia/ffa/sky", FFASavedPlayerData.class, PlayerData.class);
-        new PlayerDataManager(NexiaFfa.FFA_UHC_DATA_MANAGER, "/nexia/ffa/uhc", FFASavedPlayerData.class, PlayerData.class);
+        new PlayerDataManager(NexiaCore.FFA_CLASSIC_DATA_MANAGER, "/nexia/ffa/classic", ClassicFFASavedPlayerData.class, PlayerData.class);
+        new PlayerDataManager(NexiaCore.FFA_KITS_DATA_MANAGER, "/nexia/ffa/kits", FFASavedPlayerData.class, KitFFAPlayerData.class);
+        new PlayerDataManager(NexiaCore.FFA_SKY_DATA_MANAGER, "/nexia/ffa/sky", FFASavedPlayerData.class, PlayerData.class);
+        new PlayerDataManager(NexiaCore.FFA_UHC_DATA_MANAGER, "/nexia/ffa/uhc", FFASavedPlayerData.class, PlayerData.class);
 
         // <-----------  BedWars --------------->
-        new PlayerDataManager(BwGame.BEDWARS_DATA_MANAGER, "/nexia/bedwars", BedwarsSavedPlayerData.class, BedwarsPlayerData.class);
+        new PlayerDataManager(NexiaCore.BEDWARS_DATA_MANAGER, "/nexia/bedwars", BedwarsSavedPlayerData.class, BedwarsPlayerData.class);
 
         // <-----------  Duels --------------->
-        new PlayerDataManager(DuelGameHandler.DUELS_DATA_MANAGER, "/nexia/duels", DuelsSavedPlayerData.class, DuelsPlayerData.class);
+        new PlayerDataManager(NexiaCore.DUELS_DATA_MANAGER, "/nexia/duels", DuelsSavedPlayerData.class, DuelsPlayerData.class);
 
         // <-----------  Football --------------->
-        new PlayerDataManager(FootballGame.FOOTBALL_DATA_MANAGER, "/nexia/football", FootballSavedPlayerData.class, FootballPlayerData.class);
+        new PlayerDataManager(NexiaCore.FOOTBALL_DATA_MANAGER, "/nexia/football", FootballSavedPlayerData.class, FootballPlayerData.class);
 
         // <-----------  OITC --------------->
-        new PlayerDataManager(OitcGame.OITC_DATA_MANAGER, "/nexia/oitc", WLKSavedPlayerData.class, OITCPlayerData.class);
+        new PlayerDataManager(NexiaCore.OITC_DATA_MANAGER, "/nexia/oitc", WLKSavedPlayerData.class, OITCPlayerData.class);
 
         // <-----------  SkyWars --------------->
-        new PlayerDataManager(SkywarsGame.SKYWARS_DATA_MANAGER, "/nexia/skywars", WLKSavedPlayerData.class, SkywarsPlayerData.class);
+        new PlayerDataManager(NexiaCore.SKYWARS_DATA_MANAGER, "/nexia/skywars", WLKSavedPlayerData.class, SkywarsPlayerData.class);
     }
 
     public PlayerData get(NexiaPlayer player) {

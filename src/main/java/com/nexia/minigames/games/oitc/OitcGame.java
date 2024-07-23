@@ -44,8 +44,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static com.nexia.core.NexiaCore.OITC_DATA_MANAGER;
+
 public class OitcGame {
-    public static final ResourceLocation OITC_DATA_MANAGER = NexiaCore.id("oitc");
     public static ArrayList<NexiaPlayer> players = new ArrayList<>();
 
     public static ArrayList<NexiaPlayer> spectator = new ArrayList<>();

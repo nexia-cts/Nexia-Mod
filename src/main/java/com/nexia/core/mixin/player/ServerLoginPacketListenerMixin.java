@@ -2,6 +2,7 @@ package com.nexia.core.mixin.player;
 
 import com.mojang.authlib.GameProfile;
 import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.time.ServerType;
@@ -28,7 +29,7 @@ public class ServerLoginPacketListenerMixin {
             component = new TranslatableComponent("§c§lYou have been banned.\n§7Reason: §d" + component.getString().split("Reason: ")[1] + "\n§7You can appeal your ban at §d" + NexiaDiscord.config.discordLink);
         }
 
-        if(!PlayerDataManager.getDataManager(NexiaDiscord.DISCORD_DATA_MANAGER).get(gameProfile.getId()).savedData.get(Boolean.class, "isLinked") && ServerTime.serverType.equals(ServerType.DEV)) {
+        if(!PlayerDataManager.getDataManager(NexiaCore.DISCORD_DATA_MANAGER).get(gameProfile.getId()).savedData.get(Boolean.class, "isLinked") && ServerTime.serverType.equals(ServerType.DEV)) {
             int id = RandomUtil.randomInt(1000, 9999);
 
             if (Discord.idMinecraft.containsKey(id)) {

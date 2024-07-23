@@ -1,26 +1,21 @@
 package com.nexia.core.commands.player;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.nexia.base.player.PlayerDataManager;
-import com.nexia.base.player.SavedPlayerData;
-import com.nexia.ffa.NexiaFfa;
-import com.nexia.minigames.games.bedwars.BwGame;
-import com.nexia.minigames.games.duels.DuelGameHandler;
-import com.nexia.minigames.games.football.FootballGame;
-import com.nexia.minigames.games.oitc.OitcGame;
-import com.nexia.minigames.games.skywars.SkywarsGame;
-import com.nexia.nexus.api.command.CommandSourceInfo;
-import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.nexia.base.player.NexiaPlayer;
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.base.player.SavedPlayerData;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.commands.CommandUtil;
-import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.ffa.FfaGameMode;
+import com.nexia.nexus.api.command.CommandSourceInfo;
+import com.nexia.nexus.api.command.CommandUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -42,7 +37,7 @@ public class StatsCommand {
 
     public static int run(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
-        CorePlayerData playerData = (CorePlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
+        CorePlayerData playerData = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
 
 
         Component start = Component.text("  »").color(NamedTextColor.GRAY);
@@ -57,23 +52,23 @@ public class StatsCommand {
 
         if (playerData.gameMode == PlayerGameMode.FFA) {
             message = ChatFormat.separatorLine("FFA Classic Stats");
-            SavedPlayerData data = PlayerDataManager.getDataManager(NexiaFfa.FFA_CLASSIC_DATA_MANAGER).get(player).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.FFA_CLASSIC_DATA_MANAGER).get(player).savedData;
 
             long rating = Math.round(data.get(Double.class, "rating") * 100);
 
             if (playerData.ffaGameMode == FfaGameMode.KITS) {
                 message = ChatFormat.separatorLine("Kit FFA Stats");
-                data = PlayerDataManager.getDataManager(NexiaFfa.FFA_KITS_DATA_MANAGER).get(player).savedData;
+                data = PlayerDataManager.getDataManager(NexiaCore.FFA_KITS_DATA_MANAGER).get(player).savedData;
             }
 
             if (playerData.ffaGameMode == FfaGameMode.UHC) {
                 message = ChatFormat.separatorLine("UHC FFA Stats");
-                data = PlayerDataManager.getDataManager(NexiaFfa.FFA_UHC_DATA_MANAGER).get(player).savedData;
+                data = PlayerDataManager.getDataManager(NexiaCore.FFA_UHC_DATA_MANAGER).get(player).savedData;
             }
 
             if (playerData.ffaGameMode == FfaGameMode.SKY) {
                 message = ChatFormat.separatorLine("Sky FFA Stats");
-                data = PlayerDataManager.getDataManager(NexiaFfa.FFA_SKY_DATA_MANAGER).get(player).savedData;
+                data = PlayerDataManager.getDataManager(NexiaCore.FFA_SKY_DATA_MANAGER).get(player).savedData;
             }
 
             int kills = data.get(Integer.class, "kills");
@@ -114,7 +109,7 @@ public class StatsCommand {
 
         if(playerData.gameMode == PlayerGameMode.LOBBY){
             message = ChatFormat.separatorLine("Duels Stats");
-            SavedPlayerData data = PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player).savedData;
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
@@ -130,7 +125,7 @@ public class StatsCommand {
 
         if(playerData.gameMode == PlayerGameMode.BEDWARS){
             message = ChatFormat.separatorLine("Bedwars Stats");
-            SavedPlayerData data = PlayerDataManager.getDataManager(BwGame.BEDWARS_DATA_MANAGER).get(player).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.BEDWARS_DATA_MANAGER).get(player).savedData;
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
@@ -149,7 +144,7 @@ public class StatsCommand {
 
         if(playerData.gameMode == PlayerGameMode.OITC){
             message = ChatFormat.separatorLine("OITC Stats");
-            SavedPlayerData data = PlayerDataManager.getDataManager(OitcGame.OITC_DATA_MANAGER).get(player).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.OITC_DATA_MANAGER).get(player).savedData;
 
             player.sendMessage(message);
             player.sendMessage(user);
@@ -169,7 +164,7 @@ public class StatsCommand {
 
         if(playerData.gameMode == PlayerGameMode.FOOTBALL){
             message = ChatFormat.separatorLine("Football Stats");
-            SavedPlayerData data = PlayerDataManager.getDataManager(FootballGame.FOOTBALL_DATA_MANAGER).get(player).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.FOOTBALL_DATA_MANAGER).get(player).savedData;
 
             player.sendMessage(message);
             player.sendMessage(user);
@@ -189,7 +184,7 @@ public class StatsCommand {
 
         if(playerData.gameMode == PlayerGameMode.SKYWARS){
             message = ChatFormat.separatorLine("SkyWars Stats");
-            SavedPlayerData data = PlayerDataManager.getDataManager(SkywarsGame.SKYWARS_DATA_MANAGER).get(player).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.SKYWARS_DATA_MANAGER).get(player).savedData;
 
             player.sendMessage(message);
             player.sendMessage(user);
@@ -232,23 +227,23 @@ public class StatsCommand {
 
         if (gamemode.equalsIgnoreCase("ffa classic") || gamemode.equalsIgnoreCase("kit ffa") || gamemode.equalsIgnoreCase("sky ffa") || gamemode.equalsIgnoreCase("uhc ffa")){
             message = ChatFormat.separatorLine("FFA Classic Stats");
-            SavedPlayerData data = PlayerDataManager.getDataManager(NexiaFfa.FFA_CLASSIC_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.FFA_CLASSIC_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
 
             long rating = Math.round(data.get(Double.class, "rating") * 100);
 
             if (gamemode.equalsIgnoreCase("kit ffa")) {
                 message = ChatFormat.separatorLine("Kit FFA Stats");
-                data = PlayerDataManager.getDataManager(NexiaFfa.FFA_KITS_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
+                data = PlayerDataManager.getDataManager(NexiaCore.FFA_KITS_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
             }
 
             if (gamemode.equalsIgnoreCase("sky ffa")) {
                 message = ChatFormat.separatorLine("Sky FFA Stats");
-                data = PlayerDataManager.getDataManager(NexiaFfa.FFA_SKY_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
+                data = PlayerDataManager.getDataManager(NexiaCore.FFA_SKY_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
             }
 
             if (gamemode.equalsIgnoreCase("uhc ffa")) {
                 message = ChatFormat.separatorLine("UHC FFA Stats");
-                data = PlayerDataManager.getDataManager(NexiaFfa.FFA_UHC_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
+                data = PlayerDataManager.getDataManager(NexiaCore.FFA_UHC_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
             }
 
             int kills = data.get(Integer.class, "kills");
@@ -289,7 +284,7 @@ public class StatsCommand {
 
         if(gamemode.equalsIgnoreCase("duels")){
             message = ChatFormat.separatorLine("Duels Stats");
-            SavedPlayerData data = PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
             source.sendMessage(message);
             source.sendMessage(user);
             source.sendMessage(start
@@ -305,7 +300,7 @@ public class StatsCommand {
 
         if(gamemode.equalsIgnoreCase("bedwars")){
             message = ChatFormat.separatorLine("Bedwars Stats");
-            SavedPlayerData data = PlayerDataManager.getDataManager(BwGame.BEDWARS_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.BEDWARS_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
             source.sendMessage(message);
             source.sendMessage(user);
             source.sendMessage(start
@@ -324,7 +319,7 @@ public class StatsCommand {
 
         if(gamemode.equalsIgnoreCase("oitc")){
             message = ChatFormat.separatorLine("OITC Stats");
-            SavedPlayerData data = PlayerDataManager.getDataManager(OitcGame.OITC_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.OITC_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
 
             source.sendMessage(message);
             source.sendMessage(user);
@@ -344,7 +339,7 @@ public class StatsCommand {
 
         if(gamemode.equalsIgnoreCase("football")){
             message = ChatFormat.separatorLine("Football Stats");
-            SavedPlayerData data = PlayerDataManager.getDataManager(FootballGame.FOOTBALL_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.FOOTBALL_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
 
             source.sendMessage(message);
             source.sendMessage(user);
@@ -364,7 +359,7 @@ public class StatsCommand {
 
         if(gamemode.equalsIgnoreCase("skywars")){
             message = ChatFormat.separatorLine("SkyWars Stats");
-            SavedPlayerData data = PlayerDataManager.getDataManager(SkywarsGame.SKYWARS_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
+            SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.SKYWARS_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
 
             source.sendMessage(message);
             source.sendMessage(user);
