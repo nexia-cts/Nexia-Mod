@@ -90,7 +90,7 @@ public class SkywarsGame {
 
     private static int endTime = 5;
 
-    public static CustomBossEvent BOSSBAR = ServerTime.minecraftServer.getCustomBossEvents().get(new ResourceLocation("skywars", "timer"));
+    public static CustomBossEvent BOSSBAR;
 
     public static void leave(NexiaPlayer player) {
         SkywarsGame.death(player, player.unwrap().getLastDamageSource());
@@ -441,6 +441,7 @@ public class SkywarsGame {
 
     public static void firstTick(){
         SkywarsGame.resetAll();
+        ServerTime.minecraftServer.getCustomBossEvents().get(new ResourceLocation("skywars", "timer"));
     }
 
     public static ArrayList<NexiaPlayer> getViewers() {
