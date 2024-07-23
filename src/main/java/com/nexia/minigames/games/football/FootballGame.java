@@ -1,7 +1,7 @@
 package com.nexia.minigames.games.football;
 
 import com.nexia.base.player.PlayerDataManager;
-import com.nexia.core.Main;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -76,7 +76,7 @@ public class FootballGame {
 
 
     public static void leave(NexiaPlayer player) {
-        FootballPlayerData data = (FootballPlayerData) PlayerDataManager.getDataManager(Main.FOOTBALL_DATA_MANAGER).get(player);
+        FootballPlayerData data = (FootballPlayerData) PlayerDataManager.getDataManager(NexiaCore.FOOTBALL_DATA_MANAGER).get(player);
         FootballGame.spectator.remove(player);
         FootballGame.queue.remove(player);
         FootballGame.players.remove(player);
@@ -177,14 +177,14 @@ public class FootballGame {
 
         if(!FootballGame.isEnding) {
             ServerPlayer closestPlayer = (ServerPlayer) FootballGame.world.getNearestPlayer(entity.getX(), entity.getY(), entity.getZ(), 20, e -> e instanceof ServerPlayer se && !se.isSpectator() && !se.isCreative() && team.players.contains(new NexiaPlayer(se)));
-            if(closestPlayer != null) PlayerDataManager.getDataManager(Main.FOOTBALL_DATA_MANAGER).get(closestPlayer.getUUID()).savedData.incrementInteger("goals");
+            if(closestPlayer != null) PlayerDataManager.getDataManager(NexiaCore.FOOTBALL_DATA_MANAGER).get(closestPlayer.getUUID()).savedData.incrementInteger("goals");
             team.goals++;
             if(team.goals >= FootballGame.map.maxGoals) FootballGame.endGame(team);
         }
 
         FootballGame.updateInfo();
 
-        //PlayerDataManager.getDataManager(Main.FOOTBALL_DATA_MANAGER).get(scorer.get()).savedData.goals++;
+        //PlayerDataManager.getDataManager(NexiaCore.FOOTBALL_DATA_MANAGER).get(scorer.get()).savedData.goals++;
 
         int teamID = 1;
         if(team == FootballGame.team2) teamID = 2;
@@ -224,12 +224,12 @@ public class FootballGame {
     }
 
     public static void joinQueue(NexiaPlayer player) {
-        FootballPlayerData data = (FootballPlayerData) PlayerDataManager.getDataManager(Main.FOOTBALL_DATA_MANAGER).get(player);
+        FootballPlayerData data = (FootballPlayerData) PlayerDataManager.getDataManager(NexiaCore.FOOTBALL_DATA_MANAGER).get(player);
         data.team = null;
 
         if(FootballGame.isStarted){
             FootballGame.spectator.add(player);
-            ((FootballPlayerData)PlayerDataManager.getDataManager(Main.FOOTBALL_DATA_MANAGER).get(player)).gameMode = FootballGameMode.SPECTATOR;
+            ((FootballPlayerData)PlayerDataManager.getDataManager(NexiaCore.FOOTBALL_DATA_MANAGER).get(player)).gameMode = FootballGameMode.SPECTATOR;
             player.setGameMode(Minecraft.GameMode.SPECTATOR);
         } else {
             FootballGame.queue.add(player);
@@ -263,7 +263,7 @@ public class FootballGame {
 
         for(NexiaPlayer player : winnerTeam.players) {
             player.sendTitle(Title.title(Component.text("You won!").color(ChatFormat.greenColor), Component.text("")));
-            PlayerDataManager.getDataManager(Main.FOOTBALL_DATA_MANAGER).get(player).savedData.incrementInteger("wins");
+            PlayerDataManager.getDataManager(NexiaCore.FOOTBALL_DATA_MANAGER).get(player).savedData.incrementInteger("wins");
         }
 
         for(NexiaPlayer player : FootballGame.getViewers()){
@@ -276,7 +276,7 @@ public class FootballGame {
         String[] timer = TickUtil.minuteTimeStamp(FootballGame.gameTime * 20);
         for(NexiaPlayer player : FootballGame.getViewers()) {
             if(player == null) return;
-            FootballTeam playerTeam = ((FootballPlayerData)PlayerDataManager.getDataManager(Main.FOOTBALL_DATA_MANAGER).get(player)).team;
+            FootballTeam playerTeam = ((FootballPlayerData)PlayerDataManager.getDataManager(NexiaCore.FOOTBALL_DATA_MANAGER).get(player)).team;
             if(playerTeam == null) playerTeam = FootballGame.team1; // maybe cuz spectator
             FootballTeam otherTeam = FootballGame.team1;
             if(playerTeam.equals(FootballGame.team1)) otherTeam = FootballGame.team2;
@@ -394,7 +394,7 @@ public class FootballGame {
                 //NexiaPlayer.inventory.setItem(1, kicking);
                 player.unwrap().inventory.setItem(0, kicking);
 
-                FootballPlayerData data = (FootballPlayerData) PlayerDataManager.getDataManager(Main.FOOTBALL_DATA_MANAGER).get(player);
+                FootballPlayerData data = (FootballPlayerData) PlayerDataManager.getDataManager(NexiaCore.FOOTBALL_DATA_MANAGER).get(player);
                 data.gameMode = FootballGameMode.PLAYING;
 
                 player.addTag("in_football_game");
@@ -453,7 +453,7 @@ public class FootballGame {
     }
 
     public static boolean isFootballPlayer(NexiaPlayer player){
-        return ((CorePlayerData)PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player)).gameMode == PlayerGameMode.FOOTBALL || player.hasTag("football") || player.hasTag("in_football_game");
+        return ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).gameMode == PlayerGameMode.FOOTBALL || player.hasTag("football") || player.hasTag("in_football_game");
     }
 
     public static void resetAll() {

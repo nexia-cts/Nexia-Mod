@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.base.player.PlayerDataManager;
-import com.nexia.core.Main;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
@@ -21,7 +21,7 @@ public class LinkCommand {
         dispatcher.register(CommandUtils.literal("link")
                 .requires(commandSourceInfo -> {
                     try {
-                        return !PlayerDataManager.getDataManager(Main.DISCORD_DATA_MANAGER).get(commandSourceInfo.getPlayerOrException().getUUID()).savedData.get(Boolean.class, "isLinked");
+                        return !PlayerDataManager.getDataManager(NexiaCore.DISCORD_DATA_MANAGER).get(commandSourceInfo.getPlayerOrException().getUUID()).savedData.get(Boolean.class, "isLinked");
                     } catch (Exception ignored) {
                     }
                     return false;

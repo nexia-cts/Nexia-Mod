@@ -31,7 +31,6 @@ public abstract class ItemFrameMixin extends Entity {
         // Disable interacting with item frames
         if ((FfaUtil.isFfaPlayer(nexiaPlayer) || KitRoom.isInKitRoom(nexiaPlayer)) && !player.isCreative()) {
             cir.setReturnValue(InteractionResult.FAIL);
-            return;
         }
 
     }

@@ -1,8 +1,12 @@
 package com.nexia.core.mixin.player;
 
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.misc.EventUtil;
+import com.nexia.core.utilities.player.CorePlayerData;
+import com.nexia.core.utilities.player.CoreSavedPlayerData;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
@@ -13,6 +17,7 @@ import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
+import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -77,7 +82,7 @@ public abstract class PlayerMixin extends LivingEntity {
 
         if((com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.sky.utilities.FfaAreas.isInFfaSpawn(nexiaPlayer))
                 || (com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(nexiaPlayer))
-                || (com.nexia.core.utilities.player.PlayerDataManager.get(nexiaPlayer).gameMode.equals(PlayerGameMode.LOBBY) && PlayerDataManager.get(nexiaPlayer).gameMode.equals(DuelGameMode.LOBBY))) {
+                || (((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(nexiaPlayer)).gameMode.equals(PlayerGameMode.LOBBY) && ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(nexiaPlayer)).gameMode.equals(DuelGameMode.LOBBY))) {
             cir.setReturnValue(false);
             nexiaPlayer.refreshInventory();
         }
@@ -129,7 +134,7 @@ public abstract class PlayerMixin extends LivingEntity {
 
             /*
             DuelsTeam team = PlayerDataManager.get(player).duelOptions.duelsTeam;
-            if(team != null && team.all.contains(AccuratePlayer.create(attacker)) && com.nexia.core.utilities.player.PlayerDataManager.get(player).gameMode == PlayerGameMode.LOBBY) {
+            if(team != null && team.all.contains(AccuratePlayer.create(attacker)) && PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player).gameMode == PlayerGameMode.LOBBY) {
                 cir.setReturnValue(false);
             }
             */
@@ -180,7 +185,6 @@ public abstract class PlayerMixin extends LivingEntity {
         if (!EventUtil.dropItem(nexiaPlayer, dropped)) {
             cir.setReturnValue(false);
             nexiaPlayer.refreshInventory();
-            return;
         }
 
     }
@@ -199,7 +203,7 @@ public abstract class PlayerMixin extends LivingEntity {
 
     @ModifyArg(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;setSprinting(Z)V"))
     public boolean setSprintFix(boolean par1) {
-        return com.nexia.core.utilities.player.PlayerDataManager.get(new NexiaPlayer((ServerPlayer) (Object) this)).savedData.isSprintFix();
+        return ((CoreSavedPlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(new NexiaPlayer((ServerPlayer) (Object) this)).savedData).isSprintFix();
     }
 
     @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)

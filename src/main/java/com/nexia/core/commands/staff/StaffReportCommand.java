@@ -1,7 +1,7 @@
 package com.nexia.core.commands.staff;
 
 import com.nexia.base.player.PlayerDataManager;
-import com.nexia.core.Main;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.player.CoreSavedPlayerData;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.nexus.api.command.CommandUtils;
@@ -31,7 +31,7 @@ public class StaffReportCommand {
                                     ServerPlayer mcOtherPlayer = context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()));
                                     NexiaPlayer otherPlayer = new NexiaPlayer(mcOtherPlayer);
 
-                                    CorePlayerData data = (CorePlayerData) PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(mcOtherPlayer.getUUID());
+                                    CorePlayerData data = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(mcOtherPlayer.getUUID());
 
                                     if(type.equalsIgnoreCase("ban")) {
                                         if(((CoreSavedPlayerData)data.savedData).isReportBanned()) {

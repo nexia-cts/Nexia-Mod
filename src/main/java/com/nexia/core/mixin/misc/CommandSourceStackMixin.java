@@ -26,7 +26,6 @@ public class CommandSourceStackMixin {
         // If sourced from datapack
         if (source instanceof MinecraftServer && entity != null) {
             ci.cancel();
-            return;
         }
     }
 }

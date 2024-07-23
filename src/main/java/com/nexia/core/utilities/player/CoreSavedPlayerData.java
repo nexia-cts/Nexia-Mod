@@ -48,7 +48,7 @@ public class CoreSavedPlayerData extends SavedPlayerData {
     }
 
     public String getMuteReason() {
-        return get(String.class, "muteEnd");
+        return get(String.class, "muteReason");
     }
 
     public String setMuteReason(String muteReason) {

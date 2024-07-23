@@ -2,6 +2,7 @@ package com.nexia.core.listeners.nexus;
 
 import com.nexia.base.player.PlayerData;
 import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.ffa.classic.utilities.RatingUtil;
 import com.nexia.nexus.api.event.player.PlayerJoinEvent;
@@ -11,7 +12,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.discord.Main;
+import com.nexia.discord.NexiaDiscord;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.kyori.adventure.text.Component;
@@ -21,7 +22,7 @@ import net.kyori.adventure.text.format.TextColor;
 
 import java.util.Objects;
 
-import static com.nexia.discord.Main.jda;
+import static com.nexia.discord.NexiaDiscord.jda;
 
 public class PlayerJoinListener {
     public void registerListener() {
@@ -77,22 +78,22 @@ public class PlayerJoinListener {
         player.sendMessage(
                 Component.text(" » ").color(ChatFormat.brandColor2)
                                 .append(Component.text("Join our discord: ").color(ChatFormat.normalColor))
-                                        .append(Component.text(com.nexia.discord.Main.config.discordLink)
+                                        .append(Component.text(NexiaDiscord.config.discordLink)
                                                 .color(ChatFormat.brandColor2)
                                                 .hoverEvent(HoverEvent.showText(Component.text("Click me").color(TextColor.fromHexString("#73ff54"))))
-                                                .clickEvent(ClickEvent.openUrl(com.nexia.discord.Main.config.discordLink))
+                                                .clickEvent(ClickEvent.openUrl(NexiaDiscord.config.discordLink))
                                         )
         );
         player.sendMessage(ChatFormat.separatorLine(null));
     }
 
     private static void checkBooster(NexiaPlayer player) {
-        PlayerData playerData = PlayerDataManager.getDataManager(com.nexia.core.Main.DISCORD_DATA_MANAGER).get(player.getUUID());
+        PlayerData playerData = PlayerDataManager.getDataManager(NexiaCore.DISCORD_DATA_MANAGER).get(player.getUUID());
         if(!playerData.savedData.get(Boolean.class, "isLinked")) { return; }
         Member discordUser = null;
 
         try {
-            discordUser = Objects.requireNonNull(jda.getGuildById(Main.config.guildID)).retrieveMemberById(playerData.savedData.get(Long.class, "discordID")).complete(true);
+            discordUser = Objects.requireNonNull(jda.getGuildById(NexiaDiscord.config.guildID)).retrieveMemberById(playerData.savedData.get(Long.class, "discordID")).complete(true);
         } catch (Exception ignored) { }
 
         if(discordUser == null) {
@@ -126,7 +127,7 @@ public class PlayerJoinListener {
     }
 
     private static void processJoin(NexiaPlayer player) {
-        if(((CorePlayerData)PlayerDataManager.getDataManager(com.nexia.core.Main.CORE_DATA_MANAGER).get(player)).clientType.equals(CorePlayerData.ClientType.VIAFABRICPLUS)) return;
+        if(((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).clientType.equals(CorePlayerData.ClientType.VIAFABRICPLUS)) return;
 
         PlayerDataManager.dataManagerMap.forEach((resourceLocation, playerDataManager) -> playerDataManager.addPlayerData(player));
 

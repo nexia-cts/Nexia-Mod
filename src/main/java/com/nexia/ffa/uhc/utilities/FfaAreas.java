@@ -1,5 +1,6 @@
 package com.nexia.ffa.uhc.utilities;
 
+import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
@@ -47,7 +48,7 @@ public class FfaAreas {
 
         map.pasteMap(ffaWorld);
 
-        if(com.nexia.core.Main.config.debugMode) com.nexia.core.Main.logger.info("[DEBUG]: Uhc FFA Map has been reset.");
+        if(NexiaCore.config.debugMode) NexiaCore.logger.info("[DEBUG]: Uhc FFA Map has been reset.");
 
         if(announce){
             for(Entity entity : WorldUtil.getWorld(ffaWorld).getEntities()) {

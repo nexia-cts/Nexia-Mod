@@ -6,7 +6,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.discord.Main;
+import com.nexia.discord.NexiaDiscord;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -22,9 +22,9 @@ public class DiscordCommand {
         context.getSource().sendMessage(
                 ChatFormat.nexiaMessage
                                 .append(Component.text("Link to discord: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                                        .append(Component.text(com.nexia.discord.Main.config.discordLink).color(ChatFormat.brandColor2)
+                                        .append(Component.text(NexiaDiscord.config.discordLink).color(ChatFormat.brandColor2)
                                                 .hoverEvent(HoverEvent.showText(Component.text("Click me").color(ChatFormat.greenColor)))
-                                                .clickEvent(ClickEvent.openUrl(Main.config.discordLink)))
+                                                .clickEvent(ClickEvent.openUrl(NexiaDiscord.config.discordLink)))
         ));
 
         return 1;

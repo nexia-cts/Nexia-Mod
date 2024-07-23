@@ -4,7 +4,6 @@ import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.pos.PositionUtil;
 import com.nexia.core.utilities.world.WorldUtil;
-import com.nexia.ffa.Main;
 import com.nexia.nexus.api.world.World;
 import com.nexia.nexus.api.world.util.Location;
 import net.minecraft.core.BlockPos;

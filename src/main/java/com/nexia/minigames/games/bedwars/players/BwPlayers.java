@@ -1,7 +1,7 @@
 package com.nexia.minigames.games.bedwars.players;
 
 import com.nexia.base.player.PlayerDataManager;
-import com.nexia.core.Main;
+import com.nexia.core.NexiaCore;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
@@ -30,7 +30,7 @@ public class BwPlayers {
     public static final String BED_WARS_IN_GAME_TAG = "in_bedwars";
 
     private static void setInBedWars(NexiaPlayer player) {
-        CorePlayerData playerData = (CorePlayerData) PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player);
+        CorePlayerData playerData = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player);
 
         playerData.gameMode = PlayerGameMode.BEDWARS;
         player.addTag(BwPlayers.BED_WARS_IN_GAME_TAG);
@@ -71,7 +71,7 @@ public class BwPlayers {
                 nexiaPlayers.sendMessage(eliminationMessage);
             }
 
-            PlayerDataManager.getDataManager(Main.BEDWARS_DATA_MANAGER).get(player).savedData.incrementInteger("losses");
+            PlayerDataManager.getDataManager(NexiaCore.BEDWARS_DATA_MANAGER).get(player).savedData.incrementInteger("losses");
             team.players.remove(player);
 
             ServerLevel world = BwAreas.bedWarsWorld;

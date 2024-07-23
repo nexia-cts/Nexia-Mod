@@ -28,13 +28,13 @@
   "accessWidener" : "nexia.accesswidener",
   "entrypoints": {
     "main": [
-      "com.nexia.core.Main",
-      "com.nexia.ffa.Main",
-      "com.nexia.minigames.Main",
-      "com.nexia.discord.Main"
+      "com.nexia.core.NexiaCore",
+      "com.nexia.ffa.NexiaFfa",
+      "com.nexia.minigames.NexiaMinigames",
+      "com.nexia.discord.NexiaDiscord"
     ],
     "nexus": [
-      "com.nexia.core.Main"
+      "com.nexia.core.NexiaCore"
     ]
   },
   "mixins": [

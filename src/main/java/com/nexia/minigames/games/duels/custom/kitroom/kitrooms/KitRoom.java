@@ -1,7 +1,7 @@
 package com.nexia.minigames.games.duels.custom.kitroom.kitrooms;
 
 import com.nexia.base.player.PlayerDataManager;
-import com.nexia.core.Main;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.world.WorldUtil;
@@ -51,7 +51,7 @@ public class KitRoom {
     }
 
     public static boolean isInKitRoom(NexiaPlayer player) {
-        return ((DuelsPlayerData)PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player)).kitRoom != null && !((DuelsPlayerData)PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player)).editingKit.isEmpty();
+        return ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).kitRoom != null && !((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).editingKit.isEmpty();
     }
 
     public StructureMap getKitRoom() {
@@ -83,7 +83,7 @@ public class KitRoom {
                 .setGameRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS, false)
                 .setTimeOfDay(6000);
 
-        if(Main.config.debugMode) Main.logger.info("[DEBUG]: Created world: kitroom:{}", uuid);
+        if(NexiaCore.config.debugMode) NexiaCore.logger.info("[DEBUG]: Created world: kitroom:{}", uuid);
 
         this.handle = ServerTime.fantasy.openTemporaryWorld(config, new ResourceLocation("kitroom", String.valueOf(uuid)));
         this.level = this.handle.asWorld();
@@ -105,7 +105,7 @@ public class KitRoom {
     }
 
     public void leave() {
-        ((DuelsPlayerData)PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(this.player)).kitRoom = null;
+        ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(this.player)).kitRoom = null;
         this.player.reset(true, Minecraft.GameMode.ADVENTURE);
         this.delete();
     }

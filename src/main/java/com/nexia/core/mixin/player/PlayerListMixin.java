@@ -2,7 +2,7 @@ package com.nexia.core.mixin.player;
 
 import com.mojang.authlib.GameProfile;
 import com.nexia.base.player.PlayerDataManager;
-import com.nexia.core.Main;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
@@ -10,6 +10,7 @@ import com.nexia.core.utilities.player.BanHandler;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.discord.NexiaDiscord;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
@@ -82,7 +83,7 @@ public abstract class PlayerListMixin {
 
         if(key.contains("multiplayer.player.join")) {
             if(joinPlayer.getTags().contains("bot")) ci.cancel();
-            if(((CorePlayerData)PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(joinPlayer.getUUID())).clientType.equals(CorePlayerData.ClientType.VIAFABRICPLUS)) {
+            if(((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(joinPlayer.getUUID())).clientType.equals(CorePlayerData.ClientType.VIAFABRICPLUS)) {
                 joinPlayer.addTag("viafabricplus");
                 ci.cancel();
             }
@@ -163,7 +164,7 @@ public abstract class PlayerListMixin {
             String textBanTime = banTimeToText(banTime);
 
             if(LocalDateTime.now().isBefore(banTime)){
-                cir.setReturnValue(new TextComponent("§c§lYou have been banned.\n§7Duration: §d" + textBanTime + "\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + com.nexia.discord.Main.config.discordLink));
+                cir.setReturnValue(new TextComponent("§c§lYou have been banned.\n§7Duration: §d" + textBanTime + "\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + NexiaDiscord.config.discordLink));
             } else {
                 BanHandler.removeBanFromList(gameProfile);
             }

@@ -1,10 +1,13 @@
 package com.nexia.core.mixin.player;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.misc.EventUtil;
+import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaUtil;
@@ -91,7 +94,6 @@ public class ServerGamePacketListenerMixin {
                 ci.cancel();
                 BlockPos blockPos = packet.getHitResult().getBlockPos().relative(packet.getHitResult().getDirection());
                 player.connection.send(new ClientboundBlockUpdatePacket(blockPos, player.level.getBlockState(blockPos)));
-                return;
             }
         }
 
@@ -166,7 +168,6 @@ public class ServerGamePacketListenerMixin {
                 !EventUtil.dropItem(nexiaPlayer, inv.getItem(player.inventory.selected))) {
             player.connection.send(new ClientboundContainerSetSlotPacket(0, 36 + inv.selected, inv.getSelected()));
             ci.cancel();
-            return;
         }
     }
 
@@ -183,7 +184,7 @@ public class ServerGamePacketListenerMixin {
             }
         }
 
-        if (PlayerDataManager.get(nexiaPlayer).gameMode == PlayerGameMode.LOBBY) {
+        if (((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(nexiaPlayer)).gameMode == PlayerGameMode.LOBBY) {
             ci.cancel();
             return;
         }

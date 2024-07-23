@@ -2,7 +2,7 @@ package com.nexia.ffa.sky.utilities;
 
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.base.player.SavedPlayerData;
-import com.nexia.core.Main;
+import com.nexia.core.NexiaCore;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.google.gson.Gson;
 import com.nexia.core.games.util.LobbyUtil;
@@ -64,7 +64,7 @@ public class FfaSkyUtil {
     public static final HashMap<Integer, ItemStack> killRewards = new HashMap<>();
 
     public static boolean isFfaPlayer(NexiaPlayer player) {
-        CorePlayerData data = (CorePlayerData) PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player);
+        CorePlayerData data = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player);
         return player.hasTag("ffa_sky") && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == FfaGameMode.SKY;
     }
 
@@ -104,7 +104,7 @@ public class FfaSkyUtil {
         String stringInventory = savableInventory.toSave();
 
         try {
-            String file = PlayerDataManager.getDataManager(Main.FFA_SKY_DATA_MANAGER).getDataDirectory() + "/inventory/savedInventories/" + player.getUUID() + ".json";
+            String file = PlayerDataManager.getDataManager(NexiaCore.FFA_SKY_DATA_MANAGER).getDataDirectory() + "/inventory/savedInventories/" + player.getUUID() + ".json";
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(stringInventory);
             fileWriter.close();
@@ -132,7 +132,7 @@ public class FfaSkyUtil {
         SavableInventory layout = null;
 
         try {
-            String file = PlayerDataManager.getDataManager(Main.FFA_SKY_DATA_MANAGER).getDataDirectory() + "/inventory";
+            String file = PlayerDataManager.getDataManager(NexiaCore.FFA_SKY_DATA_MANAGER).getDataDirectory() + "/inventory";
             String defaultJson = Files.readString(Path.of(file + "/default.json"));
             Gson gson = new Gson();
             defaultInventory = gson.fromJson(defaultJson, SavableInventory.class);
@@ -205,7 +205,7 @@ public class FfaSkyUtil {
         if(attacker != null) {
             NexiaPlayer nexiaPlayer = new NexiaPlayer(attacker);
             if(!nexiaPlayer.equals(player)) {
-                SavedPlayerData data = PlayerDataManager.getDataManager(Main.FFA_SKY_DATA_MANAGER).get(nexiaPlayer).savedData;
+                SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.FFA_SKY_DATA_MANAGER).get(nexiaPlayer).savedData;
 
                 data.incrementInteger("killstreak");
                 int killstreak = data.get(Integer.class, "killstreak");
@@ -220,7 +220,7 @@ public class FfaSkyUtil {
         FfaSkyUtil.clearEnderpearls(player);
         FfaSkyUtil.clearArrows(player);
 
-        SavedPlayerData data = PlayerDataManager.getDataManager(Main.FFA_SKY_DATA_MANAGER).get(player).savedData;
+        SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.FFA_SKY_DATA_MANAGER).get(player).savedData;
         data.incrementInteger("deaths");
         int killstreak = data.get(Integer.class, "killstreak");
         if (killstreak > data.get(Integer.class, "bestKillstreak"))

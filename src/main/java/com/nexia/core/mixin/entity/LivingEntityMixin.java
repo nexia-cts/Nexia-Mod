@@ -1,6 +1,9 @@
 package com.nexia.core.mixin.entity;
 
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,7 +35,7 @@ public abstract class LivingEntityMixin {
     @ModifyArg(method = "hurt", index = 1, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;actuallyHurt(Lnet/minecraft/world/damagesource/DamageSource;F)V"))
     protected float hurt(DamageSource damageSource, float value) {
         if((Object) this instanceof ServerPlayer player) {
-            if(PlayerDataManager.get(player.getUUID()).gameMode == PlayerGameMode.LOBBY) {
+            if(((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player.getUUID())).gameMode == PlayerGameMode.LOBBY) {
                 return value;
             }
         }
@@ -50,11 +53,8 @@ public abstract class LivingEntityMixin {
         double g = this.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
         ItemStack itemStack = this.getBlockingItem();
         if (!itemStack.isEmpty()) {
-            if(instance instanceof Player) {
-                g = Math.min(1.0, 1-(1-g)*(1-(double) ShieldItem.getShieldKnockbackResistanceValue(itemStack)));
-            } else {
-                g = Math.min(1.0, g + (double) ShieldItem.getShieldKnockbackResistanceValue(itemStack));
-            }
+            if (instance instanceof Player) g = Math.min(1.0, 1-(1-g)*(1-(double) ShieldItem.getShieldKnockbackResistanceValue(itemStack)));
+            else g = Math.min(1.0, g + (double) ShieldItem.getShieldKnockbackResistanceValue(itemStack));
         }
 
         f = (float)((double)f * (1.0 - g));

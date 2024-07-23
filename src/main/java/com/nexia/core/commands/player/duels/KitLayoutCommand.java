@@ -5,7 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.base.player.PlayerDataManager;
-import com.nexia.core.Main;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
@@ -34,8 +34,8 @@ public class KitLayoutCommand {
                     try {
                         NexiaPlayer player = new NexiaPlayer(commandSourceInfo.getPlayerOrException());
 
-                        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player);
-                        CorePlayerData playerData1 = (CorePlayerData) PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player);
+                        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+                        CorePlayerData playerData1 = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player);
                         return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
                     } catch (Exception ignored) {}
                     return false;
@@ -62,12 +62,12 @@ public class KitLayoutCommand {
 
         if(argument.equalsIgnoreCase("save")) {
 
-            if(((DuelsPlayerData)PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player)).editingLayout.isEmpty()) {
+            if(((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).editingLayout.isEmpty()) {
                 player.sendMessage(Component.text("You aren't editing a layout!", ChatFormat.failColor));
                 return 0;
             }
 
-            inventory = ((DuelsPlayerData)PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player)).editingLayout;
+            inventory = ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).editingLayout;
 
             String path = InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + player.getUUID() + File.separator + "layout";
             Path playerPath = Path.of(path);
@@ -98,14 +98,14 @@ public class KitLayoutCommand {
 
         if (argument.equalsIgnoreCase("edit")) {
 
-            if(!((DuelsPlayerData)PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player)).editingLayout.isEmpty()) {
+            if(!((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).editingLayout.isEmpty()) {
                 player.sendMessage(Component.text("You are still editing a layuot! Save it run or run /hub!", ChatFormat.failColor));
                 return 0;
             }
 
             DuelGameHandler.loadInventory(player, inventory);
 
-            ((DuelsPlayerData)PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player)).editingLayout = inventory;
+            ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).editingLayout = inventory;
 
             return 1;
         }

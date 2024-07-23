@@ -77,7 +77,7 @@ public abstract class EntityMixin implements Nameable, CommandSource {
                 double e = entity.getZ() - this.getZ();
                 double f = Mth.absMax(d, e);
                 if (f >= 0.009999999776482582) {
-                    f = (double)Mth.sqrt(f);
+                    f = Mth.sqrt(f);
                     d /= f;
                     e /= f;
                     double g = 1.0 / f;

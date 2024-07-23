@@ -1,7 +1,7 @@
 package com.nexia.ffa.kits;
 
 import com.nexia.base.player.PlayerDataManager;
-import com.nexia.core.Main;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
@@ -50,7 +50,7 @@ public class FfaKit {
     }
 
     public void giveKit(NexiaPlayer player, boolean clearEffect) {
-        ((KitFFAPlayerData)PlayerDataManager.getDataManager(Main.FFA_KITS_DATA_MANAGER).get(player)).kit = this;
+        ((KitFFAPlayerData)PlayerDataManager.getDataManager(NexiaCore.FFA_KITS_DATA_MANAGER).get(player)).kit = this;
 
         if (clearEffect) player.clearEffects();
 

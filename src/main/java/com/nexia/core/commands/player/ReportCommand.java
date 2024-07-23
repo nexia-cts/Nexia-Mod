@@ -2,6 +2,7 @@ package com.nexia.core.commands.player;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.player.CoreSavedPlayerData;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.nexus.api.command.CommandUtils;
@@ -13,7 +14,7 @@ import com.nexia.core.utilities.http.DiscordWebhook;
 import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.discord.Main;
+import com.nexia.discord.NexiaDiscord;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -25,7 +26,7 @@ import java.awt.*;
 public class ReportCommand {
 
     private static boolean sendWebhook(String reporter, String victim, String reason){
-        DiscordWebhook webhook = new DiscordWebhook(Main.config.reportWebhook);
+        DiscordWebhook webhook = new DiscordWebhook(NexiaDiscord.config.reportWebhook);
         webhook.addEmbed(new DiscordWebhook.EmbedObject()
                 .setAuthor((reporter + " reported " + victim), null, null)
                 .setColor(Color.RED)
@@ -57,7 +58,7 @@ public class ReportCommand {
     public static int report(CommandContext<CommandSourceInfo> context, ServerPlayer player, String reason) throws CommandSyntaxException {
         NexiaPlayer executor = new NexiaPlayer(context.getSource().getPlayerOrException());
 
-        if(((CoreSavedPlayerData)PlayerDataManager.getDataManager(com.nexia.core.Main.CORE_DATA_MANAGER).get(executor).savedData).isReportBanned()) {
+        if(((CoreSavedPlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(executor).savedData).isReportBanned()) {
             executor.sendMessage(
                     ChatFormat.nexiaMessage
                             .append(Component.text("You are report banned!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false)

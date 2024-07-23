@@ -1,7 +1,7 @@
 package com.nexia.minigames.games.bedwars;
 
 import com.nexia.base.player.PlayerDataManager;
-import com.nexia.core.Main;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.NxFileUtil;
@@ -295,12 +295,12 @@ public class BwGame {
             BwTeam winnerTeam = aliveTeams.getFirst();
             String whoWon;
             if (winnerTeam.players.size() == 1) {
-                PlayerDataManager.getDataManager(Main.BEDWARS_DATA_MANAGER).get(winnerTeam.players.stream().findFirst().get()).savedData.incrementInteger("wins");
+                PlayerDataManager.getDataManager(NexiaCore.BEDWARS_DATA_MANAGER).get(winnerTeam.players.stream().findFirst().get()).savedData.incrementInteger("wins");
                 whoWon = winnerTeam.textColor + winnerTeam.players.getFirst().getRawName();
             } else {
                 whoWon = winnerTeam.textColor + winnerTeam.displayName + " team";
                 for(NexiaPlayer player : winnerTeam.players) {
-                    PlayerDataManager.getDataManager(Main.BEDWARS_DATA_MANAGER).get(player).savedData.incrementInteger("wins");
+                    PlayerDataManager.getDataManager(NexiaCore.BEDWARS_DATA_MANAGER).get(player).savedData.incrementInteger("wins");
                 }
             }
 
@@ -370,7 +370,7 @@ public class BwGame {
                 BwScoreboard.removeScoreboardFor(player);
             }
         } catch (Exception exception) {
-            if(Main.config.debugMode) Main.logger.error(exception.getMessage());
+            if(NexiaCore.config.debugMode) NexiaCore.logger.error(exception.getMessage());
         }
 
         spectatorList.clear();

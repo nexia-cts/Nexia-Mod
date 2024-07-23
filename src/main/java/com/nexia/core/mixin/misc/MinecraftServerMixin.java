@@ -52,7 +52,6 @@ public abstract class MinecraftServerMixin {
     @Inject(method = "isUnderSpawnProtection", at = @At("HEAD"), cancellable = true)
     private void noSpawnProtection(ServerLevel serverLevel, BlockPos blockPos, Player player, CallbackInfoReturnable<Boolean> cir) {
         cir.setReturnValue(false);
-        return;
     }
 
     @ModifyArg(method = "tickServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/status/ServerStatus$Players;setSample([Lcom/mojang/authlib/GameProfile;)V"))

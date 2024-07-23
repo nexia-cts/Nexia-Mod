@@ -2,7 +2,7 @@ package com.nexia.minigames.games.duels;
 
 import com.google.gson.Gson;
 import com.nexia.base.player.PlayerDataManager;
-import com.nexia.core.Main;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
@@ -108,7 +108,7 @@ public class DuelGameHandler {
     }
 
     public static void leave(NexiaPlayer player, boolean leaveTeam) {
-        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player);
+        DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
         data.gameMode = DuelGameMode.LOBBY;
         if (data.gameOptions != null && data.gameOptions.duelsGame != null) {
             data.gameOptions.duelsGame.death(player, player.unwrap().getLastDamageSource());
@@ -146,7 +146,7 @@ public class DuelGameHandler {
         data.gameOptions = null;
         data.duelOptions.spectatingPlayer = null;
 
-        if(Main.config.debugMode) Main.logger.info(String.format("[DEBUG]: Player %s left Duels.", player.getRawName()));
+        if(NexiaCore.config.debugMode) NexiaCore.logger.info(String.format("[DEBUG]: Player %s left Duels.", player.getRawName()));
     }
 
     public static void winnerRockets(@NotNull NexiaPlayer winner, @NotNull ServerLevel level,
@@ -197,7 +197,7 @@ public class DuelGameHandler {
                 .setTimeOfDay(6000);
 
 
-        if(Main.config.debugMode) Main.logger.info("[DEBUG]: Created world: duels:{}", uuid);
+        if(NexiaCore.config.debugMode) NexiaCore.logger.info("[DEBUG]: Created world: duels:{}", uuid);
 
         return ServerTime.fantasy.openTemporaryWorld(config, new ResourceLocation("duels", uuid)).asWorld();
         //return ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", uuid)).location(), config).asWorld();

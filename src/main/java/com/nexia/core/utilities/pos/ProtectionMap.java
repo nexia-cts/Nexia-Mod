@@ -1,7 +1,7 @@
 package com.nexia.core.utilities.pos;
 
 import com.google.gson.Gson;
-import com.nexia.core.Main;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import net.kyori.adventure.text.Component;
@@ -92,7 +92,7 @@ public class ProtectionMap {
             Gson gson = new Gson();
             map = gson.fromJson(possibleJson, byte[][][].class);
         } catch (Exception e) {
-            System.out.println(Main.MOD_NAME + ": Failed to import protection map from " + filePath);
+            System.out.println(NexiaCore.MOD_NAME + ": Failed to import protection map from " + filePath);
             return null;
         }
         return new ProtectionMap(map, listedBlocks, notListedBlock, outsideMessage);

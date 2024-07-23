@@ -51,7 +51,6 @@ public abstract class BlockItemMixin {
         if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(level) && !FfaSkyUtil.beforeBuild(nexiaPlayer, blockPos)) {
             cir.setReturnValue(InteractionResult.PASS);
             nexiaPlayer.refreshInventory();
-            return;
         }
     }
 

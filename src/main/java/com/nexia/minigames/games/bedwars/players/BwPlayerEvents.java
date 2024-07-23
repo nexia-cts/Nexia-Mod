@@ -1,7 +1,7 @@
 package com.nexia.minigames.games.bedwars.players;
 
 import com.nexia.base.player.PlayerDataManager;
-import com.nexia.core.Main;
+import com.nexia.core.NexiaCore;
 import com.nexia.minigames.games.bedwars.util.player.BedwarsPlayerData;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
@@ -96,8 +96,8 @@ public class BwPlayerEvents {
     public static void afterHurt(NexiaPlayer player, DamageSource damageSource) {
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player.unwrap());
         if (attacker != null) {
-            ((BedwarsPlayerData)PlayerDataManager.getDataManager(Main.BEDWARS_DATA_MANAGER).get(player)).combatTagPlayer = attacker;
-            ((BedwarsPlayerData)PlayerDataManager.getDataManager(Main.BEDWARS_DATA_MANAGER).get(attacker.getUUID())).combatTagPlayer = player.unwrap();
+            ((BedwarsPlayerData)PlayerDataManager.getDataManager(NexiaCore.BEDWARS_DATA_MANAGER).get(player)).combatTagPlayer = attacker;
+            ((BedwarsPlayerData)PlayerDataManager.getDataManager(NexiaCore.BEDWARS_DATA_MANAGER).get(attacker.getUUID())).combatTagPlayer = player.unwrap();
             if (player.unwrap().hasEffect(MobEffects.INVISIBILITY)) {
                 player.unwrap().removeEffect(MobEffects.INVISIBILITY);
             }
@@ -214,7 +214,7 @@ public class BwPlayerEvents {
 
             if (new EntityPos(team.bedLocation).isInRadius(new EntityPos(blockPos), 1)) {
                 team.announceBedBreak(player, blockPos);
-                PlayerDataManager.getDataManager(Main.BEDWARS_DATA_MANAGER).get(player).savedData.incrementInteger("bedsBroken");
+                PlayerDataManager.getDataManager(NexiaCore.BEDWARS_DATA_MANAGER).get(player).savedData.incrementInteger("bedsBroken");
                 break;
             }
         }

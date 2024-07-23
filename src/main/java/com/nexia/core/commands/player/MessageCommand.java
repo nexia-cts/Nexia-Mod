@@ -1,7 +1,7 @@
 package com.nexia.core.commands.player;
 
 import com.nexia.base.player.PlayerDataManager;
-import com.nexia.core.Main;
+import com.nexia.core.NexiaCore;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
@@ -63,7 +63,7 @@ public class MessageCommand {
 
     private static int replyCommand(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         NexiaPlayer sender = new NexiaPlayer(context.getSource().getPlayerOrException());
-        CorePlayerData senderData = (CorePlayerData) PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(sender);
+        CorePlayerData senderData = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(sender);
         NexiaPlayer receiver = senderData.lastMessageSender;
 
         if (receiver == null) {
@@ -94,7 +94,7 @@ public class MessageCommand {
 
                         ));
 
-        ((CorePlayerData) PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(receiver)).lastMessageSender = sender;
+        ((CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(receiver)).lastMessageSender = sender;
     }
 
 }

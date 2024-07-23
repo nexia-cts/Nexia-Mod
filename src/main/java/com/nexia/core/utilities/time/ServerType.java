@@ -1,6 +1,6 @@
 package com.nexia.core.utilities.time;
 
-import com.nexia.core.Main;
+import com.nexia.core.NexiaCore;
 
 public class ServerType {
 
@@ -16,7 +16,7 @@ public class ServerType {
     }
 
     public static ServerType returnServer() {
-        return getServerType(Main.config.serverType);
+        return getServerType(NexiaCore.config.serverType);
     }
 
     public static ServerType getServerType(String region) {

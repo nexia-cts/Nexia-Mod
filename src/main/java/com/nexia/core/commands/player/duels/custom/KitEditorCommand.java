@@ -7,7 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.natamus.collective_fabric.functions.PlayerFunctions;
 import com.natamus.collective_fabric.functions.StringFunctions;
 import com.nexia.base.player.PlayerDataManager;
-import com.nexia.core.Main;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
@@ -43,8 +43,8 @@ public class KitEditorCommand {
                     try {
                         NexiaPlayer player = new NexiaPlayer(commandSourceInfo.getPlayerOrException());
 
-                        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player);
-                        CorePlayerData playerData1 = (CorePlayerData) PlayerDataManager.getDataManager(Main.CORE_DATA_MANAGER).get(player);
+                        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+                        CorePlayerData playerData1 = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player);
                         return playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY;
                     } catch (Exception ignored) {}
                     return false;
@@ -75,14 +75,14 @@ public class KitEditorCommand {
 
         if(argument.equalsIgnoreCase("save")) {
 
-            DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player);
+            DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
 
             if(playerData.editingKit.isEmpty() || playerData.kitRoom == null) {
                 player.sendMessage(Component.text("You aren't editing a kit!", ChatFormat.failColor));
                 return 0;
             }
 
-            inventory = ((DuelsPlayerData)PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player)).editingKit;
+            inventory = ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).editingKit;
 
             String gearstring = PlayerFunctions.getPlayerGearString(player.unwrap());
 
@@ -116,13 +116,13 @@ public class KitEditorCommand {
 
         if (argument.equalsIgnoreCase("edit")) {
 
-            if(!((DuelsPlayerData)PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player)).editingKit.isEmpty()) {
+            if(!((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).editingKit.isEmpty()) {
                 player.sendMessage(Component.text("You are still editing a kit! Save it or run /hub!", ChatFormat.failColor));
                 return 0;
             }
 
             KitRoom kitRoom;
-            DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(Main.DUELS_DATA_MANAGER).get(player);
+            DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
 
 
             switch (slot) {

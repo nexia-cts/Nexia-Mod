@@ -1,10 +1,13 @@
 package com.nexia.core.mixin.item;
 
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.ffa.sky.utilities.FfaAreas;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
+import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -39,7 +42,6 @@ public class EnderPearlItemMixin extends Item {
             if (((FfaAreas.isFfaWorld(serverPlayer.getLevel()) && FfaSkyUtil.wasInSpawn.contains(serverPlayer.getUUID())) || (serverPlayer.getLevel().equals(LobbyUtil.lobbyWorld))) && !serverPlayer.isCreative()) {
                 cir.setReturnValue(InteractionResultHolder.pass(serverPlayer.getItemInHand(interactionHand)));
                 nexiaPlayer.refreshInventory();
-                return;
             }
 
         }
@@ -52,7 +54,7 @@ public class EnderPearlItemMixin extends Item {
         if (thrower == null) return time;
         NexiaPlayer nexiaPlayer = new NexiaPlayer(thrower);
 
-        DuelGameMode duelGameMode = PlayerDataManager.get(nexiaPlayer).gameMode;
+        DuelGameMode duelGameMode = ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(nexiaPlayer)).gameMode;
 
         if(duelGameMode.equals(DuelGameMode.POT) || duelGameMode.equals(DuelGameMode.NETH_POT)) time = 300;
         if (FfaSkyUtil.isFfaPlayer(nexiaPlayer)) time = 10;

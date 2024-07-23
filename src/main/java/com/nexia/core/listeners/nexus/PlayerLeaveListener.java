@@ -12,7 +12,7 @@ public class PlayerLeaveListener {
             processDisconnect(player);
 
             /*
-            if(Main.config.events.statusMessages){
+            if(NexiaCore.config.events.statusMessages){
                 playerDisconnectEvent.setLeaveMessage(
                         Component.text("[").color(ChatFormat.lineColor)
                                 .append(Component.text("-").color(ChatFormat.failColor)

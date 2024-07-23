@@ -1,6 +1,6 @@
 package com.nexia.core.utilities.world;
 
-import com.nexia.core.Main;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.nexus.api.util.Identifier;
@@ -73,15 +73,15 @@ public class WorldUtil {
             FileUtils.forceDeleteOnExit(new File("/world/dimensions/" + identifier.getNamespace(), identifier.getPath()));
             ServerTime.nexusServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getPath(), false);
         } catch (Exception e) {
-            Main.logger.error("Error occurred while deleting world: {}:{}", identifier.getNamespace(), identifier.getPath());
+            NexiaCore.logger.error("Error occurred while deleting world: {}:{}", identifier.getNamespace(), identifier.getPath());
 
             try {
                 ServerTime.nexusServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getPath(), false);
             } catch (Exception ignored2) {
-                if(Main.config.debugMode) e.printStackTrace();
+                if(NexiaCore.config.debugMode) e.printStackTrace();
             }
 
-            if(Main.config.debugMode) e.printStackTrace();
+            if(NexiaCore.config.debugMode) e.printStackTrace();
             return;
         }
         worldHandle.delete();
@@ -97,7 +97,7 @@ public class WorldUtil {
     }
 
     public static void deleteTempWorlds() {
-        if(Main.config.debugMode) Main.logger.info("[DEBUG]: Deleting Temporary Worlds");
+        if(NexiaCore.config.debugMode) NexiaCore.logger.info("[DEBUG]: Deleting Temporary Worlds");
         List<ResourceLocation> delete = new ArrayList<>();
 
         for (ServerLevel level : ServerTime.minecraftServer.getAllLevels()) {

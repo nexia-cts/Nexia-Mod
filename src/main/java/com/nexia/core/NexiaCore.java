@@ -18,7 +18,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Main implements ModInitializer, NexusPlugin {
+public class NexiaCore implements ModInitializer, NexusPlugin {
 	public static ModConfig config;
 
 	public static final String MOD_NAME = "Nexia";
@@ -63,18 +63,18 @@ public class Main implements ModInitializer, NexusPlugin {
 	@Override
 	@SuppressWarnings("FutureReturnValueIgnored")
 	public void onNexusLoad(NexusAPI api, NexusServer server) {
-		Main.logger.info("Loading Nexus API...");
+		NexiaCore.logger.info("Loading Nexus API...");
 
 		ServerTime.nexusServer = server;
 		ServerTime.nexusAPI = api;
 		ServerTime.scheduler = api.getScheduler();
 
-		Main.logger.info("Registering listeners...");
+		NexiaCore.logger.info("Registering listeners...");
 		ListenerHelper.registerListeners();
-		Main.logger.info("Registered listeners.");
-		Main.logger.info("Registering Nexus commands...");
+		NexiaCore.logger.info("Registered listeners.");
+		NexiaCore.logger.info("Registering Nexus commands...");
 		CommandLoader.registerNexusCommands();
-		Main.logger.info("Registered Nexus commands.");
+		NexiaCore.logger.info("Registered Nexus commands.");
 	}
 	public static ResourceLocation id(String path) {
 		return new ResourceLocation("nexia", path);

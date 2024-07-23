@@ -4,7 +4,7 @@ import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.player.NexiaPlayer;
-import com.nexia.discord.Main;
+import com.nexia.discord.NexiaDiscord;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
@@ -42,7 +42,7 @@ public class RanksGUI extends SimpleGui {
         ItemDisplayUtil.addLore(supporter, net.kyori.adventure.text.Component.text("https://www.patreon.com/Nexia", TextColor.fromHexString("#f96b59")).decoration(ChatFormat.italic, false), 3);
         ItemDisplayUtil.addLore(supporter, net.kyori.adventure.text.Component.text("OR", ChatFormat.Minecraft.white).decoration(ChatFormat.bold, true).decoration(ChatFormat.italic, false), 4);
         ItemDisplayUtil.addLore(supporter, net.kyori.adventure.text.Component.text("Boosting - Boost the discord server.", TextColor.fromHexString("#8c00ff")).decoration(ChatFormat.italic, false), 5);
-        ItemDisplayUtil.addLore(supporter, net.kyori.adventure.text.Component.text(Main.config.discordLink, TextColor.fromHexString("#8c00ff")).decoration(ChatFormat.italic, false), 6);
+        ItemDisplayUtil.addLore(supporter, net.kyori.adventure.text.Component.text(NexiaDiscord.config.discordLink, TextColor.fromHexString("#8c00ff")).decoration(ChatFormat.italic, false), 6);
         ItemDisplayUtil.addLore(supporter, "§3", 7);
         ItemDisplayUtil.addLore(supporter, net.kyori.adventure.text.Component.text("Price: ", TextColor.fromHexString("#8c00ff")).decoration(ChatFormat.italic, false)
                         .append(net.kyori.adventure.text.Component.text("5.00$", ChatFormat.brandColor1).decoration(ChatFormat.bold, true).decoration(ChatFormat.italic, false)), 8);
@@ -102,7 +102,7 @@ public class RanksGUI extends SimpleGui {
                                                 .color(TextColor.fromHexString("#8c00ff"))
                                                 .decoration(ChatFormat.bold, true)
                                                 .hoverEvent(HoverEvent.showText(net.kyori.adventure.text.Component.text("Click me").color(TextColor.fromHexString("#8c00ff"))))
-                                                .clickEvent(ClickEvent.openUrl(Main.config.discordLink)))
+                                                .clickEvent(ClickEvent.openUrl(NexiaDiscord.config.discordLink)))
                                         .append(net.kyori.adventure.text.Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
                         )
                 );

@@ -1,5 +1,6 @@
 package com.nexia.discord;
 
+import com.nexia.core.NexiaCore;
 import com.nexia.discord.config.ModConfig;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1u.serializer.GsonConfigSerializer;
@@ -13,7 +14,7 @@ import net.fabricmc.api.ModInitializer;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
-public class Main implements ModInitializer {
+public class NexiaDiscord implements ModInitializer {
 
     public static ModConfig config;
 
@@ -24,7 +25,7 @@ public class Main implements ModInitializer {
         AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
         config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
 
-        Logger logger = com.nexia.core.Main.logger;
+        Logger logger = NexiaCore.logger;
 
         logger.log(Level.INFO, "Initializing Nexia Discord...");
 
@@ -35,7 +36,7 @@ public class Main implements ModInitializer {
         logger.log(Level.INFO, "Successfully initialized Discord!");
         logger.log(Level.INFO, "Adding linking functionality...");
         jda.addEventListener(new Discord());
-        Main.registerCommands();
+        NexiaDiscord.registerCommands();
         logger.log(Level.INFO, "Linking functionality has been added!");
     }
 

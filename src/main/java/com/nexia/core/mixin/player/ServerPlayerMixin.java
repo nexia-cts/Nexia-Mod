@@ -1,11 +1,14 @@
 package com.nexia.core.mixin.player;
 
 import com.mojang.authlib.GameProfile;
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.commands.staff.DetectCommand;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.duels.CustomDuelGUI;
 import com.nexia.core.gui.duels.DuelGUI;
+import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.NexiaPlayer;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
@@ -111,8 +114,8 @@ public abstract class ServerPlayerMixin extends Player {
     private void die(DamageSource damageSource, CallbackInfo ci) {
         ServerPlayer player = (ServerPlayer)(Object)this;
         NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
-        PlayerGameMode gameMode = PlayerDataManager.get(nexiaPlayer).gameMode;
-        DuelsPlayerData duelsData = com.nexia.minigames.games.duels.util.player.PlayerDataManager.get(nexiaPlayer);
+        PlayerGameMode gameMode = ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(nexiaPlayer)).gameMode;
+        DuelsPlayerData duelsData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(nexiaPlayer);
 
         if (FfaUtil.isFfaPlayer(nexiaPlayer)) {
             FfaUtil.leaveOrDie(nexiaPlayer, damageSource, false);

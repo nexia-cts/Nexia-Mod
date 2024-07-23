@@ -4,7 +4,7 @@ import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import com.nexia.core.Main;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.chat.ChatFormat;
 import net.kyori.adventure.text.Component;
 
@@ -30,7 +30,7 @@ public class RulesCommand {
                         .append(Component.text(" ]").color(ChatFormat.lineColor).decoration(ChatFormat.strikeThrough, false))
                         .append(Component.text("                           ").color(ChatFormat.lineColor).decoration(ChatFormat.strikeThrough, true)));
 
-        for (int i = 0; i < Main.config.rules.length; i++) {
+        for (int i = 0; i < NexiaCore.config.rules.length; i++) {
 
             message = message.append(Component.text("\n" + (i+1) + ". ")
                     .color(ChatFormat.brandColor1)
@@ -40,7 +40,7 @@ public class RulesCommand {
                             .color(ChatFormat.arrowColor)
                             .decoration(ChatFormat.bold, false)
                             .decoration(ChatFormat.strikeThrough, false)
-                            .append(Component.text(Main.config.rules[i])
+                            .append(Component.text(NexiaCore.config.rules[i])
                                     .decoration(ChatFormat.bold, false)
                                     .decoration(ChatFormat.strikeThrough, false)
                                     .color(ChatFormat.normalColor)

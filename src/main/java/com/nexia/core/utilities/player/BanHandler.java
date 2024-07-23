@@ -5,7 +5,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.discord.Main;
+import com.nexia.discord.NexiaDiscord;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -124,7 +124,7 @@ public class BanHandler {
         ServerPlayer banned = ServerTime.minecraftServer.getPlayerList().getPlayer(profile.getId());
 
         if (banned != null) {
-            banned.connection.disconnect(new TextComponent("§c§lYou have been banned.\n§7Duration: §d" + banTimeToText(banTime) + "\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + Main.config.discordLink));
+            banned.connection.disconnect(new TextComponent("§c§lYou have been banned.\n§7Duration: §d" + banTimeToText(banTime) + "\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + NexiaDiscord.config.discordLink));
         }
     }
 
