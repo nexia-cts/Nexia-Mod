@@ -49,7 +49,7 @@ public class CoreSavedPlayerData extends SavedPlayerData {
 
     public String setMuteReason(String muteReason) {
         set(String.class, "muteReason", muteReason);
-        return this.muteReason = muteReason;
+        return this.muteReason;
     }
 
     public boolean isReportBanned() {
@@ -58,7 +58,7 @@ public class CoreSavedPlayerData extends SavedPlayerData {
 
     public boolean setReportBanned(boolean reportBanned) {
         set(Boolean.class, "isReportBanned", reportBanned);
-        return isReportBanned = reportBanned;
+        return isReportBanned;
     }
 
     public boolean isSprintFix() {
@@ -67,6 +67,6 @@ public class CoreSavedPlayerData extends SavedPlayerData {
 
     public boolean setSprintFix(boolean sprintFix) {
         set(Boolean.class, "sprintFix", sprintFix);
-        return this.sprintFix = sprintFix;
+        return this.sprintFix;
     }
 }
