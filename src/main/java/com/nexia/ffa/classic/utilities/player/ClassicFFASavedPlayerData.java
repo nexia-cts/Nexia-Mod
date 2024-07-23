@@ -17,10 +17,10 @@ public class ClassicFFASavedPlayerData extends SavedPlayerData {
         this.bestKillstreak = 0;
         this.deaths = 0;
         try {
-            buildField(Integer.class, "kills", kills, ClassicFFASavedPlayerData.class);
-            buildField(Integer.class, "killstreak", killstreak, ClassicFFASavedPlayerData.class);
-            buildField(Integer.class, "bestKillstreak", bestKillstreak, ClassicFFASavedPlayerData.class);
-            buildField(Integer.class, "deaths", deaths, ClassicFFASavedPlayerData.class);
+            buildField(Integer.class, "kills", kills);
+            buildField(Integer.class, "killstreak", killstreak);
+            buildField(Integer.class, "bestKillstreak", bestKillstreak);
+            buildField(Integer.class, "deaths", deaths);
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
@@ -28,8 +28,8 @@ public class ClassicFFASavedPlayerData extends SavedPlayerData {
         this.elo = 0;
         this.rating = 1;
         try {
-            buildField(Double.class, "elo", elo, ClassicFFASavedPlayerData.class);
-            buildField(Double.class, "rating", rating, ClassicFFASavedPlayerData.class);
+            buildField(Double.class, "elo", elo);
+            buildField(Double.class, "rating", rating);
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }

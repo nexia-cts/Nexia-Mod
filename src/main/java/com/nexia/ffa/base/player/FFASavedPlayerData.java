@@ -17,10 +17,10 @@ public class FFASavedPlayerData extends SavedPlayerData {
 
         this.deaths = 0;
         try {
-            buildField(Integer.class, "kills", kills, FFASavedPlayerData.class);
-            buildField(Integer.class, "killstreak", killstreak, FFASavedPlayerData.class);
-            buildField(Integer.class, "bestKillstreak", bestKillstreak, FFASavedPlayerData.class);
-            buildField(Integer.class, "deaths", deaths, FFASavedPlayerData.class);
+            buildField(Integer.class, "kills", kills);
+            buildField(Integer.class, "killstreak", killstreak);
+            buildField(Integer.class, "bestKillstreak", bestKillstreak);
+            buildField(Integer.class, "deaths", deaths);
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }

@@ -25,44 +25,52 @@ public abstract class SavedPlayerData {
         data.append(type, name, value, null);
     }
 
-    public <T> void buildField(Class<T> type, String name, T value, Class<? extends SavedPlayerData> thisClass) throws NoSuchFieldException {
-        data.append(type, name, value, thisClass.getField(name));
+    public <T> void buildField(Class<T> type, String name, T value) throws NoSuchFieldException {
+        data.append(type, name, value, getClass().getField(name));
     }
 
     public <T> T get(Class<T> type, String name) {
-        return data.retrieve(type, name);
+        try {
+            return data.retrieve(type, name);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
     public class Data {
-        private final Map<Class<?>, TypedData<?>> storedData = new HashMap<>();
+        private final Map<Class<?>, TypedData> storedData = new HashMap<>();
         public Data() {
 
         }
         public <T> void append(Class<T> type, String name, T value, Field field) {
-            TypedData<T> typeData;
-            if (!storedData.containsKey(type)) typeData = new TypedData<>();
-            else typeData = (TypedData<T>) storedData.get(type);
+            TypedData typeData;
+            if (!storedData.containsKey(type)) typeData = new TypedData();
+            else typeData = storedData.get(type);
             if (typeData.linkedFields.containsKey(name)) {
                 try {
                     typeData.linkedFields.get(name).set(SavedPlayerData.this, value);
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
-            } else if (field != null)
+            } else if (field != null) {
+                try {
+                    field.set(SavedPlayerData.this, value);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
                 typeData.linkedFields.put(name, field);
-            typeData.storedData.put(name, value);
+            } else throw new NullPointerException("The field " + name + " in " + SavedPlayerData.this.getClass().getSimpleName() + " must not be null!");
             storedData.put(type, typeData);
         }
-        public <T> T retrieve(Class<T> type, String name) {
-            TypedData<T> typeData;
-            if (!storedData.containsKey(type)) typeData = new TypedData<>();
-            else typeData = (TypedData<T>) storedData.get(type);
-            if (typeData.storedData.containsKey(name))
-                return typeData.storedData.get(name);
+        public <T> T retrieve(Class<T> type, String name) throws IllegalAccessException {
+            TypedData typeData;
+            if (!storedData.containsKey(type)) typeData = new TypedData();
+            else typeData = storedData.get(type);
+            if (typeData.linkedFields.containsKey(name))
+                return (T) typeData.linkedFields.get(name).get(SavedPlayerData.this);
             return null;
         }
     }
-    public static class TypedData<T> {
-        private final Map<String, T> storedData = new HashMap<>();
+    public static class TypedData {
         private final Map<String, Field> linkedFields = new HashMap<>();
         public TypedData() {
 

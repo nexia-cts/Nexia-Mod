@@ -15,9 +15,9 @@ public class WLKSavedPlayerData extends SavedPlayerData {
         this.losses = 0;
         this.kills = 0;
         try {
-            buildField(Integer.class, "wins", wins, WLKSavedPlayerData.class);
-            buildField(Integer.class, "losses", losses, WLKSavedPlayerData.class);
-            buildField(Integer.class, "kills", kills, WLKSavedPlayerData.class);
+            buildField(Integer.class, "wins", wins);
+            buildField(Integer.class, "losses", losses);
+            buildField(Integer.class, "kills", kills);
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }

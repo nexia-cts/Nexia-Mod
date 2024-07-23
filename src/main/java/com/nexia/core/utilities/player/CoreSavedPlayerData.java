@@ -23,10 +23,10 @@ public class CoreSavedPlayerData extends SavedPlayerData {
         this.isReportBanned = false;
         this.sprintFix = true;
         try {
-            buildField(String.class, "muteEnd", muteEnd, CoreSavedPlayerData.class);
-            buildField(String.class, "muteReason", muteReason, CoreSavedPlayerData.class);
-            buildField(Boolean.class, "isReportBanned", isReportBanned, CoreSavedPlayerData.class);
-            buildField(Boolean.class, "sprintFix", sprintFix, CoreSavedPlayerData.class);
+            buildField(String.class, "muteEnd", muteEnd);
+            buildField(String.class, "muteReason", muteReason);
+            buildField(Boolean.class, "isReportBanned", isReportBanned);
+            buildField(Boolean.class, "sprintFix", sprintFix);
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
