@@ -19,16 +19,16 @@ public class NetworkingHandler {
 
             if(!ServerPlayNetworking.canSend(handler.player, detectCombatify)) {
                 if(ServerPlayNetworking.canSend(handler.player, new ResourceLocation("fabric", "registry/sync/direct"))) {
-                    ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(handler.player.getUUID())).clientType = CorePlayerData.ClientType.VIAFABRICPLUS;
+                    ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(handler.player.getUUID())).setClientType(CorePlayerData.ClientType.VIAFABRICPLUS);
                     handler.player.connection.disconnect(new TextComponent("§5§lNexia\n§7You need to install §c§lCombatify§7 in order to join the server.\n\n§chttps://modrinth.com/mod/combatify"));
                     return;
                 }
 
-                ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(handler.player.getUUID())).clientType = CorePlayerData.ClientType.COMBAT_TEST;
+                ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(handler.player.getUUID())).setClientType(CorePlayerData.ClientType.COMBAT_TEST);
                 return;
             }
 
-            ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(handler.player.getUUID())).clientType = CorePlayerData.ClientType.COMBATIFY;
+            ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(handler.player.getUUID())).setClientType(CorePlayerData.ClientType.COMBATIFY);
         });
     }
 }

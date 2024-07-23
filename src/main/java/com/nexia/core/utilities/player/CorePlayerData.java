@@ -39,7 +39,10 @@ public class CorePlayerData extends PlayerData {
 
         this.lastMessageSender = null;
 
-        this.clientType = null;
+        this.clientType = ClientType.COMBAT_TEST;
+    }
+    public void setClientType(ClientType type) {
+        this.clientType = type;
     }
 
     public enum ClientType {
