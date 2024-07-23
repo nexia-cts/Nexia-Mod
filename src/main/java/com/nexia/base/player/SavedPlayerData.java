@@ -21,7 +21,7 @@ public abstract class SavedPlayerData {
 
     public <T> void set(Class<T> type, String name, T value) {
         try {
-            data.append(type, name, value, getClass().getField(name));
+            data.append(type, name, value, getClass().getField(name), this);
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
@@ -29,31 +29,31 @@ public abstract class SavedPlayerData {
 
     public <T> T get(Class<T> type, String name) {
         try {
-            return data.retrieve(type, name, getClass().getField(name));
+            return data.retrieve(type, name, getClass().getField(name), this);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
     }
-    public class Data {
+    public static class Data {
         public Data() {
 
         }
-        public <T> void append(Class<T> type, String name, T value, Field field) {
+        public <T> void append(Class<T> type, String name, T value, Field field, SavedPlayerData data) {
             if (field != null) {
                 try {
-                    field.set(SavedPlayerData.this, value);
+                    field.set(data, value);
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
-            } else throw new NullPointerException("The field " + name + " in " + SavedPlayerData.this.getClass().getSimpleName() + " must not be null!");
+            } else throw new NullPointerException("The field " + name + " in " + data.getClass().getSimpleName() + " must not be null!");
         }
-        public <T> T retrieve(Class<T> type, String name, Field field) throws IllegalAccessException, NoSuchFieldException {
+        public <T> T retrieve(Class<T> type, String name, Field field, SavedPlayerData data) throws IllegalAccessException, NoSuchFieldException {
             if (field != null) {
-                var val = field.get(SavedPlayerData.this);
+                var val = field.get(data);
                 if (type.isInstance(val))
                     return (T) val;
-                else throw new ClassCastException("The field " + name + " in " + SavedPlayerData.this.getClass().getSimpleName() + " is not a " + type.getSimpleName());
-            } else throw new NullPointerException("The field " + name + " in " + SavedPlayerData.this.getClass().getSimpleName() + " must not be null!");
+                else throw new ClassCastException("The field " + name + " in " + data.getClass().getSimpleName() + " is not a " + type.getSimpleName());
+            } else throw new NullPointerException("The field " + name + " in " + data.getClass().getSimpleName() + " must not be null!");
         }
     }
 }
