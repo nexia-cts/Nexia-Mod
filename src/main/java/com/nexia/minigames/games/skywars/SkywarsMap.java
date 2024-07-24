@@ -150,7 +150,7 @@ public class SkywarsMap {
     }
 
     public static void deleteWorld(String id) {
-        WorldUtil.deleteWorld(new ResourceLocation("skywars", id));
+        WorldUtil.deleteWorld(new Identifier("skywars", id));
     }
 
     public SkywarsMap(String id, int maxPlayers, ArrayList<EntityPos> positions, StructureMap structureMap) {

@@ -14,6 +14,7 @@ import com.nexia.minigames.games.duels.custom.team.CustomTeamDuelsGame;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
+import com.nexia.nexus.api.util.Identifier;
 import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.kyori.adventure.text.Component;
@@ -203,6 +204,6 @@ public class DuelGameHandler {
     }
 
     public static void deleteWorld(String id) {
-        WorldUtil.deleteWorld(new ResourceLocation("duels", id));
+        WorldUtil.deleteWorld(new Identifier("duels", id));
     }
 }

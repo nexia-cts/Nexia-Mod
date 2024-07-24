@@ -64,19 +64,19 @@ public class WorldUtil {
         return ServerTime.nexusServer.getWorld(new Identifier(level.dimension().location().getNamespace(), level.dimension().location().getPath()));
     }
 
-    public static void deleteWorld(ResourceLocation identifier) {
+    public static void deleteWorld(Identifier identifier) {
         RuntimeWorldHandle worldHandle;
         try {
             worldHandle = ServerTime.fantasy.getOrOpenPersistentWorld(
-                    ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(identifier.getNamespace(), identifier.getPath())).location(),
+                    ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(identifier.getNamespace(), identifier.getId())).location(),
                     new RuntimeWorldConfig());
-            FileUtils.forceDeleteOnExit(new File("/world/dimensions/" + identifier.getNamespace(), identifier.getPath()));
-            ServerTime.nexusServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getPath(), false);
+            FileUtils.forceDeleteOnExit(new File("/world/dimensions/" + identifier.getNamespace(), identifier.getId()));
+            ServerTime.nexusServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getId(), false);
         } catch (Exception e) {
-            NexiaCore.logger.error("Error occurred while deleting world: {}:{}", identifier.getNamespace(), identifier.getPath());
+            NexiaCore.logger.error("Error occurred while deleting world: {}:{}", identifier.getNamespace(), identifier.getId());
 
             try {
-                ServerTime.nexusServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getPath(), false);
+                ServerTime.nexusServer.unloadWorld(identifier.getNamespace() + ":" + identifier.getId(), false);
             } catch (Exception ignored2) {
                 if(NexiaCore.config.debugMode) e.printStackTrace();
             }
@@ -98,19 +98,20 @@ public class WorldUtil {
 
     public static void deleteTempWorlds() {
         if(NexiaCore.config.debugMode) NexiaCore.logger.info("[DEBUG]: Deleting Temporary Worlds");
-        List<ResourceLocation> delete = new ArrayList<>();
+        List<Identifier> delete = new ArrayList<>();
 
-        for (ServerLevel level : ServerTime.minecraftServer.getAllLevels()) {
-            ResourceLocation name = level.dimension().location();
+        for (World world : ServerTime.nexusServer.getWorlds()) {
+            Identifier name = world.getIdentifier();
+
             if (name.getNamespace().equalsIgnoreCase("duels") ||
-                    (name.getNamespace().equalsIgnoreCase("skywars") && !name.getPath().equalsIgnoreCase(SkywarsGame.id)) ||
+                    (name.getNamespace().equalsIgnoreCase("skywars") && !name.getId().equalsIgnoreCase(SkywarsGame.id)) ||
                     name.getNamespace().equalsIgnoreCase("kitroom")
             ) {
                 delete.add(name);
             }
         }
 
-        for (ResourceLocation deletion : delete) {
+        for (Identifier deletion : delete) {
             WorldUtil.deleteWorld(deletion);
         }
     }

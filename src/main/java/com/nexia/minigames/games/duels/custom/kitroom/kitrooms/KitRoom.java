@@ -6,6 +6,7 @@ import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
+import com.nexia.nexus.api.util.Identifier;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.nexus.api.world.util.Location;
 import com.nexia.nexus.builder.implementation.world.structure.StructureMap;
@@ -113,6 +114,6 @@ public class KitRoom {
 
     private void delete() {
         if(this.level == null || this.handle == null) return;
-        WorldUtil.deleteWorld(new ResourceLocation("kitroom", String.valueOf(uuid)));
+        WorldUtil.deleteWorld(new Identifier("kitroom", String.valueOf(uuid)));
     }
 }
