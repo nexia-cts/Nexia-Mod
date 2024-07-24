@@ -3,6 +3,7 @@ package com.nexia.base.player;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.PlayerUtil;
@@ -24,6 +25,8 @@ import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import com.nexia.nexus.builder.implementation.world.entity.player.WrappedPlayer;
 import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
@@ -99,6 +102,25 @@ public class NexiaPlayer extends WrappedPlayer {
         this.unwrap().onUpdateAbilities();
 
         ServerTime.minecraftServer.getPlayerList().sendPlayerPermissionLevel(this.unwrap());
+    }
+
+    /**
+     * Sends a parsed <a href="https://docs.advntr.dev/minimessage/index.html">MiniMessage</a> message to the player.
+     * @param message The message that's going to get parsed
+     * @apiNote Check out the <a href="https://docs.advntr.dev/minimessage/format.html">MiniMessage docs</a>.
+     */
+
+    public void sendMiniMessage(String message) {
+        this.sendMessage(MiniMessage.get().parse(message));
+    }
+
+    /**
+     * Sends a message with the prefix <code>Nexia » </code> to the player.
+     * @apiNote The message is going to get sent in white ({@link ChatFormat.Minecraft}).
+     */
+
+    public void sendNexiaMessage(String message) {
+        this.sendMessage(ChatFormat.nexiaMessage.append(Component.text(message, ChatFormat.Minecraft.white)));
     }
 
     public boolean hasPermission(@NotNull String permission) {
