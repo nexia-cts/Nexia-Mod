@@ -20,7 +20,7 @@ public class KitCommand {
         dispatcher.register(CommandUtils.literal("kit")
                 .executes(context -> {
                     NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
-                    if(!FfaKitsUtil.canGoToSpawn(player)) {
+                    if(!FfaKitsUtil.INSTANCE.canGoToSpawn(player)) {
                         player.sendMessage(Component.text("You must be fully healed to change kits!", ChatFormat.failColor));
                         return 0;
                     }
@@ -32,7 +32,7 @@ public class KitCommand {
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest(FfaKit.stringFfaKits, builder)))
                         .executes(context -> {
                             NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
-                            if(!FfaKitsUtil.canGoToSpawn(player)) {
+                            if(!FfaKitsUtil.INSTANCE.canGoToSpawn(player)) {
                                 player.sendMessage(Component.text("You must be fully healed to change kits!").color(ChatFormat.failColor));
                                 return 1;
                             }

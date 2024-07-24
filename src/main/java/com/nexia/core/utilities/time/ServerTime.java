@@ -101,10 +101,10 @@ public class ServerTime {
         OitcGame.tick();
 
         if (totalTickCount % 5 == 0) {
-            FfaClassicUtil.fiveTick();
-            FfaKitsUtil.fiveTick();
-            FfaSkyUtil.fiveTick();
-            FfaUhcUtil.fiveTick();
+            FfaClassicUtil.INSTANCE.fiveTick();
+            FfaKitsUtil.INSTANCE.fiveTick();
+            FfaSkyUtil.INSTANCE.fiveTick();
+            FfaUhcUtil.INSTANCE.fiveTick();
         }
 
         // Most second methods are also handled here to avoid too many methods from being executed at the same time

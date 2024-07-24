@@ -38,9 +38,9 @@ public class ServerPlayerGameModeMixin {
 
         if (BwAreas.isBedWarsWorld(level) && !BwPlayerEvents.beforeBreakBlock(nexiaPlayer, blockPos)) {
             cir.setReturnValue(false);
-        }  else if (FfaAreas.isFfaWorld(level) && !FfaUhcUtil.beforeBuild(nexiaPlayer, blockPos)) {
+        }  else if (FfaAreas.isFfaWorld(level) && !FfaUhcUtil.INSTANCE.beforeBuild(nexiaPlayer, blockPos)) {
             cir.setReturnValue(false);
-        } else if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(level) && !FfaSkyUtil.beforeBuild(nexiaPlayer, blockPos)) {
+        } else if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(level) && !FfaSkyUtil.INSTANCE.beforeBuild(nexiaPlayer, blockPos)) {
             cir.setReturnValue(false);
         } else if(level.equals(FootballGame.world) && !player.isCreative()) {
             cir.setReturnValue(false);

@@ -39,11 +39,11 @@ public abstract class FoodDataMixin {
         if (!(player instanceof ServerPlayer serverPlayer)) return 1f;
         NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
 
-        if (BwAreas.isBedWarsWorld(serverPlayer.level) || FfaSkyUtil.isFfaPlayer(nexiaPlayer)) {
+        if (BwAreas.isBedWarsWorld(serverPlayer.level) || FfaSkyUtil.INSTANCE.isFfaPlayer(nexiaPlayer)) {
             return 0.5f;
         }
 
-        if(FfaUhcUtil.isFfaPlayer(nexiaPlayer)) {
+        if(FfaUhcUtil.INSTANCE.isFfaPlayer(nexiaPlayer)) {
             return 0.0f;
         }
 

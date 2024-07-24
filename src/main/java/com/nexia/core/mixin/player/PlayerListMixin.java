@@ -96,8 +96,8 @@ public abstract class PlayerListMixin {
 
         World respawn = nexiaPlayer.getRespawnPosition().getWorld();
 
-        if(FfaSkyUtil.isFfaPlayer(nexiaPlayer)) {
-            FfaSkyUtil.joinOrRespawn(nexiaPlayer);
+        if(FfaSkyUtil.INSTANCE.isFfaPlayer(nexiaPlayer)) {
+            FfaSkyUtil.INSTANCE.joinOrRespawn(nexiaPlayer);
             return;
         }
 

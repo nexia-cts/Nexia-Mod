@@ -1,5 +1,6 @@
 package com.nexia.core.mixin.player;
 
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.LobbyUtil;
@@ -7,13 +8,9 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.misc.EventUtil;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.CoreSavedPlayerData;
-import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.ffa.classic.utilities.FfaClassicUtil;
-import com.nexia.ffa.kits.utilities.FfaKitsUtil;
-import com.nexia.ffa.sky.utilities.FfaSkyUtil;
-import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
+import com.nexia.ffa.base.BaseFfaUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
@@ -93,24 +90,11 @@ public abstract class PlayerMixin extends LivingEntity {
         if (!((Object) this instanceof ServerPlayer player)) return;
         NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
-        if (FfaSkyUtil.isFfaPlayer(nexiaPlayer) && !FfaSkyUtil.beforeDamage(nexiaPlayer, damageSource)) {
-            cir.setReturnValue(false);
-            return;
-        }
-
-        if (FfaClassicUtil.isFfaPlayer(nexiaPlayer) && !FfaClassicUtil.beforeDamage(nexiaPlayer, damageSource)) {
-            cir.setReturnValue(false);
-            return;
-        }
-
-        if (FfaKitsUtil.isFfaPlayer(nexiaPlayer) && !FfaKitsUtil.beforeDamage(nexiaPlayer, damageSource)) {
-            cir.setReturnValue(false);
-            return;
-        }
-
-        if (FfaUhcUtil.isFfaPlayer(nexiaPlayer) && !FfaUhcUtil.beforeDamage(nexiaPlayer, damageSource)) {
-            cir.setReturnValue(false);
-            return;
+        for (BaseFfaUtil util : BaseFfaUtil.ffaUtils) {
+            if (util.isFfaPlayer(nexiaPlayer) && !util.beforeDamage(nexiaPlayer, damageSource)) {
+                cir.setReturnValue(false);
+                return;
+            }
         }
 
         if(player.getLevel().equals(LobbyUtil.lobbyWorld) && damageSource == DamageSource.OUT_OF_WORLD) {

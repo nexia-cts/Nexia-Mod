@@ -39,7 +39,7 @@ public class EnderPearlItemMixin extends Item {
             thrower = serverPlayer;
             NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
 
-            if (((FfaAreas.isFfaWorld(serverPlayer.getLevel()) && FfaSkyUtil.wasInSpawn.contains(serverPlayer.getUUID())) || (serverPlayer.getLevel().equals(LobbyUtil.lobbyWorld))) && !serverPlayer.isCreative()) {
+            if (((FfaAreas.isFfaWorld(serverPlayer.getLevel()) && FfaSkyUtil.INSTANCE.wasInSpawn.contains(serverPlayer.getUUID())) || (serverPlayer.getLevel().equals(LobbyUtil.lobbyWorld))) && !serverPlayer.isCreative()) {
                 cir.setReturnValue(InteractionResultHolder.pass(serverPlayer.getItemInHand(interactionHand)));
                 nexiaPlayer.refreshInventory();
             }
@@ -57,7 +57,7 @@ public class EnderPearlItemMixin extends Item {
         DuelGameMode duelGameMode = ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(nexiaPlayer)).gameMode;
 
         if(duelGameMode.equals(DuelGameMode.POT) || duelGameMode.equals(DuelGameMode.NETH_POT)) time = 300;
-        if (FfaSkyUtil.isFfaPlayer(nexiaPlayer)) time = 10;
+        if (FfaSkyUtil.INSTANCE.isFfaPlayer(nexiaPlayer)) time = 10;
 
         return time;
     }

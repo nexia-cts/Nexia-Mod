@@ -6,7 +6,6 @@ import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.CoreSavedPlayerData;
 import com.nexia.discord.utilities.player.DiscordSavedPlayerData;
 import com.nexia.ffa.base.player.FFASavedPlayerData;
-import com.nexia.ffa.classic.utilities.player.ClassicFFASavedPlayerData;
 import com.nexia.ffa.kits.utilities.player.KitFFAPlayerData;
 import com.nexia.minigames.games.base.player.WLKSavedPlayerData;
 import com.nexia.minigames.games.bedwars.util.player.BedwarsPlayerData;
@@ -60,7 +59,7 @@ public class PlayerDataManager {
         new PlayerDataManager(NexiaCore.DISCORD_DATA_MANAGER, "/nexia/discord", DiscordSavedPlayerData.class, PlayerData.class);
 
         // <-----------  FFAs --------------->
-        new PlayerDataManager(NexiaCore.FFA_CLASSIC_DATA_MANAGER, "/nexia/ffa/classic", ClassicFFASavedPlayerData.class, PlayerData.class);
+        new PlayerDataManager(NexiaCore.FFA_CLASSIC_DATA_MANAGER, "/nexia/ffa/classic", FFASavedPlayerData.class, PlayerData.class);
         new PlayerDataManager(NexiaCore.FFA_KITS_DATA_MANAGER, "/nexia/ffa/kits", FFASavedPlayerData.class, KitFFAPlayerData.class);
         new PlayerDataManager(NexiaCore.FFA_SKY_DATA_MANAGER, "/nexia/ffa/sky", FFASavedPlayerData.class, PlayerData.class);
         new PlayerDataManager(NexiaCore.FFA_UHC_DATA_MANAGER, "/nexia/ffa/uhc", FFASavedPlayerData.class, PlayerData.class);

@@ -1,6 +1,7 @@
 package com.nexia.core.mixin.player;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.PlayerGameMode;
@@ -8,7 +9,6 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.misc.EventUtil;
 import com.nexia.core.utilities.player.CorePlayerData;
-import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
@@ -139,7 +139,6 @@ public class ServerGamePacketListenerMixin {
             if (containerId == 0 && slot >= 1 && slot <= 4) {
                 ci.cancel();
                 nexiaPlayer.refreshInventory();
-                return;
             }
         }
 
@@ -152,7 +151,6 @@ public class ServerGamePacketListenerMixin {
         if (!EventUtil.craftItem(nexiaPlayer)) {
             ci.cancel();
             nexiaPlayer.refreshInventory();
-            return;
         }
     }
 
@@ -200,13 +198,13 @@ public class ServerGamePacketListenerMixin {
             NexiaPlayer nexiaTarget = new NexiaPlayer(target);
 
             boolean cancel = (
-                    FfaClassicUtil.isFfaPlayer(nexiaPlayer) && !FfaClassicUtil.isFfaPlayer(nexiaTarget)
+                    FfaClassicUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && !FfaClassicUtil.INSTANCE.isFfaPlayer(nexiaTarget)
             ) || (
-                    FfaKitsUtil.isFfaPlayer(nexiaPlayer) && !FfaKitsUtil.isFfaPlayer(nexiaTarget)
+                    FfaKitsUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && !FfaKitsUtil.INSTANCE.isFfaPlayer(nexiaTarget)
             ) || (
-                    FfaSkyUtil.isFfaPlayer(nexiaPlayer) && !FfaSkyUtil.isFfaPlayer(nexiaTarget)
+                    FfaSkyUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && !FfaSkyUtil.INSTANCE.isFfaPlayer(nexiaTarget)
             ) || (
-                    FfaUhcUtil.isFfaPlayer(nexiaPlayer) && !FfaUhcUtil.isFfaPlayer(nexiaTarget)
+                    FfaUhcUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && !FfaUhcUtil.INSTANCE.isFfaPlayer(nexiaTarget)
             ) || (
                     SkywarsGame.isSkywarsPlayer(nexiaPlayer) && !SkywarsGame.isSkywarsPlayer(nexiaTarget)
             ) || (

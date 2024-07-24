@@ -27,7 +27,7 @@ public abstract class ThrownEnderpearlMixin extends ThrowableItemProjectile {
             if (BwUtil.isInBedWars(nexiaPlayer)) {
                 return BwUtil.getPearlDamage();
             }
-            if (FfaSkyUtil.isFfaPlayer(nexiaPlayer)) {
+            if (FfaSkyUtil.INSTANCE.isFfaPlayer(nexiaPlayer)) {
                 return 0;
             }
 

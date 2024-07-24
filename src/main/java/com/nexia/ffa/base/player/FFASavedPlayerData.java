@@ -8,6 +8,8 @@ public class FFASavedPlayerData extends SavedPlayerData {
     public int killstreak;
     public int bestKillstreak;
     public int deaths;
+    public double rating;
+    public double elo;
 
     public FFASavedPlayerData() {
         super();
@@ -20,5 +22,10 @@ public class FFASavedPlayerData extends SavedPlayerData {
         set(Integer.class, "killstreak", killstreak);
         set(Integer.class, "bestKillstreak", bestKillstreak);
         set(Integer.class, "deaths", deaths);
+
+        this.elo = 0;
+        this.rating = 1;
+        set(Double.class, "elo", elo);
+        set(Double.class, "rating", rating);
     }
 }

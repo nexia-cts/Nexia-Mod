@@ -42,13 +42,13 @@ public abstract class BlockItemMixin {
             return;
         }
 
-        if (FfaAreas.isFfaWorld(level) && !FfaUhcUtil.beforeBuild(nexiaPlayer, blockPos)) {
+        if (FfaAreas.isFfaWorld(level) && !FfaUhcUtil.INSTANCE.beforeBuild(nexiaPlayer, blockPos)) {
             cir.setReturnValue(InteractionResult.PASS);
             nexiaPlayer.refreshInventory();
             return;
         }
 
-        if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(level) && !FfaSkyUtil.beforeBuild(nexiaPlayer, blockPos)) {
+        if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(level) && !FfaSkyUtil.INSTANCE.beforeBuild(nexiaPlayer, blockPos)) {
             cir.setReturnValue(InteractionResult.PASS);
             nexiaPlayer.refreshInventory();
         }

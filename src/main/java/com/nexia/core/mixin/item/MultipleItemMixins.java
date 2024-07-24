@@ -21,7 +21,7 @@ public class MultipleItemMixins {
     public void preventPlayers(Level level, Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         NexiaPlayer nexiaPlayer = new NexiaPlayer((ServerPlayer) player);
 
-        if(((FfaKitsUtil.isFfaPlayer(nexiaPlayer) && FfaKitsUtil.wasInSpawn.contains(player.getUUID())) || player.level.equals(LobbyUtil.lobbyWorld)) && !player.isCreative()) {
+        if(((FfaKitsUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && FfaKitsUtil.INSTANCE.wasInSpawn.contains(player.getUUID())) || player.level.equals(LobbyUtil.lobbyWorld)) && !player.isCreative()) {
             cir.setReturnValue(new InteractionResultHolder<>(InteractionResult.FAIL, player.getItemInHand(interactionHand)));
             nexiaPlayer.refreshInventory();
         }

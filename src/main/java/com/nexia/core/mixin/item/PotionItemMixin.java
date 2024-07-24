@@ -37,7 +37,7 @@ public class PotionItemMixin {
             this.player = (ServerPlayer) livingEntity;
             NexiaPlayer nexiaPlayer = new NexiaPlayer(this.player);
 
-            if((FfaKitsUtil.isFfaPlayer(nexiaPlayer) && FfaKitsUtil.wasInSpawn.contains(player.getUUID())) || (FfaSkyUtil.isFfaPlayer(nexiaPlayer) && FfaSkyUtil.wasInSpawn.contains(player.getUUID())) ||(((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(nexiaPlayer)).gameMode.equals(PlayerGameMode.LOBBY) && ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(nexiaPlayer)).gameMode.equals(DuelGameMode.LOBBY))) {
+            if((FfaKitsUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && FfaKitsUtil.INSTANCE.wasInSpawn.contains(player.getUUID())) || (FfaSkyUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && FfaSkyUtil.INSTANCE.wasInSpawn.contains(player.getUUID())) ||(((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(nexiaPlayer)).gameMode.equals(PlayerGameMode.LOBBY) && ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(nexiaPlayer)).gameMode.equals(DuelGameMode.LOBBY))) {
                 cir.setReturnValue(itemStack);
                 nexiaPlayer.refreshInventory();
             }
@@ -61,7 +61,7 @@ public class PotionItemMixin {
         if (player == null) return new ItemStack(Items.GLASS_BOTTLE);
         NexiaPlayer nexiaPlayer = new NexiaPlayer(this.player);
 
-        if (BwUtil.isBedWarsPlayer(nexiaPlayer) || FfaSkyUtil.isFfaPlayer(nexiaPlayer)) {
+        if (BwUtil.isBedWarsPlayer(nexiaPlayer) || FfaSkyUtil.INSTANCE.isFfaPlayer(nexiaPlayer)) {
             nexiaPlayer.refreshInventory();
             return ItemStack.EMPTY;
         }

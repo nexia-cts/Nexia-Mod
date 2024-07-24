@@ -1,10 +1,10 @@
 package com.nexia.ffa;
 
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
@@ -60,23 +60,23 @@ public class FfaUtil {
         CorePlayerData data = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player);
 
         if(data.ffaGameMode == FfaGameMode.CLASSIC) {
-            FfaClassicUtil.leaveOrDie(player, source, leaving);
+            FfaClassicUtil.INSTANCE.leaveOrDie(player, source, leaving);
             return;
         }
 
         if(data.ffaGameMode == FfaGameMode.KITS) {
-            FfaKitsUtil.leaveOrDie(player, source, leaving);
+            FfaKitsUtil.INSTANCE.leaveOrDie(player, source, leaving);
             return;
         }
 
         if(data.ffaGameMode == FfaGameMode.SKY) {
-            FfaSkyUtil.wasInSpawn.remove(player.getUUID());
-            FfaSkyUtil.leaveOrDie(player, source, leaving);
+            FfaSkyUtil.INSTANCE.wasInSpawn.remove(player.getUUID());
+            FfaSkyUtil.INSTANCE.leaveOrDie(player, source, leaving);
             return;
         }
 
         if(data.ffaGameMode == FfaGameMode.UHC) {
-            FfaUhcUtil.leaveOrDie(player, source, leaving);
+            FfaUhcUtil.INSTANCE.leaveOrDie(player, source, leaving);
             return;
         }
 
