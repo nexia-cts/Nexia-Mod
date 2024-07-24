@@ -134,7 +134,7 @@ public class TeamDuelsGame { // implements Runnable{
         DuelGameHandler.teamDuelsGames.add(game);
 
         for (NexiaPlayer player : team1.all) {
-            DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
+            DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
 
             data.gameMode = gameMode;
             data.gameOptions = new DuelOptions.GameOptions(game, team2);
@@ -165,7 +165,7 @@ public class TeamDuelsGame { // implements Runnable{
         }
 
         for (NexiaPlayer player : team2.all) {
-            DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
+            DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
 
             data.gameMode = gameMode;
             data.gameOptions = new DuelOptions.GameOptions(game, team1);
@@ -248,11 +248,11 @@ public class TeamDuelsGame { // implements Runnable{
                 this.isEnding = false;
 
                 for (NexiaPlayer player : loserTeam.all) {
-                    ((DuelsPlayerData)PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player)).gameOptions = null;
+                    ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).gameOptions = null;
                     player.runCommand("/hub", 0, false);
                 }
                 for (NexiaPlayer player : winnerTeam.all) {
-                    ((DuelsPlayerData)PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player)).gameOptions = null;
+                    ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).gameOptions = null;
                     player.runCommand("/hub", 0, false);
                 }
 
@@ -360,20 +360,20 @@ public class TeamDuelsGame { // implements Runnable{
                         .color(ChatFormat.brandColor2));
 
         for (NexiaPlayer player : loserTeam.all) {
-            PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player).savedData.incrementInteger("losses");
+            PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player).savedData.incrementInteger("losses");
             player.sendTitle(Title.title(titleLose, subtitleLose));
             player.sendMessage(win);
         }
 
         for (NexiaPlayer player : winnerTeam.all) {
-            PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player).savedData.incrementInteger("wins");
+            PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player).savedData.incrementInteger("wins");
             player.sendTitle(Title.title(titleWin, subtitleWin));
             player.sendMessage(win);
         }
     }
 
     public void death(@NotNull NexiaPlayer victim, @Nullable DamageSource source) {
-        DuelsPlayerData victimData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(victim);
+        DuelsPlayerData victimData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(victim);
         DuelsTeam victimTeam = victimData.duelOptions.duelsTeam;
 
         if (victimTeam == null || this.isEnding) return;
@@ -387,7 +387,7 @@ public class TeamDuelsGame { // implements Runnable{
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim.unwrap());
 
         if (attacker != null) {
-            DuelsPlayerData attackerData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(attacker.getUUID());
+            DuelsPlayerData attackerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(attacker.getUUID());
             if (attackerData.gameOptions.teamDuelsGame != null && attackerData.gameOptions.teamDuelsGame.equals(this) && isVictimTeamDead) {
                 this.endGame(victimTeam, attackerData.duelOptions.duelsTeam, true);
             }
@@ -398,8 +398,6 @@ public class TeamDuelsGame { // implements Runnable{
                 this.endGame(victimTeam, this.team2, true);
             else if (this.team2 == victimTeam)
                 this.endGame(victimTeam, this.team1, true);
-
-            return;
         }
 
         /*

@@ -12,7 +12,6 @@ import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.ffa.FfaUtil;
-import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
@@ -33,7 +32,7 @@ public class SpectateCommand {
                     try {
                         NexiaPlayer player = new NexiaPlayer(commandSourceInfo.getPlayerOrException());
 
-                        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(player);
+                        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
                         CorePlayerData playerData1 = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player);
                         return (playerData.gameMode == DuelGameMode.LOBBY && playerData1.gameMode == PlayerGameMode.LOBBY) || (playerData1.gameMode == PlayerGameMode.FFA);
                     } catch (Exception ignored) {

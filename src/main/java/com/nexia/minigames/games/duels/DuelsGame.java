@@ -80,8 +80,8 @@ public class DuelsGame {
             stringGameMode = "CLASSIC";
         }
 
-        DuelsPlayerData invitorData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(p1);
-        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(p2);
+        DuelsPlayerData invitorData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(p1);
+        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(p2);
 
         if(invitorData.duelOptions.spectatingPlayer != null) {
             GamemodeHandler.unspectatePlayer(p1, invitorData.duelOptions.spectatingPlayer, false);
@@ -160,8 +160,8 @@ public class DuelsGame {
                 NexiaPlayer attacker = this.winner;
                 NexiaPlayer victim = this.loser;
 
-                DuelsPlayerData victimData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(victim);
-                DuelsPlayerData attackerData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(attacker);
+                DuelsPlayerData victimData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(victim);
+                DuelsPlayerData attackerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(attacker);
 
                 for(NexiaPlayer spectator : this.spectators) {
                     spectator.runCommand("/hub", 0, false);
@@ -299,7 +299,7 @@ public class DuelsGame {
     }
 
     public void death(@NotNull NexiaPlayer victim, @Nullable DamageSource source){
-        DuelsPlayerData victimData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(victim);
+        DuelsPlayerData victimData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(victim);
         if(victimData.gameOptions == null || victimData.gameOptions.duelsGame == null || victimData.gameOptions.duelsGame.isEnding) return;
 
         victim.unwrap().destroyVanishingCursedItems();
@@ -311,7 +311,7 @@ public class DuelsGame {
 
             NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
 
-            DuelsPlayerData attackerData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(nexiaAttacker);
+            DuelsPlayerData attackerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(nexiaAttacker);
             if((victimData.inDuel && attackerData.inDuel) && victimData.gameOptions.duelsGame == attackerData.gameOptions.duelsGame){
                 this.endGame(victim, nexiaAttacker, true);
                 return;
@@ -319,7 +319,7 @@ public class DuelsGame {
         }
         if(victimData.gameOptions.duelPlayer != null) {
             NexiaPlayer accurateAttacker = victimData.gameOptions.duelPlayer;
-            DuelsPlayerData attackerData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(accurateAttacker);
+            DuelsPlayerData attackerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(accurateAttacker);
 
             if ((victimData.inDuel && attackerData.inDuel) && accurateAttacker.equals(victimData.gameOptions.duelPlayer)) {
                 this.endGame(victim, accurateAttacker, true);

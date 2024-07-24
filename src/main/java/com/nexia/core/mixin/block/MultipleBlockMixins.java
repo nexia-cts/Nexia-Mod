@@ -1,11 +1,11 @@
 package com.nexia.core.mixin.block;
 
-import com.nexia.base.player.PlayerDataManager;
-import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.base.player.NexiaPlayer;
+import com.nexia.base.player.PlayerDataManager;
+import com.nexia.core.NexiaCore;
+import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
-import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.KitRoom;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import net.minecraft.core.BlockPos;
@@ -29,7 +29,7 @@ public class MultipleBlockMixins {
     private void use(BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult, CallbackInfoReturnable<InteractionResult> cir) {
         if (!(player instanceof ServerPlayer serverPlayer)) return;
         NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
-        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(nexiaPlayer);
+        DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(nexiaPlayer);
 
         if ((FfaUtil.isFfaPlayer(nexiaPlayer) || KitRoom.isInKitRoom(nexiaPlayer) || BwUtil.isInBedWars(nexiaPlayer) || (playerData.gameOptions != null && (playerData.gameOptions.duelsGame != null || playerData.gameOptions.teamDuelsGame != null || playerData.gameOptions.customTeamDuelsGame != null || playerData.gameOptions.customDuelsGame != null)) || LobbyUtil.isLobbyWorld(nexiaPlayer.getWorld())) && !player.isCreative()) {
             cir.setReturnValue(InteractionResult.FAIL);

@@ -10,7 +10,6 @@ import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
-import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.minigames.games.skywars.SkywarsGame;
@@ -66,7 +65,7 @@ public abstract class FoodDataMixin {
         if(SkywarsGame.isSkywarsPlayer(nexiaPlayer)) return;
 
         // Duels
-        DuelGameMode duelGameMode = ((DuelsPlayerData)PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(nexiaPlayer)).gameMode;
+        DuelGameMode duelGameMode = ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(nexiaPlayer)).gameMode;
         PlayerGameMode gameMode = ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(nexiaPlayer)).gameMode;
         if(gameMode.equals(PlayerGameMode.LOBBY) && (duelGameMode != null && !duelGameMode.hasSaturation)) return;
 

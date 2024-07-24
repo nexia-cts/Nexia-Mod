@@ -1,7 +1,7 @@
 package com.nexia.core.gui;
 
 import com.nexia.base.player.PlayerDataManager;
-import com.nexia.minigames.games.duels.DuelGameHandler;
+import com.nexia.core.NexiaCore;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import com.nexia.core.games.util.LobbyUtil;
@@ -92,7 +92,7 @@ public class PlayGUI extends SimpleGui {
 
         int duelsPlayers = 0;
         for(ServerPlayer serverPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()) {
-            DuelGameMode gameMode = ((DuelsPlayerData)PlayerDataManager.getDataManager(DuelGameHandler.DUELS_DATA_MANAGER).get(serverPlayer.getUUID())).gameMode;
+            DuelGameMode gameMode = ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(serverPlayer.getUUID())).gameMode;
             if(gameMode != null && (gameMode != DuelGameMode.LOBBY && gameMode != DuelGameMode.SPECTATING)) duelsPlayers++;
         }
 
