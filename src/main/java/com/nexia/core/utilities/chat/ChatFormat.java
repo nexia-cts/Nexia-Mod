@@ -75,8 +75,9 @@ public class ChatFormat {
 
     // Text
 
-    public static Component nexiaMessage = MiniMessage.get().parse(String.format("<bold><gradient:%s:%s>Nexia</gradient></bold> <color:%s>»</color> ", ChatFormat.brandColor1, ChatFormat.brandColor2, ChatFormat.arrowColor));
+    public static Component nexia = MiniMessage.get().parse(String.format("<bold><gradient:%s:%s>Nexia</gradient></bold>", ChatFormat.brandColor1, ChatFormat.brandColor2));
 
+    public static Component nexiaMessage = nexia.append(MiniMessage.get().parse(String.format(" <color:%s>»</color> ", ChatFormat.arrowColor)));
 
 
     public static Component separatorLine(String title) {
