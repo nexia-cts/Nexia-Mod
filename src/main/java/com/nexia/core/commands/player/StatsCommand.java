@@ -37,7 +37,7 @@ public class StatsCommand {
 
     public static int run(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
-        CorePlayerData playerData = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+        CorePlayerData playerData = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player);
 
 
         Component start = Component.text("  »").color(NamedTextColor.GRAY);
