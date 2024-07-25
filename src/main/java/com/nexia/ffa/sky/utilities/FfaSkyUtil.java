@@ -193,8 +193,6 @@ public class FfaSkyUtil extends BaseFfaUtil {
 
     @Override
     public void finishSendToSpawn(NexiaPlayer player) {
-        player.reset(true, Minecraft.GameMode.SURVIVAL);
-        spawn.teleportPlayer(ffaWorld, player.unwrap());
         setInventory(player);
     }
 
