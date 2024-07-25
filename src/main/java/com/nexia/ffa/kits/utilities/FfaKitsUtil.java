@@ -17,9 +17,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.phys.AABB;
 
 import static com.nexia.ffa.kits.utilities.FfaAreas.*;
 
@@ -83,8 +81,8 @@ public class FfaKitsUtil extends BaseFfaUtil {
     }
 
     @Override
-    public BlockPos[] getFfaCorners() {
-        return new BlockPos[]{ffaCorner1, ffaCorner2};
+    public AABB getFfaCorners() {
+        return new AABB(ffaCorner1, ffaCorner2);
     }
 
     @Override

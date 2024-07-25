@@ -13,7 +13,7 @@ import com.nexia.nexus.api.world.types.Minecraft;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.phys.AABB;
 
 import static com.nexia.ffa.uhc.utilities.FfaAreas.*;
 
@@ -57,7 +57,7 @@ public class FfaUhcUtil extends BaseFfaUtil {
     }
 
     @Override
-    public BlockPos[] getFfaCorners() {
+    public AABB getFfaCorners() {
         return new BlockPos[]{ffaCorner1, ffaCorner2};
     }
 

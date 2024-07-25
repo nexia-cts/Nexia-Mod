@@ -204,7 +204,7 @@ public abstract class BaseFfaUtil {
 
     public abstract boolean isInFfaSpawn(NexiaPlayer player);
 
-    public abstract BlockPos[] getFfaCorners();
+    public abstract AABB getFfaCorners();
 
 
     public void setDeathMessage(@NotNull NexiaPlayer player, @Nullable DamageSource source){
@@ -293,9 +293,8 @@ public abstract class BaseFfaUtil {
     }
 
     public void clearProjectiles(NexiaPlayer player) {
-        BlockPos c1 = getFfaCorners()[0].offset(-10, -getFfaCorners()[0].getY(), -10);
-        BlockPos c2 = getFfaCorners()[1].offset(10, 319 - getFfaCorners()[1].getY(), 10);
-        BoundingBox box = new BoundingBox(c1.getX(), c1.getY(), c1.getZ(), c2.getX(), c2.getY(), c2.getZ());
+        AABB aabb = getFfaCorners().contract(-10, -getFfaCorners().minY, -10).expandTowards(10, 319 - getFfaCorners().maxY, 10);
+        BoundingBox box = new BoundingBox(aabb.minX, aabb.maxX, aabb.minY, aabb.maxY, aabb.minZ, aabb.maxZ);
 
         for (WrappedProjectile projectile : getNexusFfaWorld().getEntities(box, entity -> entity instanceof WrappedProjectile projectile
                         && projectile.getOwner() != null
@@ -306,36 +305,28 @@ public abstract class BaseFfaUtil {
     }
 
     public void clearThrownTridents(NexiaPlayer player) {
-        BlockPos c1 = getFfaCorners()[0].offset(-10, -getFfaCorners()[0].getY(), -10);
-        BlockPos c2 = getFfaCorners()[1].offset(10, 319 - getFfaCorners()[1].getY(), 10);
-        AABB aabb = new AABB(c1, c2);
+        AABB aabb = getFfaCorners().contract(-10, -getFfaCorners().minY, -10).expandTowards(10, 319 - getFfaCorners().maxY, 10);
         for (ThrownTrident trident : getFfaWorld().getEntities(EntityType.TRIDENT, aabb, trident -> trident.getOwner() != null && trident.getOwner().getUUID().equals(player.getUUID()))) {
             trident.remove();
         }
     }
 
     public void clearArrows(NexiaPlayer player) {
-        BlockPos c1 = getFfaCorners()[0].offset(-10, - getFfaCorners()[0].getY(), -10);
-        BlockPos c2 = getFfaCorners()[1].offset(10, 319 - getFfaCorners()[1].getY(), 10);
-        AABB aabb = new AABB(c1, c2);
+        AABB aabb = getFfaCorners().contract(-10, -getFfaCorners().minY, -10).expandTowards(10, 319 - getFfaCorners().maxY, 10);
         for (Arrow arrow : getFfaWorld().getEntities(EntityType.ARROW, aabb, arrow -> arrow.getOwner() != null && arrow.getOwner().getUUID().equals(player.getUUID()))) {
             arrow.remove();
         }
     }
 
     public void clearSpectralArrows(NexiaPlayer player) {
-        BlockPos c1 = getFfaCorners()[0].offset(-10, - getFfaCorners()[0].getY(), -10);
-        BlockPos c2 = getFfaCorners()[1].offset(10, 319 - getFfaCorners()[1].getY(), 10);
-        AABB aabb = new AABB(c1, c2);
+        AABB aabb = getFfaCorners().contract(-10, -getFfaCorners().minY, -10).expandTowards(10, 319 - getFfaCorners().maxY, 10);
         for (SpectralArrow arrow : getFfaWorld().getEntities(EntityType.SPECTRAL_ARROW, aabb, arrow -> arrow.getOwner() != null && arrow.getOwner().getUUID().equals(player.getUUID()))) {
             arrow.remove();
         }
     }
 
     public void clearEnderpearls(NexiaPlayer player) {
-        BlockPos c1 = getFfaCorners()[0].offset(-10, - getFfaCorners()[0].getY(), -10);
-        BlockPos c2 = getFfaCorners()[1].offset(10, 319 - getFfaCorners()[1].getY(), 10);
-        AABB aabb = new AABB(c1, c2);
+        AABB aabb = getFfaCorners().contract(-10, -getFfaCorners().minY, -10).expandTowards(10, 319 - getFfaCorners().maxY, 10);
         for (ThrownEnderpearl enderpearl : getFfaWorld().getEntities(EntityType.ENDER_PEARL, aabb, enderpearl -> enderpearl.getOwner() != null && enderpearl.getOwner().getUUID().equals(player.getUUID()))) {
             enderpearl.remove();
         }

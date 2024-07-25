@@ -13,6 +13,7 @@ import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.phys.AABB;
 
 import java.util.List;
 
@@ -89,8 +90,8 @@ public class FfaClassicUtil extends BaseFfaUtil {
     }
 
     @Override
-    public BlockPos[] getFfaCorners() {
-        return new BlockPos[]{ffaCorner1, ffaCorner2};
+    public AABB getFfaCorners() {
+        return new AABB(ffaCorner1, ffaCorner2);
     }
 
     @Override
