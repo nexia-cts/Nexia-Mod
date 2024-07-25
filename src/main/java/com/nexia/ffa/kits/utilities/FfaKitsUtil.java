@@ -12,6 +12,7 @@ import com.nexia.ffa.base.BaseFfaUtil;
 import com.nexia.ffa.kits.FfaKit;
 import com.nexia.ffa.kits.utilities.player.KitFFAPlayerData;
 import com.nexia.nexus.api.world.World;
+import com.nexia.nexus.api.world.types.Minecraft;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.minecraft.core.BlockPos;
@@ -62,17 +63,17 @@ public class FfaKitsUtil extends BaseFfaUtil {
     }
 
     @Override
-    public void completeFiveTick(ServerPlayer player, NexiaPlayer nexiaPlayer) {
-        if(!isInFfaSpawn(nexiaPlayer) && ((KitFFAPlayerData) PlayerDataManager.getDataManager(NexiaCore.FFA_KITS_DATA_MANAGER).get(nexiaPlayer)).kit == null) {
-            nexiaPlayer.sendTitle(Title.title(Component.text("No kit selected!").color(ChatFormat.failColor), Component.text("You need to select a kit!").color(ChatFormat.failColor)));
-            nexiaPlayer.sendSound(new EntityPos(player), SoundEvents.NOTE_BLOCK_DIDGERIDOO, SoundSource.BLOCKS, 10, 1);
-            sendToSpawn(nexiaPlayer);
+    public void completeFiveTick(NexiaPlayer player) {
+        if(!isInFfaSpawn(player) && ((KitFFAPlayerData) PlayerDataManager.getDataManager(NexiaCore.FFA_KITS_DATA_MANAGER).get(player)).kit == null) {
+            player.sendTitle(Title.title(Component.text("No kit selected!").color(ChatFormat.failColor), Component.text("You need to select a kit!").color(ChatFormat.failColor)));
+            player.playSound(Minecraft.Sound.NOTE_BLOCK_DIDGERIDOO, 10, 1);
+            sendToSpawn(player);
             return;
         }
 
-        if(wasInSpawn.contains(player.getUUID()) && !isInFfaSpawn(nexiaPlayer)){
+        if(wasInSpawn.contains(player.getUUID()) && !isInFfaSpawn(player)){
             wasInSpawn.remove(player.getUUID());
-            nexiaPlayer.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your kit was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
+            player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your kit was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
         }
     }
 

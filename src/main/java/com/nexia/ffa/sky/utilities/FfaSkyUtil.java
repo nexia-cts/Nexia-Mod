@@ -76,12 +76,12 @@ public class FfaSkyUtil extends BaseFfaUtil {
     }
 
     @Override
-    public void completeFiveTick(ServerPlayer player, NexiaPlayer nexiaPlayer) {
-        if(wasInSpawn.contains(player.getUUID()) && !isInFfaSpawn(nexiaPlayer)){
+    public void completeFiveTick(NexiaPlayer player) {
+        if(wasInSpawn.contains(player.getUUID()) && !isInFfaSpawn(player)){
             wasInSpawn.remove(player.getUUID());
-            player.getCooldowns().addCooldown(Items.ENDER_PEARL, 10);
-            saveInventory(nexiaPlayer);
-            nexiaPlayer.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your inventory layout was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
+            player.unwrap().getCooldowns().addCooldown(Items.ENDER_PEARL, 10);
+            saveInventory(player);
+            player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your inventory layout was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
         }
     }
 

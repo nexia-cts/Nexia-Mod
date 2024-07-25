@@ -88,39 +88,25 @@ public abstract class BaseFfaUtil {
         List<ServerPlayer> players = getFfaWorld().players();
         if(players.isEmpty()) return true;
 
-        ServerPlayer bot = null;
-
-        for(ServerPlayer player : players) {
-            if(player.getScoreboardName().equals("femboy.ai")) {
-                bot = player;
-                break;
-            }
-        }
-
-        if(bot != null && players.size() == 1) {
-            bot.kill(); // despawns the bot
-            return true;
-        }
-
-        if(bot == null && !players.isEmpty()) {
-            ServerTime.nexusServer.runCommand("/function core:bot/bot", 4, false); // spawns the bot
-            return false;
-        }
-
+        return checkBot(players);
+    }
+    
+    public boolean checkBot(List<ServerPlayer> players) {
         return false;
     }
 
     public void fiveTick() {
         if(checkWorld()) return;
-        for (ServerPlayer player : getFfaWorld().players()) {
+        for (Player player : getNexusFfaWorld().getPlayers()) {
             NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
             if(!isFfaPlayer(nexiaPlayer)) continue;
             
-            completeFiveTick(player, nexiaPlayer);
+            completeFiveTick(nexiaPlayer);
         }
     }
 
-    public abstract void completeFiveTick(ServerPlayer player, NexiaPlayer nexiaPlayer);
+    public abstract void completeFiveTick(NexiaPlayer player);
+
     public void saveInventory(NexiaPlayer player){
         SavableInventory savableInventory = new SavableInventory(player.unwrap().inventory);
         String stringInventory = savableInventory.toSave();
@@ -176,15 +162,12 @@ public abstract class BaseFfaUtil {
     }
 
     public void giveKillLoot(NexiaPlayer attacker, NexiaPlayer player) {
-
     }
 
     public void killHeal(NexiaPlayer attacker) {
-
     }
 
     public void doPreKill(NexiaPlayer attacker, NexiaPlayer player) {
-
     }
 
     public void calculateDeath(NexiaPlayer player){
