@@ -19,6 +19,7 @@ import com.nexia.nexus.api.world.World;
 import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.nexus.api.world.util.BoundingBox;
+import com.nexia.nexus.api.world.util.Vector3D;
 import com.nexia.nexus.builder.implementation.world.entity.projectile.WrappedProjectile;
 import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
@@ -27,10 +28,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.SpectralArrow;
+import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
@@ -43,7 +44,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Predicate;
 
 public abstract class BaseFfaUtil {
     public ArrayList<UUID> wasInSpawn = new ArrayList<>();
@@ -297,8 +297,11 @@ public abstract class BaseFfaUtil {
         BlockPos c2 = getFfaCorners()[1].offset(10, 319 - getFfaCorners()[1].getY(), 10);
         BoundingBox box = new BoundingBox(c1.getX(), c1.getY(), c1.getZ(), c2.getX(), c2.getY(), c2.getZ());
 
-        for(com.nexia.nexus.api.world.entity.Entity entity : getNexusFfaWorld().getEntities(box, entity -> entity instanceof WrappedProjectile projectile && projectile.getOwner() != null && projectile.getOwner().getUUID().equals(player.getUUID()))) {
-            entity.kill();
+        for (WrappedProjectile projectile : getNexusFfaWorld().getEntities(box, entity -> entity instanceof WrappedProjectile projectile
+                        && projectile.getOwner() != null
+                        && projectile.getOwner().getUUID().equals(player.getUUID()))
+                .stream().map(WrappedProjectile.class::cast).toList()) {
+            projectile.kill();
         }
     }
 
@@ -306,11 +309,8 @@ public abstract class BaseFfaUtil {
         BlockPos c1 = getFfaCorners()[0].offset(-10, -getFfaCorners()[0].getY(), -10);
         BlockPos c2 = getFfaCorners()[1].offset(10, 319 - getFfaCorners()[1].getY(), 10);
         AABB aabb = new AABB(c1, c2);
-        Predicate<Entity> predicate = o -> true;
-        for (ThrownTrident trident : getFfaWorld().getEntities(EntityType.TRIDENT, aabb, predicate)) {
-            if (trident.getOwner() != null && trident.getOwner().getUUID().equals(player.getUUID())) {
-                trident.remove();
-            }
+        for (ThrownTrident trident : getFfaWorld().getEntities(EntityType.TRIDENT, aabb, trident -> trident.getOwner() != null && trident.getOwner().getUUID().equals(player.getUUID()))) {
+            trident.remove();
         }
     }
 
@@ -318,11 +318,8 @@ public abstract class BaseFfaUtil {
         BlockPos c1 = getFfaCorners()[0].offset(-10, - getFfaCorners()[0].getY(), -10);
         BlockPos c2 = getFfaCorners()[1].offset(10, 319 - getFfaCorners()[1].getY(), 10);
         AABB aabb = new AABB(c1, c2);
-        Predicate<Entity> predicate = o -> true;
-        for (Arrow arrow : getFfaWorld().getEntities(EntityType.ARROW, aabb, predicate)) {
-            if (arrow.getOwner() != null && arrow.getOwner().getUUID().equals(player.getUUID())) {
-                arrow.remove();
-            }
+        for (Arrow arrow : getFfaWorld().getEntities(EntityType.ARROW, aabb, arrow -> arrow.getOwner() != null && arrow.getOwner().getUUID().equals(player.getUUID()))) {
+            arrow.remove();
         }
     }
 
@@ -330,11 +327,17 @@ public abstract class BaseFfaUtil {
         BlockPos c1 = getFfaCorners()[0].offset(-10, - getFfaCorners()[0].getY(), -10);
         BlockPos c2 = getFfaCorners()[1].offset(10, 319 - getFfaCorners()[1].getY(), 10);
         AABB aabb = new AABB(c1, c2);
-        Predicate<Entity> predicate = o -> true;
-        for (SpectralArrow arrow : getFfaWorld().getEntities(EntityType.SPECTRAL_ARROW, aabb, predicate)) {
-            if (arrow.getOwner() != null && arrow.getOwner().getUUID().equals(player.getUUID())) {
-                arrow.remove();
-            }
+        for (SpectralArrow arrow : getFfaWorld().getEntities(EntityType.SPECTRAL_ARROW, aabb, arrow -> arrow.getOwner() != null && arrow.getOwner().getUUID().equals(player.getUUID()))) {
+            arrow.remove();
+        }
+    }
+
+    public void clearEnderpearls(NexiaPlayer player) {
+        BlockPos c1 = getFfaCorners()[0].offset(-10, - getFfaCorners()[0].getY(), -10);
+        BlockPos c2 = getFfaCorners()[1].offset(10, 319 - getFfaCorners()[1].getY(), 10);
+        AABB aabb = new AABB(c1, c2);
+        for (ThrownEnderpearl enderpearl : getFfaWorld().getEntities(EntityType.ENDER_PEARL, aabb, enderpearl -> enderpearl.getOwner() != null && enderpearl.getOwner().getUUID().equals(player.getUUID()))) {
+            enderpearl.remove();
         }
     }
 
@@ -365,6 +368,7 @@ public abstract class BaseFfaUtil {
 
         player.safeReset(true, getMinecraftGameMode());
         getSpawn().teleportPlayer(getNexusFfaWorld(), player);
+        player.setVelocity(new Vector3D(0, 0, 0));
         finishSendToSpawn(player);
     }
 
