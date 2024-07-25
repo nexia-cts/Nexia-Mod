@@ -31,7 +31,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.entity.projectile.SpectralArrow;
-import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
@@ -246,8 +245,8 @@ public abstract class BaseFfaUtil {
             }
         }
 
-        for (Player fPlayer : ServerTime.nexusServer.getPlayers()) {
-            if (fPlayer.hasTag("ffa_" + getNameLowercase())) player.sendMessage(msg);
+        for (Player fPlayer : getNexusFfaWorld().getPlayers()) {
+            fPlayer.sendMessage(msg);
         }
     }
 
@@ -297,14 +296,8 @@ public abstract class BaseFfaUtil {
         BlockPos c1 = getFfaCorners()[0].offset(-10, -getFfaCorners()[0].getY(), -10);
         BlockPos c2 = getFfaCorners()[1].offset(10, 319 - getFfaCorners()[1].getY(), 10);
         BoundingBox box = new BoundingBox(c1.getX(), c1.getY(), c1.getZ(), c2.getX(), c2.getY(), c2.getZ());
-        Predicate<com.nexia.nexus.api.world.entity.Entity> predicate = o -> o instanceof Arrow;
 
-        for(com.nexia.nexus.api.world.entity.Entity entity : getNexusFfaWorld().getEntities(box)) {
-            if(!(entity instanceof Projectile projectile) ||
-                    projectile.getOwner() == null ||
-                    !projectile.getOwner().getUUID().equals(player.getUUID())
-            ) continue;
-
+        for(com.nexia.nexus.api.world.entity.Entity entity : getNexusFfaWorld().getEntities(box, entity -> entity instanceof Projectile projectile && projectile.getOwner() != null && projectile.getOwner().getUUID().equals(player.getUUID()))) {
             entity.kill();
         }
     }
@@ -341,18 +334,6 @@ public abstract class BaseFfaUtil {
         for (SpectralArrow arrow : getFfaWorld().getEntities(EntityType.SPECTRAL_ARROW, aabb, predicate)) {
             if (arrow.getOwner() != null && arrow.getOwner().getUUID().equals(player.getUUID())) {
                 arrow.remove();
-            }
-        }
-    }
-
-    public void clearEnderpearls(NexiaPlayer player) {
-        BlockPos c1 = getFfaCorners()[0].offset(-10, - getFfaCorners()[0].getY(), -10);
-        BlockPos c2 = getFfaCorners()[1].offset(10, 319 - getFfaCorners()[1].getY(), 10);
-        AABB aabb = new AABB(c1, c2);
-        Predicate<Entity> predicate = o -> true;
-        for (ThrownEnderpearl pearl : getFfaWorld().getEntities(EntityType.ENDER_PEARL, aabb, predicate)) {
-            if (pearl.getOwner() != null && pearl.getOwner().getUUID().equals(player.getUUID())) {
-                pearl.remove();
             }
         }
     }
