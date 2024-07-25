@@ -62,16 +62,16 @@ public class FfaUhcUtil extends BaseFfaUtil {
     }
 
     @Override
-    public boolean isAdventure() {
-        return false;
+    public Minecraft.GameMode getMinecraftGameMode() {
+        return Minecraft.GameMode.SURVIVAL;
     }
 
     @Override
-    public void completeFiveTick(ServerPlayer player, NexiaPlayer nexiaPlayer) {
-        if (wasInSpawn.contains(player.getUUID()) && !isInFfaSpawn(nexiaPlayer)) {
+    public void completeFiveTick(NexiaPlayer player) {
+        if (wasInSpawn.contains(player.getUUID()) && !isInFfaSpawn(player)) {
             wasInSpawn.remove(player.getUUID());
-            saveInventory(nexiaPlayer);
-            nexiaPlayer.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your inventory layout was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
+            saveInventory(player);
+            player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your inventory layout was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
         }
     }
 

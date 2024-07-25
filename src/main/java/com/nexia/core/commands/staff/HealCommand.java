@@ -18,7 +18,7 @@ public class HealCommand {
         dispatcher.register(CommandUtils.literal("heal").executes(HealCommand::run)
                 .requires(commandSourceInfo -> CommandUtil.hasPermission(commandSourceInfo, "nexia.staff.heal", 1))
                 .then(CommandUtils.argument("player", EntityArgument.player())
-                        .executes(context -> HealCommand.heal(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()))))
+                        .executes(context -> HealCommand.heal(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), false))))
                 )
         );
     }

@@ -17,9 +17,9 @@ import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.RatingUtil;
 import com.nexia.nexus.api.world.World;
 import com.nexia.nexus.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.entity.projectile.Projectile;
 import com.nexia.nexus.api.world.types.Minecraft;
-import com.nexia.nexus.builder.implementation.Wrapped;
-import com.nexia.nexus.builder.implementation.world.entity.player.WrappedPlayer;
+import com.nexia.nexus.api.world.util.BoundingBox;
 import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.kyori.adventure.text.Component;
@@ -34,7 +34,6 @@ import net.minecraft.world.entity.projectile.SpectralArrow;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -91,39 +90,25 @@ public abstract class BaseFfaUtil {
         List<ServerPlayer> players = getFfaWorld().players();
         if(players.isEmpty()) return true;
 
-        ServerPlayer bot = null;
-
-        for(ServerPlayer player : players) {
-            if(player.getScoreboardName().equals("femboy.ai")) {
-                bot = player;
-                break;
-            }
-        }
-
-        if(bot != null && players.size() == 1) {
-            bot.kill(); // despawns the bot
-            return true;
-        }
-
-        if(bot == null && !players.isEmpty()) {
-            ServerTime.nexusServer.runCommand("/function core:bot/bot", 4, false); // spawns the bot
-            return false;
-        }
-
+        return checkBot(players);
+    }
+    
+    public boolean checkBot(List<ServerPlayer> players) {
         return false;
     }
 
     public void fiveTick() {
         if(checkWorld()) return;
-        for (ServerPlayer player : getFfaWorld().players()) {
+        for (Player player : getNexusFfaWorld().getPlayers()) {
             NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
             if(!isFfaPlayer(nexiaPlayer)) continue;
             
-            completeFiveTick(player, nexiaPlayer);
+            completeFiveTick(nexiaPlayer);
         }
     }
 
-    public abstract void completeFiveTick(ServerPlayer player, NexiaPlayer nexiaPlayer);
+    public abstract void completeFiveTick(NexiaPlayer player);
+
     public void saveInventory(NexiaPlayer player){
         SavableInventory savableInventory = new SavableInventory(player.unwrap().inventory);
         String stringInventory = savableInventory.toSave();
@@ -179,15 +164,12 @@ public abstract class BaseFfaUtil {
     }
 
     public void giveKillLoot(NexiaPlayer attacker, NexiaPlayer player) {
-
     }
 
     public void killHeal(NexiaPlayer attacker) {
-
     }
 
     public void doPreKill(NexiaPlayer attacker, NexiaPlayer player) {
-
     }
 
     public void calculateDeath(NexiaPlayer player){
@@ -264,8 +246,8 @@ public abstract class BaseFfaUtil {
             }
         }
 
-        for (Player fPlayer : getFfaWorld().players().stream().map((serverPlayer) -> Wrapped.wrap(serverPlayer, WrappedPlayer.class)).toList()) {
-            fPlayer.sendMessage(msg);
+        for (Player fPlayer : ServerTime.nexusServer.getPlayers()) {
+            if (fPlayer.hasTag("ffa_" + getNameLowercase())) player.sendMessage(msg);
         }
     }
 
@@ -311,8 +293,24 @@ public abstract class BaseFfaUtil {
 
     }
 
+    public void clearProjectiles(NexiaPlayer player) {
+        BlockPos c1 = getFfaCorners()[0].offset(-10, -getFfaCorners()[0].getY(), -10);
+        BlockPos c2 = getFfaCorners()[1].offset(10, 319 - getFfaCorners()[1].getY(), 10);
+        BoundingBox box = new BoundingBox(c1.getX(), c1.getY(), c1.getZ(), c2.getX(), c2.getY(), c2.getZ());
+        Predicate<com.nexia.nexus.api.world.entity.Entity> predicate = o -> o instanceof Arrow;
+
+        for(com.nexia.nexus.api.world.entity.Entity entity : getNexusFfaWorld().getEntities(box)) {
+            if(!(entity instanceof Projectile projectile) ||
+                    projectile.getOwner() == null ||
+                    !projectile.getOwner().getUUID().equals(player.getUUID())
+            ) continue;
+
+            entity.kill();
+        }
+    }
+
     public void clearThrownTridents(NexiaPlayer player) {
-        BlockPos c1 = getFfaCorners()[0].offset(-10, - getFfaCorners()[0].getY(), -10);
+        BlockPos c1 = getFfaCorners()[0].offset(-10, -getFfaCorners()[0].getY(), -10);
         BlockPos c2 = getFfaCorners()[1].offset(10, 319 - getFfaCorners()[1].getY(), 10);
         AABB aabb = new AABB(c1, c2);
         Predicate<Entity> predicate = o -> true;
@@ -381,20 +379,16 @@ public abstract class BaseFfaUtil {
 
     public void sendToSpawn(NexiaPlayer player) {
         player.getInventory().clear();
-        clearEnderpearls(player);
-        clearThrownTridents(player);
-        clearArrows(player);
-        clearSpectralArrows(player);
+        clearProjectiles(player);
         wasInSpawn.add(player.getUUID());
 
-        player.safeReset(true, isAdventure() ? Minecraft.GameMode.ADVENTURE : Minecraft.GameMode.SURVIVAL);
-        player.unwrap().setDeltaMovement(Vec3.ZERO);
+        player.safeReset(true, getMinecraftGameMode());
         getSpawn().teleportPlayer(getNexusFfaWorld(), player);
         finishSendToSpawn(player);
     }
 
-    public boolean isAdventure() {
-        return true;
+    public Minecraft.GameMode getMinecraftGameMode() {
+        return Minecraft.GameMode.ADVENTURE;
     }
 
     public abstract void finishSendToSpawn(NexiaPlayer player);

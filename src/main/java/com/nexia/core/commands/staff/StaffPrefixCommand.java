@@ -33,7 +33,7 @@ public class StaffPrefixCommand {
                                         .executes(context -> {
 
                                             String type = StringArgumentType.getString(context, "type");
-                                            ServerPlayer mcOtherPlayer = context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()));
+                                            ServerPlayer mcOtherPlayer = context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), false));
                                             NexiaPlayer otherPlayer = new NexiaPlayer(mcOtherPlayer);
                                             NexiaRank rank = NexiaRank.identifyRank(StringArgumentType.getString(context, "prefix"));
 

@@ -18,12 +18,12 @@ public class PingCommand {
     public static void register(CommandDispatcher<CommandSourceInfo> dispatcher) {
         dispatcher.register(CommandUtils.literal("ping").executes(PingCommand::run)
                 .then(CommandUtils.argument("player", EntityArgument.player())
-                        .executes(context -> PingCommand.ping(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()))))
+                        .executes(context -> PingCommand.ping(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), true))))
                 )
         );
         dispatcher.register(CommandUtils.literal("latency").executes(PingCommand::run)
                 .then(CommandUtils.argument("player", EntityArgument.player())
-                        .executes(context -> PingCommand.ping(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()))))
+                        .executes(context -> PingCommand.ping(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), true))))
                 )
         );
     }

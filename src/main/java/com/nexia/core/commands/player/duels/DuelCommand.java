@@ -47,15 +47,15 @@ public class DuelCommand {
                         .executes(context -> {
                             NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
 
-                            DuelGUI.openDuelGui(player.unwrap(), context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())));
+                            DuelGUI.openDuelGui(player.unwrap(), context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), true)));
                             return 1;
                         })
                         .then(CommandUtils.argument("gamemode", StringArgumentType.string())
                                 .suggests(((context, builder) -> SharedSuggestionProvider.suggest((DuelGameMode.stringDuelGameModes), builder)))
-                                .executes(context -> DuelCommand.challenge(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())), StringArgumentType.getString(context, "gamemode"), null))
+                                .executes(context -> DuelCommand.challenge(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), true)), StringArgumentType.getString(context, "gamemode"), null))
                                 .then(CommandUtils.argument("map", StringArgumentType.string())
                                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest((DuelsMap.stringDuelsMaps), builder)))
-                                        .executes(context -> DuelCommand.challenge(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())), StringArgumentType.getString(context, "gamemode"), StringArgumentType.getString(context, "map")))
+                                        .executes(context -> DuelCommand.challenge(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), true)), StringArgumentType.getString(context, "gamemode"), StringArgumentType.getString(context, "map")))
                                 ))));
     }
 

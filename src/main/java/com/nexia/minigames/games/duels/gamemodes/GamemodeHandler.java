@@ -138,7 +138,7 @@ public class GamemodeHandler {
          */
         // what could go wrong?
 
-        executor.setGameMode(Minecraft.GameMode.ADVENTURE);
+        executor.setGameMode(Minecraft.GameMode.SPECTATOR);
         executor.teleport(player.getLocation());
 
         DuelsGame duelsGame = playerData.gameOptions.duelsGame;
@@ -146,7 +146,7 @@ public class GamemodeHandler {
         TeamDuelsGame teamDuelsGame = playerData.gameOptions.teamDuelsGame;
         CustomTeamDuelsGame customTeamDuelsGame = playerData.gameOptions.customTeamDuelsGame;
 
-        Component spectateMSG = Component.text(String.format("(%s started spectating)", executor.getRawName())).color(ChatFormat.systemColor).decorate(ChatFormat.bold);
+        Component spectateMSG = Component.text(String.format("(%s started spectating)", executor.getRawName()), ChatFormat.systemColor).decorate(ChatFormat.italic);
 
         if (teamDuelsGame != null) {
             teamDuelsGame.spectators.add(executor);
@@ -210,7 +210,7 @@ public class GamemodeHandler {
         }
 
         DuelsPlayerData executorData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(executor);
-        Component spectateMSG = Component.text(String.format("(%s started spectating)", executor.getRawName())).color(ChatFormat.systemColor).decorate(ChatFormat.bold);
+        Component spectateMSG = Component.text(String.format("(%s started spectating)", executor.getRawName()), ChatFormat.systemColor).decorate(ChatFormat.italic);
 
         if (duelsGame != null || teamDuelsGame != null || customDuelsGame != null || customTeamDuelsGame != null) {
             executor.sendMessage(

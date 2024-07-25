@@ -31,7 +31,7 @@ public class StatsCommand {
                 .then(CommandUtils.argument("player", EntityArgument.player())
                         .then(CommandUtils.argument("gamemode", StringArgumentType.greedyString())
                                 .suggests(((context, builder) -> SharedSuggestionProvider.suggest((LobbyUtil.statsGameModes), builder)))
-                                .executes(context -> StatsCommand.other(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())), StringArgumentType.getString(context, "gamemode")))))
+                                .executes(context -> StatsCommand.other(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), true)), StringArgumentType.getString(context, "gamemode")))))
         );
     }
 

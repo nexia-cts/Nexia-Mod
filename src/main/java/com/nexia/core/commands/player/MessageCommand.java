@@ -53,7 +53,7 @@ public class MessageCommand {
 
     private static int msgCommand(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         NexiaPlayer sender = new NexiaPlayer(context.getSource().getPlayerOrException());
-        NexiaPlayer receiver = new NexiaPlayer(context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())));
+        NexiaPlayer receiver = new NexiaPlayer(context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), true)));
         String message = StringArgumentType.getString(context, "message");
 
         sendMessage(sender, receiver, message);

@@ -43,7 +43,7 @@ public class UnGamemodeBanCommand {
             return 1;
         }
 
-        GamemodeBanHandler.tryUnGamemodeBan(sender, new NexiaPlayer(context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()))), gameMode);
+        GamemodeBanHandler.tryUnGamemodeBan(sender, new NexiaPlayer(context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), false))), gameMode);
 
         return 1;
     }

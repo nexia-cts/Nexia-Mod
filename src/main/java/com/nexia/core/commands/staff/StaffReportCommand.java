@@ -28,7 +28,7 @@ public class StaffReportCommand {
                         .then(CommandUtils.argument("player", EntityArgument.player())
                                 .executes(context -> {
                                     String type = StringArgumentType.getString(context, "type");
-                                    ServerPlayer mcOtherPlayer = context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()));
+                                    ServerPlayer mcOtherPlayer = context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), false));
                                     NexiaPlayer otherPlayer = new NexiaPlayer(mcOtherPlayer);
 
                                     CorePlayerData data = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(mcOtherPlayer.getUUID());

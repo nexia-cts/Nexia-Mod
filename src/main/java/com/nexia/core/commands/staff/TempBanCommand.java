@@ -20,7 +20,7 @@ public class TempBanCommand {
                 .then(CommandUtils.argument("player", GameProfileArgument.gameProfile())
                         .then(CommandUtils.argument("duration", StringArgumentType.word())
                                 .then(CommandUtils.argument("reason", StringArgumentType.greedyString())
-                                        .executes(context -> TempBanCommand.ban(context.getSource(), context.getArgument("player", GameProfileArgument.Result.class).getNames(CommandUtil.getCommandSourceStack(context.getSource())), StringArgumentType.getString(context, "reason"), StringArgumentType.getString(context, "duration"))))
+                                        .executes(context -> TempBanCommand.ban(context.getSource(), context.getArgument("player", GameProfileArgument.Result.class).getNames(CommandUtil.getCommandSourceStack(context.getSource(), false)), StringArgumentType.getString(context, "reason"), StringArgumentType.getString(context, "duration"))))
                 )
         ));
     }
