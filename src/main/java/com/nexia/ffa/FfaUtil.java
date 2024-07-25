@@ -157,4 +157,27 @@ public class FfaUtil {
                 .append(Component.text(FfaUtil.calculateHealth(attacker.getHealth()) + "❤").color(ChatFormat.failColor))
                 .append(Component.text(" left.").color(ChatFormat.chatColor2));
     }
+
+    public static void joinOrRespawn(NexiaPlayer player) {
+        CorePlayerData data = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player);
+
+        if(data.ffaGameMode == FfaGameMode.CLASSIC) {
+            FfaClassicUtil.INSTANCE.joinOrRespawn(player);
+            return;
+        }
+
+        if(data.ffaGameMode == FfaGameMode.KITS) {
+            FfaKitsUtil.INSTANCE.joinOrRespawn(player);
+            return;
+        }
+
+        if(data.ffaGameMode == FfaGameMode.SKY) {
+            FfaSkyUtil.INSTANCE.joinOrRespawn(player);
+            return;
+        }
+
+        if(data.ffaGameMode == FfaGameMode.UHC) {
+            FfaUhcUtil.INSTANCE.joinOrRespawn(player);
+        }
+    }
 }

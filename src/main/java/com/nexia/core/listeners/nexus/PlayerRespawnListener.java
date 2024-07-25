@@ -1,16 +1,11 @@
 package com.nexia.core.listeners.nexus;
 
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
-import com.nexia.core.utilities.player.CorePlayerData;
-import com.nexia.minigames.games.duels.DuelGameHandler;
-import com.nexia.minigames.games.skywars.util.player.SkywarsPlayerData;
-import com.nexia.nexus.api.event.player.PlayerRespawnEvent;
-import com.nexia.nexus.api.world.types.Minecraft;
-import com.nexia.nexus.api.world.util.Location;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.base.player.NexiaPlayer;
+import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.minigames.games.duels.DuelsGame;
@@ -20,6 +15,10 @@ import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.minigames.games.skywars.SkywarsGameMode;
+import com.nexia.minigames.games.skywars.util.player.SkywarsPlayerData;
+import com.nexia.nexus.api.event.player.PlayerRespawnEvent;
+import com.nexia.nexus.api.world.types.Minecraft;
+import com.nexia.nexus.api.world.util.Location;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Random;

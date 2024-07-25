@@ -338,15 +338,13 @@ public abstract class BaseFfaUtil {
         if (attacker != null) {
             NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
 
-            clearThrownTridents(nexiaAttacker);
-            clearArrows(nexiaAttacker);
-            clearSpectralArrows(nexiaAttacker);
+            clearProjectiles(nexiaAttacker);
             setInventory(nexiaAttacker);
         }
 
-        clearThrownTridents(player);
+        clearProjectiles(player);
 
-        if(leaving) return;
+        if (leaving) return;
 
         setDeathMessage(player, source);
         sendToSpawn(player);
@@ -354,13 +352,20 @@ public abstract class BaseFfaUtil {
 
     public void sendToSpawn(NexiaPlayer player) {
         player.getInventory().clear();
-        clearProjectiles(player);
         wasInSpawn.add(player.getUUID());
 
         player.safeReset(true, getMinecraftGameMode());
         getSpawn().teleportPlayer(getNexusFfaWorld(), player);
         player.setVelocity(new Vector3D(0, 0, 0));
         finishSendToSpawn(player);
+    }
+
+    public void joinOrRespawn(NexiaPlayer player, boolean tp) {
+        if (tp) sendToSpawn(player);
+    }
+
+    public final void joinOrRespawn(NexiaPlayer player) {
+        joinOrRespawn(player, true);
     }
 
     public Minecraft.GameMode getMinecraftGameMode() {

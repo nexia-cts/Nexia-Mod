@@ -54,9 +54,7 @@ public class FfaKitsUtil extends BaseFfaUtil {
 
     @Override
     public void doPreKill(NexiaPlayer attacker, NexiaPlayer player) {
-        clearArrows(attacker);
-        clearSpectralArrows(attacker);
-        clearThrownTridents(attacker);
+        clearProjectiles(attacker);
     }
 
     @Override

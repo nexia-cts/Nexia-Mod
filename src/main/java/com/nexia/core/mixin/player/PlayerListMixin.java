@@ -1,6 +1,7 @@
 package com.nexia.core.mixin.player;
 
 import com.mojang.authlib.GameProfile;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.LobbyUtil;
@@ -8,10 +9,9 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.player.BanHandler;
 import com.nexia.core.utilities.player.CorePlayerData;
-import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.discord.NexiaDiscord;
-import com.nexia.ffa.sky.utilities.FfaSkyUtil;
+import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.skywars.SkywarsGame;
@@ -96,8 +96,8 @@ public abstract class PlayerListMixin {
 
         World respawn = nexiaPlayer.getRespawnPosition().getWorld();
 
-        if(FfaSkyUtil.INSTANCE.isFfaPlayer(nexiaPlayer)) {
-            FfaSkyUtil.INSTANCE.joinOrRespawn(nexiaPlayer);
+        if(FfaUtil.isFfaPlayer(nexiaPlayer)) {
+            FfaUtil.joinOrRespawn(nexiaPlayer);
             return;
         }
 

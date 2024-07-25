@@ -275,7 +275,8 @@ public class LobbyUtil {
                 player.setRespawnPosition(FfaAreas.nexusFfaLocation, FfaAreas.spawn.yaw, true, false);
             }
 
-            FfaClassicUtil.INSTANCE.clearThrownTridents(player);
+            FfaClassicUtil.INSTANCE.joinOrRespawn(player, false);
+            FfaClassicUtil.INSTANCE.clearProjectiles(player);
             FfaClassicUtil.INSTANCE.setInventory(player);
         }
 
@@ -283,39 +284,39 @@ public class LobbyUtil {
             player.addTag("ffa_sky");
             FfaSkyUtil.INSTANCE.wasInSpawn.add(player.getUUID());
             ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).ffaGameMode = FfaGameMode.SKY;
-            if(tp){
+            if (tp) {
                 FfaSkyUtil.INSTANCE.sendToSpawn(player);
                 player.setRespawnPosition(com.nexia.ffa.sky.utilities.FfaAreas.nexusFfaLocation, com.nexia.ffa.sky.utilities.FfaAreas.spawn.yaw, true, false);
             }
 
-            FfaSkyUtil.INSTANCE.joinOrRespawn(player);
+            FfaSkyUtil.INSTANCE.joinOrRespawn(player, false);
+            FfaSkyUtil.INSTANCE.clearProjectiles(player);
         }
 
         if(game.equalsIgnoreCase("uhc ffa")){
             player.addTag("ffa_uhc");
             FfaUhcUtil.INSTANCE.wasInSpawn.add(player.getUUID());
             ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).ffaGameMode = FfaGameMode.UHC;
-            if(tp){
+            if (tp) {
                 FfaUhcUtil.INSTANCE.sendToSpawn(player);
                 player.setRespawnPosition(com.nexia.ffa.uhc.utilities.FfaAreas.nexusFfaLocation, com.nexia.ffa.uhc.utilities.FfaAreas.spawn.yaw, true, false);
             }
 
-            FfaUhcUtil.INSTANCE.clearArrows(player);
-            FfaUhcUtil.INSTANCE.clearThrownTridents(player);
+            FfaUhcUtil.INSTANCE.joinOrRespawn(player, false);
+            FfaUhcUtil.INSTANCE.clearProjectiles(player);
         }
 
         if(game.equalsIgnoreCase("kits ffa")){
             player.addTag("ffa_kits");
             FfaKitsUtil.INSTANCE.wasInSpawn.add(player.getUUID());
             ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).ffaGameMode = FfaGameMode.KITS;
-            if(tp){
+            if (tp) {
                 FfaKitsUtil.INSTANCE.sendToSpawn(player);
                 player.setRespawnPosition(com.nexia.ffa.kits.utilities.FfaAreas.nexusFfaLocation, com.nexia.ffa.kits.utilities.FfaAreas.spawn.yaw, true, false);
             }
 
-            FfaKitsUtil.INSTANCE.clearThrownTridents(player);
-            FfaKitsUtil.INSTANCE.clearArrows(player);
-            FfaKitsUtil.INSTANCE.clearSpectralArrows(player);
+            FfaKitsUtil.INSTANCE.joinOrRespawn(player, false);
+            FfaKitsUtil.INSTANCE.clearProjectiles(player);
         }
 
         if(game.equalsIgnoreCase("bedwars")){
