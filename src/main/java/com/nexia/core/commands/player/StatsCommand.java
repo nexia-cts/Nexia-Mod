@@ -54,8 +54,6 @@ public class StatsCommand {
             message = ChatFormat.separatorLine("FFA Classic Stats");
             SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.FFA_CLASSIC_DATA_MANAGER).get(player).savedData;
 
-            long rating = Math.round(data.get(Double.class, "rating") * 100);
-
             if (playerData.ffaGameMode == FfaGameMode.KITS) {
                 message = ChatFormat.separatorLine("Kit FFA Stats");
                 data = PlayerDataManager.getDataManager(NexiaCore.FFA_KITS_DATA_MANAGER).get(player).savedData;
@@ -75,12 +73,14 @@ public class StatsCommand {
             int deaths = data.get(Integer.class, "deaths");
             int killstreak = data.get(Integer.class, "killstreak");
             int bestKillstreak = data.get(Integer.class, "bestKillstreak");
+            long elo = Math.round(data.get(Double.class, "elo") * 1000);
+            long rating = Math.round(data.get(Double.class, "rating") * 100);
 
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
-                            .append(Component.text(" Kills: ").color(ChatFormat.brandColor2))
-                                    .append(Component.text(kills).color(ChatFormat.greenColor))
+                    .append(Component.text(" Kills: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(kills).color(ChatFormat.greenColor))
             );
             player.sendMessage(start
                     .append(Component.text(" Deaths: ").color(ChatFormat.brandColor2))
@@ -89,22 +89,25 @@ public class StatsCommand {
 
             player.sendMessage(start
                     .append(Component.text(" KDR: ").color(ChatFormat.brandColor2))
-                            .append(Component.text(calculateKDR(kills, deaths)).color(ChatFormat.greenColor))
+                    .append(Component.text(calculateKDR(kills, deaths)).color(ChatFormat.greenColor))
             );
 
             player.sendMessage(start
-                            .append(Component.text(" Killstreak: ").color(ChatFormat.brandColor2))
-                                    .append(Component.text(killstreak).color(ChatFormat.goldColor))
-                                            .append(Component.text("/").color(ChatFormat.arrowColor))
-                                                    .append(Component.text(bestKillstreak).color(ChatFormat.goldColor))
+                    .append(Component.text(" Killstreak: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(killstreak).color(ChatFormat.goldColor))
+                    .append(Component.text("/").color(ChatFormat.arrowColor))
+                    .append(Component.text(bestKillstreak).color(ChatFormat.goldColor))
             );
 
-            if (playerData.ffaGameMode == FfaGameMode.CLASSIC) {
-                player.sendMessage(start
-                        .append(Component.text(" Rating: ").color(ChatFormat.brandColor2))
-                        .append(Component.text(rating).color(ChatFormat.goldColor))
-                );
-            }
+            player.sendMessage(start
+                    .append(Component.text(" Elo: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(elo).color(ChatFormat.goldColor))
+            );
+
+            player.sendMessage(start
+                    .append(Component.text(" Rating: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(rating).color(ChatFormat.goldColor))
+            );
         }
 
         if(playerData.gameMode == PlayerGameMode.LOBBY){

@@ -17,15 +17,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Score;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RatingUtil {
     public static Map<BaseFfaUtil, List<Score>> leaderboardRating = new HashMap<>();
@@ -72,6 +70,8 @@ public class RatingUtil {
     }
 
     public static void updateLeaderboard(BaseFfaUtil util) {
+        if (!Objects.equals(util.getName(), ""))
+            return;
         for (Entity entity : util.getFfaWorld().getAllEntities()) {
             if (entity.getType() == EntityType.ARMOR_STAND) {
                 entity.kill();
@@ -109,26 +109,24 @@ public class RatingUtil {
             }
         }
 
-        double x = 0.5;
-        double y = 79.75;
-        double z = -5.5;
+        Vec3 vec3 = new Vec3(0.5, 79.75, -5.5);
 
-        createArmorStand(util.getFfaWorld(), x, y + 1.25, z, ObjectMappings.convertComponent(MiniMessage.get().parse("<bold><gradient:#A201F9:#E401ED>LEADERBOARD</gradient></bold>")));
-        createArmorStand(util.getFfaWorld(), x, y + 1, z, ObjectMappings.convertComponent(MiniMessage.get().parse("<bold><gradient:#A201F9:#E401ED>HIGHEST RATING</gradient></bold>")));
-        createArmorStand(util.getFfaWorld(), x, y + 0.5, z, ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>#1 %s</gradient>", NexiaRank.GOD.team.color1, NexiaRank.GOD.team.color2, playerNames[0])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[0]).color(ChatFormat.goldColor))));
-        createArmorStand(util.getFfaWorld(), x, y + 0.25, z, ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>#2 %s</gradient>", NexiaRank.PRO.team.color1, NexiaRank.PRO.team.color2, playerNames[1])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[1]).color(ChatFormat.goldColor))));
-        createArmorStand(util.getFfaWorld(), x, y, z, ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>#3 %s</gradient>", NexiaRank.PRO.team.color1, NexiaRank.PRO.team.color2, playerNames[2])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[2]).color(ChatFormat.goldColor))));
-        createArmorStand(util.getFfaWorld(), x, y - 0.25, z, ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>#4 %s</gradient>", NexiaRank.PRO.team.color1, NexiaRank.PRO.team.color2, playerNames[3])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[3]).color(ChatFormat.goldColor))));
-        createArmorStand(util.getFfaWorld(), x, y - 0.5, z, ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>#5 %s</gradient>", NexiaRank.PRO.team.color1, NexiaRank.PRO.team.color2, playerNames[4])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[4]).color(ChatFormat.goldColor))));
-        createArmorStand(util.getFfaWorld(), x, y - 0.75, z, ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>#6 %s</gradient>", NamedTextColor.DARK_GRAY.asHexString(), NamedTextColor.GRAY.asHexString(), playerNames[5])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[5]).color(ChatFormat.goldColor))));
-        createArmorStand(util.getFfaWorld(), x, y - 1, z, ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>#7 %s</gradient>", NamedTextColor.DARK_GRAY.asHexString(), NamedTextColor.GRAY.asHexString(), playerNames[6])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[6]).color(ChatFormat.goldColor))));
-        createArmorStand(util.getFfaWorld(), x, y - 1.25, z, ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>#8 %s</gradient>", NamedTextColor.DARK_GRAY.asHexString(), NamedTextColor.GRAY.asHexString(), playerNames[7])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[7]).color(ChatFormat.goldColor))));
-        createArmorStand(util.getFfaWorld(), x, y - 1.5, z, ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>#9 %s</gradient>", NamedTextColor.DARK_GRAY.asHexString(), NamedTextColor.GRAY.asHexString(), playerNames[8])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[8]).color(ChatFormat.goldColor))));
-        createArmorStand(util.getFfaWorld(), x, y - 1.75, z, ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>#10 %s</gradient>", NamedTextColor.DARK_GRAY.asHexString(), NamedTextColor.GRAY.asHexString(), playerNames[9])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[9]).color(ChatFormat.goldColor))));
+        createArmorStand(util.getFfaWorld(), vec3.add(0, 1.25, 0), ObjectMappings.convertComponent(MiniMessage.get().parse("<bold><gradient:#A201F9:#E401ED>LEADERBOARD</gradient></bold>")));
+        createArmorStand(util.getFfaWorld(), vec3.add(0, 1, 0), ObjectMappings.convertComponent(MiniMessage.get().parse("<bold><gradient:#A201F9:#E401ED>HIGHEST RATING</gradient></bold>")));
+        createArmorStand(util.getFfaWorld(), vec3.add(0, 0.5, 0), ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>#1 %s</gradient>", NexiaRank.GOD.team.color1, NexiaRank.GOD.team.color2, playerNames[0])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[0]).color(ChatFormat.goldColor))));
+        createArmorStand(util.getFfaWorld(), vec3.add(0, 0.25, 0), ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>#2 %s</gradient>", NexiaRank.PRO.team.color1, NexiaRank.PRO.team.color2, playerNames[1])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[1]).color(ChatFormat.goldColor))));
+        createArmorStand(util.getFfaWorld(), vec3, ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>#3 %s</gradient>", NexiaRank.PRO.team.color1, NexiaRank.PRO.team.color2, playerNames[2])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[2]).color(ChatFormat.goldColor))));
+        createArmorStand(util.getFfaWorld(), vec3.subtract(0, 0.25, 0), ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>#4 %s</gradient>", NexiaRank.PRO.team.color1, NexiaRank.PRO.team.color2, playerNames[3])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[3]).color(ChatFormat.goldColor))));
+        createArmorStand(util.getFfaWorld(), vec3.subtract(0, 0.5, 0), ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>#5 %s</gradient>", NexiaRank.PRO.team.color1, NexiaRank.PRO.team.color2, playerNames[4])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[4]).color(ChatFormat.goldColor))));
+        createArmorStand(util.getFfaWorld(), vec3.subtract(0, 0.75, 0), ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>#6 %s</gradient>", NamedTextColor.DARK_GRAY.asHexString(), NamedTextColor.GRAY.asHexString(), playerNames[5])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[5]).color(ChatFormat.goldColor))));
+        createArmorStand(util.getFfaWorld(), vec3.subtract(0, 1, 0), ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>#7 %s</gradient>", NamedTextColor.DARK_GRAY.asHexString(), NamedTextColor.GRAY.asHexString(), playerNames[6])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[6]).color(ChatFormat.goldColor))));
+        createArmorStand(util.getFfaWorld(), vec3.subtract(0, 1.25, 0), ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>#8 %s</gradient>", NamedTextColor.DARK_GRAY.asHexString(), NamedTextColor.GRAY.asHexString(), playerNames[7])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[7]).color(ChatFormat.goldColor))));
+        createArmorStand(util.getFfaWorld(), vec3.subtract(0, 1.5, 0), ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>#9 %s</gradient>", NamedTextColor.DARK_GRAY.asHexString(), NamedTextColor.GRAY.asHexString(), playerNames[8])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[8]).color(ChatFormat.goldColor))));
+        createArmorStand(util.getFfaWorld(), vec3.subtract(0, 1.75, 0), ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>#10 %s</gradient>", NamedTextColor.DARK_GRAY.asHexString(), NamedTextColor.GRAY.asHexString(), playerNames[9])).append(Component.text(" » ").color(NamedTextColor.WHITE)).append(Component.text(scores[9]).color(ChatFormat.goldColor))));
     }
 
-    private static void createArmorStand(ServerLevel ffaWorld, double x, double y, double z, net.minecraft.network.chat.Component customName) {
-        ArmorStand armorStand = new ArmorStand(ffaWorld, x, y, z);
+    private static void createArmorStand(ServerLevel ffaWorld, Vec3 vec3, net.minecraft.network.chat.Component customName) {
+        ArmorStand armorStand = new ArmorStand(ffaWorld, vec3.x, vec3.y, vec3.z);
         armorStand.setInvisible(true);
         armorStand.setNoGravity(true);
         armorStand.setCustomName(customName);

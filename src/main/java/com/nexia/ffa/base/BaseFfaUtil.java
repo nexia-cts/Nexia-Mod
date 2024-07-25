@@ -384,10 +384,15 @@ public abstract class BaseFfaUtil {
         clearSpectralArrows(player);
         wasInSpawn.add(player.getUUID());
 
-        player.safeReset(true, Minecraft.GameMode.ADVENTURE);
+        player.safeReset(true, isAdventure() ? Minecraft.GameMode.ADVENTURE : Minecraft.GameMode.SURVIVAL);
         getSpawn().teleportPlayer(getNexusFfaWorld(), player);
         finishSendToSpawn(player);
     }
+
+    public boolean isAdventure() {
+        return true;
+    }
+
     public abstract void finishSendToSpawn(NexiaPlayer player);
 
     public boolean beforeBuild(NexiaPlayer player, BlockPos blockPos) {

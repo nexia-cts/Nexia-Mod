@@ -62,6 +62,11 @@ public class FfaUhcUtil extends BaseFfaUtil {
     }
 
     @Override
+    public boolean isAdventure() {
+        return false;
+    }
+
+    @Override
     public void completeFiveTick(ServerPlayer player, NexiaPlayer nexiaPlayer) {
         if (wasInSpawn.contains(player.getUUID()) && !isInFfaSpawn(nexiaPlayer)) {
             wasInSpawn.remove(player.getUUID());

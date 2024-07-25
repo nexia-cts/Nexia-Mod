@@ -225,7 +225,12 @@ public class FfaSkyUtil extends BaseFfaUtil {
 
     @Override
     public BlockPos[] getFfaCorners() {
-        return new BlockPos[0];
+        return new BlockPos[]{ffaCorner1, ffaCorner2};
+    }
+
+    @Override
+    public boolean isAdventure() {
+        return false;
     }
 
     public static void afterPlace(NexiaPlayer player, BlockPos blockPos, InteractionHand hand) {
