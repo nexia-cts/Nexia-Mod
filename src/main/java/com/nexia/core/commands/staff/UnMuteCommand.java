@@ -24,7 +24,7 @@ public class UnMuteCommand {
 
     public static int unMute(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         CommandSourceInfo sender = context.getSource();
-        ServerPlayer muted = context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()));
+        ServerPlayer muted = context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), false));
 
         PlayerMutes.unMute(sender, muted);
 

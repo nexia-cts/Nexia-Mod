@@ -22,11 +22,11 @@ public class FfaAreas {
     public static World nexusFfaWorld = null;
     public static Location nexusFfaLocation = null;
 
-    public static EntityPos spawn = new EntityPos(0.5, 80, 0.5, 0, 0);
+    public static EntityPos spawn = new EntityPos(0.5, 90, 0.5, 0, 0);
 
     private static final int mapRadius = 30;
 
-    public static final int buildLimitY = 80;
+    public static final int buildLimitY = 90;
     public static BlockPos spawnCorner1 = spawn.toBlockPos().offset(-6, -5, -6);
     public static BlockPos spawnCorner2 = spawn.toBlockPos().offset(6, 5, 6);
 

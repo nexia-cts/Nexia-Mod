@@ -20,14 +20,14 @@ public class UnBanCommand {
                 .requires(commandSourceInfo -> CommandUtil.hasPermission(commandSourceInfo, "nexia.staff.ban", 3))
                 .then(CommandUtils.argument("player", GameProfileArgument.gameProfile())
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest((ServerTime.minecraftServer.getPlayerList().getBans().getUserList()), builder)))
-                        .executes(context -> UnBanCommand.unban(context.getSource(), context.getArgument("player", GameProfileArgument.Result.class).getNames(CommandUtil.getCommandSourceStack(context.getSource()))))
+                        .executes(context -> UnBanCommand.unban(context.getSource(), context.getArgument("player", GameProfileArgument.Result.class).getNames(CommandUtil.getCommandSourceStack(context.getSource(), false))))
                 )
         );
         dispatcher.register(CommandUtils.literal("pardon")
                 .requires(commandSourceInfo -> CommandUtil.hasPermission(commandSourceInfo, "nexia.staff.ban", 3))
                 .then(CommandUtils.argument("player", GameProfileArgument.gameProfile())
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest((ServerTime.minecraftServer.getPlayerList().getBans().getUserList()), builder)))
-                        .executes(context -> UnBanCommand.unban(context.getSource(), context.getArgument("player", GameProfileArgument.Result.class).getNames(CommandUtil.getCommandSourceStack(context.getSource()))))
+                        .executes(context -> UnBanCommand.unban(context.getSource(), context.getArgument("player", GameProfileArgument.Result.class).getNames(CommandUtil.getCommandSourceStack(context.getSource(), false))))
                 )
         );
     }

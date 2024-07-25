@@ -16,7 +16,7 @@ public class FfaAreas {
     public static World nexusFfaWorld = null;
     public static Location nexusFfaLocation = null;
 
-    public static EntityPos spawn = new EntityPos(0.5, 128, 0.5, 0, 0);
+    public static EntityPos spawn = new EntityPos(0.5, 80, 0.5, 0, 0);
 
     public static BlockPos spawnCorner1 = spawn.toBlockPos().offset(-9, -12, -9);
     public static BlockPos spawnCorner2 = spawn.toBlockPos().offset(9, 12, 9);

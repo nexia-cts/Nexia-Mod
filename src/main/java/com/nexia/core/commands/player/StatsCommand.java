@@ -31,13 +31,13 @@ public class StatsCommand {
                 .then(CommandUtils.argument("player", EntityArgument.player())
                         .then(CommandUtils.argument("gamemode", StringArgumentType.greedyString())
                                 .suggests(((context, builder) -> SharedSuggestionProvider.suggest((LobbyUtil.statsGameModes), builder)))
-                                .executes(context -> StatsCommand.other(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())), StringArgumentType.getString(context, "gamemode")))))
+                                .executes(context -> StatsCommand.other(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), true)), StringArgumentType.getString(context, "gamemode")))))
         );
     }
 
     public static int run(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
-        CorePlayerData playerData = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
+        CorePlayerData playerData = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player);
 
 
         Component start = Component.text("  »").color(NamedTextColor.GRAY);
@@ -73,8 +73,6 @@ public class StatsCommand {
             int deaths = data.get(Integer.class, "deaths");
             int killstreak = data.get(Integer.class, "killstreak");
             int bestKillstreak = data.get(Integer.class, "bestKillstreak");
-            long elo = Math.round(data.get(Double.class, "elo") * 1000);
-            long rating = Math.round(data.get(Double.class, "rating") * 100);
 
             player.sendMessage(message);
             player.sendMessage(user);
@@ -97,16 +95,6 @@ public class StatsCommand {
                     .append(Component.text(killstreak).color(ChatFormat.goldColor))
                     .append(Component.text("/").color(ChatFormat.arrowColor))
                     .append(Component.text(bestKillstreak).color(ChatFormat.goldColor))
-            );
-
-            player.sendMessage(start
-                    .append(Component.text(" Elo: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(elo).color(ChatFormat.goldColor))
-            );
-
-            player.sendMessage(start
-                    .append(Component.text(" Rating: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(rating).color(ChatFormat.goldColor))
             );
         }
 
@@ -232,8 +220,6 @@ public class StatsCommand {
             message = ChatFormat.separatorLine("FFA Classic Stats");
             SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.FFA_CLASSIC_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
 
-            long rating = Math.round(data.get(Double.class, "rating") * 100);
-
             if (gamemode.equalsIgnoreCase("kit ffa")) {
                 message = ChatFormat.separatorLine("Kit FFA Stats");
                 data = PlayerDataManager.getDataManager(NexiaCore.FFA_KITS_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
@@ -276,13 +262,6 @@ public class StatsCommand {
                     .append(Component.text("/").color(ChatFormat.arrowColor))
                     .append(Component.text(bestKillstreak).color(ChatFormat.goldColor))
             );
-
-            if(gamemode.equalsIgnoreCase("ffa classic")) {
-                source.sendMessage(start
-                        .append(Component.text(" Rating: ").color(ChatFormat.brandColor2))
-                        .append(Component.text(rating).color(ChatFormat.goldColor))
-                );
-            }
         }
 
         if(gamemode.equalsIgnoreCase("duels")){

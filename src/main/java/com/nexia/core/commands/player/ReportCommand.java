@@ -48,7 +48,7 @@ public class ReportCommand {
         dispatcher.register(CommandUtils.literal("report")
                 .then(CommandUtils.argument("player", EntityArgument.player())
                         .then(CommandUtils.argument("reason", StringArgumentType.greedyString())
-                                .executes(context -> ReportCommand.report(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())), StringArgumentType.getString(context, "reason")))
+                                .executes(context -> ReportCommand.report(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), true)), StringArgumentType.getString(context, "reason")))
                         )
                 )
         );

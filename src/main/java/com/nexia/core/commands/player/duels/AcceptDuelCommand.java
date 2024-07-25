@@ -38,7 +38,7 @@ public class AcceptDuelCommand {
                     return false;
                 })
                 .then(CommandUtils.argument("player", EntityArgument.player())
-                        .executes(context -> AcceptDuelCommand.accept(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()))))
+                        .executes(context -> AcceptDuelCommand.accept(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), true))))
                 )
         );
     }

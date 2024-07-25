@@ -29,7 +29,7 @@ public class RankCommand {
                 .then(CommandUtils.argument("player", EntityArgument.player())
                         .then(CommandUtils.argument("rank", StringArgumentType.string())
                                 .suggests(((context, builder) -> SharedSuggestionProvider.suggest((ranks), builder)))
-                                .executes(context -> RankCommand.give(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())), StringArgumentType.getString(context, "rank")))))
+                                .executes(context -> RankCommand.give(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), false)), StringArgumentType.getString(context, "rank")))))
         );
     }
 
