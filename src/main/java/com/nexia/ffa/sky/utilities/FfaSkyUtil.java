@@ -229,8 +229,8 @@ public class FfaSkyUtil extends BaseFfaUtil {
     }
 
     @Override
-    public boolean isAdventure() {
-        return false;
+    public Minecraft.GameMode getMinecraftGameMode() {
+        return Minecraft.GameMode.SURVIVAL;
     }
 
     public static void afterPlace(NexiaPlayer player, BlockPos blockPos, InteractionHand hand) {

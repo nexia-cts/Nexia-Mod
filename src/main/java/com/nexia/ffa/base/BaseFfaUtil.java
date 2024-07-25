@@ -17,7 +17,9 @@ import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.RatingUtil;
 import com.nexia.nexus.api.world.World;
 import com.nexia.nexus.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.entity.projectile.Projectile;
 import com.nexia.nexus.api.world.types.Minecraft;
+import com.nexia.nexus.api.world.util.BoundingBox;
 import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.kyori.adventure.text.Component;
@@ -291,8 +293,24 @@ public abstract class BaseFfaUtil {
 
     }
 
+    public void clearProjectiles(NexiaPlayer player) {
+        BlockPos c1 = getFfaCorners()[0].offset(-10, -getFfaCorners()[0].getY(), -10);
+        BlockPos c2 = getFfaCorners()[1].offset(10, 319 - getFfaCorners()[1].getY(), 10);
+        BoundingBox box = new BoundingBox(c1.getX(), c1.getY(), c1.getZ(), c2.getX(), c2.getY(), c2.getZ());
+        Predicate<com.nexia.nexus.api.world.entity.Entity> predicate = o -> o instanceof Arrow;
+
+        for(com.nexia.nexus.api.world.entity.Entity entity : getNexusFfaWorld().getEntities(box)) {
+            if(!(entity instanceof Projectile projectile) ||
+                    projectile.getOwner() == null ||
+                    !projectile.getOwner().getUUID().equals(player.getUUID())
+            ) continue;
+
+            entity.kill();
+        }
+    }
+
     public void clearThrownTridents(NexiaPlayer player) {
-        BlockPos c1 = getFfaCorners()[0].offset(-10, - getFfaCorners()[0].getY(), -10);
+        BlockPos c1 = getFfaCorners()[0].offset(-10, -getFfaCorners()[0].getY(), -10);
         BlockPos c2 = getFfaCorners()[1].offset(10, 319 - getFfaCorners()[1].getY(), 10);
         AABB aabb = new AABB(c1, c2);
         Predicate<Entity> predicate = o -> true;
@@ -361,19 +379,16 @@ public abstract class BaseFfaUtil {
 
     public void sendToSpawn(NexiaPlayer player) {
         player.getInventory().clear();
-        clearEnderpearls(player);
-        clearThrownTridents(player);
-        clearArrows(player);
-        clearSpectralArrows(player);
+        clearProjectiles(player);
         wasInSpawn.add(player.getUUID());
 
-        player.safeReset(true, isAdventure() ? Minecraft.GameMode.ADVENTURE : Minecraft.GameMode.SURVIVAL);
+        player.safeReset(true, getMinecraftGameMode());
         getSpawn().teleportPlayer(getNexusFfaWorld(), player);
         finishSendToSpawn(player);
     }
 
-    public boolean isAdventure() {
-        return true;
+    public Minecraft.GameMode getMinecraftGameMode() {
+        return Minecraft.GameMode.ADVENTURE;
     }
 
     public abstract void finishSendToSpawn(NexiaPlayer player);

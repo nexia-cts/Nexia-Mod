@@ -62,8 +62,8 @@ public class FfaUhcUtil extends BaseFfaUtil {
     }
 
     @Override
-    public boolean isAdventure() {
-        return false;
+    public Minecraft.GameMode getMinecraftGameMode() {
+        return Minecraft.GameMode.SURVIVAL;
     }
 
     @Override
