@@ -1,10 +1,9 @@
 package com.nexia.core.gui.ffa;
 
-import com.nexia.nexus.api.world.entity.player.Player;
-import com.nexia.nexus.builder.implementation.util.ObjectMappings;
-import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.base.player.NexiaPlayer;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.ffa.kits.FfaKit;
+import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;

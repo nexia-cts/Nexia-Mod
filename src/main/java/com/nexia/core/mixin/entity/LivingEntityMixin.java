@@ -8,39 +8,64 @@ import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.CombatRules;
+import net.minecraft.world.damagesource.CombatTracker;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin {
+public abstract class LivingEntityMixin extends Entity {
 
+
+    public LivingEntityMixin(EntityType<?> entityType, Level level) {
+        super(entityType, level);
+    }
 
     @Shadow public abstract double getAttributeValue(Attribute attribute);
 
     @Shadow public abstract ItemStack getBlockingItem();
 
+    @Shadow public abstract CombatTracker getCombatTracker();
+
+    @Shadow public abstract float getHealth();
+
+    @Shadow public abstract void setHealth(float f);
+
+    @Shadow public abstract float getAbsorptionAmount();
+
+    @Shadow public abstract void setAbsorptionAmount(float f);
+
     // Make void death instant
-    @ModifyArg(method = "hurt", index = 1, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;actuallyHurt(Lnet/minecraft/world/damagesource/DamageSource;F)V"))
-    protected float hurt(DamageSource damageSource, float value) {
+    @Inject(method = "actuallyHurt", at = @At(value = "HEAD"), cancellable = true)
+    protected void killInVoid(DamageSource damageSource, float f, CallbackInfo ci) {
         if((Object) this instanceof ServerPlayer player) {
             if(((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player.getUUID())).gameMode == PlayerGameMode.LOBBY) {
-                return value;
+                return;
             }
         }
-        if (damageSource == DamageSource.OUT_OF_WORLD) return 1000000.0F;
-        return value;
+        if (!isInvulnerableTo(damageSource)) {
+            if (damageSource == DamageSource.OUT_OF_WORLD) {
+                setHealth(0);
+                getCombatTracker().recordDamage(damageSource, getHealth(), getHealth() + getAbsorptionAmount());
+                setAbsorptionAmount(0);
+                ci.cancel();
+            }
+        }
     }
 
     /**
