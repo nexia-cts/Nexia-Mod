@@ -73,8 +73,6 @@ public class StatsCommand {
             int deaths = data.get(Integer.class, "deaths");
             int killstreak = data.get(Integer.class, "killstreak");
             int bestKillstreak = data.get(Integer.class, "bestKillstreak");
-            long elo = Math.round(data.get(Double.class, "elo") * 1000);
-            long rating = Math.round(data.get(Double.class, "rating") * 100);
 
             player.sendMessage(message);
             player.sendMessage(user);
@@ -98,16 +96,8 @@ public class StatsCommand {
                     .append(Component.text("/").color(ChatFormat.arrowColor))
                     .append(Component.text(bestKillstreak).color(ChatFormat.goldColor))
             );
-
-            player.sendMessage(start
-                    .append(Component.text(" Elo: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(elo).color(ChatFormat.goldColor))
-            );
-
-            player.sendMessage(start
-                    .append(Component.text(" Rating: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(rating).color(ChatFormat.goldColor))
-            );
+            player.sendMessage(ChatFormat.separatorLine(null));
+            return 1;
         }
 
         if(playerData.gameMode == PlayerGameMode.LOBBY){
@@ -123,6 +113,8 @@ public class StatsCommand {
                     .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
                     .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
             );
+            player.sendMessage(ChatFormat.separatorLine(null));
+            return 1;
         }
 
 
@@ -143,6 +135,8 @@ public class StatsCommand {
                     .append(Component.text(" Beds broken: ").color(ChatFormat.brandColor2))
                     .append(Component.text(data.get(Integer.class, "bedsBroken")).color(ChatFormat.failColor))
             );
+            player.sendMessage(ChatFormat.separatorLine(null));
+            return 1;
         }
 
         if(playerData.gameMode == PlayerGameMode.OITC){
@@ -163,6 +157,8 @@ public class StatsCommand {
                     .append(Component.text(" Kills: ").color(ChatFormat.brandColor2))
                     .append(Component.text(data.get(Integer.class, "kills")).color(ChatFormat.failColor))
             );
+            player.sendMessage(ChatFormat.separatorLine(null));
+            return 1;
         }
 
         if(playerData.gameMode == PlayerGameMode.FOOTBALL){
@@ -183,6 +179,8 @@ public class StatsCommand {
                     .append(Component.text(" Goals: ").color(ChatFormat.brandColor2))
                     .append(Component.text(data.get(Integer.class, "goals")).color(ChatFormat.failColor))
             );
+            player.sendMessage(ChatFormat.separatorLine(null));
+            return 1;
         }
 
         if(playerData.gameMode == PlayerGameMode.SKYWARS){
@@ -232,8 +230,6 @@ public class StatsCommand {
             message = ChatFormat.separatorLine("FFA Classic Stats");
             SavedPlayerData data = PlayerDataManager.getDataManager(NexiaCore.FFA_CLASSIC_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
 
-            long rating = Math.round(data.get(Double.class, "rating") * 100);
-
             if (gamemode.equalsIgnoreCase("kit ffa")) {
                 message = ChatFormat.separatorLine("Kit FFA Stats");
                 data = PlayerDataManager.getDataManager(NexiaCore.FFA_KITS_DATA_MANAGER).get(otherPlayer.getUUID()).savedData;
@@ -276,13 +272,6 @@ public class StatsCommand {
                     .append(Component.text("/").color(ChatFormat.arrowColor))
                     .append(Component.text(bestKillstreak).color(ChatFormat.goldColor))
             );
-
-            if(gamemode.equalsIgnoreCase("ffa classic")) {
-                source.sendMessage(start
-                        .append(Component.text(" Rating: ").color(ChatFormat.brandColor2))
-                        .append(Component.text(rating).color(ChatFormat.goldColor))
-                );
-            }
         }
 
         if(gamemode.equalsIgnoreCase("duels")){
