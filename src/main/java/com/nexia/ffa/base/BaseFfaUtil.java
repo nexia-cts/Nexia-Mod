@@ -17,10 +17,9 @@ import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.RatingUtil;
 import com.nexia.nexus.api.world.World;
 import com.nexia.nexus.api.world.entity.player.Player;
-import com.nexia.nexus.api.world.entity.projectile.Projectile;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.nexus.api.world.util.BoundingBox;
-import com.nexia.nexus.builder.implementation.world.entity.WrappedEntity;
+import com.nexia.nexus.builder.implementation.world.entity.projectile.WrappedProjectile;
 import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.kyori.adventure.text.Component;
@@ -298,7 +297,7 @@ public abstract class BaseFfaUtil {
         BlockPos c2 = getFfaCorners()[1].offset(10, 319 - getFfaCorners()[1].getY(), 10);
         BoundingBox box = new BoundingBox(c1.getX(), c1.getY(), c1.getZ(), c2.getX(), c2.getY(), c2.getZ());
 
-        for(com.nexia.nexus.api.world.entity.Entity entity : getNexusFfaWorld().getEntities(box, entity -> entity instanceof WrappedEntity wrapped && wrapped.unwrap() instanceof Projectile projectile && projectile.getOwner() != null && projectile.getOwner().getUUID().equals(player.getUUID()))) {
+        for(com.nexia.nexus.api.world.entity.Entity entity : getNexusFfaWorld().getEntities(box, entity -> entity instanceof WrappedProjectile projectile && projectile.getOwner() != null && projectile.getOwner().getUUID().equals(player.getUUID()))) {
             entity.kill();
         }
     }
