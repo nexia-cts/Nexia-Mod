@@ -7,6 +7,7 @@ import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.CombatRules;
 import net.minecraft.world.damagesource.CombatTracker;
 import net.minecraft.world.damagesource.DamageSource;
@@ -53,13 +54,11 @@ public abstract class LivingEntityMixin extends Entity {
     // Make void death instant
     @Inject(method = "actuallyHurt", at = @At(value = "HEAD"), cancellable = true)
     protected void killInVoid(DamageSource damageSource, float f, CallbackInfo ci) {
-        if((Object) this instanceof ServerPlayer player) {
-            if(((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player.getUUID())).gameMode == PlayerGameMode.LOBBY) {
-                return;
-            }
-        }
         if (!isInvulnerableTo(damageSource)) {
             if (damageSource == DamageSource.OUT_OF_WORLD) {
+                if (getAbsorptionAmount() > 0.0F && getAbsorptionAmount() < 3.4028235E37F && damageSource.getEntity() instanceof ServerPlayer attacker) {
+                    attacker.awardStat(Stats.DAMAGE_DEALT_ABSORBED, Math.round(getAbsorptionAmount() * 10));
+                }
                 setHealth(0);
                 getCombatTracker().recordDamage(damageSource, getHealth(), getHealth() + getAbsorptionAmount());
                 setAbsorptionAmount(0);

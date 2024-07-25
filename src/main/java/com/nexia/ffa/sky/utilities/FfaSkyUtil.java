@@ -225,7 +225,7 @@ public class FfaSkyUtil extends BaseFfaUtil {
 
     @Override
     public AABB getFfaCorners() {
-        return new BlockPos[]{ffaCorner1, ffaCorner2};
+        return new AABB(ffaCorner1, ffaCorner2);
     }
 
     @Override
