@@ -23,7 +23,7 @@ public class FfaKit {
 
     public static final FfaKit KNIGHT = new FfaKit("knight", new ItemStack(Items.DIAMOND_SWORD));
     public static final FfaKit POSEIDON = new FfaKit("poseidon", new ItemStack(Items.TRIDENT));
-    public static final FfaKit BRUTE = new FfaKit("brute", new ItemStack(Items.DIAMOND_AXE));
+    public static final FfaKit BRUTE = new FfaKit("nrute", new ItemStack(Items.DIAMOND_AXE));
     public static final FfaKit NINJA = new FfaKit("ninja", new ItemStack(Items.SUGAR));
     public static final FfaKit VIKING = new FfaKit("viking", new ItemStack(Items.SHIELD));
     public static final FfaKit ARCHER = new FfaKit("archer", new ItemStack(Items.BOW));

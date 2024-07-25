@@ -1,5 +1,6 @@
 package com.nexia.core.gui.ffa;
 
+import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.base.player.NexiaPlayer;
