@@ -85,7 +85,7 @@ public class FfaSkyUtil extends BaseFfaUtil {
         }
     }
 
-    public void saveInventory(NexiaPlayer player){
+    public void saveInventory(NexiaPlayer player) {
         Inventory inventory = player.unwrap().inventory;
 
         ItemStack ogWoolItem = null;
@@ -193,6 +193,8 @@ public class FfaSkyUtil extends BaseFfaUtil {
 
     @Override
     public void finishSendToSpawn(NexiaPlayer player) {
+        player.reset(true, Minecraft.GameMode.SURVIVAL);
+        spawn.teleportPlayer(ffaWorld, player.unwrap());
         setInventory(player);
     }
 
