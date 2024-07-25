@@ -134,6 +134,7 @@ public class SpectateCommand {
             nexiaExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("That player is not in FFA!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
             ));
+            return 0;
         }
 
         // Check if player is in combat (or full health), then put them in spectator.
