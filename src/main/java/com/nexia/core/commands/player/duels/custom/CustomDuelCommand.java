@@ -47,15 +47,15 @@ public class CustomDuelCommand {
                         .executes(context -> {
                             NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
 
-                            CustomDuelGUI.openDuelGui(player.unwrap(), context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())));
+                            CustomDuelGUI.openDuelGui(player.unwrap(), context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), true)));
                             return 1;
                         })
                         .then(CommandUtils.argument("kit", StringArgumentType.string())
                                 .suggests(((context, builder) -> SharedSuggestionProvider.suggest((InventoryUtil.getListOfInventories("duels/custom/" + context.getSource().getPlayerOrException().getUUID())), builder)))
-                                .executes(context -> CustomDuelCommand.challenge(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())), StringArgumentType.getString(context, "kit"), null))
+                                .executes(context -> CustomDuelCommand.challenge(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), true)), StringArgumentType.getString(context, "kit"), null))
                                 .then(CommandUtils.argument("map", StringArgumentType.string())
                                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest((DuelsMap.stringDuelsMaps), builder)))
-                                        .executes(context -> CustomDuelCommand.challenge(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource())), StringArgumentType.getString(context, "kit"), StringArgumentType.getString(context, "map")))
+                                        .executes(context -> CustomDuelCommand.challenge(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), true)), StringArgumentType.getString(context, "kit"), StringArgumentType.getString(context, "map")))
                                 ))));
     }
 

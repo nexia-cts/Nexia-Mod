@@ -41,7 +41,7 @@ public class SpectateCommand {
                 })
                         .executes(SpectateCommand::gameModeSpectate)
                 .then(CommandUtils.argument("player", EntityArgument.player())
-                        .executes(context -> SpectateCommand.spectate(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()))))
+                        .executes(context -> SpectateCommand.spectate(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), true))))
                 )
         );
     }

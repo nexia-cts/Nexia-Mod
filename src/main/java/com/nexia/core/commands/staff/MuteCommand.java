@@ -39,7 +39,7 @@ public class MuteCommand {
     public static int mute(CommandContext<CommandSourceInfo> context, String durationArg, String reason) throws CommandSyntaxException {
 
         CommandSourceInfo sender = context.getSource();
-        ServerPlayer muted = context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource()));
+        ServerPlayer muted = context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), false));
 
         int durationInSeconds;
         try {

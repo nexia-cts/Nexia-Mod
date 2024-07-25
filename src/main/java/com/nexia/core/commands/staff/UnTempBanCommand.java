@@ -23,7 +23,7 @@ public class UnTempBanCommand {
     public static int unBan(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         CommandSourceInfo sender = context.getSource();
 
-        BanHandler.tryUnBan(sender, context.getArgument("player", GameProfileArgument.Result.class).getNames(CommandUtil.getCommandSourceStack(context.getSource())));
+        BanHandler.tryUnBan(sender, context.getArgument("player", GameProfileArgument.Result.class).getNames(CommandUtil.getCommandSourceStack(context.getSource(), false)));
 
         return 1;
     }

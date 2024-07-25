@@ -24,9 +24,9 @@ public class BanCommand {
         dispatcher.register(CommandUtils.literal("ban")
                 .requires(commandSourceInfo -> CommandUtil.hasPermission(commandSourceInfo, "nexia.staff.ban", 3))
                 .then(CommandUtils.argument("player", GameProfileArgument.gameProfile())
-                        .executes(context -> BanCommand.ban(context.getSource(), context.getArgument("player", GameProfileArgument.Result.class).getNames(CommandUtil.getCommandSourceStack(context.getSource())), "No reason specified."))
+                        .executes(context -> BanCommand.ban(context.getSource(), context.getArgument("player", GameProfileArgument.Result.class).getNames(CommandUtil.getCommandSourceStack(context.getSource(), false)), "No reason specified."))
                         .then(CommandUtils.argument("reason", StringArgumentType.greedyString())
-                                .executes(context -> BanCommand.ban(context.getSource(), context.getArgument("player", GameProfileArgument.Result.class).getNames(CommandUtil.getCommandSourceStack(context.getSource())), StringArgumentType.getString(context, "reason"))))
+                                .executes(context -> BanCommand.ban(context.getSource(), context.getArgument("player", GameProfileArgument.Result.class).getNames(CommandUtil.getCommandSourceStack(context.getSource(), false)), StringArgumentType.getString(context, "reason"))))
                 )
         );
     }
