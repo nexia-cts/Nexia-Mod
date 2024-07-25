@@ -18,6 +18,8 @@ import com.nexia.ffa.RatingUtil;
 import com.nexia.nexus.api.world.World;
 import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.nexus.api.world.types.Minecraft;
+import com.nexia.nexus.builder.implementation.Wrapped;
+import com.nexia.nexus.builder.implementation.world.entity.player.WrappedPlayer;
 import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.kyori.adventure.text.Component;
@@ -32,6 +34,7 @@ import net.minecraft.world.entity.projectile.SpectralArrow;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -261,8 +264,8 @@ public abstract class BaseFfaUtil {
             }
         }
 
-        for (Player fPlayer : ServerTime.nexusServer.getPlayers()) {
-            if (fPlayer.hasTag("ffa_" + getNameLowercase())) player.sendMessage(msg);
+        for (Player fPlayer : getFfaWorld().players().stream().map((serverPlayer) -> Wrapped.wrap(serverPlayer, WrappedPlayer.class)).toList()) {
+            fPlayer.sendMessage(msg);
         }
     }
 
@@ -385,6 +388,7 @@ public abstract class BaseFfaUtil {
         wasInSpawn.add(player.getUUID());
 
         player.safeReset(true, isAdventure() ? Minecraft.GameMode.ADVENTURE : Minecraft.GameMode.SURVIVAL);
+        player.unwrap().setDeltaMovement(Vec3.ZERO);
         getSpawn().teleportPlayer(getNexusFfaWorld(), player);
         finishSendToSpawn(player);
     }
