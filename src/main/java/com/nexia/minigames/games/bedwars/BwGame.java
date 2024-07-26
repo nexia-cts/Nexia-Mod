@@ -22,7 +22,7 @@ import com.nexia.minigames.games.bedwars.util.BwScoreboard;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -41,6 +41,7 @@ public class BwGame {
 
     public static final String bedWarsDirectory = NxFileUtil.addConfigDir("bedwars");
 
+    public static ServerLevel world = null;
     public static boolean isGameActive = false;
     public static int gameTicks = 0;
     public static final int gameLength = 30 * 60 + 1;

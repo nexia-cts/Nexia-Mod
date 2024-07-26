@@ -1,8 +1,6 @@
 package com.nexia.ffa.classic.utilities;
 
-import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.core.utilities.pos.PositionUtil;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.ffa.FfaAreas;
 import com.nexia.nexus.api.world.World;

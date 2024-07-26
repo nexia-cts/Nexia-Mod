@@ -12,7 +12,6 @@ public class PlayerSwapHandItemsListener {
 
             if(LobbyUtil.isLobbyWorld(player.getWorld())) {
                 playerDropItemEvent.setCancelled(true);
-                return;
             }
         });
     }
