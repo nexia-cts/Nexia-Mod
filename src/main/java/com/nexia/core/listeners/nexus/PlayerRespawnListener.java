@@ -58,12 +58,12 @@ public class PlayerRespawnListener {
                 return;
             }
 
-            if(data.gameMode == PlayerGameMode.BEDWARS) {
-                ServerTime.scheduler.schedule(() -> respawnEvent.setRespawnMode(Minecraft.GameMode.SURVIVAL), 30);
+            if(data.gameMode == PlayerGameMode.BEDWARS && !player.isInvulnerable()) {
+                player.setGameMode(Minecraft.GameMode.SURVIVAL);
             }
 
-            if(data.gameMode == PlayerGameMode.OITC) {
-                respawnEvent.setRespawnMode(Minecraft.GameMode.ADVENTURE);
+            if(data.gameMode == PlayerGameMode.OITC && !player.isInvulnerable()) {
+                player.setGameMode(Minecraft.GameMode.ADVENTURE);
             }
             
             if(duelsGame != null && duelsGame.isEnding && duelsGame.winner != null) {
