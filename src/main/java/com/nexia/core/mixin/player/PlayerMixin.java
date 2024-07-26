@@ -10,14 +10,11 @@ import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.CoreSavedPlayerData;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.base.BaseFfaUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
-import com.nexia.nexus.api.world.types.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -134,10 +131,6 @@ public abstract class PlayerMixin extends LivingEntity {
         if (!((Object) this instanceof ServerPlayer player)) return;
 
         NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
-
-        if (FfaUtil.isFfaPlayer(nexiaPlayer) && damageSource == DamageSource.OUT_OF_WORLD) {
-            FfaUtil.leaveOrDie(nexiaPlayer, damageSource, false);
-        }
 
         if (BwUtil.isBedWarsPlayer(nexiaPlayer)) {
             BwPlayerEvents.afterHurt(nexiaPlayer, damageSource);
