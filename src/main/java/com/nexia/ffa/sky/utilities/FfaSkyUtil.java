@@ -144,9 +144,7 @@ public class FfaSkyUtil extends BaseFfaUtil {
             availableRewards.remove(killRewardIndex);
 
             // Give reward
-            if (attacker.unwrap().inventory.contains(reward)) {
-                attacker.unwrap().inventory.add(reward.copy());
-            }
+            attacker.unwrap().inventory.add(reward.copy());
             givenRewards.add(reward.copy());
         }
 
