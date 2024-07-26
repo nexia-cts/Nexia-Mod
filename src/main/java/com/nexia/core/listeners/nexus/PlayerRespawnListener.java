@@ -4,6 +4,8 @@ import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.player.CorePlayerData;
+import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.ffa.uhc.utilities.FfaAreas;
 import com.nexia.minigames.games.skywars.util.player.SkywarsPlayerData;
 import com.nexia.nexus.api.event.player.PlayerRespawnEvent;
 import com.nexia.nexus.api.world.types.Minecraft;
@@ -49,15 +51,15 @@ public class PlayerRespawnListener {
                     respawn.setX(serverPlayer.getX());
                     respawn.setY(serverPlayer.getY());
                     respawn.setZ(serverPlayer.getZ());
+                    respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
+                    respawnEvent.setSpawnpoint(respawn);
                 }
 
-                respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
-                respawnEvent.setSpawnpoint(respawn);
                 return;
             }
 
             if(data.gameMode == PlayerGameMode.BEDWARS) {
-                respawnEvent.setRespawnMode(Minecraft.GameMode.SURVIVAL);
+                ServerTime.scheduler.schedule(() -> respawnEvent.setRespawnMode(Minecraft.GameMode.SURVIVAL), 30);
             }
 
             if(data.gameMode == PlayerGameMode.OITC) {
