@@ -14,7 +14,6 @@ import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.RatingUtil;
 import com.nexia.nexus.api.world.World;
 import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.nexus.api.world.types.Minecraft;
@@ -43,7 +42,6 @@ import java.util.UUID;
 
 public abstract class BaseFfaUtil {
     public ArrayList<UUID> wasInSpawn = new ArrayList<>();
-    public KillTracker killTracker = new KillTracker();
     public static final List<BaseFfaUtil> ffaUtils = new ArrayList<>();
 
     public BaseFfaUtil() {
@@ -67,10 +65,6 @@ public abstract class BaseFfaUtil {
     public abstract EntityPos getSpawn();
 
     public abstract Location getRespawnLocation();
-
-    public KillTracker getKillTracker() {
-        return killTracker;
-    }
 
     public boolean isFfaPlayer(NexiaPlayer player) {
         CorePlayerData data = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player);
@@ -130,9 +124,6 @@ public abstract class BaseFfaUtil {
 
         SavedPlayerData data = getDataManager().get(attacker).savedData;
 
-        RatingUtil.calculateRating(attacker, player, this);
-        RatingUtil.updateLeaderboard(this);
-
         data.incrementInteger("killstreak");
         int killstreak = data.get(Integer.class, "killstreak");
         if (killstreak > data.get(Integer.class, "bestKillstreak"))
@@ -141,9 +132,6 @@ public abstract class BaseFfaUtil {
 
         killHeal(attacker);
         giveKillLoot(attacker, player);
-
-        // Increment kill count for attacker
-        getKillTracker().incrementKillCount(attacker.getUUID(), player.getUUID());
 
         if (killstreak % 5 == 0) {
             for (ServerPlayer serverPlayer : getFfaWorld().players()) {
@@ -218,28 +206,7 @@ public abstract class BaseFfaUtil {
                 Component component = FfaUtil.returnClassicDeathMessage(player, nexiaAttacker);
                 if(component != null) msg = component;
 
-                double attackerOldRating = getDataManager().get(nexiaAttacker).savedData.get(Double.class, "rating");
-                double victimOldRating = getDataManager().get(player).savedData.get(Double.class, "rating");
-
                 calculateKill(nexiaAttacker, player);
-
-                double attackerNewRating = getDataManager().get(nexiaAttacker).savedData.get(Double.class, "rating");
-                double victimNewRating = getDataManager().get(player).savedData.get(Double.class, "rating");
-
-                if(component != null) {
-                    msg = msg.append(Component.text(" (")
-                                    .color(ChatFormat.chatColor2))
-                            .append(Component.text(String.format("%.2f", RatingUtil.calculateRatingDifference(victimNewRating, victimOldRating) * 100))
-                                    .color(ChatFormat.failColor))
-                            .append(Component.text(" / ")
-                                    .color(ChatFormat.chatColor2))
-                            .append(Component.text("+")
-                                    .color(ChatFormat.greenColor))
-                            .append(Component.text(String.format("%.2f", RatingUtil.calculateRatingDifference(attackerNewRating, attackerOldRating) * 100))
-                                    .color(ChatFormat.greenColor))
-                            .append(Component.text(")")
-                                    .color(ChatFormat.chatColor2));
-                }
             }
         }
 
