@@ -56,11 +56,15 @@ public class PlayerRespawnListener {
                 return;
             }
 
-            if(data.gameMode == PlayerGameMode.BEDWARS && !player.isInvulnerable()) {
+            if(data.gameMode == PlayerGameMode.BEDWARS && hasRespawned(respawnEvent)) {
                 player.setGameMode(Minecraft.GameMode.SURVIVAL);
             }
 
-            if(data.gameMode == PlayerGameMode.OITC && !player.isInvulnerable()) {
+            if(data.gameMode == PlayerGameMode.SKYWARS && hasRespawned(respawnEvent)) {
+                player.setGameMode(Minecraft.GameMode.SPECTATOR);
+            }
+
+            if(data.gameMode == PlayerGameMode.OITC && hasRespawned(respawnEvent)) {
                 player.setGameMode(Minecraft.GameMode.ADVENTURE);
             }
             
@@ -127,5 +131,9 @@ public class PlayerRespawnListener {
             }
 
         });
+    }
+
+    private boolean hasRespawned(PlayerRespawnEvent respawnEvent) {
+        return respawnEvent != null;
     }
 }
