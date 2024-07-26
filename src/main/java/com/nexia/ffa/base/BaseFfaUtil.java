@@ -115,8 +115,8 @@ public abstract class BaseFfaUtil {
         }
     }
 
-    public void calculateKill(NexiaPlayer attacker, NexiaPlayer player){
-        ServerTime.scheduler.schedule(() -> attacker.setHealth(attacker.getMaxHealth()), 5);
+    public void calculateKill(NexiaPlayer attacker, NexiaPlayer player) {
+        killHeal(attacker);
 
         doPreKill(attacker, player);
 
@@ -130,7 +130,6 @@ public abstract class BaseFfaUtil {
             data.set(Integer.class, "bestKillstreak", killstreak);
         data.incrementInteger("kills");
 
-        killHeal(attacker);
         giveKillLoot(attacker, player);
 
         if (killstreak % 5 == 0) {
@@ -152,6 +151,7 @@ public abstract class BaseFfaUtil {
     }
 
     public void killHeal(NexiaPlayer attacker) {
+        ServerTime.scheduler.schedule(() -> attacker.setHealth(attacker.getMaxHealth()), 5);
     }
 
     public void doPreKill(NexiaPlayer attacker, NexiaPlayer player) {
@@ -193,14 +193,12 @@ public abstract class BaseFfaUtil {
     public abstract AABB getFfaCorners();
 
 
-    public void setDeathMessage(@NotNull NexiaPlayer player, @Nullable DamageSource source){
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player.unwrap());
-
+    public void setDeathMessage(@NotNull NexiaPlayer player, @Nullable ServerPlayer attacker, @Nullable DamageSource source) {
         calculateDeath(player);
         
         Component msg = FfaUtil.returnDeathMessage(player, source);
 
-        if(attacker != null) {
+        if (attacker != null) {
             NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
             if(msg.toString().contains("somehow killed themselves") && !nexiaAttacker.equals(player)) {
                 Component component = FfaUtil.returnClassicDeathMessage(player, nexiaAttacker);
@@ -276,15 +274,19 @@ public abstract class BaseFfaUtil {
             NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
 
             clearProjectiles(nexiaAttacker);
-            setInventory(nexiaAttacker);
+            fulfilKill(player, source, nexiaAttacker);
         }
 
         clearProjectiles(player);
 
         if (leaving) return;
 
-        setDeathMessage(player, source);
+        setDeathMessage(player, attacker, source);
         sendToSpawn(player);
+    }
+
+    public void fulfilKill(@NotNull NexiaPlayer player, @Nullable DamageSource source, @NotNull NexiaPlayer attacker) {
+        setInventory(attacker);
     }
 
     public void sendToSpawn(NexiaPlayer player) {

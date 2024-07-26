@@ -20,6 +20,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Inventory;
@@ -28,6 +29,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -140,6 +143,12 @@ public class FfaSkyUtil extends BaseFfaUtil {
         itemStack = new ItemStack(coloredWool[woolId], itemStack.getCount());
         woolId++;
         return itemStack;
+    }
+
+    @Override
+    public void fulfilKill(@NotNull NexiaPlayer player, @Nullable DamageSource source, @NotNull NexiaPlayer attacker) {
+        killHeal(attacker);
+        giveKillLoot(attacker, player);
     }
 
     public void giveKillLoot(NexiaPlayer attacker, NexiaPlayer player) {
