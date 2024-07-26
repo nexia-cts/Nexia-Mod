@@ -10,6 +10,7 @@ import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.base.BaseFfaUtil;
 import com.nexia.nexus.api.world.World;
 import com.nexia.nexus.api.world.types.Minecraft;
+import com.nexia.nexus.api.world.util.Location;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -49,6 +50,11 @@ public class FfaUhcUtil extends BaseFfaUtil {
     @Override
     public EntityPos getSpawn() {
         return spawn;
+    }
+
+    @Override
+    public Location getRespawnLocation() {
+        return nexusFfaLocation;
     }
 
     @Override

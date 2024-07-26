@@ -23,15 +23,8 @@ import java.text.DecimalFormat;
 
 public class FfaUtil {
 
-    public static final String FFA_TAG = "ffa";
-
     public static boolean isFfaPlayer(NexiaPlayer player) {
-        return (player.hasTag(FFA_TAG)
-                || player.hasTag("ffa_classic")
-                || player.hasTag("ffa_kits")
-                || player.hasTag("ffa_sky")
-                || player.hasTag("ffa_uhc"))
-                && ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).gameMode == PlayerGameMode.FFA;
+        return ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).gameMode == PlayerGameMode.FFA;
     }
 
     public static float calculateHealth(float health){

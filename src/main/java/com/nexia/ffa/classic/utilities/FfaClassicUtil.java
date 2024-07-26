@@ -9,6 +9,7 @@ import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.base.BaseFfaUtil;
 import com.nexia.nexus.api.world.World;
+import com.nexia.nexus.api.world.util.Location;
 import net.kyori.adventure.text.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -72,6 +73,11 @@ public class FfaClassicUtil extends BaseFfaUtil {
     @Override
     public EntityPos getSpawn() {
         return spawn;
+    }
+
+    @Override
+    public Location getRespawnLocation() {
+        return nexusFfaLocation;
     }
 
     @Override

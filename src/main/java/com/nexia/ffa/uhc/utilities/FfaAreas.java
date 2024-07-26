@@ -1,14 +1,13 @@
 package com.nexia.ffa.uhc.utilities;
 
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.pos.PositionUtil;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.nexus.api.util.Identifier;
 import com.nexia.nexus.api.world.World;
-import com.nexia.nexus.api.world.entity.Entity;
 import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.nexus.api.world.util.Location;
 import com.nexia.nexus.builder.implementation.world.structure.StructureMap;
@@ -48,11 +47,11 @@ public class FfaAreas {
 
         map.pasteMap(ffaWorld);
 
-        if(NexiaCore.config.debugMode) NexiaCore.logger.info("[DEBUG]: Uhc FFA Map has been reset.");
+        if (NexiaCore.config.debugMode) NexiaCore.logger.info("[DEBUG]: Uhc FFA Map has been reset.");
 
-        if(announce){
-            for(Entity entity : WorldUtil.getWorld(ffaWorld).getEntities()) {
-                if(entity instanceof Player player && player.hasTag("ffa_uhc")) player.sendMessage(Component.text("[!] Map has been reloaded!").color(ChatFormat.lineTitleColor));
+        if (announce) {
+            for (Player player : nexusFfaWorld.getPlayers()) {
+                player.sendMessage(Component.text("[!] Map has been reloaded!").color(ChatFormat.lineTitleColor));
             }
         }
     }

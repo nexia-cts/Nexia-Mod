@@ -1,6 +1,5 @@
 package com.nexia.core.games.util;
 
-import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayers;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
@@ -26,7 +25,7 @@ public class PlayerGameMode {
 
     public static final PlayerGameMode SKYWARS = new PlayerGameMode("skywars", "Skywars", SkywarsGame.SKYWARS_TAG);
     public static final PlayerGameMode OITC = new PlayerGameMode("oitc", "OITC", OitcGame.OITC_TAG);
-    public static final PlayerGameMode FFA = new PlayerGameMode("ffa", "FFA", FfaUtil.FFA_TAG);
+    public static final PlayerGameMode FFA = new PlayerGameMode("ffa", "FFA", "ffa");
     public static final PlayerGameMode FOOTBALL = new PlayerGameMode("football", "Football", FootballGame.FOOTBALL_TAG);
 
     //public static final PlayerGameMode DUELS = new PlayerGameMode("duels");

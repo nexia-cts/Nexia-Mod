@@ -1,22 +1,16 @@
 package com.nexia.core.games.util;
 
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.BanHandler;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.GamemodeBanHandler;
-import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.world.WorldUtil;
-import com.nexia.ffa.FfaGameMode;
-import com.nexia.ffa.FfaUtil;
-import com.nexia.ffa.classic.utilities.FfaAreas;
 import com.nexia.ffa.base.BaseFfaUtil;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
-import com.nexia.ffa.kits.utilities.FfaKitsUtil;
-import com.nexia.ffa.sky.utilities.FfaSkyUtil;
-import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.football.FootballGame;
@@ -88,11 +82,6 @@ public class LobbyUtil {
     public static String[] removedTags = {
             PlayerGameMode.BEDWARS.tag,
             "bedwars",
-            PlayerGameMode.FFA.tag,
-            "ffa_classic",
-            "ffa_kits",
-            "ffa_sky",
-            "ffa_uhc",
             PlayerGameMode.FOOTBALL.tag,
             "in_football_game",
             "duels",
@@ -238,18 +227,18 @@ public class LobbyUtil {
 
     public static void sendGame(NexiaPlayer player, String game, boolean message, boolean tp) {
 
-        if(checkGameModeBan(player, game)) {
+        if (checkGameModeBan(player, game)) {
             return;
         }
 
-        for (BaseFfaUtil util : BaseFfaUtil.ffaUtils){
+        for (BaseFfaUtil util : BaseFfaUtil.ffaUtils) {
             if (game.equalsIgnoreCase(util.getNameLowercase() + " ffa") && !util.canGoToSpawn(player)) {
                 player.sendMessage(Component.text("You must be fully healed to go to spawn!").color(ChatFormat.failColor));
                 return;
             }
         }
 
-        if(player.hasTag("duels")) {
+        if (player.hasTag("duels")) {
             player.removeTag("duels");
             DuelGameHandler.leave(player, true);
         }
@@ -257,74 +246,38 @@ public class LobbyUtil {
         player.reset(true, Minecraft.GameMode.ADVENTURE);
         player.leaveAllGames();
 
-        if(game.equalsIgnoreCase("classic ffa") ||
+        if (game.equalsIgnoreCase("classic ffa") ||
                 game.equalsIgnoreCase("kits ffa") ||
                 game.equalsIgnoreCase("sky ffa") ||
                 game.equalsIgnoreCase("uhc ffa")) {
-            player.addTag(FfaUtil.FFA_TAG);
             ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).gameMode = PlayerGameMode.FFA;
             if (message) { player.sendActionBarMessage(Component.text("You have joined §8🗡 §7§lFFA §b🔱")); }
         }
 
-        if(game.equalsIgnoreCase("classic ffa")){
-            player.addTag("ffa_classic");
-            FfaClassicUtil.INSTANCE.wasInSpawn.add(player.getUUID());
-            ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).ffaGameMode = FfaGameMode.CLASSIC;
-            if (tp) {
-                FfaClassicUtil.INSTANCE.sendToSpawn(player);
-                player.setRespawnPosition(FfaAreas.nexusFfaLocation, FfaAreas.spawn.yaw, true, false);
-            }
+        for (BaseFfaUtil util : BaseFfaUtil.ffaUtils) {
+            if (game.equalsIgnoreCase(util.getNameLowercase() + " ffa")) {
+                util.wasInSpawn.add(player.getUUID());
+                ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).ffaGameMode = util.getGameMode();
+                if (tp) {
+                    util.sendToSpawn(player);
+                    player.setRespawnPosition(util.getRespawnLocation(), util.getSpawn().yaw, true, false);
+                }
 
-            FfaClassicUtil.INSTANCE.joinOrRespawn(player, false);
-            FfaClassicUtil.INSTANCE.clearProjectiles(player);
+                util.joinOrRespawn(player, false);
+                util.clearProjectiles(player);
+            }
+        }
+
+        if (game.equalsIgnoreCase("classic ffa")) {
             FfaClassicUtil.INSTANCE.setInventory(player);
         }
 
-        if(game.equalsIgnoreCase("sky ffa")){
-            player.addTag("ffa_sky");
-            FfaSkyUtil.INSTANCE.wasInSpawn.add(player.getUUID());
-            ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).ffaGameMode = FfaGameMode.SKY;
-            if (tp) {
-                FfaSkyUtil.INSTANCE.sendToSpawn(player);
-                player.setRespawnPosition(com.nexia.ffa.sky.utilities.FfaAreas.nexusFfaLocation, com.nexia.ffa.sky.utilities.FfaAreas.spawn.yaw, true, false);
-            }
-
-            FfaSkyUtil.INSTANCE.joinOrRespawn(player, false);
-            FfaSkyUtil.INSTANCE.clearProjectiles(player);
-        }
-
-        if(game.equalsIgnoreCase("uhc ffa")){
-            player.addTag("ffa_uhc");
-            FfaUhcUtil.INSTANCE.wasInSpawn.add(player.getUUID());
-            ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).ffaGameMode = FfaGameMode.UHC;
-            if (tp) {
-                FfaUhcUtil.INSTANCE.sendToSpawn(player);
-                player.setRespawnPosition(com.nexia.ffa.uhc.utilities.FfaAreas.nexusFfaLocation, com.nexia.ffa.uhc.utilities.FfaAreas.spawn.yaw, true, false);
-            }
-
-            FfaUhcUtil.INSTANCE.joinOrRespawn(player, false);
-            FfaUhcUtil.INSTANCE.clearProjectiles(player);
-        }
-
-        if(game.equalsIgnoreCase("kits ffa")){
-            player.addTag("ffa_kits");
-            FfaKitsUtil.INSTANCE.wasInSpawn.add(player.getUUID());
-            ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).ffaGameMode = FfaGameMode.KITS;
-            if (tp) {
-                FfaKitsUtil.INSTANCE.sendToSpawn(player);
-                player.setRespawnPosition(com.nexia.ffa.kits.utilities.FfaAreas.nexusFfaLocation, com.nexia.ffa.kits.utilities.FfaAreas.spawn.yaw, true, false);
-            }
-
-            FfaKitsUtil.INSTANCE.joinOrRespawn(player, false);
-            FfaKitsUtil.INSTANCE.clearProjectiles(player);
-        }
-
-        if(game.equalsIgnoreCase("bedwars")){
+        if (game.equalsIgnoreCase("bedwars")) {
             if(message){ player.sendActionBarMessage(Component.text("You have joined §b\uD83E\uDE93 §c§lBedwars §e⚡"));}
             BwPlayerEvents.tryToJoin(player, false);
         }
 
-        if(game.equalsIgnoreCase("duels")){
+        if (game.equalsIgnoreCase("duels")) {
             LobbyUtil.returnToLobby(player, tp);
 
             if(message){

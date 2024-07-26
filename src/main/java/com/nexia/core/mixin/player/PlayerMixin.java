@@ -19,7 +19,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.stats.Stats;
 import net.minecraft.world.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
@@ -46,32 +45,8 @@ public abstract class PlayerMixin extends LivingEntity {
 
     @Shadow public abstract ItemCooldowns getCooldowns();
 
-    @Shadow public abstract void awardStat(ResourceLocation resourceLocation, int i);
-
     protected PlayerMixin(EntityType<? extends LivingEntity> entityType, Level level) {
         super(entityType, level);
-    }
-
-    @Inject(method = "actuallyHurt", at = @At(value = "HEAD"), cancellable = true)
-    protected void killInVoid(DamageSource damageSource, float f, CallbackInfo ci) {
-        if (((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(getUUID())).gameMode == PlayerGameMode.LOBBY) {
-            return;
-        }
-        if (!isInvulnerableTo(damageSource)) {
-            if (damageSource == DamageSource.OUT_OF_WORLD) {
-                if (getAbsorptionAmount() > 0.0F && getAbsorptionAmount() < 3.4028235E37F) {
-                    awardStat(Stats.DAMAGE_ABSORBED, Math.round(getAbsorptionAmount() * 10));
-                }
-                setHealth(0);
-                float totalHarm = getHealth() + getAbsorptionAmount();
-                getCombatTracker().recordDamage(damageSource, getHealth(), totalHarm);
-                setAbsorptionAmount(0);
-                if (totalHarm < 3.4028235E37F) {
-                    awardStat(Stats.DAMAGE_TAKEN, Math.round(totalHarm * 10.0F));
-                }
-                ci.cancel();
-            }
-        }
     }
 
 

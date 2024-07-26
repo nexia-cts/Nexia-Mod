@@ -13,6 +13,7 @@ import com.nexia.ffa.kits.FfaKit;
 import com.nexia.ffa.kits.utilities.player.KitFFAPlayerData;
 import com.nexia.nexus.api.world.World;
 import com.nexia.nexus.api.world.types.Minecraft;
+import com.nexia.nexus.api.world.util.Location;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.minecraft.server.level.ServerLevel;
@@ -50,6 +51,11 @@ public class FfaKitsUtil extends BaseFfaUtil {
     @Override
     public EntityPos getSpawn() {
         return spawn;
+    }
+
+    @Override
+    public Location getRespawnLocation() {
+        return nexusFfaLocation;
     }
 
     @Override

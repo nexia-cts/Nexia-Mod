@@ -19,6 +19,7 @@ import com.nexia.nexus.api.world.World;
 import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.nexus.api.world.util.BoundingBox;
+import com.nexia.nexus.api.world.util.Location;
 import com.nexia.nexus.api.world.util.Vector3D;
 import com.nexia.nexus.builder.implementation.world.entity.projectile.WrappedProjectile;
 import io.github.blumbo.inventorymerger.InventoryMerger;
@@ -28,11 +29,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.projectile.Arrow;
-import net.minecraft.world.entity.projectile.SpectralArrow;
-import net.minecraft.world.entity.projectile.ThrownEnderpearl;
-import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -70,13 +66,15 @@ public abstract class BaseFfaUtil {
 
     public abstract EntityPos getSpawn();
 
+    public abstract Location getRespawnLocation();
+
     public KillTracker getKillTracker() {
         return killTracker;
     }
 
     public boolean isFfaPlayer(NexiaPlayer player) {
         CorePlayerData data = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player);
-        return player.hasTag("ffa_" + getNameLowercase()) && data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == getGameMode();
+        return data.gameMode == PlayerGameMode.FFA && data.ffaGameMode == getGameMode();
     }
 
     public boolean canGoToSpawn(NexiaPlayer player) {
@@ -301,34 +299,6 @@ public abstract class BaseFfaUtil {
                         && projectile.getOwner().getUUID().equals(player.getUUID()))
                 .stream().map(WrappedProjectile.class::cast).toList()) {
             projectile.kill();
-        }
-    }
-
-    public void clearThrownTridents(NexiaPlayer player) {
-        AABB aabb = getFfaCorners().contract(-10, -getFfaCorners().minY, -10).expandTowards(10, 319 - getFfaCorners().maxY, 10);
-        for (ThrownTrident trident : getFfaWorld().getEntities(EntityType.TRIDENT, aabb, trident -> trident.getOwner() != null && trident.getOwner().getUUID().equals(player.getUUID()))) {
-            trident.remove();
-        }
-    }
-
-    public void clearArrows(NexiaPlayer player) {
-        AABB aabb = getFfaCorners().contract(-10, -getFfaCorners().minY, -10).expandTowards(10, 319 - getFfaCorners().maxY, 10);
-        for (Arrow arrow : getFfaWorld().getEntities(EntityType.ARROW, aabb, arrow -> arrow.getOwner() != null && arrow.getOwner().getUUID().equals(player.getUUID()))) {
-            arrow.remove();
-        }
-    }
-
-    public void clearSpectralArrows(NexiaPlayer player) {
-        AABB aabb = getFfaCorners().contract(-10, -getFfaCorners().minY, -10).expandTowards(10, 319 - getFfaCorners().maxY, 10);
-        for (SpectralArrow arrow : getFfaWorld().getEntities(EntityType.SPECTRAL_ARROW, aabb, arrow -> arrow.getOwner() != null && arrow.getOwner().getUUID().equals(player.getUUID()))) {
-            arrow.remove();
-        }
-    }
-
-    public void clearEnderpearls(NexiaPlayer player) {
-        AABB aabb = getFfaCorners().contract(-10, -getFfaCorners().minY, -10).expandTowards(10, 319 - getFfaCorners().maxY, 10);
-        for (ThrownEnderpearl enderpearl : getFfaWorld().getEntities(EntityType.ENDER_PEARL, aabb, enderpearl -> enderpearl.getOwner() != null && enderpearl.getOwner().getUUID().equals(player.getUUID()))) {
-            enderpearl.remove();
         }
     }
 

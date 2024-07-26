@@ -11,6 +11,7 @@ import com.nexia.ffa.base.BaseFfaUtil;
 import com.nexia.ffa.sky.SkyFfaBlocks;
 import com.nexia.nexus.api.world.World;
 import com.nexia.nexus.api.world.types.Minecraft;
+import com.nexia.nexus.api.world.util.Location;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
@@ -73,6 +74,11 @@ public class FfaSkyUtil extends BaseFfaUtil {
     @Override
     public EntityPos getSpawn() {
         return spawn;
+    }
+
+    @Override
+    public Location getRespawnLocation() {
+        return nexusFfaLocation;
     }
 
     @Override

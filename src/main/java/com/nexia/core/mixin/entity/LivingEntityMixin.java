@@ -1,5 +1,7 @@
 package com.nexia.core.mixin.entity;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.PlayerGameMode;
@@ -7,9 +9,7 @@ import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.stats.Stats;
 import net.minecraft.world.CombatRules;
-import net.minecraft.world.damagesource.CombatTracker;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -25,9 +25,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
@@ -41,30 +39,18 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Shadow public abstract ItemStack getBlockingItem();
 
-    @Shadow public abstract CombatTracker getCombatTracker();
-
-    @Shadow public abstract float getHealth();
-
-    @Shadow public abstract void setHealth(float f);
-
-    @Shadow public abstract float getAbsorptionAmount();
-
-    @Shadow public abstract void setAbsorptionAmount(float f);
+    @Shadow public abstract void kill();
 
     // Make void death instant
-    @Inject(method = "actuallyHurt", at = @At(value = "HEAD"), cancellable = true)
-    protected void killInVoid(DamageSource damageSource, float f, CallbackInfo ci) {
-        if (!isInvulnerableTo(damageSource)) {
-            if (damageSource == DamageSource.OUT_OF_WORLD) {
-                if (getAbsorptionAmount() > 0.0F && getAbsorptionAmount() < 3.4028235E37F && damageSource.getEntity() instanceof ServerPlayer attacker) {
-                    attacker.awardStat(Stats.DAMAGE_DEALT_ABSORBED, Math.round(getAbsorptionAmount() * 10));
-                }
-                setHealth(0);
-                getCombatTracker().recordDamage(damageSource, getHealth(), getHealth() + getAbsorptionAmount());
-                setAbsorptionAmount(0);
-                ci.cancel();
+    @WrapOperation(method = "outOfWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
+    protected boolean killInVoid(LivingEntity instance, DamageSource damageSource, float f, Operation<Boolean> original) {
+        if ((Object)this instanceof ServerPlayer serverPlayer) {
+            if (((CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(serverPlayer.getUUID())).gameMode == PlayerGameMode.LOBBY) {
+                return original.call(instance, damageSource, f);
             }
         }
+        kill();
+        return true;
     }
 
     /**
