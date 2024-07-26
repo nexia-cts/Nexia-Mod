@@ -3,6 +3,14 @@ package com.nexia.core.listeners.nexus;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
+<<<<<<< Updated upstream
+=======
+import com.nexia.core.utilities.player.CorePlayerData;
+import com.nexia.minigames.games.skywars.util.player.SkywarsPlayerData;
+import com.nexia.nexus.api.event.player.PlayerRespawnEvent;
+import com.nexia.nexus.api.world.types.Minecraft;
+import com.nexia.nexus.api.world.util.Location;
+>>>>>>> Stashed changes
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.player.CorePlayerData;
@@ -54,6 +62,14 @@ public class PlayerRespawnListener {
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
                 respawnEvent.setSpawnpoint(respawn);
                 return;
+            }
+
+            if(data.gameMode == PlayerGameMode.BEDWARS) {
+                respawnEvent.setRespawnMode(Minecraft.GameMode.SURVIVAL);
+            }
+
+            if(data.gameMode == PlayerGameMode.OITC) {
+                respawnEvent.setRespawnMode(Minecraft.GameMode.ADVENTURE);
             }
             
             if(duelsGame != null && duelsGame.isEnding && duelsGame.winner != null) {

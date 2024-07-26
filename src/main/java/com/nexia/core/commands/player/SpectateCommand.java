@@ -127,7 +127,6 @@ public class SpectateCommand {
             nexiaExecutor.sendMessage(ChatFormat.nexiaMessage.append(
                     Component.text("If you are in duels then you do /spectate <player>.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
             ));
-            return 0;
         }
 
         if(!FfaUtil.isFfaPlayer(nexiaPlayer)) {
