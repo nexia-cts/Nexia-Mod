@@ -12,9 +12,7 @@ import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.ffa.base.BaseFfaUtil;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
-import com.nexia.ffa.sky.utilities.SkyFfaAreas;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
-import com.nexia.ffa.uhc.utilities.UhcFfaAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
@@ -117,7 +115,6 @@ public abstract class PlayerMixin extends LivingEntity {
         if(attacker != null) {
             if(attacker.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
                 cir.setReturnValue(false);
-                return;
             }
 
             /*

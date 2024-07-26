@@ -4,6 +4,10 @@ import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.player.CorePlayerData;
+import com.nexia.minigames.games.bedwars.BwGame;
+import com.nexia.minigames.games.oitc.OitcGame;
+import com.nexia.minigames.games.oitc.OitcGameMode;
+import com.nexia.minigames.games.oitc.util.player.OITCPlayerData;
 import com.nexia.minigames.games.skywars.util.player.SkywarsPlayerData;
 import com.nexia.nexus.api.event.player.PlayerRespawnEvent;
 import com.nexia.nexus.api.world.types.Minecraft;
@@ -56,12 +60,36 @@ public class PlayerRespawnListener {
                 return;
             }
 
-            if(data.gameMode == PlayerGameMode.BEDWARS && !player.isInvulnerable()) {
-                player.setGameMode(Minecraft.GameMode.SURVIVAL);
+            if(data.gameMode == PlayerGameMode.BEDWARS) {
+                Location respawn = new Location(0,100, 0, WorldUtil.getWorld(BwGame.world));
+
+                ServerPlayer serverPlayer = PlayerUtil.getPlayerAttacker(player.unwrap());
+                if(serverPlayer != null && serverPlayer != player.unwrap()) {
+                    respawn.setX(serverPlayer.getX());
+                    respawn.setY(serverPlayer.getY());
+                    respawn.setZ(serverPlayer.getZ());
+                    respawnEvent.setRespawnMode(Minecraft.GameMode.ADVENTURE);
+                    respawnEvent.setSpawnpoint(respawn);
+                }
+
+                return;
             }
 
-            if(data.gameMode == PlayerGameMode.OITC && !player.isInvulnerable()) {
-                player.setGameMode(Minecraft.GameMode.ADVENTURE);
+
+            if(data.gameMode == PlayerGameMode.OITC) {
+                Location respawn = new Location(0,100, 0, WorldUtil.getWorld(OitcGame.world));
+
+                boolean isPlaying = ((OITCPlayerData)PlayerDataManager.getDataManager(NexiaCore.OITC_DATA_MANAGER).get(player)).gameMode == OitcGameMode.PLAYING;
+                ServerPlayer serverPlayer = PlayerUtil.getPlayerAttacker(player.unwrap());
+                if(serverPlayer != null && serverPlayer != player.unwrap() && isPlaying) {
+                    respawn.setX(serverPlayer.getX());
+                    respawn.setY(serverPlayer.getY());
+                    respawn.setZ(serverPlayer.getZ());
+                    respawnEvent.setRespawnMode(Minecraft.GameMode.ADVENTURE);
+                    respawnEvent.setSpawnpoint(respawn);
+                }
+
+                return;
             }
             
             if(duelsGame != null && duelsGame.isEnding && duelsGame.winner != null) {

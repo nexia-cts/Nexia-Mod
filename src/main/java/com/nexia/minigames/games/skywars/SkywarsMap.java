@@ -7,7 +7,6 @@ import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.nexus.api.util.Identifier;
 import com.nexia.nexus.builder.implementation.world.structure.StructureMap;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 

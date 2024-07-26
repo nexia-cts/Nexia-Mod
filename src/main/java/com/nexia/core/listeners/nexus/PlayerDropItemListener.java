@@ -13,7 +13,6 @@ public class PlayerDropItemListener {
             if (!EventUtil.dropItem(player, playerDropItemEvent.getItemStack())) {
                 playerDropItemEvent.setCancelled(true);
                 player.refreshInventory();
-                return;
             }
         });
     }

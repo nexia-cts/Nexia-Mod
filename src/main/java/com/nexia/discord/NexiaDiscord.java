@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
@@ -51,7 +50,7 @@ public class NexiaDiscord implements ModInitializer {
                                         .addChoice("EU", "eu")
                                         .addChoice("NA", "na")
                                         .addChoice("DEV", "dev"),
-                                new OptionData(OptionType.INTEGER, "code", "The code when you do /link in minecraft.")
+                                new OptionData(OptionType.INTEGER, "code", "The code when you do /link in Minecraft.")
                                         .setRequired(true)
                                         .setRequiredRange(1000, 9999)
                         )
