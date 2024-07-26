@@ -48,7 +48,7 @@ public class LobbyUtil {
     public static World nexusLobbyWorld = null;
     public static Location nexusLobbyLocation = null;
 
-    public static EntityPos lobbySpawn = new EntityPos(0, 65, 0, 0, 0);
+    public static EntityPos lobbySpawn = new EntityPos(0.5, 65, 0.5, 0, 0);
 
     public static boolean isLobbyWorld(Level level) {
         return level.dimension() == Level.OVERWORLD;
