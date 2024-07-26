@@ -59,11 +59,11 @@ public class UhcFfaAreas implements FfaAreas {
     }
 
     public boolean isFfaWorld(Level level) {
-        return level.dimension().location().toString().equals("ffa:uhc");
+        return isFfaWorldStatic(level);
     }
 
-    public boolean isInFfaSpawn(NexiaPlayer player) {
-        return PositionUtil.isBetween(spawnCorner1, spawnCorner2, player.unwrap().blockPosition());
+    public static boolean isFfaWorldStatic(Level level) {
+        return level.dimension().location().toString().equals("ffa:uhc");
     }
 
     @Override
@@ -96,9 +96,9 @@ public class UhcFfaAreas implements FfaAreas {
         return new AABB(ffaCorner1, ffaCorner2);
     }
 
-    public void setFfaWorld(MinecraftServer server) {
+    public static void setFfaWorld(MinecraftServer server) {
         for (ServerLevel level : server.getAllLevels()) {
-            if (isFfaWorld(level)) {
+            if (isFfaWorldStatic(level)) {
                 ffaWorld = level;
                 nexusFfaWorld = WorldUtil.getWorld(level);
                 break;

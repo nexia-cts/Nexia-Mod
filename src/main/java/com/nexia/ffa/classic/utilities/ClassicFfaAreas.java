@@ -26,11 +26,11 @@ public class ClassicFfaAreas implements FfaAreas {
     public static BlockPos ffaCorner2 = spawn.toBlockPos().offset(150, -spawn.y + 255, 150);
 
     public boolean isFfaWorld(Level level) {
-        return level.dimension().location().toString().equals("ffa:classic");
+        return isFfaWorldStatic(level);
     }
 
-    public boolean isInFfaSpawn(NexiaPlayer player) {
-        return PositionUtil.isBetween(spawnCorner1, spawnCorner2, player.unwrap().blockPosition());
+    public static boolean isFfaWorldStatic(Level level) {
+        return level.dimension().location().toString().equals("ffa:classic");
     }
 
     @Override
@@ -63,9 +63,9 @@ public class ClassicFfaAreas implements FfaAreas {
         return new AABB(ffaCorner1, ffaCorner2);
     }
 
-    public void setFfaWorld(MinecraftServer server) {
+    public static void setFfaWorld(MinecraftServer server) {
         for (ServerLevel level : server.getAllLevels()) {
-            if (isFfaWorld(level)) {
+            if (isFfaWorldStatic(level)) {
                 ffaWorld = level;
                 nexusFfaWorld = WorldUtil.getWorld(level);
                 break;

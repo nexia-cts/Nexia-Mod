@@ -1,8 +1,6 @@
 package com.nexia.ffa.kits.utilities;
 
-import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.core.utilities.pos.PositionUtil;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.ffa.FfaAreas;
 import com.nexia.nexus.api.world.World;
@@ -27,11 +25,11 @@ public class KitFfaAreas implements FfaAreas {
     public static BlockPos ffaCorner2 = spawn.toBlockPos().offset(500, -spawn.y + 255, 500);
 
     public boolean isFfaWorld(Level level) {
-        return level.dimension().location().toString().equals("ffa:kits");
+        return isFfaWorldStatic(level);
     }
 
-    public boolean isInFfaSpawn(NexiaPlayer player) {
-        return PositionUtil.isBetween(spawnCorner1, spawnCorner2, player.getLocation());
+    public static boolean isFfaWorldStatic(Level level) {
+        return level.dimension().location().toString().equals("ffa:kits");
     }
 
     @Override
@@ -64,9 +62,9 @@ public class KitFfaAreas implements FfaAreas {
         return new AABB(ffaCorner1, ffaCorner2);
     }
 
-    public void setFfaWorld(MinecraftServer server) {
+    public static void setFfaWorld(MinecraftServer server) {
         for (ServerLevel level : server.getAllLevels()) {
-            if (isFfaWorld(level)) {
+            if (isFfaWorldStatic(level)) {
                 ffaWorld = level;
                 nexusFfaWorld = WorldUtil.getWorld(level);
                 break;

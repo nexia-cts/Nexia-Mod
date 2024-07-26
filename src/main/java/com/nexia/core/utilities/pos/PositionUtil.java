@@ -20,14 +20,14 @@ public class PositionUtil {
 
 
     public static boolean isBetween(AABB corners, BlockPos between) {
-        return corners.minX <= between.getX() && corners.minX >= between.getX() &&
-                corners.minY <= between.getY() && corners.minY >= between.getY() &&
-                corners.minZ <= between.getZ() && corners.minZ >= between.getZ();
+        return corners.minX <= between.getX() && corners.maxX >= between.getX() &&
+                corners.minY <= between.getY() && corners.maxY >= between.getY() &&
+                corners.minZ <= between.getZ() && corners.maxZ >= between.getZ();
     }
 
     public static boolean isBetween(AABB corners, Location between) {
-        return corners.minX <= between.getX() && corners.minX >= between.getX() &&
-                corners.minY <= between.getY() && corners.minY >= between.getY() &&
-                corners.minZ <= between.getZ() && corners.minZ >= between.getZ();
+        return corners.minX <= between.getX() && corners.maxX >= between.getX() &&
+                corners.minY <= between.getY() && corners.maxY >= between.getY() &&
+                corners.minZ <= between.getZ() && corners.maxZ >= between.getZ();
     }
 }

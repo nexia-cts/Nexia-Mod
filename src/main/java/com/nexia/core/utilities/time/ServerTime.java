@@ -5,10 +5,13 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.ffa.base.BaseFfaUtil;
+import com.nexia.ffa.classic.utilities.ClassicFfaAreas;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
+import com.nexia.ffa.kits.utilities.KitFfaAreas;
 import com.nexia.ffa.sky.SkyFfaBlocks;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
+import com.nexia.ffa.sky.utilities.SkyFfaAreas;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.ffa.uhc.utilities.UhcFfaAreas;
 import com.nexia.minigames.games.bedwars.BwGame;
@@ -61,9 +64,10 @@ public class ServerTime {
         LobbyUtil.setLobbyWorld(minecraftServer);
         WorldUtil.setVoidWorld(minecraftServer);
 
-        for (BaseFfaUtil util : BaseFfaUtil.ffaUtils) {
-            util.ffaAreas.setFfaWorld(minecraftServer);
-        }
+        ClassicFfaAreas.setFfaWorld(server);
+        KitFfaAreas.setFfaWorld(server);
+        SkyFfaAreas.setFfaWorld(server);
+        UhcFfaAreas.setFfaWorld(server);
 
         BwLoadShop.loadBedWarsShop(true);
         BwDimension.register();

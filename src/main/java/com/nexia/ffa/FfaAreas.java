@@ -20,8 +20,6 @@ public interface FfaAreas {
 
     AABB getFfaCorners();
 
-    void setFfaWorld(MinecraftServer server);
-
     default boolean isInFfaSpawn(NexiaPlayer player) {
         return PositionUtil.isBetween(getSpawnCorners(), player.getLocation());
     }

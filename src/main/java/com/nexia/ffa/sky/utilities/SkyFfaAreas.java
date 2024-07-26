@@ -1,9 +1,8 @@
 package com.nexia.ffa.sky.utilities;
 
-import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.base.player.NexiaPlayer;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.core.utilities.pos.PositionUtil;
 import com.nexia.core.utilities.pos.ProtectionBlock;
 import com.nexia.core.utilities.pos.ProtectionMap;
 import com.nexia.core.utilities.world.WorldUtil;
@@ -39,11 +38,11 @@ public class SkyFfaAreas implements FfaAreas {
     }
 
     public boolean isFfaWorld(Level level) {
-        return level.dimension().location().toString().equals("ffa:sky");
+        return isFfaWorldStatic(level);
     }
 
-    public boolean isInFfaSpawn(NexiaPlayer player) {
-        return PositionUtil.isBetween(spawnCorner1, spawnCorner2, player.getLocation());
+    public static boolean isFfaWorldStatic(Level level) {
+        return level.dimension().location().toString().equals("ffa:sky");
     }
 
     @Override
@@ -76,9 +75,9 @@ public class SkyFfaAreas implements FfaAreas {
         return new AABB(ffaCorner1, ffaCorner2);
     }
 
-    public void setFfaWorld(MinecraftServer server) {
+    public static void setFfaWorld(MinecraftServer server) {
         for (ServerLevel level : server.getAllLevels()) {
-            if (isFfaWorld(level)) {
+            if (isFfaWorldStatic(level)) {
                 ffaWorld = level;
                 nexusFfaWorld = WorldUtil.getWorld(level);
                 break;
