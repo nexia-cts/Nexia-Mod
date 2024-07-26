@@ -5,18 +5,14 @@ import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
-import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.base.BaseFfaUtil;
 import com.nexia.ffa.sky.SkyFfaBlocks;
-import com.nexia.nexus.api.world.World;
 import com.nexia.nexus.api.world.types.Minecraft;
-import com.nexia.nexus.api.world.util.Location;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -28,7 +24,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
-import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +31,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
-import static com.nexia.ffa.sky.utilities.FfaAreas.*;
+import static com.nexia.ffa.sky.utilities.SkyFfaAreas.buildLimitY;
+import static com.nexia.ffa.sky.utilities.SkyFfaAreas.canBuild;
 
 public class FfaSkyUtil extends BaseFfaUtil {
 
@@ -48,6 +44,10 @@ public class FfaSkyUtil extends BaseFfaUtil {
             Items.LIME_WOOL, Items.LIGHT_BLUE_WOOL, Items.MAGENTA_WOOL};
     public static int woolId = 0;
     public static final HashMap<Integer, ItemStack> killRewards = new HashMap<>();
+
+    public FfaSkyUtil() {
+        super(new SkyFfaAreas());
+    }
 
     @Override
     public String getName() {
@@ -62,26 +62,6 @@ public class FfaSkyUtil extends BaseFfaUtil {
     @Override
     public PlayerDataManager getDataManager() {
         return PlayerDataManager.getDataManager(NexiaCore.FFA_SKY_DATA_MANAGER);
-    }
-
-    @Override
-    public ServerLevel getFfaWorld() {
-        return ffaWorld;
-    }
-
-    @Override
-    public World getNexusFfaWorld() {
-        return nexusFfaWorld;
-    }
-
-    @Override
-    public EntityPos getSpawn() {
-        return spawn;
-    }
-
-    @Override
-    public Location getRespawnLocation() {
-        return nexusFfaLocation;
     }
 
     @Override
@@ -232,16 +212,6 @@ public class FfaSkyUtil extends BaseFfaUtil {
             return false;
         }
         return canBuild(player, blockPos);
-    }
-
-    @Override
-    public boolean isInFfaSpawn(NexiaPlayer player) {
-        return FfaAreas.isInFfaSpawn(player);
-    }
-
-    @Override
-    public AABB getFfaCorners() {
-        return new AABB(ffaCorner1, ffaCorner2);
     }
 
     @Override

@@ -1,7 +1,8 @@
 package com.nexia.core.mixin.entity;
 
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.ffa.sky.utilities.FfaAreas;
+import com.nexia.ffa.sky.utilities.FfaSkyUtil;
+import com.nexia.ffa.sky.utilities.SkyFfaAreas;
 import com.nexia.minigames.games.football.FootballGame;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.server.level.ServerLevel;
@@ -54,8 +55,8 @@ public abstract class EntityMixin implements Nameable, CommandSource {
 
         if (instance.level instanceof ServerLevel serverLevel) {
 
-            if (FfaAreas.isFfaWorld(serverLevel)) {
-                voidY = FfaAreas.getVoidY();
+            if (FfaSkyUtil.INSTANCE.isFfaWorld(serverLevel)) {
+                voidY = SkyFfaAreas.getVoidY();
             }
         }
 

@@ -5,24 +5,22 @@ import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.gui.ffa.KitGUI;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.base.BaseFfaUtil;
 import com.nexia.ffa.kits.FfaKit;
 import com.nexia.ffa.kits.utilities.player.KitFFAPlayerData;
-import com.nexia.nexus.api.world.World;
 import com.nexia.nexus.api.world.types.Minecraft;
-import com.nexia.nexus.api.world.util.Location;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.phys.AABB;
-
-import static com.nexia.ffa.kits.utilities.FfaAreas.*;
 
 public class FfaKitsUtil extends BaseFfaUtil {
     public static final FfaKitsUtil INSTANCE = new FfaKitsUtil();
+
+    public FfaKitsUtil() {
+        super(new KitFfaAreas());
+    }
+
     @Override
     public String getName() {
         return "Kits";
@@ -36,26 +34,6 @@ public class FfaKitsUtil extends BaseFfaUtil {
     @Override
     public PlayerDataManager getDataManager() {
         return PlayerDataManager.getDataManager(NexiaCore.FFA_KITS_DATA_MANAGER);
-    }
-
-    @Override
-    public ServerLevel getFfaWorld() {
-        return ffaWorld;
-    }
-
-    @Override
-    public World getNexusFfaWorld() {
-        return nexusFfaWorld;
-    }
-
-    @Override
-    public EntityPos getSpawn() {
-        return spawn;
-    }
-
-    @Override
-    public Location getRespawnLocation() {
-        return nexusFfaLocation;
     }
 
     @Override
@@ -76,16 +54,6 @@ public class FfaKitsUtil extends BaseFfaUtil {
             wasInSpawn.remove(player.getUUID());
             player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your kit was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
         }
-    }
-
-    @Override
-    public boolean isInFfaSpawn(NexiaPlayer player) {
-        return FfaAreas.isInFfaSpawn(player);
-    }
-
-    @Override
-    public AABB getFfaCorners() {
-        return new AABB(ffaCorner1, ffaCorner2);
     }
 
     @Override

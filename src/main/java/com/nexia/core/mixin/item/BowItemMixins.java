@@ -1,7 +1,10 @@
 package com.nexia.core.mixin.item;
 
-import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.base.player.NexiaPlayer;
+import com.nexia.core.games.util.LobbyUtil;
+import com.nexia.ffa.kits.utilities.FfaKitsUtil;
+import com.nexia.ffa.sky.utilities.FfaSkyUtil;
+import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BowItem;
@@ -20,9 +23,9 @@ public class BowItemMixins {
         if(livingEntity instanceof ServerPlayer player){
             NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
-            if(((com.nexia.ffa.kits.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.kits.utilities.FfaAreas.isInFfaSpawn(nexiaPlayer)) ||
-                    (com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(nexiaPlayer)) ||
-                    (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.sky.utilities.FfaAreas.isInFfaSpawn(nexiaPlayer)) ||
+            if(((FfaKitsUtil.INSTANCE.isFfaWorld(player.level) && FfaKitsUtil.INSTANCE.isInFfaSpawn(nexiaPlayer)) ||
+                    (FfaUhcUtil.INSTANCE.isFfaWorld(player.level) && FfaUhcUtil.INSTANCE.isInFfaSpawn(nexiaPlayer)) ||
+                    (FfaSkyUtil.INSTANCE.isFfaWorld(player.level) && FfaSkyUtil.INSTANCE.isInFfaSpawn(nexiaPlayer)) ||
                     (player.getLevel().equals(LobbyUtil.lobbyWorld))
             ) && !player.isCreative()) {
                 ci.cancel();

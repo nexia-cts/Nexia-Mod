@@ -6,6 +6,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.pos.PositionUtil;
 import com.nexia.core.utilities.world.WorldUtil;
+import com.nexia.ffa.FfaAreas;
 import com.nexia.nexus.api.util.Identifier;
 import com.nexia.nexus.api.world.World;
 import com.nexia.nexus.api.world.entity.player.Player;
@@ -16,8 +17,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 
-public class FfaAreas {
+public class UhcFfaAreas implements FfaAreas {
 
     public static boolean shouldResetMap = true;
 
@@ -40,7 +42,7 @@ public class FfaAreas {
 
     public static StructureMap map = new StructureMap(new Identifier("ffa", "uhc"), StructureMap.Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-80, -17, -80), true);
 
-    public FfaAreas() {
+    public UhcFfaAreas() {
     }
 
     public static void resetMap(boolean announce) {
@@ -56,15 +58,45 @@ public class FfaAreas {
         }
     }
 
-    public static boolean isFfaWorld(Level level) {
+    public boolean isFfaWorld(Level level) {
         return level.dimension().location().toString().equals("ffa:uhc");
     }
 
-    public static boolean isInFfaSpawn(NexiaPlayer player) {
+    public boolean isInFfaSpawn(NexiaPlayer player) {
         return PositionUtil.isBetween(spawnCorner1, spawnCorner2, player.unwrap().blockPosition());
     }
 
-    public static void setFfaWorld(MinecraftServer server) {
+    @Override
+    public ServerLevel getFfaWorld() {
+        return ffaWorld;
+    }
+
+    @Override
+    public World getNexusFfaWorld() {
+        return nexusFfaWorld;
+    }
+
+    @Override
+    public Location getFfaLocation() {
+        return nexusFfaLocation;
+    }
+
+    @Override
+    public EntityPos getSpawn() {
+        return spawn;
+    }
+
+    @Override
+    public AABB getSpawnCorners() {
+        return new AABB(spawnCorner1, spawnCorner2);
+    }
+
+    @Override
+    public AABB getFfaCorners() {
+        return new AABB(ffaCorner1, ffaCorner2);
+    }
+
+    public void setFfaWorld(MinecraftServer server) {
         for (ServerLevel level : server.getAllLevels()) {
             if (isFfaWorld(level)) {
                 ffaWorld = level;

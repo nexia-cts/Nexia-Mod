@@ -1,7 +1,7 @@
 package com.nexia.ffa.sky;
 
 import com.nexia.core.utilities.item.BlockUtil;
-import com.nexia.ffa.sky.utilities.FfaAreas;
+import com.nexia.ffa.sky.utilities.SkyFfaAreas;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
@@ -33,8 +33,8 @@ public class SkyFfaBlocks {
     private static final Block disappearingWoolType = Blocks.GRAY_WOOL;
 
     public static void tick() {
-        if(FfaAreas.ffaWorld == null) return;
-        if(FfaAreas.ffaWorld.players().isEmpty()) return;
+        if(SkyFfaAreas.ffaWorld == null) return;
+        if(SkyFfaAreas.ffaWorld.players().isEmpty()) return;
         ticks++;
 
         while (!playerPlacedBlocks.isEmpty()) {
@@ -87,7 +87,7 @@ public class SkyFfaBlocks {
     private static void setDisappearingBlock(BlockPos blockPos) {
         if (contains(playerPlacedBlocks, blockPos)) return;
 
-        ServerLevel world = FfaAreas.ffaWorld;
+        ServerLevel world = SkyFfaAreas.ffaWorld;
         BlockState blockState = world.getBlockState(blockPos);
 
         disappearingWool.add(new SkyFfaBlock(blockPos, ticks + disappearingBlockTime));
@@ -100,8 +100,8 @@ public class SkyFfaBlocks {
         if (contains(playerPlacedBlocks, blockPos) || contains(disappearingWool, blockPos)) return;
 
         try {
-            if(FfaAreas.ffaWorld.getChunkAt(blockPos) != null) {
-                FfaAreas.ffaWorld.setBlock(blockPos, Blocks.AIR.defaultBlockState(), 3);
+            if(SkyFfaAreas.ffaWorld.getChunkAt(blockPos) != null) {
+                SkyFfaAreas.ffaWorld.setBlock(blockPos, Blocks.AIR.defaultBlockState(), 3);
             }
         } catch (Exception ignored) { }
 

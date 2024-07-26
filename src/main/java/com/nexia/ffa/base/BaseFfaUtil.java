@@ -12,6 +12,7 @@ import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.ffa.FfaAreas;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.nexus.api.world.World;
@@ -28,6 +29,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,9 +44,11 @@ import java.util.UUID;
 
 public abstract class BaseFfaUtil {
     public ArrayList<UUID> wasInSpawn = new ArrayList<>();
+    public final FfaAreas ffaAreas;
     public static final List<BaseFfaUtil> ffaUtils = new ArrayList<>();
 
-    public BaseFfaUtil() {
+    public BaseFfaUtil(FfaAreas ffaAreas) {
+        this.ffaAreas = ffaAreas;
         ffaUtils.add(this);
     }
 
@@ -58,13 +62,25 @@ public abstract class BaseFfaUtil {
 
     public abstract PlayerDataManager getDataManager();
 
-    public abstract ServerLevel getFfaWorld();
+    public boolean isFfaWorld(Level level) {
+        return ffaAreas.isFfaWorld(level);
+    }
 
-    public abstract World getNexusFfaWorld();
+    public ServerLevel getFfaWorld() {
+        return ffaAreas.getFfaWorld();
+    }
 
-    public abstract EntityPos getSpawn();
+    public World getNexusFfaWorld() {
+        return ffaAreas.getNexusFfaWorld();
+    }
 
-    public abstract Location getRespawnLocation();
+    public EntityPos getSpawn() {
+        return ffaAreas.getSpawn();
+    }
+
+    public Location getRespawnLocation() {
+        return ffaAreas.getFfaLocation();
+    }
 
     public boolean isFfaPlayer(NexiaPlayer player) {
         CorePlayerData data = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player);
@@ -188,9 +204,13 @@ public abstract class BaseFfaUtil {
         return !isInFfaSpawn(player);
     }
 
-    public abstract boolean isInFfaSpawn(NexiaPlayer player);
+    public boolean isInFfaSpawn(NexiaPlayer player) {
+        return ffaAreas.isInFfaSpawn(player);
+    }
 
-    public abstract AABB getFfaCorners();
+    public AABB getFfaCorners() {
+        return ffaAreas.getFfaCorners();
+    }
 
 
     public void setDeathMessage(@NotNull NexiaPlayer player, @Nullable ServerPlayer attacker, @Nullable DamageSource source) {

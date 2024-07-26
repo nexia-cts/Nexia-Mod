@@ -2,6 +2,9 @@ package com.nexia.core.gui;
 
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
+import com.nexia.ffa.kits.utilities.KitFfaAreas;
+import com.nexia.ffa.sky.utilities.SkyFfaAreas;
+import com.nexia.ffa.uhc.utilities.UhcFfaAreas;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import com.nexia.core.games.util.LobbyUtil;
@@ -9,7 +12,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.ffa.classic.utilities.FfaAreas;
+import com.nexia.ffa.classic.utilities.ClassicFfaAreas;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.football.FootballGame;
@@ -39,10 +42,10 @@ public class PlayGUI extends SimpleGui {
     }
     private void setMainLayout(){
 
-        int players = FfaAreas.ffaWorld.players().size();
-        players = players + com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld.players().size();
-        players = players + com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld.players().size();
-        players = players + com.nexia.ffa.uhc.utilities.FfaAreas.ffaWorld.players().size();
+        int players = ClassicFfaAreas.ffaWorld.players().size();
+        players = players + KitFfaAreas.ffaWorld.players().size();
+        players = players + SkyFfaAreas.ffaWorld.players().size();
+        players = players + UhcFfaAreas.ffaWorld.players().size();
 
         ItemStack ffa = new ItemStack(Items.NETHERITE_SWORD, 1);
         ffa.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("FFA", ChatFormat.Minecraft.aqua).decoration(ChatFormat.italic, false)));
@@ -125,7 +128,7 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(classic, net.kyori.adventure.text.Component.text("The classic snapshot", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 1);
         ItemDisplayUtil.addLore(classic, net.kyori.adventure.text.Component.text("Free For All gamemode.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
         ItemDisplayUtil.addLore(classic, "§f", 3);
-        ItemDisplayUtil.addLore(classic, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", FfaAreas.ffaWorld.players().size()), ChatFormat.Minecraft.aqua).decoration(ChatFormat.italic, false), 4);
+        ItemDisplayUtil.addLore(classic, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", ClassicFfaAreas.ffaWorld.players().size()), ChatFormat.Minecraft.aqua).decoration(ChatFormat.italic, false), 4);
 
         ItemStack kit = new ItemStack(Items.CROSSBOW, 1);
         kit.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Kit FFA", ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false)));
@@ -136,7 +139,7 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(kit, net.kyori.adventure.text.Component.text("Fight against players", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 1);
         ItemDisplayUtil.addLore(kit, net.kyori.adventure.text.Component.text("with various kits!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
         ItemDisplayUtil.addLore(kit, "§f", 3);
-        ItemDisplayUtil.addLore(kit, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld.players().size()), ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false), 4);
+        ItemDisplayUtil.addLore(kit, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", KitFfaAreas.ffaWorld.players().size()), ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false), 4);
 
         ItemStack skyffa = new ItemStack(Items.POTION, 1);
         skyffa.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Sky FFA", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false)));
@@ -148,7 +151,7 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(skyffa, net.kyori.adventure.text.Component.text("Fight people on sky islands", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 1);
         ItemDisplayUtil.addLore(skyffa, net.kyori.adventure.text.Component.text("and drink Piss Juice™ to survive!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
         ItemDisplayUtil.addLore(skyffa, "§5", 3);
-        ItemDisplayUtil.addLore(skyffa, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld.players().size()), ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false), 4);
+        ItemDisplayUtil.addLore(skyffa, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", SkyFfaAreas.ffaWorld.players().size()), ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false), 4);
 
         ItemStack uhc = new ItemStack(Items.GOLDEN_APPLE, 1);
         uhc.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("UHC FFA", ChatFormat.goldColor).decoration(ChatFormat.italic, false)));
@@ -159,7 +162,7 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(uhc, net.kyori.adventure.text.Component.text("A FFA to practice PvP", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 1);
         ItemDisplayUtil.addLore(uhc, net.kyori.adventure.text.Component.text("for the UHC gamemode.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
         ItemDisplayUtil.addLore(uhc, "§f", 3);
-        ItemDisplayUtil.addLore(uhc, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", com.nexia.ffa.uhc.utilities.FfaAreas.ffaWorld.players().size()), ChatFormat.goldColor).decoration(ChatFormat.italic, false), 4);
+        ItemDisplayUtil.addLore(uhc, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", UhcFfaAreas.ffaWorld.players().size()), ChatFormat.goldColor).decoration(ChatFormat.italic, false), 4);
 
         ItemStack emptySlot = new ItemStack(Items.BLACK_STAINED_GLASS_PANE, 1);
         emptySlot.setHoverName(new TextComponent(""));

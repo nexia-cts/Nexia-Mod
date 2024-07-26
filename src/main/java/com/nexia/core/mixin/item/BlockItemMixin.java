@@ -2,7 +2,8 @@ package com.nexia.core.mixin.item;
 
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
-import com.nexia.ffa.uhc.utilities.FfaAreas;
+import com.nexia.ffa.sky.utilities.SkyFfaAreas;
+import com.nexia.ffa.uhc.utilities.UhcFfaAreas;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
@@ -42,13 +43,13 @@ public abstract class BlockItemMixin {
             return;
         }
 
-        if (FfaAreas.isFfaWorld(level) && !FfaUhcUtil.INSTANCE.beforeBuild(nexiaPlayer, blockPos)) {
+        if (FfaUhcUtil.INSTANCE.isFfaWorld(level) && !FfaUhcUtil.INSTANCE.beforeBuild(nexiaPlayer, blockPos)) {
             cir.setReturnValue(InteractionResult.PASS);
             nexiaPlayer.refreshInventory();
             return;
         }
 
-        if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(level) && !FfaSkyUtil.INSTANCE.beforeBuild(nexiaPlayer, blockPos)) {
+        if (FfaSkyUtil.INSTANCE.isFfaWorld(level) && !FfaSkyUtil.INSTANCE.beforeBuild(nexiaPlayer, blockPos)) {
             cir.setReturnValue(InteractionResult.PASS);
             nexiaPlayer.refreshInventory();
         }
@@ -62,7 +63,7 @@ public abstract class BlockItemMixin {
 
         BlockPos blockPos = context.getClickedPos();
 
-        if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(player.getLevel())) {
+        if (FfaSkyUtil.INSTANCE.isFfaWorld(player.getLevel())) {
             FfaSkyUtil.afterPlace(nexiaPlayer, blockPos, context.getHand());
         }
     }

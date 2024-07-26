@@ -7,7 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.ffa.uhc.utilities.FfaAreas;
+import com.nexia.ffa.uhc.utilities.UhcFfaAreas;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.minigames.games.skywars.SkywarsMap;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
@@ -77,7 +77,7 @@ public class DevExperimentalCommandsCommand {
 
             player.teleportTo(level, 0, 80, 0, 0, 0);
         } else if(argument.equalsIgnoreCase("rluhc")) {
-            FfaAreas.resetMap(true);
+            UhcFfaAreas.resetMap(true);
             player.sendMessage(LegacyChatFormat.format("Reloaded UHC Map."), Util.NIL_UUID);
         } else if(argument.contains("swmap")) {
             SkywarsMap map = SkywarsMap.identifyMap(name);

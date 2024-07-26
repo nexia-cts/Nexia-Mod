@@ -4,14 +4,16 @@ import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.pos.PositionUtil;
 import com.nexia.core.utilities.world.WorldUtil;
+import com.nexia.ffa.FfaAreas;
 import com.nexia.nexus.api.world.World;
 import com.nexia.nexus.api.world.util.Location;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 
-public class FfaAreas {
+public class KitFfaAreas implements FfaAreas {
     public static ServerLevel ffaWorld = null;
     public static World nexusFfaWorld = null;
     public static Location nexusFfaLocation = null;
@@ -24,15 +26,45 @@ public class FfaAreas {
     public static BlockPos ffaCorner1 = spawn.toBlockPos().offset(-500, -spawn.y, -500);
     public static BlockPos ffaCorner2 = spawn.toBlockPos().offset(500, -spawn.y + 255, 500);
 
-    public static boolean isFfaWorld(Level level) {
+    public boolean isFfaWorld(Level level) {
         return level.dimension().location().toString().equals("ffa:kits");
     }
 
-    public static boolean isInFfaSpawn(NexiaPlayer player) {
+    public boolean isInFfaSpawn(NexiaPlayer player) {
         return PositionUtil.isBetween(spawnCorner1, spawnCorner2, player.getLocation());
     }
 
-    public static void setFfaWorld(MinecraftServer server) {
+    @Override
+    public ServerLevel getFfaWorld() {
+        return ffaWorld;
+    }
+
+    @Override
+    public World getNexusFfaWorld() {
+        return nexusFfaWorld;
+    }
+
+    @Override
+    public Location getFfaLocation() {
+        return nexusFfaLocation;
+    }
+
+    @Override
+    public EntityPos getSpawn() {
+        return spawn;
+    }
+
+    @Override
+    public AABB getSpawnCorners() {
+        return new AABB(spawnCorner1, spawnCorner2);
+    }
+
+    @Override
+    public AABB getFfaCorners() {
+        return new AABB(ffaCorner1, ffaCorner2);
+    }
+
+    public void setFfaWorld(MinecraftServer server) {
         for (ServerLevel level : server.getAllLevels()) {
             if (isFfaWorld(level)) {
                 ffaWorld = level;

@@ -18,6 +18,8 @@ public interface FfaAreas {
     EntityPos getSpawn();
     AABB getSpawnCorners();
 
+    AABB getFfaCorners();
+
     void setFfaWorld(MinecraftServer server);
 
     default boolean isInFfaSpawn(NexiaPlayer player) {

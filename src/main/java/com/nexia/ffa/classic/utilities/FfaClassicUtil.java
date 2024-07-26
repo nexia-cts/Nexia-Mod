@@ -4,23 +4,21 @@ import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.base.BaseFfaUtil;
-import com.nexia.nexus.api.world.World;
-import com.nexia.nexus.api.world.util.Location;
 import net.kyori.adventure.text.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.phys.AABB;
 
 import java.util.List;
 
-import static com.nexia.ffa.classic.utilities.FfaAreas.*;
-
 public class FfaClassicUtil extends BaseFfaUtil {
     public static final FfaClassicUtil INSTANCE = new FfaClassicUtil();
+
+    public FfaClassicUtil() {
+        super(new ClassicFfaAreas());
+    }
+
     @Override
     public String getName() {
         return "Classic";
@@ -61,42 +59,12 @@ public class FfaClassicUtil extends BaseFfaUtil {
     }
 
     @Override
-    public ServerLevel getFfaWorld() {
-        return ffaWorld;
-    }
-
-    @Override
-    public World getNexusFfaWorld() {
-        return nexusFfaWorld;
-    }
-
-    @Override
-    public EntityPos getSpawn() {
-        return spawn;
-    }
-
-    @Override
-    public Location getRespawnLocation() {
-        return nexusFfaLocation;
-    }
-
-    @Override
     public void completeFiveTick(NexiaPlayer player) {
         if(wasInSpawn.contains(player.getUUID()) && !isInFfaSpawn(player)){
             wasInSpawn.remove(player.getUUID());
             saveInventory(player);
             player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your inventory layout was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
         }
-    }
-
-    @Override
-    public boolean isInFfaSpawn(NexiaPlayer player) {
-        return FfaAreas.isInFfaSpawn(player);
-    }
-
-    @Override
-    public AABB getFfaCorners() {
-        return new AABB(ffaCorner1, ffaCorner2);
     }
 
     @Override

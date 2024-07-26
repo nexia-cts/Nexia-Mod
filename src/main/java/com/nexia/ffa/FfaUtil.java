@@ -6,10 +6,14 @@ import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.CorePlayerData;
+import com.nexia.ffa.classic.utilities.ClassicFfaAreas;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
+import com.nexia.ffa.kits.utilities.KitFfaAreas;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
+import com.nexia.ffa.sky.utilities.SkyFfaAreas;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
+import com.nexia.ffa.uhc.utilities.UhcFfaAreas;
 import net.kyori.adventure.text.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.Item;
@@ -77,10 +81,10 @@ public class FfaUtil {
     }
 
     public static boolean isFfaWorld(Level level) {
-        return level == com.nexia.ffa.classic.utilities.FfaAreas.ffaWorld ||
-                level == com.nexia.ffa.kits.utilities.FfaAreas.ffaWorld ||
-                level == com.nexia.ffa.sky.utilities.FfaAreas.ffaWorld ||
-                level == com.nexia.ffa.uhc.utilities.FfaAreas.ffaWorld;
+        return level == ClassicFfaAreas.ffaWorld ||
+                level == KitFfaAreas.ffaWorld ||
+                level == SkyFfaAreas.ffaWorld ||
+                level == UhcFfaAreas.ffaWorld;
     }
 
     public static Component returnDeathMessage(@NotNull NexiaPlayer player, @Nullable DamageSource source) {

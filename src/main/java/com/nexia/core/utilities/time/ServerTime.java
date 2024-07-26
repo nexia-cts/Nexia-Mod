@@ -4,12 +4,13 @@ import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.world.WorldUtil;
-import com.nexia.ffa.classic.utilities.FfaAreas;
+import com.nexia.ffa.base.BaseFfaUtil;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
 import com.nexia.ffa.sky.SkyFfaBlocks;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
+import com.nexia.ffa.uhc.utilities.UhcFfaAreas;
 import com.nexia.minigames.games.bedwars.BwGame;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.areas.BwDimension;
@@ -60,10 +61,9 @@ public class ServerTime {
         LobbyUtil.setLobbyWorld(minecraftServer);
         WorldUtil.setVoidWorld(minecraftServer);
 
-        FfaAreas.setFfaWorld(minecraftServer);
-        com.nexia.ffa.kits.utilities.FfaAreas.setFfaWorld(minecraftServer);
-        com.nexia.ffa.uhc.utilities.FfaAreas.setFfaWorld(minecraftServer);
-        com.nexia.ffa.sky.utilities.FfaAreas.setFfaWorld(minecraftServer);
+        for (BaseFfaUtil util : BaseFfaUtil.ffaUtils) {
+            util.ffaAreas.setFfaWorld(minecraftServer);
+        }
 
         BwLoadShop.loadBedWarsShop(true);
         BwDimension.register();
@@ -150,8 +150,8 @@ public class ServerTime {
         } catch (Exception ignored) { }
 
 
-        if(totalSecondCount % 3600 == 0 && !com.nexia.ffa.uhc.utilities.FfaAreas.shouldResetMap) {
-            com.nexia.ffa.uhc.utilities.FfaAreas.shouldResetMap = true;
+        if(totalSecondCount % 3600 == 0 && !UhcFfaAreas.shouldResetMap) {
+            UhcFfaAreas.shouldResetMap = true;
         }
     }
 

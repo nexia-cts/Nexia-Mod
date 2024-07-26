@@ -3,7 +3,8 @@ package com.nexia.core.mixin.player;
 import com.nexia.core.utilities.item.BlockUtil;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
-import com.nexia.ffa.uhc.utilities.FfaAreas;
+import com.nexia.ffa.sky.utilities.SkyFfaAreas;
+import com.nexia.ffa.uhc.utilities.UhcFfaAreas;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
@@ -38,9 +39,9 @@ public class ServerPlayerGameModeMixin {
 
         if (BwAreas.isBedWarsWorld(level) && !BwPlayerEvents.beforeBreakBlock(nexiaPlayer, blockPos)) {
             cir.setReturnValue(false);
-        }  else if (FfaAreas.isFfaWorld(level) && !FfaUhcUtil.INSTANCE.beforeBuild(nexiaPlayer, blockPos)) {
+        }  else if (FfaUhcUtil.INSTANCE.isFfaWorld(level) && !FfaUhcUtil.INSTANCE.beforeBuild(nexiaPlayer, blockPos)) {
             cir.setReturnValue(false);
-        } else if (com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(level) && !FfaSkyUtil.INSTANCE.beforeBuild(nexiaPlayer, blockPos)) {
+        } else if (FfaSkyUtil.INSTANCE.isFfaWorld(level) && !FfaSkyUtil.INSTANCE.beforeBuild(nexiaPlayer, blockPos)) {
             cir.setReturnValue(false);
         } else if(level.equals(FootballGame.world) && !player.isCreative()) {
             cir.setReturnValue(false);

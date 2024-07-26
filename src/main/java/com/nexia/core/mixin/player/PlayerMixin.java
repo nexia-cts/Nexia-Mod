@@ -11,6 +11,10 @@ import com.nexia.core.utilities.player.CoreSavedPlayerData;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.ffa.base.BaseFfaUtil;
+import com.nexia.ffa.sky.utilities.FfaSkyUtil;
+import com.nexia.ffa.sky.utilities.SkyFfaAreas;
+import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
+import com.nexia.ffa.uhc.utilities.UhcFfaAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
@@ -77,8 +81,8 @@ public abstract class PlayerMixin extends LivingEntity {
         if (!((Object) this instanceof ServerPlayer player)) return;
         NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
-        if((com.nexia.ffa.sky.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.sky.utilities.FfaAreas.isInFfaSpawn(nexiaPlayer))
-                || (com.nexia.ffa.uhc.utilities.FfaAreas.isFfaWorld(player.level) && com.nexia.ffa.uhc.utilities.FfaAreas.isInFfaSpawn(nexiaPlayer))
+        if((FfaSkyUtil.INSTANCE.isFfaWorld(player.level) && FfaSkyUtil.INSTANCE.isInFfaSpawn(nexiaPlayer))
+                || (FfaUhcUtil.INSTANCE.isFfaWorld(player.level) && FfaUhcUtil.INSTANCE.isInFfaSpawn(nexiaPlayer))
                 || (((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(nexiaPlayer)).gameMode.equals(PlayerGameMode.LOBBY) && ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(nexiaPlayer)).gameMode.equals(DuelGameMode.LOBBY))) {
             cir.setReturnValue(false);
             nexiaPlayer.refreshInventory();

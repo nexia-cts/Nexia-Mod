@@ -3,6 +3,7 @@ package com.nexia.core.commands.staff.dev;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.nexia.ffa.sky.utilities.SkyFfaAreas;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
@@ -30,7 +31,7 @@ public class ProtectionMapCommand {
 
     public static int ffa_sky(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        com.nexia.ffa.sky.utilities.FfaAreas.createProtectionMap(player);
+        SkyFfaAreas.createProtectionMap(player);
         return 1;
     }
 }
