@@ -61,7 +61,7 @@ dependencies {
 
 	include(implementation("com.google.code.gson:gson:${project.gson_version}"))
 
-	include(implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:${project.mixin_extras_version}")))
+	include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${project.mixin_extras_version}")))
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	//include(modApi("eu.pb4:hologram-api:0.1.0") { exclude(group: "net.fabricmc.fabric-api") })

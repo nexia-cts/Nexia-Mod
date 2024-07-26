@@ -1,5 +1,6 @@
 package com.nexia.core.mixin.player;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.authlib.GameProfile;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
@@ -91,27 +92,29 @@ public abstract class PlayerListMixin {
     }
 
     @Inject(at = @At("RETURN"), method = "respawn")
-    private void respawned(ServerPlayer oldPlayer, boolean bl, CallbackInfoReturnable<ServerPlayer> cir) {
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(oldPlayer);
+    private void respawned(ServerPlayer oldPlayer, boolean bl, CallbackInfoReturnable<ServerPlayer> cir, @Local(ordinal = 1) ServerPlayer newPlayer) {
+        NexiaPlayer player = new NexiaPlayer(newPlayer);
 
-        World respawn = nexiaPlayer.getRespawnPosition().getWorld();
+        World respawn = player.getRespawnPosition().getWorld();
 
-        if(FfaUtil.isFfaPlayer(nexiaPlayer)) {
-            FfaUtil.joinOrRespawn(nexiaPlayer);
+        if (FfaUtil.isFfaPlayer(player)) {
+            FfaUtil.joinOrRespawn(player);
             return;
         }
 
         if(respawn != null && LobbyUtil.isLobbyWorld(respawn)) {
-            nexiaPlayer.getInventory().clear();
-            LobbyUtil.giveItems(nexiaPlayer);
-            nexiaPlayer.setGameMode(Minecraft.GameMode.ADVENTURE);
+            player.getInventory().clear();
+            LobbyUtil.giveItems(player);
+            player.setGameMode(Minecraft.GameMode.ADVENTURE);
 
-            nexiaPlayer.runCommand("/hub", 0, false);
+            player.runCommand("/hub", 0, false);
             return;
         }
 
-        if (BwUtil.isInBedWars(nexiaPlayer)) { BwPlayerEvents.respawned(nexiaPlayer); }
-        if (SkywarsGame.world.equals(respawn) || SkywarsGame.isSkywarsPlayer(nexiaPlayer)) { nexiaPlayer.setGameMode(Minecraft.GameMode.SPECTATOR); }
+        if (BwUtil.isInBedWars(player))
+            BwPlayerEvents.respawned(player);
+        if (SkywarsGame.world.equals(respawn) || SkywarsGame.isSkywarsPlayer(player))
+            player.setGameMode(Minecraft.GameMode.SPECTATOR);
     }
 
     @Unique

@@ -305,7 +305,7 @@ public abstract class BaseFfaUtil {
         sendToSpawn(player);
     }
 
-    public void fulfilKill(@NotNull NexiaPlayer player, @Nullable DamageSource source, @NotNull NexiaPlayer attacker) {
+    public void fulfilKill(@NotNull NexiaPlayer player, @Nullable DamageSource source, @Nullable NexiaPlayer attacker) {
         setInventory(attacker);
     }
 

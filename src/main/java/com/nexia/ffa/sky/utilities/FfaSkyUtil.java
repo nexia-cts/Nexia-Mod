@@ -4,6 +4,7 @@ import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.chat.ChatFormat;
+import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.base.BaseFfaUtil;
 import com.nexia.ffa.sky.SkyFfaBlocks;
@@ -13,7 +14,10 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Inventory;
@@ -21,9 +25,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import static com.nexia.ffa.sky.utilities.SkyFfaAreas.buildLimitY;
 import static com.nexia.ffa.sky.utilities.SkyFfaAreas.canBuild;
@@ -118,6 +125,50 @@ public class FfaSkyUtil extends BaseFfaUtil {
         woolId++;
         return itemStack;
     }
+    @Override
+    public void fulfilKill(@NotNull NexiaPlayer player, @Nullable DamageSource source, @Nullable NexiaPlayer attacker) {
+
+    }
+
+    public void giveKillLoot(NexiaPlayer attacker, NexiaPlayer player) {
+        if(!isFfaPlayer(attacker)) return;
+        HashMap<Integer, ItemStack> availableRewards = (HashMap<Integer, ItemStack>) killRewards.clone();
+        ArrayList<ItemStack> givenRewards = new ArrayList<>();
+
+
+        for (int i = 0; i < Math.min(2, availableRewards.size()); i++) {
+            // Pick reward
+            int randomIndex = new Random().nextInt(availableRewards.size());
+            int killRewardIndex = (Integer)availableRewards.keySet().toArray()[randomIndex];
+            ItemStack reward = availableRewards.get(killRewardIndex);
+            availableRewards.remove(killRewardIndex);
+
+            // Give reward
+            if (attacker.unwrap().inventory.contains(reward)) {
+                attacker.unwrap().inventory.add(reward.copy());
+            }
+            givenRewards.add(reward.copy());
+        }
+
+        // Inform player about given rewards
+
+        attacker.sendMessage(Component.text("[").color(ChatFormat.arrowColor)
+                .append(Component.text("☠").color(ChatFormat.brandColor1))
+                .append(Component.text("] ").color(ChatFormat.arrowColor))
+                .append(Component.text(player.getRawName()).color(ChatFormat.brandColor2))
+        );
+
+        for (ItemStack givenReward : givenRewards) {
+            String itemName = LegacyChatFormat.removeColors(givenReward.getHoverName().getString());
+            if (givenReward.getCount() > 1) itemName += "s";
+            attacker.sendMessage(Component.text("[").color(ChatFormat.arrowColor)
+                    .append(Component.text("+" + givenReward.getCount()).color(ChatFormat.brandColor1))
+                    .append(Component.text("] ").color(ChatFormat.arrowColor))
+                    .append(Component.text(itemName).color(ChatFormat.brandColor2))
+            );
+        }
+        attacker.sendSound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.MASTER, 0.75f, 1f);
+    }
 
     public void killHeal(NexiaPlayer player) {
         if(!isFfaPlayer(player)) return;
@@ -180,14 +231,14 @@ public class FfaSkyUtil extends BaseFfaUtil {
     static {
         ItemStack pearl = new ItemStack(Items.ENDER_PEARL, 1);
         ItemStack cobweb = new ItemStack(Items.COBWEB, 2);
-        ItemStack arrow = new ItemStack(Items.ARROW, 4);
+        ItemStack snowball = new ItemStack(Items.SNOWBALL, 4);
         pearl.getOrCreateTag();
         cobweb.getOrCreateTag();
-        arrow.getOrCreateTag();
+        snowball.getOrCreateTag();
 
         killRewards.put(3, gApplePotion());
         killRewards.put(4, pearl);
         killRewards.put(5, cobweb);
-        killRewards.put(9, arrow);
+        killRewards.put(9, snowball);
     }
 }
