@@ -13,6 +13,7 @@ import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
+import com.nexia.ffa.pot.utilities.FfaPotUtil;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
@@ -197,19 +198,13 @@ public class ServerGamePacketListenerMixin {
             if (!(entity instanceof ServerPlayer target)) continue;
             NexiaPlayer nexiaTarget = new NexiaPlayer(target);
 
-            boolean cancel = (
-                    FfaClassicUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && !FfaClassicUtil.INSTANCE.isFfaPlayer(nexiaTarget)
-            ) || (
-                    FfaKitsUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && !FfaKitsUtil.INSTANCE.isFfaPlayer(nexiaTarget)
-            ) || (
-                    FfaSkyUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && !FfaSkyUtil.INSTANCE.isFfaPlayer(nexiaTarget)
-            ) || (
-                    FfaUhcUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && !FfaUhcUtil.INSTANCE.isFfaPlayer(nexiaTarget)
-            ) || (
-                    SkywarsGame.isSkywarsPlayer(nexiaPlayer) && !SkywarsGame.isSkywarsPlayer(nexiaTarget)
-            ) || (
-                    FootballGame.isFootballPlayer(nexiaTarget) && !FootballGame.isFootballPlayer(nexiaTarget)
-            );
+            boolean cancel = (FfaClassicUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && !FfaClassicUtil.INSTANCE.isFfaPlayer(nexiaTarget))
+                    || (FfaKitsUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && !FfaKitsUtil.INSTANCE.isFfaPlayer(nexiaTarget))
+                    || (FfaPotUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && !FfaPotUtil.INSTANCE.isFfaPlayer(nexiaTarget))
+                    || (FfaSkyUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && !FfaSkyUtil.INSTANCE.isFfaPlayer(nexiaTarget))
+                    || (FfaUhcUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && !FfaUhcUtil.INSTANCE.isFfaPlayer(nexiaTarget))
+                    || (SkywarsGame.isSkywarsPlayer(nexiaPlayer) && !SkywarsGame.isSkywarsPlayer(nexiaTarget))
+                    || (FootballGame.isFootballPlayer(nexiaTarget) && !FootballGame.isFootballPlayer(nexiaTarget));
 
 
             if (cancel) {

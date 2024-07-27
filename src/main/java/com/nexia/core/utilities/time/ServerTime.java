@@ -8,6 +8,8 @@ import com.nexia.ffa.classic.utilities.ClassicFfaAreas;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
 import com.nexia.ffa.kits.utilities.KitFfaAreas;
+import com.nexia.ffa.pot.utilities.FfaPotUtil;
+import com.nexia.ffa.pot.utilities.PotFfaAreas;
 import com.nexia.ffa.sky.SkyFfaBlocks;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.sky.utilities.SkyFfaAreas;
@@ -63,6 +65,7 @@ public class ServerTime {
 
         ClassicFfaAreas.setFfaWorld(server);
         KitFfaAreas.setFfaWorld(server);
+        PotFfaAreas.setFfaWorld(server);
         SkyFfaAreas.setFfaWorld(server);
         UhcFfaAreas.setFfaWorld(server);
 
@@ -104,6 +107,7 @@ public class ServerTime {
         if (totalTickCount % 5 == 0) {
             FfaClassicUtil.INSTANCE.fiveTick();
             FfaKitsUtil.INSTANCE.fiveTick();
+            FfaPotUtil.INSTANCE.fiveTick();
             FfaSkyUtil.INSTANCE.fiveTick();
             FfaUhcUtil.INSTANCE.fiveTick();
         }

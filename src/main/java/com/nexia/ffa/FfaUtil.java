@@ -10,6 +10,8 @@ import com.nexia.ffa.classic.utilities.ClassicFfaAreas;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
 import com.nexia.ffa.kits.utilities.KitFfaAreas;
+import com.nexia.ffa.pot.utilities.FfaPotUtil;
+import com.nexia.ffa.pot.utilities.PotFfaAreas;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.sky.utilities.SkyFfaAreas;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
@@ -66,6 +68,11 @@ public class FfaUtil {
             return;
         }
 
+        if(data.ffaGameMode == FfaGameMode.POT) {
+            FfaPotUtil.INSTANCE.leaveOrDie(player, source, leaving);
+            return;
+        }
+
         if(data.ffaGameMode == FfaGameMode.SKY) {
             FfaSkyUtil.INSTANCE.wasInSpawn.remove(player.getUUID());
             FfaSkyUtil.INSTANCE.leaveOrDie(player, source, leaving);
@@ -83,6 +90,7 @@ public class FfaUtil {
     public static boolean isFfaWorld(Level level) {
         return level == ClassicFfaAreas.ffaWorld ||
                 level == KitFfaAreas.ffaWorld ||
+                level == PotFfaAreas.ffaWorld ||
                 level == SkyFfaAreas.ffaWorld ||
                 level == UhcFfaAreas.ffaWorld;
     }
@@ -165,6 +173,11 @@ public class FfaUtil {
 
         if(data.ffaGameMode == FfaGameMode.KITS) {
             FfaKitsUtil.INSTANCE.joinOrRespawn(player);
+            return;
+        }
+
+        if(data.ffaGameMode == FfaGameMode.POT) {
+            FfaPotUtil.INSTANCE.joinOrRespawn(player);
             return;
         }
 

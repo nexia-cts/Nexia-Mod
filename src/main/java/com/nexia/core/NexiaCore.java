@@ -19,7 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class NexiaCore implements ModInitializer, NexusPlugin {
-	public static ModConfig config;
+    public static ModConfig config;
 
 	public static final String MOD_NAME = "Nexia";
 	public static Logger logger = LogManager.getLogger(MOD_NAME);
@@ -29,22 +29,23 @@ public class NexiaCore implements ModInitializer, NexusPlugin {
 
 	public static final ResourceLocation CORE_DATA_MANAGER = id("core");
 
-	public static final ResourceLocation DISCORD_DATA_MANAGER = NexiaCore.id("discord");
+	public static final ResourceLocation DISCORD_DATA_MANAGER = id("discord");
 
-	public static final ResourceLocation FFA_CLASSIC_DATA_MANAGER = NexiaCore.id("ffa_classic");
-	public static final ResourceLocation FFA_KITS_DATA_MANAGER = NexiaCore.id("ffa_kits");
-	public static final ResourceLocation FFA_SKY_DATA_MANAGER = NexiaCore.id("ffa_sky");
-	public static final ResourceLocation FFA_UHC_DATA_MANAGER = NexiaCore.id("ffa_uhc");
+	public static final ResourceLocation FFA_CLASSIC_DATA_MANAGER = id("ffa_classic");
+	public static final ResourceLocation FFA_KITS_DATA_MANAGER = id("ffa_kits");
+	public static final ResourceLocation FFA_POT_DATA_MANAGER = id("ffa_pot");
+	public static final ResourceLocation FFA_SKY_DATA_MANAGER = id("ffa_sky");
+	public static final ResourceLocation FFA_UHC_DATA_MANAGER = id("ffa_uhc");
 
-	public static final ResourceLocation BEDWARS_DATA_MANAGER = NexiaCore.id("bedwars");
+	public static final ResourceLocation BEDWARS_DATA_MANAGER = id("bedwars");
 
-	public static final ResourceLocation DUELS_DATA_MANAGER = NexiaCore.id("duels");
+	public static final ResourceLocation DUELS_DATA_MANAGER = id("duels");
 
-	public static final ResourceLocation FOOTBALL_DATA_MANAGER = NexiaCore.id("football");
+	public static final ResourceLocation FOOTBALL_DATA_MANAGER = id("football");
 
-	public static final ResourceLocation OITC_DATA_MANAGER = NexiaCore.id("oitc");
+	public static final ResourceLocation OITC_DATA_MANAGER = id("oitc");
 
-	public static final ResourceLocation SKYWARS_DATA_MANAGER = NexiaCore.id("skywars");
+	public static final ResourceLocation SKYWARS_DATA_MANAGER = id("skywars");
 
 	@Override
 	public void onInitialize() {
@@ -63,18 +64,18 @@ public class NexiaCore implements ModInitializer, NexusPlugin {
 	@Override
 	@SuppressWarnings("FutureReturnValueIgnored")
 	public void onNexusLoad(NexusAPI api, NexusServer server) {
-		NexiaCore.logger.info("Loading Nexus API...");
+		logger.info("Loading Nexus API...");
 
 		ServerTime.nexusServer = server;
 		ServerTime.nexusAPI = api;
 		ServerTime.scheduler = api.getScheduler();
 
-		NexiaCore.logger.info("Registering listeners...");
+		logger.info("Registering listeners...");
 		ListenerHelper.registerListeners();
-		NexiaCore.logger.info("Registered listeners.");
-		NexiaCore.logger.info("Registering Nexus commands...");
+		logger.info("Registered listeners.");
+		logger.info("Registering Nexus commands...");
 		CommandLoader.registerNexusCommands();
-		NexiaCore.logger.info("Registered Nexus commands.");
+		logger.info("Registered Nexus commands.");
 	}
 	public static ResourceLocation id(String path) {
 		return new ResourceLocation("nexia", path);

@@ -61,6 +61,7 @@ public class PlayerDataManager {
         // <-----------  FFAs --------------->
         new PlayerDataManager(NexiaCore.FFA_CLASSIC_DATA_MANAGER, "/nexia/ffa/classic", FFASavedPlayerData.class, PlayerData.class);
         new PlayerDataManager(NexiaCore.FFA_KITS_DATA_MANAGER, "/nexia/ffa/kits", FFASavedPlayerData.class, KitFFAPlayerData.class);
+        new PlayerDataManager(NexiaCore.FFA_POT_DATA_MANAGER, "/nexia/ffa/pot", FFASavedPlayerData.class, PlayerData.class);
         new PlayerDataManager(NexiaCore.FFA_SKY_DATA_MANAGER, "/nexia/ffa/sky", FFASavedPlayerData.class, PlayerData.class);
         new PlayerDataManager(NexiaCore.FFA_UHC_DATA_MANAGER, "/nexia/ffa/uhc", FFASavedPlayerData.class, PlayerData.class);
 

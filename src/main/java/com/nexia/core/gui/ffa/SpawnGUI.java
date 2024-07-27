@@ -1,9 +1,9 @@
 package com.nexia.core.gui.ffa;
 
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
-import com.nexia.base.player.NexiaPlayer;
-import com.nexia.ffa.classic.utilities.ClassicFfaAreas;
+import com.nexia.ffa.kits.utilities.KitFfaAreas;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
@@ -111,7 +111,7 @@ public class SpawnGUI extends SimpleGui {
         int[] pos = mapLocations.get(name);
         NexiaPlayer player = new NexiaPlayer(minecraftPlayer);
         if(pos != null){
-            minecraftPlayer.teleportTo(ClassicFfaAreas.ffaWorld, pos[0], pos[1], pos[2], pos[3], pos[4]);
+            minecraftPlayer.teleportTo(KitFfaAreas.ffaWorld, pos[0], pos[1], pos[2], pos[3], pos[4]);
             player.sendMessage(
                     ChatFormat.nexiaMessage
                                     .append(Component.text("You have been teleported to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))

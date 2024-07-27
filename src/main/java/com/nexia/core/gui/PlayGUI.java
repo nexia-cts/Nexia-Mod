@@ -3,6 +3,7 @@ package com.nexia.core.gui;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.ffa.kits.utilities.KitFfaAreas;
+import com.nexia.ffa.pot.utilities.PotFfaAreas;
 import com.nexia.ffa.sky.utilities.SkyFfaAreas;
 import com.nexia.ffa.uhc.utilities.UhcFfaAreas;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
@@ -27,6 +28,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
 
 public class PlayGUI extends SimpleGui {
 
@@ -41,9 +44,9 @@ public class PlayGUI extends SimpleGui {
         }
     }
     private void setMainLayout(){
-
         int players = ClassicFfaAreas.ffaWorld.players().size();
         players = players + KitFfaAreas.ffaWorld.players().size();
+        players = players + PotFfaAreas.ffaWorld.players().size();
         players = players + SkyFfaAreas.ffaWorld.players().size();
         players = players + UhcFfaAreas.ffaWorld.players().size();
 
@@ -141,6 +144,18 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(kit, "§f", 3);
         ItemDisplayUtil.addLore(kit, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", KitFfaAreas.ffaWorld.players().size()), ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false), 4);
 
+        ItemStack pot = new ItemStack(Items.POTION, 1);
+        PotionUtils.setPotion(pot, Potions.HEALING);
+        pot.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Pot FFA", ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false)));
+        ItemDisplayUtil.addGlint(pot);
+        pot.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
+
+        ItemDisplayUtil.addLore(pot, "§5", 0);
+        ItemDisplayUtil.addLore(pot, net.kyori.adventure.text.Component.text("Free for All: ", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 1);
+        ItemDisplayUtil.addLore(pot, net.kyori.adventure.text.Component.text("Pot Edition™!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
+        ItemDisplayUtil.addLore(pot, "§f", 3);
+        ItemDisplayUtil.addLore(pot, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", PotFfaAreas.ffaWorld.players().size()), ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false), 4);
+
         ItemStack skyffa = new ItemStack(Items.POTION, 1);
         skyffa.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Sky FFA", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false)));
         skyffa.getOrCreateTag().putInt("CustomPotionColor", 16771584);
@@ -149,7 +164,7 @@ public class PlayGUI extends SimpleGui {
 
         ItemDisplayUtil.addLore(skyffa, "§5", 0);
         ItemDisplayUtil.addLore(skyffa, net.kyori.adventure.text.Component.text("Fight people on sky islands", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 1);
-        ItemDisplayUtil.addLore(skyffa, net.kyori.adventure.text.Component.text("and drink Piss Juice™ to survive!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
+        ItemDisplayUtil.addLore(skyffa, net.kyori.adventure.text.Component.text("and drink Golden Apple Juice to survive!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
         ItemDisplayUtil.addLore(skyffa, "§5", 3);
         ItemDisplayUtil.addLore(skyffa, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", SkyFfaAreas.ffaWorld.players().size()), ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false), 4);
 
@@ -168,10 +183,11 @@ public class PlayGUI extends SimpleGui {
         emptySlot.setHoverName(new TextComponent(""));
 
         fillEmptySlots(emptySlot);
-        this.setSlot(1, classic);
-        this.setSlot(3, uhc);
-        this.setSlot(5, skyffa);
-        this.setSlot(7, kit);
+        this.setSlot(0, classic);
+        this.setSlot(2, uhc);
+        this.setSlot(4, pot);
+        this.setSlot(6, skyffa);
+        this.setSlot(8, kit);
     }
 
     private void setOtherGamesLayout() {
@@ -236,6 +252,11 @@ public class PlayGUI extends SimpleGui {
 
             if(name.getString().contains("Kit FFA")){
                 LobbyUtil.sendGame(nexiaPlayer, "kits ffa", true, true);
+                this.close();
+            }
+
+            if(name.getString().contains("Pot FFA")){
+                LobbyUtil.sendGame(nexiaPlayer, "pot ffa", true, true);
                 this.close();
             }
 

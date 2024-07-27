@@ -8,6 +8,8 @@ public class FfaGameMode {
 
     public static final FfaGameMode KITS = new FfaGameMode("Kit FFA", "kits");
 
+    public static final FfaGameMode POT = new FfaGameMode("Pot FFA", "pot");
+
     public static final FfaGameMode SKY = new FfaGameMode("Sky FFA", "sky");
 
     public static final FfaGameMode UHC = new FfaGameMode("UHC FFA", "uhc");
