@@ -25,7 +25,7 @@ public class SkyFfaAreas implements FfaAreas {
 
     public static EntityPos spawn = new EntityPos(0.5, 90, 0.5, 0, 0);
 
-    private static final int mapRadius = 30;
+    private static final int mapRadius = 40;
 
     public static final int buildLimitY = 90;
     public static BlockPos spawnCorner1 = spawn.toBlockPos().offset(-6, -5, -6);

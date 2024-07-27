@@ -12,6 +12,7 @@ import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
@@ -191,7 +192,7 @@ public class FfaSkyUtil extends BaseFfaUtil {
 
     private static ItemStack gApplePotion() {
         ItemStack potion = new ItemStack(Items.POTION);
-        potion.setHoverName(ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>Golden Apple Juice</gradient>", "#ffaa00", "#ffc40e"))));
+        potion.setHoverName(ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>Golden Apple Juice</gradient>", "#ffaa00", "#ffc40e")).decoration(TextDecoration.ITALIC, false)));
         potion.getOrCreateTag().putInt("CustomPotionColor", 16771584);
 
         ArrayList<MobEffectInstance> effects = new ArrayList<>();

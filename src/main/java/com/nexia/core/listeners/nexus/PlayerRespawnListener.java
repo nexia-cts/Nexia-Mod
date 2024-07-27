@@ -54,7 +54,6 @@ public class PlayerRespawnListener {
             if(data.gameMode == PlayerGameMode.BEDWARS)
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SURVIVAL);
 
-
             if(data.gameMode == PlayerGameMode.OITC)
                 respawnEvent.setRespawnMode(Minecraft.GameMode.ADVENTURE);
             

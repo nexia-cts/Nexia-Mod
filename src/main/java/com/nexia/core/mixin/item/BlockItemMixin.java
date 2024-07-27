@@ -2,8 +2,6 @@ package com.nexia.core.mixin.item;
 
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
-import com.nexia.ffa.sky.utilities.SkyFfaAreas;
-import com.nexia.ffa.uhc.utilities.UhcFfaAreas;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
