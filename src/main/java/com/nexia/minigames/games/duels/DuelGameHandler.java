@@ -1,16 +1,14 @@
 package com.nexia.minigames.games.duels;
 
 import com.google.gson.Gson;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
-import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.world.WorldUtil;
-import com.nexia.minigames.games.duels.custom.CustomDuelsGame;
-import com.nexia.minigames.games.duels.custom.team.CustomTeamDuelsGame;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
@@ -48,9 +46,6 @@ import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQu
 public class DuelGameHandler {
     public static List<DuelsGame> duelsGames = new ArrayList<>();
     public static List<TeamDuelsGame> teamDuelsGames = new ArrayList<>();
-
-    public static List<CustomDuelsGame> customDuelsGames = new ArrayList<>();
-    public static List<CustomTeamDuelsGame> customTeamDuelsGames = new ArrayList<>();
 
     public static boolean validCustomKit(NexiaPlayer player, String kitID) {
         if(kitID.trim().isEmpty()) return false;
@@ -116,12 +111,6 @@ public class DuelGameHandler {
         if (data.gameOptions != null && data.gameOptions.teamDuelsGame != null) {
             data.gameOptions.teamDuelsGame.death(player, player.unwrap().getLastDamageSource());
         }
-        if (data.gameOptions != null && data.gameOptions.customDuelsGame != null) {
-            data.gameOptions.customDuelsGame.death(player, player.unwrap().getLastDamageSource());
-        }
-        if (data.gameOptions != null && data.gameOptions.customTeamDuelsGame != null) {
-            data.gameOptions.customTeamDuelsGame.death(player, player.unwrap().getLastDamageSource());
-        }
 
         if (data.gameMode == DuelGameMode.SPECTATING) {
             GamemodeHandler.unspectatePlayer(player, data.duelOptions.spectatingPlayer, false);
@@ -173,9 +162,6 @@ public class DuelGameHandler {
 
         DuelGameHandler.duelsGames.clear();
         DuelGameHandler.teamDuelsGames.clear();
-
-        DuelGameHandler.customDuelsGames.clear();
-        DuelGameHandler.customTeamDuelsGames.clear();
     }
 
     public static ServerLevel createWorld(String uuid, boolean doRegeneration) {

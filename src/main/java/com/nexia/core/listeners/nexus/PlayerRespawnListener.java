@@ -9,8 +9,6 @@ import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.minigames.games.duels.DuelsGame;
-import com.nexia.minigames.games.duels.custom.CustomDuelsGame;
-import com.nexia.minigames.games.duels.custom.team.CustomTeamDuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.minigames.games.skywars.SkywarsGame;
@@ -35,9 +33,6 @@ public class PlayerRespawnListener {
 
             DuelsGame duelsGame = duelsData.gameOptions.duelsGame;
             TeamDuelsGame teamDuelsGame = duelsData.gameOptions.teamDuelsGame;
-
-            CustomDuelsGame customDuelsGame = duelsData.gameOptions.customDuelsGame;
-            CustomTeamDuelsGame customTeamDuelsGame = duelsData.gameOptions.customTeamDuelsGame;
 
 
             if(data.gameMode == PlayerGameMode.SKYWARS) {
@@ -82,37 +77,6 @@ public class PlayerRespawnListener {
                         player1 = teamDuelsGame.team2.alive.get(new Random().nextInt(teamDuelsGame.team2.alive.size()));
                     } else if(teamDuelsGame.team2 == duelsData.duelOptions.duelsTeam && !teamDuelsGame.team1.alive.isEmpty()){
                         player1 = teamDuelsGame.team1.alive.get(new Random().nextInt(teamDuelsGame.team1.alive.size()));
-                    }
-                } else {
-                    player1 = duelsData.duelOptions.duelsTeam.alive.get(new Random().nextInt(duelsData.duelOptions.duelsTeam.alive.size()));
-                }
-
-                if(player1 != null) {
-                    respawn = player1.getLocation();
-                }
-
-                respawnEvent.setSpawnpoint(respawn);
-                //player.teleportTo(duelsGame.level, duelsGame.winner.getX(), duelsGame.winner.getY(), duelsGame.winner.getZ(), 0, 0);
-            } else if(customDuelsGame != null && customDuelsGame.isEnding && customDuelsGame.winner != null) {
-                player.getInventory().clear();
-                LobbyUtil.giveItems(player);
-
-                respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
-                respawnEvent.setSpawnpoint(customDuelsGame.winner.getLocation());
-                //player.teleportTo(duelsGame.level, duelsGame.winner.getX(), duelsGame.winner.getY(), duelsGame.winner.getZ(), 0, 0);
-            } else if(customTeamDuelsGame != null && duelsData.duelOptions.duelsTeam != null) {
-                player.getInventory().clear();
-                LobbyUtil.giveItems(player);
-                respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
-
-                Location respawn = new Location(0,80, 0, WorldUtil.getWorld(customTeamDuelsGame.level));
-
-                NexiaPlayer player1 = null;
-                if(duelsData.duelOptions.duelsTeam.alive.isEmpty()) {
-                    if(customTeamDuelsGame.team1 == duelsData.duelOptions.duelsTeam && !customTeamDuelsGame.team2.alive.isEmpty()) {
-                        player1 = customTeamDuelsGame.team2.alive.get(new Random().nextInt(customTeamDuelsGame.team2.alive.size()));
-                    } else if (customTeamDuelsGame.team2 == duelsData.duelOptions.duelsTeam && !customTeamDuelsGame.team1.alive.isEmpty()) {
-                        player1 = customTeamDuelsGame.team1.alive.get(new Random().nextInt(customTeamDuelsGame.team1.alive.size()));
                     }
                 } else {
                     player1 = duelsData.duelOptions.duelsTeam.alive.get(new Random().nextInt(duelsData.duelOptions.duelsTeam.alive.size()));

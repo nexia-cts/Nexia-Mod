@@ -114,7 +114,6 @@ public class SkywarsGame {
 
     public static void second() {
         if(SkywarsGame.isStarted) {
-
             if(SkywarsGame.isEnding) {
                 int color = 160 * 65536 + 248;
                 // r * 65536 + g * 256 + b;
@@ -134,25 +133,23 @@ public class SkywarsGame {
             } else {
                 SkywarsGame.updateInfo();
 
-                if(SkywarsGame.glowingTime <= 0 && !SkywarsGame.isGlowingActive && !SkywarsGame.isEnding){
+                if (SkywarsGame.glowingTime <= 0 && !SkywarsGame.isGlowingActive && !SkywarsGame.isEnding)
                     SkywarsGame.glowPlayers();
-                } else if(SkywarsGame.glowingTime > 0 && !SkywarsGame.isGlowingActive && !SkywarsGame.isEnding){
+                else if (SkywarsGame.glowingTime > 0 && !SkywarsGame.isGlowingActive && !SkywarsGame.isEnding)
                     SkywarsGame.glowingTime--;
-                }
 
-                if(SkywarsGame.gameEnd > 0 && !SkywarsGame.isEnding) {
+                if (SkywarsGame.gameEnd > 0 && !SkywarsGame.isEnding)
                     SkywarsGame.gameEnd--;
-                }
 
-                if(SkywarsGame.gameEnd == 60 && !SkywarsGame.isEnding) SkywarsGame.sendCenterWarning();
-                if(SkywarsGame.gameEnd <= 0 && !SkywarsGame.isEnding) SkywarsGame.winNearestCenter();
+                if (SkywarsGame.gameEnd == 60 && !SkywarsGame.isEnding) SkywarsGame.sendCenterWarning();
+                if (SkywarsGame.gameEnd <= 0 && !SkywarsGame.isEnding) SkywarsGame.winNearestCenter();
             }
 
 
         } else {
-            if(SkywarsGame.queue.size() >= 2) {
-                for(NexiaPlayer player : SkywarsGame.queue){
-                    if(SkywarsGame.queueTime <= 5) {
+            if (SkywarsGame.queue.size() >= 2) {
+                for (NexiaPlayer player : SkywarsGame.queue){
+                    if (SkywarsGame.queueTime <= 5) {
                         player.sendTitle(getTitle());
                         player.sendSound(new EntityPos(player.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
                     }
@@ -168,7 +165,7 @@ public class SkywarsGame {
                                     .append(Component.text("Teaming is not allowed!").color(ChatFormat.failColor))
                     );
                 }
-                if(SkywarsGame.queueTime <= 5 || SkywarsGame.queueTime == 10 || SkywarsGame.queueTime == 15) {
+                if (SkywarsGame.queueTime <= 5 || SkywarsGame.queueTime == 10 || SkywarsGame.queueTime == 15) {
                     for(NexiaPlayer queuePlayers : SkywarsGame.queue) {
                         queuePlayers.sendMessage(Component.text("The game will start in ", ChatFormat.systemColor)
                                 .append(Component.text(SkywarsGame.queueTime, ChatFormat.brandColor2))
@@ -182,7 +179,7 @@ public class SkywarsGame {
                 SkywarsGame.queueTime = 15;
             }
 
-            if(SkywarsGame.queueTime <= 0) startGame();
+            if (SkywarsGame.queueTime <= 0) startGame();
         }
     }
 

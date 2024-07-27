@@ -64,7 +64,6 @@ public class DuelGameMode {
         this.item = item;
 
         if(item != null) {
-
             if(glint) ItemDisplayUtil.addGlint(item);
             DuelGameMode.duelsItems.add(item);
 

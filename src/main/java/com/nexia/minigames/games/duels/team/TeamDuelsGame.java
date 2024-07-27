@@ -10,6 +10,7 @@ import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelGameMode;
+import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.util.DuelOptions;
@@ -25,62 +26,28 @@ import net.minecraft.world.damagesource.DamageSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.UUID;
 
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 
-public class TeamDuelsGame { // implements Runnable{
+public class TeamDuelsGame extends DuelsGame {
     public DuelsTeam team1;
 
     public DuelsTeam team2;
-
-    public UUID uuid;
-
-    public DuelGameMode gameMode;
-
-    public DuelsMap map;
-
-    public boolean isEnding = false;
-
-    public boolean hasStarted = false;
-
-    public int startTime;
-
-    private int currentStartTime = 5;
-
-    public int endTime;
-
-    private int currentEndTime = 0;
-
-    public ServerLevel level;
-
-    public ArrayList<NexiaPlayer> spectators = new ArrayList<>();
 
     // Winner thingie
     public DuelsTeam winner = null;
 
     public DuelsTeam loser = null;
 
-    private boolean shouldWait = false;
-
     public TeamDuelsGame(DuelsTeam team1, DuelsTeam team2, DuelGameMode gameMode, DuelsMap map, ServerLevel level, int endTime, int startTime) {
+        super(null, null, gameMode, map, level, endTime, startTime);
         this.team1 = team1;
         this.team2 = team2;
-        this.gameMode = gameMode;
-        this.map = map;
-        this.endTime = endTime;
-        this.startTime = startTime;
-        this.level = level;
     }
 
     public String detectBrokenGame() {
-        // return (this.team1 == null || this.team1.leader == null || this.team2 ==
-        // null || this.team2.leader == null) || (this.isEnding && ((this.winner ==
-        // null || this.winner.leader == null) || (this.loser == null ||
-        // this.loser.leader == null)));
-
         if (this.team1 == null)
             return "Team 1 is not set [NULL]";
         if (this.team1.getLeader() == null || this.team1.getLeader().unwrap() == null)
@@ -104,7 +71,6 @@ public class TeamDuelsGame { // implements Runnable{
         }
 
         return null;
-
     }
 
     public static TeamDuelsGame startGame(@NotNull DuelsTeam team1, @NotNull DuelsTeam team2, String stringGameMode, @Nullable DuelsMap selectedMap) {
@@ -259,7 +225,7 @@ public class TeamDuelsGame { // implements Runnable{
                 DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
                 this.team1.refreshTeam();
                 this.team2.refreshTeam();
-                DuelGameHandler.teamDuelsGames.remove(this);
+                removeDuelsGame();
                 return;
             }
         }
@@ -279,14 +245,14 @@ public class TeamDuelsGame { // implements Runnable{
                 for (NexiaPlayer player : this.team1.alive) {
                     player.sendSound(new EntityPos(player.unwrap()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS,
                             10, 2);
-                    player.setGameMode(this.gameMode.gameMode);
+                    player.setGameMode(this.gameMode != null ? this.gameMode.gameMode : Minecraft.GameMode.SURVIVAL);
                     player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
                     player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
                 }
                 for (NexiaPlayer player : this.team2.alive) {
                     player.sendSound(new EntityPos(player.unwrap()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS,
                             10, 2);
-                    player.setGameMode(this.gameMode.gameMode);
+                    player.setGameMode(this.gameMode != null ? this.gameMode.gameMode : Minecraft.GameMode.SURVIVAL);
                     player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
                     player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
                 }
@@ -310,7 +276,6 @@ public class TeamDuelsGame { // implements Runnable{
     }
 
     public void endGame(@NotNull DuelsTeam loserTeam, @Nullable DuelsTeam winnerTeam, boolean wait) {
-
         this.winner = winnerTeam;
         this.loser = loserTeam;
         if (winnerTeam == null) {
@@ -336,7 +301,7 @@ public class TeamDuelsGame { // implements Runnable{
         Component titleWin = titleLose;
         Component subtitleWin = win;
 
-        if ((winnerTeam == null || winnerTeam.getLeader() == null || winnerTeam.getLeader() == null)) {
+        if ((winnerTeam == null || winnerTeam.getLeader() == null || winnerTeam.getLeader().unwrap() == null)) {
             for (NexiaPlayer player : loserTeam.all) {
                 player.sendTitle(Title.title(titleWin, subtitleWin));
                 player.sendMessage(win);
@@ -388,7 +353,7 @@ public class TeamDuelsGame { // implements Runnable{
 
         if (attacker != null) {
             DuelsPlayerData attackerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(attacker.getUUID());
-            if (attackerData.gameOptions.teamDuelsGame != null && attackerData.gameOptions.teamDuelsGame.equals(this) && isVictimTeamDead) {
+            if (getDuelsGame(attackerData.gameOptions) != null && getDuelsGame(attackerData.gameOptions).equals(this) && isVictimTeamDead) {
                 this.endGame(victimTeam, attackerData.duelOptions.duelsTeam, true);
             }
             return;
@@ -399,12 +364,15 @@ public class TeamDuelsGame { // implements Runnable{
             else if (this.team2 == victimTeam)
                 this.endGame(victimTeam, this.team1, true);
         }
+    }
 
-        /*
-         * if(isVictimTeamDead){
-         * this.endGame(victimTeam, null, false);
-         * }
-         *
-         */
+    @Override
+    public DuelsGame getDuelsGame(DuelOptions.GameOptions gameOptions) {
+        return gameOptions.teamDuelsGame;
+    }
+
+    @Override
+    public void removeDuelsGame() {
+        DuelGameHandler.teamDuelsGames.remove(this);
     }
 }

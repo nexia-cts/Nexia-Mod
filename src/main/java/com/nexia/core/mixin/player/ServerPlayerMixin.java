@@ -106,7 +106,6 @@ public abstract class ServerPlayerMixin extends Player {
             }
             attacker.getCooldowns().addCooldown(Items.NETHERITE_SWORD, 200);
             attacker.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 0, false, false, false));
-            return;
         }
     }
 
@@ -132,8 +131,6 @@ public abstract class ServerPlayerMixin extends Player {
         else if(gameMode == PlayerGameMode.LOBBY && duelsData.gameOptions != null) {
             if(duelsData.gameOptions.duelsGame != null) duelsData.gameOptions.duelsGame.death(nexiaPlayer, damageSource);
             if(duelsData.gameOptions.teamDuelsGame != null) duelsData.gameOptions.teamDuelsGame.death(nexiaPlayer, damageSource);
-            if(duelsData.gameOptions.customDuelsGame != null) duelsData.gameOptions.customDuelsGame.death(nexiaPlayer, damageSource);
-            if(duelsData.gameOptions.customTeamDuelsGame != null) duelsData.gameOptions.customTeamDuelsGame.death(nexiaPlayer, damageSource);
         }
 
     }

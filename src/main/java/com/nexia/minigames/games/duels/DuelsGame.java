@@ -45,11 +45,11 @@ public class DuelsGame {
 
     public int startTime;
 
-    private int currentStartTime = 5;
+    protected int currentStartTime = 5;
 
     public int endTime;
 
-    private int currentEndTime = 0;
+    protected int currentEndTime = 0;
 
     public ServerLevel level;
 
@@ -60,7 +60,7 @@ public class DuelsGame {
 
     public NexiaPlayer loser = null;
 
-    private boolean shouldWait = false;
+    protected boolean shouldWait = false;
 
     public DuelsGame(NexiaPlayer p1, NexiaPlayer p2, DuelGameMode gameMode, DuelsMap map, ServerLevel level, int endTime, int startTime){
         this.p1 = p1;
@@ -200,7 +200,7 @@ public class DuelsGame {
                 }
 
                 DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
-                DuelGameHandler.duelsGames.remove(this);
+                removeDuelsGame();
                 return;
             }
         }
@@ -235,6 +235,10 @@ public class DuelsGame {
             this.p1.sendSound(new EntityPos(this.p1.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
             this.p2.sendSound(new EntityPos(this.p2.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
         }
+    }
+
+    public void removeDuelsGame() {
+        DuelGameHandler.duelsGames.remove(this);
     }
 
     public void endGame(@NotNull NexiaPlayer victim, @Nullable NexiaPlayer attacker, boolean wait) {
@@ -300,7 +304,7 @@ public class DuelsGame {
 
     public void death(@NotNull NexiaPlayer victim, @Nullable DamageSource source){
         DuelsPlayerData victimData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(victim);
-        if(victimData.gameOptions == null || victimData.gameOptions.duelsGame == null || victimData.gameOptions.duelsGame.isEnding) return;
+        if(victimData.gameOptions == null || getDuelsGame(victimData.gameOptions) == null || getDuelsGame(victimData.gameOptions).isEnding) return;
 
         victim.unwrap().destroyVanishingCursedItems();
         victim.unwrap().inventory.dropAll();
@@ -312,7 +316,7 @@ public class DuelsGame {
             NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
 
             DuelsPlayerData attackerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(nexiaAttacker);
-            if((victimData.inDuel && attackerData.inDuel) && victimData.gameOptions.duelsGame == attackerData.gameOptions.duelsGame){
+            if((victimData.inDuel && attackerData.inDuel) && getDuelsGame(victimData.gameOptions) == getDuelsGame(attackerData.gameOptions)){
                 this.endGame(victim, nexiaAttacker, true);
                 return;
             }
@@ -330,5 +334,8 @@ public class DuelsGame {
         if(victimData.inDuel) {
             this.endGame(victim, null, false);
         }
+    }
+    public DuelsGame getDuelsGame(DuelOptions.GameOptions gameOptions) {
+        return gameOptions.duelsGame;
     }
 }

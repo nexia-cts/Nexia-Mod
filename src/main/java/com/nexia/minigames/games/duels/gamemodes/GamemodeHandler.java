@@ -31,13 +31,10 @@ import java.util.List;
 public class GamemodeHandler {
 
     public static DuelGameMode identifyGamemode(@NotNull String gameMode) {
-
         for(DuelGameMode duelGameMode : DuelGameMode.duelGameModes) {
             if(duelGameMode.id.equalsIgnoreCase(gameMode)) return duelGameMode;
         }
         return null;
-
-
     }
 
     public static boolean isInQueue(@NotNull NexiaPlayer player, @NotNull DuelGameMode gameMode) {
@@ -49,7 +46,6 @@ public class GamemodeHandler {
             removeQueue(player, null, silent);
             return;
         }
-
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
 
         if (gameMode == null) {
@@ -63,7 +59,6 @@ public class GamemodeHandler {
             if (!silent) player.sendMessage(Component.text("You are in a team!").color(ChatFormat.failColor));
             return;
         }
-
 
         if (!silent) {
             player.sendMessage(
@@ -118,7 +113,7 @@ public class GamemodeHandler {
 
         DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
 
-        if (playerData.gameOptions == null || (!playerData.inDuel && playerData.gameOptions.teamDuelsGame == null && playerData.gameOptions.duelsGame == null && playerData.gameOptions.customTeamDuelsGame == null && playerData.gameOptions.customDuelsGame == null)) {
+        if (playerData.gameOptions == null || (!playerData.inDuel && playerData.gameOptions.teamDuelsGame == null && playerData.gameOptions.duelsGame == null)) {
             executor.sendMessage(Component.text("That player is not in a duel!").color(ChatFormat.failColor));
             return;
         }
@@ -142,9 +137,7 @@ public class GamemodeHandler {
         executor.teleport(player.getLocation());
 
         DuelsGame duelsGame = playerData.gameOptions.duelsGame;
-        CustomDuelsGame customDuelsGame = playerData.gameOptions.customDuelsGame;
         TeamDuelsGame teamDuelsGame = playerData.gameOptions.teamDuelsGame;
-        CustomTeamDuelsGame customTeamDuelsGame = playerData.gameOptions.customTeamDuelsGame;
 
         Component spectateMSG = Component.text(String.format("(%s started spectating)", executor.getRawName()), ChatFormat.systemColor).decorate(ChatFormat.italic);
 
@@ -159,17 +152,6 @@ public class GamemodeHandler {
             duelsGame.spectators.add(executor);
             duelsGame.p1.sendMessage(spectateMSG);
             duelsGame.p2.sendMessage(spectateMSG);
-        } else if (customTeamDuelsGame != null) {
-            customTeamDuelsGame.spectators.add(executor);
-            List<NexiaPlayer> everyTeamMember = customTeamDuelsGame.team1.all;
-            everyTeamMember.addAll(customTeamDuelsGame.team2.all);
-            for (NexiaPlayer players : everyTeamMember) {
-                players.sendMessage(spectateMSG);
-            }
-        } else if (customDuelsGame != null) {
-            customDuelsGame.spectators.add(executor);
-            customDuelsGame.p1.sendMessage(spectateMSG);
-            customDuelsGame.p2.sendMessage(spectateMSG);
         }
 
 
@@ -197,22 +179,18 @@ public class GamemodeHandler {
         }
 
         DuelsGame duelsGame = null;
-        CustomDuelsGame customDuelsGame = null;
         TeamDuelsGame teamDuelsGame = null;
-        CustomTeamDuelsGame customTeamDuelsGame = null;
 
 
         if(playerData != null && playerData.inDuel && playerData.gameOptions != null) {
             if(playerData.gameOptions.duelsGame != null) duelsGame = playerData.gameOptions.duelsGame;
             else if(playerData.gameOptions.teamDuelsGame != null) teamDuelsGame = playerData.gameOptions.teamDuelsGame;
-            else if(playerData.gameOptions.customDuelsGame != null) customDuelsGame = playerData.gameOptions.customDuelsGame;
-            else if(playerData.gameOptions.customTeamDuelsGame != null) customTeamDuelsGame = playerData.gameOptions.customTeamDuelsGame;
         }
 
         DuelsPlayerData executorData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(executor);
         Component spectateMSG = Component.text(String.format("(%s started spectating)", executor.getRawName()), ChatFormat.systemColor).decorate(ChatFormat.italic);
 
-        if (duelsGame != null || teamDuelsGame != null || customDuelsGame != null || customTeamDuelsGame != null) {
+        if (duelsGame != null || teamDuelsGame != null) {
             executor.sendMessage(
                     ChatFormat.nexiaMessage
                             .append(Component.text("You have stopped spectating ")
@@ -236,20 +214,6 @@ public class GamemodeHandler {
 
             List<NexiaPlayer> everyTeamPlayer = teamDuelsGame.team1.all;
             everyTeamPlayer.addAll(teamDuelsGame.team2.all);
-
-            for (NexiaPlayer players : everyTeamPlayer) {
-                players.sendMessage(spectateMSG);
-            }
-        } else if (customDuelsGame != null) {
-            customDuelsGame.spectators.remove(executor);
-
-            customDuelsGame.p1.sendMessage(spectateMSG);
-            customDuelsGame.p2.sendMessage(spectateMSG);
-        } else if (customTeamDuelsGame != null) {
-            customTeamDuelsGame.spectators.remove(executor);
-
-            List<NexiaPlayer> everyTeamPlayer = customTeamDuelsGame.team1.all;
-            everyTeamPlayer.addAll(customTeamDuelsGame.team2.all);
 
             for (NexiaPlayer players : everyTeamPlayer) {
                 players.sendMessage(spectateMSG);
