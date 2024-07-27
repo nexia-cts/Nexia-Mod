@@ -3,6 +3,7 @@ package com.nexia.core.mixin.item;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
+import com.nexia.ffa.pot.utilities.FfaPotUtil;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,7 +24,8 @@ public class BowItemMixins {
         if(livingEntity instanceof ServerPlayer player){
             NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
-            if(((FfaKitsUtil.INSTANCE.isFfaWorld(player.level) && FfaKitsUtil.INSTANCE.isInFfaSpawn(nexiaPlayer)) ||
+            if(((FfaPotUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && FfaPotUtil.INSTANCE.wasInSpawn.contains(player.getUUID())) ||
+                    (FfaKitsUtil.INSTANCE.isFfaWorld(player.level) && FfaKitsUtil.INSTANCE.isInFfaSpawn(nexiaPlayer)) ||
                     (FfaUhcUtil.INSTANCE.isFfaWorld(player.level) && FfaUhcUtil.INSTANCE.isInFfaSpawn(nexiaPlayer)) ||
                     (FfaSkyUtil.INSTANCE.isFfaWorld(player.level) && FfaSkyUtil.INSTANCE.isInFfaSpawn(nexiaPlayer)) ||
                     (player.getLevel().equals(LobbyUtil.lobbyWorld))

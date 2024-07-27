@@ -146,7 +146,7 @@ public class PlayGUI extends SimpleGui {
 
         ItemStack pot = new ItemStack(Items.POTION, 1);
         PotionUtils.setPotion(pot, Potions.HEALING);
-        pot.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Pot FFA", ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false)));
+        pot.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Pot FFA", ChatFormat.Minecraft.light_purple).decoration(ChatFormat.italic, false)));
         ItemDisplayUtil.addGlint(pot);
         pot.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
@@ -154,7 +154,7 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(pot, net.kyori.adventure.text.Component.text("Free for All: ", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 1);
         ItemDisplayUtil.addLore(pot, net.kyori.adventure.text.Component.text("Pot Edition™!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
         ItemDisplayUtil.addLore(pot, "§f", 3);
-        ItemDisplayUtil.addLore(pot, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", PotFfaAreas.ffaWorld.players().size()), ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false), 4);
+        ItemDisplayUtil.addLore(pot, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", PotFfaAreas.ffaWorld.players().size()), ChatFormat.Minecraft.light_purple).decoration(ChatFormat.italic, false), 4);
 
         ItemStack skyffa = new ItemStack(Items.POTION, 1);
         skyffa.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Sky FFA", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false)));

@@ -2,6 +2,7 @@ package com.nexia.core.mixin.item;
 
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.base.player.NexiaPlayer;
+import com.nexia.ffa.pot.utilities.FfaPotUtil;
 import com.nexia.minigames.games.duels.custom.kitroom.kitrooms.KitRoom;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -23,7 +24,7 @@ public class ExperienceBottleItemMixin {
 
         NexiaPlayer nexiaPlayer = new NexiaPlayer((ServerPlayer) player);
 
-        if((player.level.equals(LobbyUtil.lobbyWorld) && !KitRoom.isInKitRoom(nexiaPlayer)) && !player.isCreative()) {
+        if((FfaPotUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && FfaPotUtil.INSTANCE.wasInSpawn.contains(player.getUUID())) || (player.level.equals(LobbyUtil.lobbyWorld) && !KitRoom.isInKitRoom(nexiaPlayer)) && !player.isCreative()) {
             cir.setReturnValue(new InteractionResultHolder<>(InteractionResult.FAIL, player.getItemInHand(interactionHand)));
             nexiaPlayer.refreshInventory();
         }

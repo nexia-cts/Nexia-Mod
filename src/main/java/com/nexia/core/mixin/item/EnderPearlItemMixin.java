@@ -4,6 +4,7 @@ import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.LobbyUtil;
+import com.nexia.ffa.pot.utilities.FfaPotUtil;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
@@ -38,7 +39,7 @@ public class EnderPearlItemMixin extends Item {
             thrower = serverPlayer;
             NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
 
-            if (((FfaSkyUtil.INSTANCE.isFfaWorld(serverPlayer.getLevel()) && FfaSkyUtil.INSTANCE.wasInSpawn.contains(serverPlayer.getUUID())) || (serverPlayer.getLevel().equals(LobbyUtil.lobbyWorld))) && !serverPlayer.isCreative()) {
+            if (((FfaSkyUtil.INSTANCE.isFfaWorld(serverPlayer.getLevel()) && FfaSkyUtil.INSTANCE.wasInSpawn.contains(serverPlayer.getUUID())) || (FfaPotUtil.INSTANCE.isFfaWorld(serverPlayer.getLevel()) && FfaPotUtil.INSTANCE.wasInSpawn.contains(serverPlayer.getUUID())) || (serverPlayer.getLevel().equals(LobbyUtil.lobbyWorld))) && !serverPlayer.isCreative()) {
                 cir.setReturnValue(InteractionResultHolder.pass(serverPlayer.getItemInHand(interactionHand)));
                 nexiaPlayer.refreshInventory();
             }

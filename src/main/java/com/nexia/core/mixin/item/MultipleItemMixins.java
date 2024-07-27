@@ -1,11 +1,11 @@
 package com.nexia.core.mixin.item;
 
-import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.base.player.NexiaPlayer;
+import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
+import com.nexia.ffa.pot.utilities.FfaPotUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
@@ -21,8 +21,8 @@ public class MultipleItemMixins {
     public void preventPlayers(Level level, Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         NexiaPlayer nexiaPlayer = new NexiaPlayer((ServerPlayer) player);
 
-        if(((FfaKitsUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && FfaKitsUtil.INSTANCE.wasInSpawn.contains(player.getUUID())) || player.level.equals(LobbyUtil.lobbyWorld)) && !player.isCreative()) {
-            cir.setReturnValue(new InteractionResultHolder<>(InteractionResult.FAIL, player.getItemInHand(interactionHand)));
+        if((FfaPotUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && FfaPotUtil.INSTANCE.wasInSpawn.contains(player.getUUID())) || ((FfaKitsUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && FfaKitsUtil.INSTANCE.wasInSpawn.contains(player.getUUID())) || player.level.equals(LobbyUtil.lobbyWorld)) && !player.isCreative()) {
+            cir.setReturnValue(InteractionResultHolder.fail(player.getItemInHand(interactionHand)));
             nexiaPlayer.refreshInventory();
         }
     }

@@ -35,6 +35,7 @@
     "item.EnderPearlItemMixin",
     "item.ExperienceBottleItemMixin",
     "item.HoneyBottleItemMixin",
+    "item.ItemMixin",
     "item.MultipleItemMixins",
     "item.PotionItemMixin",
     "item.TridentItemMixin",
