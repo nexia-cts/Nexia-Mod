@@ -18,6 +18,7 @@ public class PlayCommand {
 
         dispatcher.register(CommandUtils.literal("ffa").executes(PlayCommand::openFFAGui)
                 .then(CommandUtils.literal("kits").executes(context -> playGame(context, "kits ffa")))
+                .then(CommandUtils.literal("pot").executes(context -> playGame(context, "pot ffa")))
                 .then(CommandUtils.literal("sky").executes(context -> playGame(context, "sky ffa")))
                 .then(CommandUtils.literal("uhc").executes(context -> playGame(context, "uhc ffa")))
                 .then(CommandUtils.literal("classic").executes(context -> playGame(context, "classic ffa")))
@@ -28,6 +29,7 @@ public class PlayCommand {
         dispatcher.register(CommandUtils.literal(string).executes(PlayCommand::openGUI)
                 .then(CommandUtils.literal("ffa").executes(PlayCommand::openFFAGui)
                         .then(CommandUtils.literal("kits").executes(context -> playGame(context, "kits ffa")))
+                        .then(CommandUtils.literal("pot").executes(context -> playGame(context, "pot ffa")))
                         .then(CommandUtils.literal("sky").executes(context -> playGame(context, "sky ffa")))
                         .then(CommandUtils.literal("uhc").executes(context -> playGame(context, "uhc ffa")))
                         .then(CommandUtils.literal("classic").executes(context -> playGame(context, "classic ffa")))
