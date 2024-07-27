@@ -1,10 +1,8 @@
 package com.nexia.ffa.uhc.utilities;
 
-import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.core.utilities.pos.PositionUtil;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.ffa.FfaAreas;
 import com.nexia.nexus.api.util.Identifier;

@@ -1,12 +1,10 @@
 package com.nexia.core.mixin.item;
 
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.base.player.NexiaPlayer;
-import com.nexia.ffa.sky.utilities.SkyFfaAreas;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
-import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import net.minecraft.server.level.ServerPlayer;

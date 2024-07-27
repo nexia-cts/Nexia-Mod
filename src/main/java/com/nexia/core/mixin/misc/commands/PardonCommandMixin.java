@@ -2,7 +2,6 @@ package com.nexia.core.mixin.misc.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.server.commands.BanPlayerCommands;
 import net.minecraft.server.commands.PardonCommand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

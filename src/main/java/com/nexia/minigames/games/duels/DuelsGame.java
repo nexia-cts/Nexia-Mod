@@ -212,13 +212,13 @@ public class DuelsGame {
             this.map.p2Pos.teleportPlayer(this.level, this.p2.unwrap());
 
             if (this.startTime - this.currentStartTime >= this.startTime) {
-                this.p1.sendSound(new EntityPos(this.p1.unwrap()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
-                this.p1.setGameMode((this.gameMode != null) ? this.gameMode.gameMode : Minecraft.GameMode.SURVIVAL);
+                this.p1.sendSound(new EntityPos(this.p1.unwrap()), SoundEvents.RAID_HORN, SoundSource.AMBIENT, 10, 1);
+                this.p1.setGameMode(this.gameMode != null ? this.gameMode.gameMode : Minecraft.GameMode.SURVIVAL);
                 this.p1.removeTag(LobbyUtil.NO_DAMAGE_TAG);
                 this.p1.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
-                this.p2.sendSound(new EntityPos(this.p2.unwrap()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 10, 2);
-                this.p2.setGameMode((this.gameMode != null) ? this.gameMode.gameMode : Minecraft.GameMode.SURVIVAL);
+                this.p2.sendSound(new EntityPos(this.p2.unwrap()), SoundEvents.RAID_HORN, SoundSource.AMBIENT, 10, 1);
+                this.p2.setGameMode(this.gameMode != null ? this.gameMode.gameMode : Minecraft.GameMode.SURVIVAL);
                 this.p2.removeTag(LobbyUtil.NO_DAMAGE_TAG);
                 this.p2.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
 
@@ -232,8 +232,8 @@ public class DuelsGame {
             this.p2.sendTitle(title);
 
 
-            this.p1.sendSound(new EntityPos(this.p1.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
-            this.p2.sendSound(new EntityPos(this.p2.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+            this.p1.sendSound(new EntityPos(this.p1.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.RECORDS, 10, 1);
+            this.p2.sendSound(new EntityPos(this.p2.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.RECORDS, 10, 1);
         }
     }
 
@@ -321,7 +321,7 @@ public class DuelsGame {
             NexiaPlayer accurateAttacker = victimData.gameOptions.duelPlayer;
             DuelsPlayerData attackerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(accurateAttacker);
 
-            if ((victimData.inDuel && attackerData.inDuel) && accurateAttacker.equals(victimData.gameOptions.duelPlayer)) {
+            if (victimData.inDuel && attackerData.inDuel && accurateAttacker.equals(victimData.gameOptions.duelPlayer)) {
                 this.endGame(victim, accurateAttacker, true);
                 return;
             }
