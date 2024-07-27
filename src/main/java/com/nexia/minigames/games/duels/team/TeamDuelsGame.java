@@ -243,15 +243,15 @@ public class TeamDuelsGame extends DuelsGame {
             if (this.startTime - this.currentStartTime >= this.startTime) {
 
                 for (NexiaPlayer player : this.team1.alive) {
-                    player.sendSound(new EntityPos(player.unwrap()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS,
-                            10, 2);
+                    player.sendSound(new EntityPos(player.unwrap()), SoundEvents.RAID_HORN, SoundSource.AMBIENT,
+                            10, 1);
                     player.setGameMode(this.gameMode != null ? this.gameMode.gameMode : Minecraft.GameMode.SURVIVAL);
                     player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
                     player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
                 }
                 for (NexiaPlayer player : this.team2.alive) {
-                    player.sendSound(new EntityPos(player.unwrap()), SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS,
-                            10, 2);
+                    player.sendSound(new EntityPos(player.unwrap()), SoundEvents.RAID_HORN, SoundSource.AMBIENT,
+                            10, 1);
                     player.setGameMode(this.gameMode != null ? this.gameMode.gameMode : Minecraft.GameMode.SURVIVAL);
                     player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
                     player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
