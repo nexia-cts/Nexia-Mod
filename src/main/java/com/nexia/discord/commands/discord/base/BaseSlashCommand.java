@@ -17,7 +17,7 @@ public class BaseSlashCommand {
 
     OptionData[] optionData;
 
-    public static ArrayList<BaseSlashCommand> slashCommands;
+    public static ArrayList<BaseSlashCommand> slashCommands = new ArrayList<>();
 
     public BaseSlashCommand(String name, String description, @NotNull OptionData... optionData) {
         this.name = name;
