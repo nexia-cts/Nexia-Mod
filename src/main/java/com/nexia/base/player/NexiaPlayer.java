@@ -110,8 +110,8 @@ public class NexiaPlayer extends WrappedPlayer {
      * @apiNote Check out the <a href="https://docs.advntr.dev/minimessage/format.html">MiniMessage docs</a>.
      */
 
-    public void sendMiniMessage(String message) {
-        this.sendMessage(MiniMessage.get().parse(message));
+    public void sendMiniMessage(String message, Object... args) {
+        this.sendMessage(MiniMessage.get().parse(String.format(message, args)));
     }
 
     /**
@@ -119,8 +119,8 @@ public class NexiaPlayer extends WrappedPlayer {
      * @apiNote The message is going to get sent in white ({@link ChatFormat.Minecraft}).
      */
 
-    public void sendNexiaMessage(String message) {
-        this.sendMessage(ChatFormat.nexiaMessage.append(Component.text(message, ChatFormat.Minecraft.white)));
+    public void sendNexiaMessage(String message, Object... args) {
+        this.sendMessage(ChatFormat.nexiaMessage.append(Component.text(String.format(message, args), ChatFormat.Minecraft.white)));
     }
 
     public boolean hasPermission(@NotNull String permission) {

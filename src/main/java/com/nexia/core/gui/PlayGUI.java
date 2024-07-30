@@ -164,7 +164,7 @@ public class PlayGUI extends SimpleGui {
 
         ItemDisplayUtil.addLore(skyffa, "§5", 0);
         ItemDisplayUtil.addLore(skyffa, net.kyori.adventure.text.Component.text("Fight people on sky islands", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 1);
-        ItemDisplayUtil.addLore(skyffa, net.kyori.adventure.text.Component.text("and drink Golden Apple Juice to survive!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
+        ItemDisplayUtil.addLore(skyffa, net.kyori.adventure.text.Component.text("and drink Piss Juice™ to survive!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
         ItemDisplayUtil.addLore(skyffa, "§5", 3);
         ItemDisplayUtil.addLore(skyffa, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", SkyFfaAreas.ffaWorld.players().size()), ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false), 4);
 

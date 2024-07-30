@@ -215,7 +215,7 @@ public abstract class BaseFfaUtil {
 
     public void setDeathMessage(@NotNull NexiaPlayer player, @Nullable ServerPlayer attacker, @Nullable DamageSource source) {
         calculateDeath(player);
-        
+
         Component msg = FfaUtil.returnDeathMessage(player, source);
 
         if (attacker != null) {
@@ -288,7 +288,10 @@ public abstract class BaseFfaUtil {
     }
 
     public void leaveOrDie(@NotNull NexiaPlayer player, @Nullable DamageSource source, boolean leaving) {
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player.unwrap());
+        ServerPlayer attacker;
+        if(source != null && source.getEntity() != null) attacker = PlayerUtil.getPlayerAttacker(player.unwrap(), source.getEntity());
+        else attacker = PlayerUtil.getPlayerAttacker(player.unwrap());
+
 
         if (attacker != null) {
             NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);

@@ -192,7 +192,7 @@ public class FfaSkyUtil extends BaseFfaUtil {
 
     private static ItemStack gApplePotion() {
         ItemStack potion = new ItemStack(Items.POTION);
-        potion.setHoverName(ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>Golden Apple Juice</gradient>", "#ffaa00", "#ffc40e")).decoration(TextDecoration.ITALIC, false)));
+        potion.setHoverName(ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>Piss Juice™</gradient>", "#ffaa00", "#ffc40e")).decoration(TextDecoration.ITALIC, false)));
         potion.getOrCreateTag().putInt("CustomPotionColor", 16771584);
 
         ArrayList<MobEffectInstance> effects = new ArrayList<>();
