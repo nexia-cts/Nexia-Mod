@@ -3,12 +3,12 @@ package com.nexia.discord.commands.minecraft;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
-import com.nexia.base.player.NexiaPlayer;
-import com.nexia.discord.Discord;
+import com.nexia.discord.commands.discord.LinkSlashCommand;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.nexus.api.command.CommandUtils;
 import net.kyori.adventure.text.Component;
@@ -35,15 +35,10 @@ public class LinkCommand {
 
         int id = RandomUtil.randomInt(1000, 9999);
 
-        if (Discord.idMinecraft.containsKey(id)) {
-            id = RandomUtil.randomInt(1000, 9999);
-        }
+        LinkSlashCommand.idMinecraft.put(id, player.getUUID());
 
-        Discord.idMinecraft.put(id, player.getUUID());
-
-        player.sendMessage(
-                ChatFormat.nexiaMessage
-                        .append(Component.text("Your code is: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+        player.sendNexiaMessage(
+                Component.text("Your code is: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
                         .append(Component.text(id).color(ChatFormat.brandColor1)
                                 .decoration(ChatFormat.bold, true)
                                 .hoverEvent(HoverEvent.showText(Component.text("Click me to copy").color(ChatFormat.greenColor)))

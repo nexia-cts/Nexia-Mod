@@ -6,8 +6,8 @@ import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.time.ServerType;
-import com.nexia.discord.Discord;
 import com.nexia.discord.NexiaDiscord;
+import com.nexia.discord.commands.discord.LinkSlashCommand;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.network.ServerLoginPacketListenerImpl;
@@ -32,11 +32,11 @@ public class ServerLoginPacketListenerMixin {
         if(!PlayerDataManager.getDataManager(NexiaCore.DISCORD_DATA_MANAGER).get(gameProfile.getId()).savedData.get(Boolean.class, "isLinked") && ServerTime.serverType.equals(ServerType.DEV)) {
             int id = RandomUtil.randomInt(1000, 9999);
 
-            if (Discord.idMinecraft.containsKey(id)) {
+            if (LinkSlashCommand.idMinecraft.containsKey(id)) {
                 id = RandomUtil.randomInt(1000, 9999);
             }
 
-            Discord.idMinecraft.put(id, gameProfile.getId());
+            LinkSlashCommand.idMinecraft.put(id, gameProfile.getId());
             component = new TranslatableComponent("§c§lYou may have joined the wrong server.\n\n§5§lEU§7: eu.nexia.dev\n§5§lNA§7: na.nexia.dev\n\n§7If you were intending to join the development server then you can link your account here:\n§7Code: §5§l" + id);
         }
 

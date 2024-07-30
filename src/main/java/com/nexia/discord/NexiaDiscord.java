@@ -1,20 +1,19 @@
 package com.nexia.discord;
 
 import com.nexia.core.NexiaCore;
+import com.nexia.discord.commands.discord.LinkSlashCommand;
 import com.nexia.discord.config.ModConfig;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1u.serializer.GsonConfigSerializer;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.fabricmc.api.ModInitializer;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
 public class NexiaDiscord implements ModInitializer {
+
     public static ModConfig config;
 
     public static JDA jda;
@@ -33,27 +32,13 @@ public class NexiaDiscord implements ModInitializer {
                 .build();
 
         logger.log(Level.INFO, "Successfully initialized Discord!");
-        logger.log(Level.INFO, "Adding linking functionality...");
+        logger.log(Level.INFO, "Registering slash commands...");
         jda.addEventListener(new Discord());
         NexiaDiscord.registerCommands();
-        logger.log(Level.INFO, "Linking functionality has been added!");
+        logger.log(Level.INFO, "Registered slash commands!");
     }
 
     public static void registerCommands() {
-        jda.updateCommands().addCommands(
-                Commands.slash("link", "Link the minecraft player with the discord player.")
-                        .setGuildOnly(true)
-                        .addOptions(
-                                new OptionData(OptionType.STRING, "server", "Which server you're trying to link on.")
-                                        .setRequired(true)
-                                        .setMaxLength(3)
-                                        .addChoice("EU", "eu")
-                                        .addChoice("NA", "na")
-                                        .addChoice("DEV", "dev"),
-                                new OptionData(OptionType.INTEGER, "code", "The code when you do /link in Minecraft.")
-                                        .setRequired(true)
-                                        .setRequiredRange(1000, 9999)
-                        )
-        ).queue();
+        new LinkSlashCommand();
     }
 }

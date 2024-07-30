@@ -123,6 +123,14 @@ public class NexiaPlayer extends WrappedPlayer {
         this.sendMessage(ChatFormat.nexiaMessage.append(Component.text(String.format(message, args), ChatFormat.Minecraft.white)));
     }
 
+    /**
+     * Sends a Component with the prefix <code>Nexia » </code> to the player.
+     */
+
+    public void sendNexiaMessage(Component component) {
+        this.sendMessage(ChatFormat.nexiaMessage.append(component));
+    }
+
     public boolean hasPermission(@NotNull String permission) {
         return Permissions.check(this.unwrap(), permission);
     }
