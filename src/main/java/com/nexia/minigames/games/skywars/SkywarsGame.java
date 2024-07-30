@@ -33,13 +33,19 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.UUID;
+import java.util.*;
 
 import static com.nexia.core.NexiaCore.SKYWARS_DATA_MANAGER;
 import static com.nexia.core.utilities.world.WorldUtil.getChunkGenerator;
@@ -71,7 +77,7 @@ public class SkywarsGame {
             .setTimeOfDay(6000);
 
     // Both timers counted in seconds.
-    public static int glowingTime = 180;
+    public static int chestsRefillTime = 180;
 
     public static String id = UUID.randomUUID().toString();
     public static int gameEnd = 360;
@@ -82,7 +88,7 @@ public class SkywarsGame {
     public static boolean isStarted = false;
 
     public static boolean isEnding = false;
-    public static boolean isGlowingActive = false;
+    public static boolean chestsRefilled = false;
 
     private static NexiaPlayer winner = null;
 
@@ -92,8 +98,10 @@ public class SkywarsGame {
 
     public static CustomBossEvent BOSSBAR;
 
+    public static List<BlockEntity> blockEntities = null;
+
     public static void leave(NexiaPlayer player) {
-        SkywarsGame.death(player, player.unwrap().getLastDamageSource());
+        if (player != winner) SkywarsGame.death(player, player.unwrap().getLastDamageSource());
 
         SkywarsPlayerData data = (SkywarsPlayerData) PlayerDataManager.getDataManager(SKYWARS_DATA_MANAGER).get(player);
         SkywarsGame.spectator.remove(player);
@@ -133,10 +141,10 @@ public class SkywarsGame {
             } else {
                 SkywarsGame.updateInfo();
 
-                if (SkywarsGame.glowingTime <= 0 && !SkywarsGame.isGlowingActive && !SkywarsGame.isEnding)
-                    SkywarsGame.glowPlayers();
-                else if (SkywarsGame.glowingTime > 0 && !SkywarsGame.isGlowingActive && !SkywarsGame.isEnding)
-                    SkywarsGame.glowingTime--;
+                if (SkywarsGame.chestsRefillTime <= 0 && !SkywarsGame.chestsRefilled && !SkywarsGame.isEnding)
+                    SkywarsGame.refillChests();
+                else if (SkywarsGame.chestsRefillTime > 0 && !SkywarsGame.chestsRefilled && !SkywarsGame.isEnding)
+                    SkywarsGame.chestsRefillTime--;
 
                 if (SkywarsGame.gameEnd > 0 && !SkywarsGame.isEnding)
                     SkywarsGame.gameEnd--;
@@ -239,7 +247,6 @@ public class SkywarsGame {
     }
 
     public static void startGame() {
-
         SkywarsGame.map = SkywarsMap.validateMap(SkywarsGame.map, SkywarsGame.queue.size());
 
         if(SkywarsGame.queue.size() > SkywarsGame.map.maxPlayers) {
@@ -252,14 +259,15 @@ public class SkywarsGame {
         }
 
         SkywarsGame.isStarted = true;
-        SkywarsGame.isGlowingActive = false;
+        SkywarsGame.chestsRefilled = false;
         SkywarsGame.isEnding = false;
         SkywarsGame.winner = null;
-        SkywarsGame.glowingTime = 180;
+        SkywarsGame.chestsRefillTime = 180;
         SkywarsGame.gameEnd = 360;
         SkywarsGame.alive.addAll(SkywarsGame.queue);
 
         SkywarsGame.map.structureMap.pasteMap(SkywarsGame.world);
+        blockEntities = new ArrayList<>(world.blockEntityList);
         if(NexiaCore.config.debugMode) NexiaCore.logger.info(String.format("[DEBUG]: Skywars Map (%s) has been pasted on skywars:%s.", SkywarsGame.map.id, SkywarsGame.id));
 
         ArrayList<EntityPos> positions = new ArrayList<>(SkywarsGame.map.positions);
@@ -288,8 +296,9 @@ public class SkywarsGame {
     public static void resetAll() {
         if(NexiaCore.config.debugMode) NexiaCore.logger.info("[DEBUG]: Skywars Game has been reset.");
         SkywarsGame.isStarted = false;
-        SkywarsGame.isGlowingActive = false;
-        SkywarsGame.glowingTime = 180;
+        SkywarsGame.chestsRefilled = false;
+        SkywarsGame.blockEntities = null;
+        SkywarsGame.chestsRefillTime = 180;
         SkywarsGame.isEnding = false;
         SkywarsGame.gameEnd = 360;
         SkywarsGame.endTime = 5;
@@ -337,11 +346,11 @@ public class SkywarsGame {
             );
         }
 
-        if(!SkywarsGame.isGlowingActive) {
-            String[] timer = TickUtil.minuteTimeStamp(glowingTime * 20);
-            TextComponent updatedTime = new TextComponent("§7Glow in §a" + timer[0].substring(1) + "m, " + timer[1] + "s" + "§7...");
+        if(!SkywarsGame.chestsRefilled) {
+            String[] timer = TickUtil.minuteTimeStamp(chestsRefillTime * 20);
+            TextComponent updatedTime = new TextComponent("§7Chest refill in §a" + timer[0].substring(1) + "m, " + timer[1] + "s" + "§7...");
 
-            bossbar.setValue(glowingTime);
+            bossbar.setValue(chestsRefillTime);
             bossbar.setName(updatedTime);
             return;
         }
@@ -355,9 +364,18 @@ public class SkywarsGame {
         }
     }
 
-    public static void glowPlayers() {
-        SkywarsGame.isGlowingActive = true;
-        SkywarsGame.alive.forEach((player) -> player.unwrap().setGlowing(true));
+    public static void refillChests() {
+        SkywarsGame.chestsRefilled = true;
+        blockEntities.forEach(blockEntity -> {
+            if (blockEntity instanceof RandomizableContainerBlockEntity randomizableContainerBlock) {
+                LootTable lootTable = world.getServer().getLootTables().get(new ResourceLocation("chest/mid"));
+                LootContext.Builder builder = (new LootContext.Builder(world)).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(world.getSharedSpawnPos())).withOptionalRandomSeed(world.random.nextLong());
+
+                world.setBlockAndUpdate(blockEntity.getBlockPos(), blockEntity.getBlockState());
+                world.playSound(null, blockEntity.getBlockPos(), SoundEvents.CHEST_OPEN, SoundSource.MASTER, 1, 1);
+                lootTable.fill(randomizableContainerBlock, builder.create(LootContextParamSets.CHEST));
+            }
+        });
 
         for(NexiaPlayer player : SkywarsGame.getViewers()) {
             player.sendSound(new EntityPos(player.unwrap()), SoundEvents.RESPAWN_ANCHOR_CHARGE, SoundSource.AMBIENT, 1000, 1);
@@ -365,12 +383,12 @@ public class SkywarsGame {
                     Component.text("[").color(ChatFormat.lineColor)
                             .append(Component.text("⚠").color(ChatFormat.failColor))
                             .append(Component.text("]").color(ChatFormat.lineColor))
-                            .append(Component.text(" All players have received glowing.").color(TextColor.fromHexString("#FFE588")))
+                            .append(Component.text(" All chests have been refilled.").color(TextColor.fromHexString("#FFE588")))
             );
 
             player.sendTitle(
                     Title.title(Component.text("⚠").color(ChatFormat.failColor),
-                            Component.text(" All players have received glowing.").color(TextColor.fromHexString("#FFE588")))
+                            Component.text(" All chests have been refilled.").color(TextColor.fromHexString("#FFE588")))
             );
         }
     }
@@ -405,6 +423,7 @@ public class SkywarsGame {
     }
 
     public static void death(NexiaPlayer victim, DamageSource source){
+        if (SkywarsGame.winner != null) return;
         SkywarsPlayerData victimData = (SkywarsPlayerData) PlayerDataManager.getDataManager(SKYWARS_DATA_MANAGER).get(victim);
         if(SkywarsGame.isStarted && SkywarsGame.alive.contains(victim) && victimData.gameMode == SkywarsGameMode.PLAYING) {
             ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim.unwrap());
