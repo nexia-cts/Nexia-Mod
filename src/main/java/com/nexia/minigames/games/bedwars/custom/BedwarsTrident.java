@@ -1,8 +1,8 @@
 package com.nexia.minigames.games.bedwars.custom;
 
 import com.nexia.base.player.NexiaPlayer;
-import com.nexia.minigames.games.bedwars.BwGame;
-import com.nexia.minigames.games.bedwars.util.BwUtil;
+import com.nexia.minigames.games.bedwars.BedwarsGame;
+import com.nexia.minigames.games.bedwars.util.BedwarsUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -12,7 +12,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 
-public class BwTrident extends ThrownTrident {
+public class BedwarsTrident extends ThrownTrident {
 
     public static final int returnTime = 9 * 20;
     public static final String itemTagKey = "BedWarsTrident";
@@ -22,7 +22,7 @@ public class BwTrident extends ThrownTrident {
     public boolean willBeReturned;
     public int age;
 
-    public BwTrident(Level level, ServerPlayer player, ItemStack itemStack) {
+    public BedwarsTrident(Level level, ServerPlayer player, ItemStack itemStack) {
         super(level, player, itemStack);
         this.itemStack = itemStack.copy();
         this.owner = player;
@@ -30,11 +30,11 @@ public class BwTrident extends ThrownTrident {
         this.age = 0;
 
         NexiaPlayer nexiaPlayer = new NexiaPlayer(this.owner);
-        if (BwUtil.isBedWarsPlayer(nexiaPlayer)) {
-            if (!BwGame.gameTridents.containsKey(nexiaPlayer)) {
-                BwGame.gameTridents.put(nexiaPlayer, new ArrayList<>());
+        if (BedwarsUtil.isBedWarsPlayer(nexiaPlayer)) {
+            if (!BedwarsGame.gameTridents.containsKey(nexiaPlayer)) {
+                BedwarsGame.gameTridents.put(nexiaPlayer, new ArrayList<>());
             }
-            BwGame.gameTridents.get(nexiaPlayer).add(this);
+            BedwarsGame.gameTridents.get(nexiaPlayer).add(this);
         }
     }
 

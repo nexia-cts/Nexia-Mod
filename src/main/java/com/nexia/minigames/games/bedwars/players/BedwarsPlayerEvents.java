@@ -2,6 +2,9 @@ package com.nexia.minigames.games.bedwars.players;
 
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
+import com.nexia.minigames.games.bedwars.areas.BedwarsAreas;
+import com.nexia.minigames.games.bedwars.custom.BedwarsTrident;
+import com.nexia.minigames.games.bedwars.util.BedwarsUtil;
 import com.nexia.minigames.games.bedwars.util.player.BedwarsPlayerData;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
@@ -12,16 +15,13 @@ import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.minigames.games.bedwars.BwGame;
-import com.nexia.minigames.games.bedwars.areas.BwAreas;
-import com.nexia.minigames.games.bedwars.custom.BwBridgeEgg;
-import com.nexia.minigames.games.bedwars.custom.BwExplosiveSlime;
-import com.nexia.minigames.games.bedwars.custom.BwTrident;
-import com.nexia.minigames.games.bedwars.shop.BwShop;
-import com.nexia.minigames.games.bedwars.shop.BwShopUpgradeables;
-import com.nexia.minigames.games.bedwars.upgrades.BwUpgradeShop;
-import com.nexia.minigames.games.bedwars.util.BwScoreboard;
-import com.nexia.minigames.games.bedwars.util.BwUtil;
+import com.nexia.minigames.games.bedwars.BedwarsGame;
+import com.nexia.minigames.games.bedwars.custom.BedwarsBridgeEgg;
+import com.nexia.minigames.games.bedwars.custom.BedwarsExplosiveSlime;
+import com.nexia.minigames.games.bedwars.shop.BedwarsShop;
+import com.nexia.minigames.games.bedwars.shop.BedwarsShopUpgradeables;
+import com.nexia.minigames.games.bedwars.upgrades.BedwarsUpgradeShop;
+import com.nexia.minigames.games.bedwars.util.BedwarsScoreboard;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -52,30 +52,30 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class BwPlayerEvents {
+public class BedwarsPlayerEvents {
 
     public static void tryToJoin(NexiaPlayer player, boolean throughEvent) {
-        if (BwUtil.isInBedWars(player)) {
+        if (BedwarsUtil.isInBedWars(player)) {
             //player.sendMessage(Component.text("You are already in the game.").color(ChatFormat.failColor));
             LobbyUtil.returnToLobby(player, false);
             tryToJoin(player, throughEvent);
             return;
         }
-        if (BwGame.queueList.size() >= BwGame.maxPlayerCount) {
+        if (BedwarsGame.queueList.size() >= BedwarsGame.maxPlayerCount) {
             player.sendMessage(Component.text("The game is full.").color(ChatFormat.failColor));
             LobbyUtil.returnToLobby(player, false);
             return;
         }
-        if (BwGame.isGameActive) {
-            BwPlayers.becomeSpectator(player);
+        if (BedwarsGame.isGameActive) {
+            BedwarsPlayers.becomeSpectator(player);
             return;
         }
 
-        BwPlayers.joinQueue(player);
+        BedwarsPlayers.joinQueue(player);
     }
 
     public static boolean spectatorTeleport(NexiaPlayer player, ServerboundTeleportToEntityPacket packet) {
-        if (BwUtil.isBedWarsPlayer(player)) {
+        if (BedwarsUtil.isBedWarsPlayer(player)) {
             player.sendMessage(Component.text("You can't spectate others while in the game.").color(ChatFormat.failColor));
             return false;
         }
@@ -85,7 +85,7 @@ public class BwPlayerEvents {
             if (!(entity instanceof ServerPlayer target)) continue;
             NexiaPlayer nexiaTarget = new NexiaPlayer(target);
 
-            if (!BwUtil.isBedWarsPlayer(nexiaTarget)) {
+            if (!BedwarsUtil.isBedWarsPlayer(nexiaTarget)) {
                 player.sendMessage(Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
                 return false;
             }
@@ -105,41 +105,41 @@ public class BwPlayerEvents {
     }
 
     public static void death(NexiaPlayer player) {
-        if (!BwPlayers.getPlayers().contains(player) || BwGame.winScreen) return;
+        if (!BedwarsPlayers.getPlayers().contains(player) || BedwarsGame.winScreen) return;
 
-        BwUtil.giveKillResources(player);
-        BwUtil.deathClearInventory(player);
-        BwShopUpgradeables.downgradePlayerTools(player);
+        BedwarsUtil.giveKillResources(player);
+        BedwarsUtil.deathClearInventory(player);
+        BedwarsShopUpgradeables.downgradePlayerTools(player);
 
-        if (BwGame.gameTridents.containsKey(player)) {
-            for (BwTrident trident : BwGame.gameTridents.get(player)) {
+        if (BedwarsGame.gameTridents.containsKey(player)) {
+            for (BedwarsTrident trident : BedwarsGame.gameTridents.get(player)) {
                 trident.remove();
             }
-            BwGame.gameTridents.remove(player);
+            BedwarsGame.gameTridents.remove(player);
         }
 
-        BwUtil.announceDeath(player);
+        BedwarsUtil.announceDeath(player);
 
-        BwTeam team = BwTeam.getPlayerTeam(player);
-        if (team != null && BwTeam.bedExists(team)) {
+        BedwarsTeam team = BedwarsTeam.getPlayerTeam(player);
+        if (team != null && BedwarsTeam.bedExists(team)) {
             player.setGameMode(Minecraft.GameMode.SPECTATOR);
-            BwGame.respawningList.put(player, BwGame.respawnTime * 20);
-            player.unwrap().setRespawnPosition(BwAreas.bedWarsWorld.dimension(),
-                    BwAreas.spectatorSpawn.toBlockPos(), BwAreas.spectatorSpawn.yaw, true, false);
+            BedwarsGame.respawningList.put(player, BedwarsGame.respawnTime * 20);
+            player.unwrap().setRespawnPosition(BedwarsAreas.bedWarsWorld.dimension(),
+                    BedwarsAreas.spectatorSpawn.toBlockPos(), BedwarsAreas.spectatorSpawn.yaw, true, false);
         } else {
-            BwPlayers.eliminatePlayer(player, true);
+            BedwarsPlayers.eliminatePlayer(player, true);
         }
     }
 
     public static void respawned(NexiaPlayer player) {
-        boolean fixedTeamPlayer = BwTeam.fixTeamPlayer(player);
+        boolean fixedTeamPlayer = BedwarsTeam.fixTeamPlayer(player);
 
         if (!fixedTeamPlayer) {
             // Fix spectator
-            for (int i = 0; i < BwGame.spectatorList.size(); i++) {
-                NexiaPlayer spectator = BwGame.spectatorList.get(i);
+            for (int i = 0; i < BedwarsGame.spectatorList.size(); i++) {
+                NexiaPlayer spectator = BedwarsGame.spectatorList.get(i);
                 if (spectator.getUUID().equals(player.getUUID())) {
-                    BwGame.spectatorList.set(i, player);
+                    BedwarsGame.spectatorList.set(i, player);
                     return;
                 }
             }
@@ -148,12 +148,12 @@ public class BwPlayerEvents {
 
     // Usage of /leave command or disconnecting
     public static void leaveInBedWars(NexiaPlayer player) {
-        if (BwGame.queueList.contains(player)) {
-            BwPlayers.leaveQueue(player);
-        } else if (BwPlayers.getPlayers().contains(player)) {
-            BwPlayers.eliminatePlayer(player, false);
-        } else BwGame.spectatorList.remove(player);
-        BwScoreboard.removeScoreboardFor(player);
+        if (BedwarsGame.queueList.contains(player)) {
+            BedwarsPlayers.leaveQueue(player);
+        } else if (BedwarsPlayers.getPlayers().contains(player)) {
+            BedwarsPlayers.eliminatePlayer(player, false);
+        } else BedwarsGame.spectatorList.remove(player);
+        BedwarsScoreboard.removeScoreboardFor(player);
     }
 
     // Ability to shoot fireballs
@@ -161,11 +161,11 @@ public class BwPlayerEvents {
         ItemStack itemStack = player.getItemInHand(hand);
 
         if (itemStack.getItem() == Items.FIRE_CHARGE) {
-            BwUtil.throwFireball(player, itemStack);
+            BedwarsUtil.throwFireball(player, itemStack);
             return false;
 
-        } else if (BwExplosiveSlime.isBwExplosiveSlime(itemStack)) {
-            BwUtil.throwSlime(player, itemStack);
+        } else if (BedwarsExplosiveSlime.isBwExplosiveSlime(itemStack)) {
+            BedwarsUtil.throwSlime(player, itemStack);
             return false;
         }
 
@@ -177,7 +177,7 @@ public class BwPlayerEvents {
 
         BlockPos blockPos = context.getClickedPos();
 
-        if (!BwAreas.canBuildAt(new NexiaPlayer(player), blockPos, false)) {
+        if (!BedwarsAreas.canBuildAt(new NexiaPlayer(player), blockPos, false)) {
             return false;
         }
 
@@ -189,27 +189,27 @@ public class BwPlayerEvents {
 
         BlockPos blockPos = blockPlaceContext.getClickedPos();
 
-        if (!BwAreas.canBuildAt(player, blockPos, true)) {
+        if (!BedwarsAreas.canBuildAt(player, blockPos, true)) {
             return false;
         }
-        return !BwUtil.placeTnt(player.unwrap(), blockPlaceContext);
+        return !BedwarsUtil.placeTnt(player.unwrap(), blockPlaceContext);
     }
 
     public static boolean beforeBreakBlock(NexiaPlayer player, BlockPos blockPos) {
         if (player.unwrap().isCreative()) return true;
 
-        BwTeam team = BwTeam.getPlayerTeam(player);
-        BlockState blockState = BwAreas.bedWarsWorld.getBlockState(blockPos);
+        BedwarsTeam team = BedwarsTeam.getPlayerTeam(player);
+        BlockState blockState = BedwarsAreas.bedWarsWorld.getBlockState(blockPos);
 
         if (team != null && BlockUtil.blockToText(blockState).equals(team.color + "_bed")) {
             return false;
         }
 
-        return BwAreas.canBuildAt(player, blockPos, true);
+        return BedwarsAreas.canBuildAt(player, blockPos, true);
     }
 
     public static void bedBroken(NexiaPlayer player, BlockPos blockPos) {
-        for (BwTeam team : BwTeam.allTeams.values()) {
+        for (BedwarsTeam team : BedwarsTeam.allTeams.values()) {
             if (team.bedLocation == null) continue;
 
             if (new EntityPos(team.bedLocation).isInRadius(new EntityPos(blockPos), 1)) {
@@ -224,8 +224,8 @@ public class BwPlayerEvents {
         for (MobEffectInstance effect : PotionUtils.getMobEffects(potionItem)) {
             if (effect.getEffect() == MobEffects.INVISIBILITY) {
 
-                if (!BwGame.invisiblePlayerArmor.containsKey(player)) {
-                    BwGame.invisiblePlayerArmor.put(player, player.unwrap().inventory.armor.toArray(new ItemStack[0]));
+                if (!BedwarsGame.invisiblePlayerArmor.containsKey(player)) {
+                    BedwarsGame.invisiblePlayerArmor.put(player, player.unwrap().inventory.armor.toArray(new ItemStack[0]));
                 }
                 break;
             }
@@ -234,43 +234,43 @@ public class BwPlayerEvents {
 
     public static ThrownEgg throwEgg(NexiaPlayer player, ItemStack itemStack) {
         CompoundTag compoundTag = itemStack.getTag();
-        if (compoundTag == null || !compoundTag.getBoolean(BwBridgeEgg.itemTagKey)) {
+        if (compoundTag == null || !compoundTag.getBoolean(BedwarsBridgeEgg.itemTagKey)) {
             return new ThrownEgg(player.unwrap().level, player.unwrap());
         }
 
         Block trail = Blocks.AIR;
-        BwTeam team = BwTeam.getPlayerTeam(player);
+        BedwarsTeam team = BedwarsTeam.getPlayerTeam(player);
         if (team != null) {
             trail = Registry.BLOCK.get(new ResourceLocation(team.color + "_wool"));
         }
         if (trail == Blocks.AIR) trail = Blocks.WHITE_WOOL;
 
-        return new BwBridgeEgg(player.unwrap().level, player, trail);
+        return new BedwarsBridgeEgg(player.unwrap().level, player, trail);
     }
 
     public static ThrownTrident throwTrident(NexiaPlayer player, ItemStack itemStack) {
         CompoundTag compoundTag = itemStack.getTag();
-        if (compoundTag == null || !compoundTag.getBoolean(BwTrident.itemTagKey)) {
+        if (compoundTag == null || !compoundTag.getBoolean(BedwarsTrident.itemTagKey)) {
             return new ThrownTrident(player.unwrap().level, player.unwrap(), itemStack);
         }
 
-        return new BwTrident(player.unwrap().level, player.unwrap(), itemStack);
+        return new BedwarsTrident(player.unwrap().level, player.unwrap(), itemStack);
     }
 
     public static boolean interact(Player player, ServerboundInteractPacket serverboundInteractPacket) {
         if (serverboundInteractPacket.getAction() != ServerboundInteractPacket.Action.INTERACT) return true;
-        if (BwShop.bedWarsShopItems == null) return true;
+        if (BedwarsShop.bedWarsShopItems == null) return true;
         if (!(player instanceof ServerPlayer)) return true;
 
         Entity entity = serverboundInteractPacket.getTarget(player.level);
         if (!(entity instanceof Villager)) return true;
 
         if (entity.getTags().contains("bedWarsShop_item")) {
-            BwShop.openShopGui((ServerPlayer) player);
+            BedwarsShop.openShopGui((ServerPlayer) player);
             return false;
         }
         if (entity.getTags().contains("bedWarsShop_upgrade")) {
-            BwUpgradeShop.openShopGui((ServerPlayer) player);
+            BedwarsUpgradeShop.openShopGui((ServerPlayer) player);
             return false;
         }
 
@@ -288,7 +288,7 @@ public class BwPlayerEvents {
         ItemStack itemStack = ItemStackUtil.getContainerClickItem(player.unwrap(), packet);
 
         if ((itemStack != null) && (packet.getClickType() == ClickType.THROW || slot == -999)) {
-            return BwUtil.canDropItem(itemStack);
+            return BedwarsUtil.canDropItem(itemStack);
         }
 
         return true;

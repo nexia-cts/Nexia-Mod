@@ -8,7 +8,7 @@ import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.player.CorePlayerData;
-import com.nexia.minigames.games.bedwars.util.BwUtil;
+import com.nexia.minigames.games.bedwars.util.BedwarsUtil;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
@@ -88,7 +88,7 @@ public class SkipQueueCommand {
     private static int bedwars(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
 
-        if (BwUtil.skipQueue()) {
+        if (BedwarsUtil.skipQueue()) {
             player.sendMessage(new TextComponent("Skipped queue"), Util.NIL_UUID);
         } else {
             player.sendMessage(new TextComponent("Epic queue skip failure"), Util.NIL_UUID);

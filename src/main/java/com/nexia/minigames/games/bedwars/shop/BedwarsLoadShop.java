@@ -7,7 +7,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
-import com.nexia.minigames.games.bedwars.BwGame;
+import com.nexia.minigames.games.bedwars.BedwarsGame;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.TextComponent;
@@ -17,7 +17,7 @@ import net.minecraft.world.item.Items;
 import java.io.FileReader;
 import java.nio.file.Path;
 
-public class BwLoadShop {
+public class BedwarsLoadShop {
 
     final static String shopFileName = "shop.json";
 
@@ -52,7 +52,7 @@ public class BwLoadShop {
 
     static JsonArray readBedWarsShopFile() {
         try {
-            Path path = Path.of(BwGame.bedWarsDirectory + "/" + shopFileName);
+            Path path = Path.of(BedwarsGame.bedWarsDirectory + "/" + shopFileName);
             if (!path.toFile().exists()) return null;
 
             JsonReader jsonReader = new JsonReader(new FileReader(path.toFile()));
@@ -72,25 +72,25 @@ public class BwLoadShop {
     }
 
     static void loadShopFromJson(JsonArray jsonArray) {
-        BwShop.bedWarsShopItems = new ItemStack[BwShop.shopSize];
-        BwShop.bedWarsUpgradeableItems = new ItemStack[28][];
+        BedwarsShop.bedWarsShopItems = new ItemStack[BedwarsShop.shopSize];
+        BedwarsShop.bedWarsUpgradeableItems = new ItemStack[28][];
 
         for (JsonElement element : jsonArray) {
             try {
                 JsonObject object = (JsonObject) element;
 
                 int slot = object.get(slotKey).getAsInt();
-                if (slot >= BwShop.shopSize || slot < 0) continue;
+                if (slot >= BedwarsShop.shopSize || slot < 0) continue;
 
                 String type = "default";
                 if (object.has(typeKey)) type = object.get(typeKey).getAsString();
 
                 if (type.equals("upgradeable")) {
                     ItemStack[] upgradeableItems = getUpgradeableItems(object);
-                    if (upgradeableItems != null) BwShop.bedWarsUpgradeableItems[slot] = upgradeableItems;
+                    if (upgradeableItems != null) BedwarsShop.bedWarsUpgradeableItems[slot] = upgradeableItems;
                 } else {
                     ItemStack itemStack = getItemStackFromJson(object);
-                    if (itemStack != null) BwShop.bedWarsShopItems[slot] = itemStack;
+                    if (itemStack != null) BedwarsShop.bedWarsShopItems[slot] = itemStack;
                 }
 
             } catch (Exception e) {
@@ -112,9 +112,9 @@ public class BwLoadShop {
             if (upgradeableItem == null) continue;
 
             CompoundTag info = new CompoundTag();
-            info.putString(BwShopUpgradeables.upgradeableIdKey, upgradeableItemId);
-            info.putInt(BwShopUpgradeables.upgradeableLevelKey, i);
-            upgradeableItem.getOrCreateTag().put(BwShopUpgradeables.upgradeableInfoKey, info);
+            info.putString(BedwarsShopUpgradeables.upgradeableIdKey, upgradeableItemId);
+            info.putInt(BedwarsShopUpgradeables.upgradeableLevelKey, i);
+            upgradeableItem.getOrCreateTag().put(BedwarsShopUpgradeables.upgradeableInfoKey, info);
 
             upgradeableItems[i] = upgradeableItem;
         }
@@ -143,9 +143,9 @@ public class BwLoadShop {
             if (costStack.getItem() == null || costStack.getItem() == Items.AIR) return null;
 
             CompoundTag compoundTag = itemStack.getOrCreateTag();
-            compoundTag.putBoolean(BwShop.purchasableKey, true);
-            compoundTag.putString(BwShop.currencyItemKey, costStack.getItem().toString());
-            compoundTag.putInt(BwShop.currencyAmountKey, costStack.getCount());
+            compoundTag.putBoolean(BedwarsShop.purchasableKey, true);
+            compoundTag.putString(BedwarsShop.currencyItemKey, costStack.getItem().toString());
+            compoundTag.putInt(BedwarsShop.currencyAmountKey, costStack.getCount());
 
             compoundTag.merge(TagParser.parseTag(nbt));
             if (itemStack.getMaxDamage() != 0) compoundTag.putInt("Unbreakable", 1);

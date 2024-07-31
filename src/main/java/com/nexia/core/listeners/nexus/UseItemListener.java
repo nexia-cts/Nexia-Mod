@@ -24,19 +24,16 @@ public class UseItemListener {
 
             if(gameMode == PlayerGameMode.LOBBY) {
                 if(sName.contains("gamemode selector")){
-                    //PlayGUI.openMainGUI(minecraftPlayer);
                     player.runCommand("/play", 0, false);
                     return;
                 }
 
                 if(sName.contains("prefix selector")){
-                    //PrefixGUI.openRankGUI(minecraftPlayer);
                     player.runCommand("/prefix", 0, false);
                     return;
                 }
 
                 if(sName.contains("duel sword") && !sName.contains("custom duel sword")) {
-                    //QueueGUI.openQueueGUI(minecraftPlayer);
                     player.runCommand("/queue", 0, false);
                     return;
                 }

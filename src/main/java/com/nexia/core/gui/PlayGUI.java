@@ -14,7 +14,7 @@ import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.classic.utilities.ClassicFfaAreas;
-import com.nexia.minigames.games.bedwars.areas.BwAreas;
+import com.nexia.minigames.games.bedwars.areas.BedwarsAreas;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
@@ -68,7 +68,7 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(other, net.kyori.adventure.text.Component.text("Discover other games.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 0);
 
         ItemStack bedwars = new ItemStack(Items.RED_BED, 1);
-        bedwars.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("BedWars", ChatFormat.Minecraft.red).decoration(ChatFormat.italic, false)));
+        bedwars.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Bedwars", ChatFormat.Minecraft.red).decoration(ChatFormat.italic, false)));
         ItemDisplayUtil.addGlint(bedwars);
         bedwars.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
@@ -77,11 +77,11 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(bedwars, net.kyori.adventure.text.Component.text("destroy other opponent's beds, and", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
         ItemDisplayUtil.addLore(bedwars, net.kyori.adventure.text.Component.text("kill your opponents to win!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 3);
         ItemDisplayUtil.addLore(bedwars, "§f", 4);
-        ItemDisplayUtil.addLore(bedwars, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", BwAreas.bedWarsWorld.players().size()), ChatFormat.Minecraft.red).decoration(ChatFormat.italic, false), 5);
+        ItemDisplayUtil.addLore(bedwars, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", BedwarsAreas.bedWarsWorld.players().size()), ChatFormat.Minecraft.red).decoration(ChatFormat.italic, false), 5);
 
 
         ItemStack skywars = new ItemStack(Items.GRASS_BLOCK, 1);
-        skywars.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("SkyWars", ChatFormat.Minecraft.green).decoration(ChatFormat.italic, false)));
+        skywars.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Skywars", ChatFormat.Minecraft.green).decoration(ChatFormat.italic, false)));
         skywars.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         ItemDisplayUtil.addLore(skywars, "§5", 0);

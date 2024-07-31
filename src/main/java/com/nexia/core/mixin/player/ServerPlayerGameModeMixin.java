@@ -4,9 +4,9 @@ import com.nexia.core.utilities.item.BlockUtil;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
-import com.nexia.minigames.games.bedwars.areas.BwAreas;
-import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
-import com.nexia.minigames.games.bedwars.util.BwUtil;
+import com.nexia.minigames.games.bedwars.areas.BedwarsAreas;
+import com.nexia.minigames.games.bedwars.players.BedwarsPlayerEvents;
+import com.nexia.minigames.games.bedwars.util.BedwarsUtil;
 import com.nexia.minigames.games.football.FootballGame;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -35,7 +35,7 @@ public class ServerPlayerGameModeMixin {
 
         NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
-        if (BwAreas.isBedWarsWorld(level) && !BwPlayerEvents.beforeBreakBlock(nexiaPlayer, blockPos)) {
+        if (BedwarsAreas.isBedWarsWorld(level) && !BedwarsPlayerEvents.beforeBreakBlock(nexiaPlayer, blockPos)) {
             cir.setReturnValue(false);
         }  else if (FfaUhcUtil.INSTANCE.isFfaWorld(level) && !FfaUhcUtil.INSTANCE.beforeBuild(nexiaPlayer, blockPos)) {
             cir.setReturnValue(false);
@@ -53,8 +53,8 @@ public class ServerPlayerGameModeMixin {
 
         NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
-        if (BwUtil.isBedWarsPlayer(nexiaPlayer) && isBed) {
-            BwPlayerEvents.bedBroken(nexiaPlayer, blockPos);
+        if (BedwarsUtil.isBedWarsPlayer(nexiaPlayer) && isBed) {
+            BedwarsPlayerEvents.bedBroken(nexiaPlayer, blockPos);
         }
 
     }

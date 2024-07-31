@@ -1,6 +1,6 @@
 package com.nexia.core.mixin.entity;
 
-import com.nexia.minigames.games.bedwars.areas.BwAreas;
+import com.nexia.minigames.games.bedwars.areas.BedwarsAreas;
 import com.nexia.minigames.games.oitc.OitcGame;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -20,7 +20,7 @@ public class AbstractArrowMixin {
 
         ServerLevel level = (ServerLevel) ((AbstractArrow)(Object)this).level;
 
-        if (BwAreas.isBedWarsWorld(level)) {
+        if (BedwarsAreas.isBedWarsWorld(level)) {
             vanillaCalculated *= 0.625;
         }
 
@@ -38,7 +38,7 @@ public class AbstractArrowMixin {
 
         ServerLevel level = (ServerLevel) ((AbstractArrow)(Object)this).level;
 
-        if (BwAreas.isBedWarsWorld(level)) {
+        if (BedwarsAreas.isBedWarsWorld(level)) {
             long critBoost = arrowDamage / 4 + 1;
             arrowDamage = (int)Math.min(arrowDamage + critBoost, Integer.MAX_VALUE);
         } else {

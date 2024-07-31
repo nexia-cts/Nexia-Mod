@@ -1,6 +1,6 @@
 package com.nexia.core.mixin.item;
 
-import com.nexia.minigames.games.bedwars.areas.BwAreas;
+import com.nexia.minigames.games.bedwars.areas.BedwarsAreas;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.CompassItem;
@@ -27,7 +27,7 @@ public class CompassItemMixin {
     @Redirect(method = "inventoryTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/CompoundTag;remove(Ljava/lang/String;)V"))
     private void existsAtPosition(CompoundTag instance, String string) {
 
-        if (BwAreas.isBedWarsWorld(level)) return;
+        if (BedwarsAreas.isBedWarsWorld(level)) return;
         instance.remove(string);
 
     }

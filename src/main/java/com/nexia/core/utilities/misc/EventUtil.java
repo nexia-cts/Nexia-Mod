@@ -5,7 +5,7 @@ import com.nexia.core.gui.ffa.KitGUI;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.kits.utilities.KitFfaAreas;
-import com.nexia.minigames.games.bedwars.util.BwUtil;
+import com.nexia.minigames.games.bedwars.util.BedwarsUtil;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import net.minecraft.core.BlockPos;
@@ -30,7 +30,7 @@ public class EventUtil {
         if(OitcGame.isOITCPlayer(player)) return false;
         if(FootballGame.isFootballPlayer(player)) return false;
 
-        if (BwUtil.isBedWarsPlayer(player) && !BwUtil.canDropItem(itemStack)) return false;
+        if (BedwarsUtil.isBedWarsPlayer(player) && !BedwarsUtil.canDropItem(itemStack)) return false;
 
         return true;
     }
@@ -42,7 +42,7 @@ public class EventUtil {
         if(OitcGame.isOITCPlayer(player)) return false;
         if(FootballGame.isFootballPlayer(player)) return false;
 
-        if (BwUtil.isBedWarsPlayer(player) && !BwUtil.canDropItem(itemStack)) return false;
+        if (BedwarsUtil.isBedWarsPlayer(player) && !BedwarsUtil.canDropItem(itemStack)) return false;
 
         return true;
     }
@@ -52,7 +52,7 @@ public class EventUtil {
         if(LobbyUtil.isLobbyWorld(player.unwrap().level)) return false;
         if(OitcGame.isOITCPlayer(player)) return false;
         if(FootballGame.isFootballPlayer(player)) return false;
-        if (BwUtil.isBedWarsPlayer(player)) return false;
+        if (BedwarsUtil.isBedWarsPlayer(player)) return false;
 
         return true;
     }

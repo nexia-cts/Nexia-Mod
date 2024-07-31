@@ -3,8 +3,8 @@ package com.nexia.core.mixin.item;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
-import com.nexia.minigames.games.bedwars.areas.BwAreas;
-import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
+import com.nexia.minigames.games.bedwars.areas.BedwarsAreas;
+import com.nexia.minigames.games.bedwars.players.BedwarsPlayerEvents;
 import com.nexia.minigames.games.football.FootballGame;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -29,7 +29,7 @@ public abstract class BlockItemMixin {
         BlockPos blockPos = context.getClickedPos();
         ServerLevel level = player.getLevel();
 
-        if (BwAreas.isBedWarsWorld(player.getLevel()) && !BwPlayerEvents.beforePlace(nexiaPlayer, context)) {
+        if (BedwarsAreas.isBedWarsWorld(player.getLevel()) && !BedwarsPlayerEvents.beforePlace(nexiaPlayer, context)) {
             cir.setReturnValue(InteractionResult.PASS);
             nexiaPlayer.refreshInventory();
             return;

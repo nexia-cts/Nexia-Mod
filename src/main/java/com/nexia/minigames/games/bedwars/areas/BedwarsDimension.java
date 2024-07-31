@@ -7,7 +7,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
 
-public class BwDimension {
+public class BedwarsDimension {
 
     public static final String DIMENSION_ID = "minigames";
     public static final String DIMENSION_NAME = "bedwars";

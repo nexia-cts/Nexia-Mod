@@ -51,12 +51,6 @@ public class PlayerRespawnListener {
                 return;
             }
 
-            if(data.gameMode == PlayerGameMode.BEDWARS)
-                respawnEvent.setRespawnMode(Minecraft.GameMode.SURVIVAL);
-
-            if(data.gameMode == PlayerGameMode.OITC)
-                respawnEvent.setRespawnMode(Minecraft.GameMode.ADVENTURE);
-            
             if(duelsGame != null && duelsGame.isEnding && duelsGame.winner != null) {
                 player.getInventory().clear();
                 LobbyUtil.giveItems(player);

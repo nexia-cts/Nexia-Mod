@@ -6,7 +6,7 @@ import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.pos.ProtectionBlock;
 import com.nexia.core.utilities.pos.ProtectionMap;
-import com.nexia.minigames.games.bedwars.BwGame;
+import com.nexia.minigames.games.bedwars.BedwarsGame;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-public class BwAreas {
+public class BedwarsAreas {
 
     public static ServerLevel bedWarsWorld = null;
     public static EntityPos bedWarsCenter = new EntityPos(0.5, 50, 0.5, 0, 0);
@@ -37,7 +37,7 @@ public class BwAreas {
     // Protection map related
 
     private static final String protMapFileName = "protectionMap.json";
-    private static final String protMapFilePath = BwGame.bedWarsDirectory + "/" + protMapFileName;
+    private static final String protMapFilePath = BedwarsGame.bedWarsDirectory + "/" + protMapFileName;
 
     public static ProtectionBlock[] protMapBlocks = {
             new ProtectionBlock(Blocks.VOID_AIR, true, null),
@@ -60,7 +60,7 @@ public class BwAreas {
     // ------------------------------------------------------------
 
     public static boolean isBedWarsWorld(Level level) {
-        return level.dimension().equals(BwDimension.LEVEL_KEY) || level.dimension().toString().contains(BwDimension.DIMENSION_ID + ":" + BwDimension.DIMENSION_NAME);
+        return level.dimension().equals(BedwarsDimension.LEVEL_KEY) || level.dimension().toString().contains(BedwarsDimension.DIMENSION_ID + ":" + BedwarsDimension.DIMENSION_NAME);
     }
 
     public static void setBedWarsWorld(MinecraftServer minecraftServer) {
@@ -83,7 +83,7 @@ public class BwAreas {
     }
 
     public static boolean canBuildAt(@Nullable NexiaPlayer player, BlockPos blockPos, boolean sendMessage) {
-        ProtectionMap protectionMap = BwAreas.protectionMap;
+        ProtectionMap protectionMap = BedwarsAreas.protectionMap;
         BlockPos mapPos = blockPos.subtract(bedWarsCorner1);
         sendMessage = sendMessage && player != null;
 

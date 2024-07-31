@@ -68,6 +68,7 @@ public class OitcGame {
     public static boolean isStarted = false;
 
     public static boolean isEnding = false;
+    public static boolean isPlayerRespawning = false;
 
     private static NexiaPlayer winner = null;
 
@@ -181,7 +182,7 @@ public class OitcGame {
                         Title title = getTitle(OitcGame.queueTime);
 
                         player.sendTitle(title);
-                        player.sendSound(new EntityPos(player.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.BLOCKS, 10, 1);
+                        player.sendSound(new EntityPos(player.unwrap()), SoundEvents.NOTE_BLOCK_HAT, SoundSource.RECORDS, 10, 1);
                     }
 
                     player.sendActionBarMessage(

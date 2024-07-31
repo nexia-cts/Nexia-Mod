@@ -10,7 +10,7 @@ import net.minecraft.world.item.Items;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class BwShopUpgradeables {
+public class BedwarsShopUpgradeables {
 
     final static String upgradeableInfoKey = "upgradeableInfo";
     final static String upgradeableIdKey = "id";
@@ -18,7 +18,7 @@ public class BwShopUpgradeables {
 
     protected static ItemStack getUpgradeItem(ServerPlayer player, int index) {
         try {
-            ItemStack[] upgradeableItems = BwShop.bedWarsUpgradeableItems[index];
+            ItemStack[] upgradeableItems = BedwarsShop.bedWarsUpgradeableItems[index];
             ItemStack comparedStack = upgradeableItems[0].copy();
             int currentLevel;
 
@@ -108,12 +108,12 @@ public class BwShopUpgradeables {
                 return;
             }
         }
-        BwShopUtil.giveItem(player, newItem, targetSlot);
+        BedwarsShopUtil.giveItem(player, newItem, targetSlot);
     }
 
     public static ArrayList<ItemStack[]> getActiveUpgradeables() {
         ArrayList<ItemStack[]> activeUpgradeItems = new ArrayList<>();
-        for (ItemStack[] itemStacks : BwShop.bedWarsUpgradeableItems) {
+        for (ItemStack[] itemStacks : BedwarsShop.bedWarsUpgradeableItems) {
             if (itemStacks == null || itemStacks.length < 1) continue;
             activeUpgradeItems.add(itemStacks);
         }
@@ -134,7 +134,7 @@ public class BwShopUpgradeables {
                 if (!isSameUpgradeType(invItem, upgradeables[0])) continue;
 
                 ItemStack newItem = upgradeables[invItemLevel.get() - 1].copy();
-                BwShopUtil.removeShopNbt(newItem);
+                BedwarsShopUtil.removeShopNbt(newItem);
                 player.unwrap().inventory.setItem(i, newItem);
                 continue inv;
             }

@@ -1,13 +1,13 @@
 package com.nexia.minigames.games.bedwars.util;
 
+import com.nexia.minigames.games.bedwars.areas.BedwarsAreas;
 import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.minigames.games.bedwars.BwGame;
-import com.nexia.minigames.games.bedwars.areas.BwAreas;
-import com.nexia.minigames.games.bedwars.players.BwTeam;
-import com.nexia.minigames.games.bedwars.upgrades.BwUpgrade;
+import com.nexia.minigames.games.bedwars.BedwarsGame;
+import com.nexia.minigames.games.bedwars.players.BedwarsTeam;
+import com.nexia.minigames.games.bedwars.upgrades.BedwarsUpgrade;
 import net.kyori.adventure.text.Component;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.function.Predicate;
 
-public class BwGen {
+public class BedwarsGen {
 
     public Item resource;
     public long delay;
@@ -36,7 +36,7 @@ public class BwGen {
     public ArmorStand timerDisplay;
     public ArmorStand itemDisplay;
 
-    private BwGen(Item resource, long delay, long cap, EntityPos location) {
+    private BedwarsGen(Item resource, long delay, long cap, EntityPos location) {
         this.resource = resource;
         this.delay = delay;
         this.cap = cap;
@@ -47,10 +47,10 @@ public class BwGen {
 
     // Generator list ---------------------------------------------------------------------
 
-    public static HashMap<Item, ArrayList<BwGen>> allGens = resetGens();
+    public static HashMap<Item, ArrayList<BedwarsGen>> allGens = resetGens();
 
-    public static HashMap<Item, ArrayList<BwGen>> resetGens() {
-        HashMap<Item, ArrayList<BwGen>> gens = new HashMap<>();
+    public static HashMap<Item, ArrayList<BedwarsGen>> resetGens() {
+        HashMap<Item, ArrayList<BedwarsGen>> gens = new HashMap<>();
 
         gens.put(Items.IRON_INGOT, new ArrayList<>());
         gens.put(Items.GOLD_INGOT, new ArrayList<>());
@@ -79,17 +79,17 @@ public class BwGen {
 
     public static void genTick() {
         ticks++;
-        if (BwGame.isGameActive) {
+        if (BedwarsGame.isGameActive) {
             itemGenTick();
             teamGenTick();
         }
     }
 
     private static void itemGenTick() {
-        for (ArrayList<BwGen> list : allGens.values()) {
+        for (ArrayList<BedwarsGen> list : allGens.values()) {
             if (list == null) continue;
 
-            for (BwGen gen : list) {
+            for (BedwarsGen gen : list) {
                 if (gen == null) continue;
                 gen.rotateItemDisplay();
 
@@ -112,14 +112,14 @@ public class BwGen {
     }
 
     private static void teamGenTick() {
-        if (BwTeam.allTeams == null) return;
+        if (BedwarsTeam.allTeams == null) return;
 
-        for (BwTeam team : BwTeam.allTeams.values()) {
+        for (BedwarsTeam team : BedwarsTeam.allTeams.values()) {
             if (team == null || team.genLocation == null) continue;
 
             int level;
-            if (!team.upgrades.containsKey(BwUpgrade.UPGRADE_KEY_GENERATOR)) level = 1;
-            else level = team.upgrades.get(BwUpgrade.UPGRADE_KEY_GENERATOR).level;
+            if (!team.upgrades.containsKey(BedwarsUpgrade.UPGRADE_KEY_GENERATOR)) level = 1;
+            else level = team.upgrades.get(BedwarsUpgrade.UPGRADE_KEY_GENERATOR).level;
 
             if (ironDelays.length > level && ironDelays[level] > 0 && ticks % ironDelays[level] == 0) {
                 summonGenItem(team.genLocation, new ItemStack(Items.IRON_INGOT), 48);
@@ -139,18 +139,18 @@ public class BwGen {
     }
 
     private static void summonGenItem(EntityPos pos, ItemStack itemStack, long cap) {
-        ItemEntity entity = new ItemEntity(BwAreas.bedWarsWorld, pos.x, pos.y, pos.z, itemStack);
+        ItemEntity entity = new ItemEntity(BedwarsAreas.bedWarsWorld, pos.x, pos.y, pos.z, itemStack);
         entity.setDeltaMovement(0, 0, 0);
         entity.addTag(itemCapTagStart + cap);
-        BwAreas.bedWarsWorld.addFreshEntity(entity);
+        BedwarsAreas.bedWarsWorld.addFreshEntity(entity);
     }
 
     public static void createGens() {
         ticks = 1;
-        AABB aabb = new AABB(BwAreas.bedWarsCorner1, BwAreas.bedWarsCorner2);
+        AABB aabb = new AABB(BedwarsAreas.bedWarsCorner1, BedwarsAreas.bedWarsCorner2);
         Predicate<Entity> predicate = o -> true;
 
-        for (Entity entity : BwAreas.bedWarsWorld.getEntities(EntityType.ARMOR_STAND, aabb, predicate)) {
+        for (Entity entity : BedwarsAreas.bedWarsWorld.getEntities(EntityType.ARMOR_STAND, aabb, predicate)) {
             for (String tag : entity.getTags()) {
                 if (tag.startsWith(genTagStart)) {
                     addPossibleGen(entity, tag);
@@ -162,8 +162,8 @@ public class BwGen {
     private static void addPossibleGen(Entity entity, String tag) {
         tag = tag.replaceFirst(genTagStart, "");
 
-        if (BwTeam.allTeams.containsKey(tag)) {
-            BwTeam.allTeams.get(tag).genLocation = new EntityPos(entity);
+        if (BedwarsTeam.allTeams.containsKey(tag)) {
+            BedwarsTeam.allTeams.get(tag).genLocation = new EntityPos(entity);
             return;
         }
 
@@ -177,24 +177,24 @@ public class BwGen {
         Item item = ItemStackUtil.itemFromString(StringUtils.join(splitTag, "_"));
         if (!allGens.containsKey(item)) return;
 
-        BwGen gen = new BwGen(item, delay, cap, new EntityPos(entity));
+        BedwarsGen gen = new BedwarsGen(item, delay, cap, new EntityPos(entity));
         allGens.get(item).add(gen);
     }
 
     private void summonTimerDisplay() {
         EntityPos pos = this.location;
-        ArmorStand armorStand = new ArmorStand(BwAreas.bedWarsWorld, pos.x, pos.y + 2.4, pos.z);
+        ArmorStand armorStand = new ArmorStand(BedwarsAreas.bedWarsWorld, pos.x, pos.y + 2.4, pos.z);
         armorStand.setCustomNameVisible(true);
         armorStand.addTag(genTimerDisplayTag);
         makeInvisible(armorStand);
 
-        BwAreas.bedWarsWorld.addFreshEntity(armorStand);
+        BedwarsAreas.bedWarsWorld.addFreshEntity(armorStand);
         timerDisplay = armorStand;
     }
 
     private void summonItemDisplay() {
         EntityPos pos = this.location;
-        ArmorStand armorStand = new ArmorStand(BwAreas.bedWarsWorld, pos.x, pos.y + 1.8, pos.z);
+        ArmorStand armorStand = new ArmorStand(BedwarsAreas.bedWarsWorld, pos.x, pos.y + 1.8, pos.z);
         armorStand.addTag(genItemDisplayTag);
         makeInvisible(armorStand);
 
@@ -203,7 +203,7 @@ public class BwGen {
         else if (resource == Items.EMERALD) item = Items.EMERALD_BLOCK;
         armorStand.setItemSlot(EquipmentSlot.HEAD, item.getDefaultInstance());
 
-        BwAreas.bedWarsWorld.addFreshEntity(armorStand);
+        BedwarsAreas.bedWarsWorld.addFreshEntity(armorStand);
         itemDisplay = armorStand;
     }
 

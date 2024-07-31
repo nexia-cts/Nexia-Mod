@@ -34,7 +34,7 @@ public abstract class ThrownTridentMixin extends AbstractArrow {
         float bonus = EnchantmentHelper.getDamageBonus(itemStack, livingEntity);
 
         /*
-        if ((Object)this instanceof BwTrident) {
+        if ((Object)this instanceof BedwarsTrident) {
             bonus -= 1;
         }
         */

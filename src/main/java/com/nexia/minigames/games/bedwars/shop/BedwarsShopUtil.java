@@ -2,8 +2,8 @@ package com.nexia.minigames.games.bedwars.shop;
 
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.base.player.NexiaPlayer;
-import com.nexia.minigames.games.bedwars.players.BwTeam;
-import com.nexia.minigames.games.bedwars.util.BwUtil;
+import com.nexia.minigames.games.bedwars.players.BedwarsTeam;
+import com.nexia.minigames.games.bedwars.util.BedwarsUtil;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -14,15 +14,15 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-public class BwShopUtil {
+public class BedwarsShopUtil {
 
     protected static ItemStack getShopItem(ServerPlayer player, int index) {
-        ItemStack itemStack = BwShop.bedWarsShopItems[index];
+        ItemStack itemStack = BedwarsShop.bedWarsShopItems[index];
 
         if (itemStack != null) {
             return itemStack;
         } else {
-            return BwShopUpgradeables.getUpgradeItem(player, index);
+            return BedwarsShopUpgradeables.getUpgradeItem(player, index);
         }
     }
 
@@ -30,7 +30,7 @@ public class BwShopUtil {
         itemStack = itemStack.copy();
         ItemStack cost = getCost(itemStack);
         if (cost == null) return null;
-        BwShopCost.addCostLore(itemStack, cost);
+        BedwarsShopCost.addCostLore(itemStack, cost);
         return itemStack;
     }
 
@@ -38,10 +38,10 @@ public class BwShopUtil {
         CompoundTag tag = itemStack.getTag();
         if (tag == null) return;
 
-        BwShopCost.removeCostLore(itemStack);
-        tag.remove(BwShop.purchasableKey);
-        tag.remove(BwShop.currencyItemKey);
-        tag.remove(BwShop.currencyAmountKey);
+        BedwarsShopCost.removeCostLore(itemStack);
+        tag.remove(BedwarsShop.purchasableKey);
+        tag.remove(BedwarsShop.currencyItemKey);
+        tag.remove(BedwarsShop.currencyAmountKey);
 
         if (tag.getAsString().equals("{}")) itemStack.setTag(null);
         else itemStack.setTag(tag);
@@ -50,8 +50,8 @@ public class BwShopUtil {
     protected static ItemStack getCost(ItemStack soldItem) {
         try {
             CompoundTag compoundTag = soldItem.getOrCreateTag();
-            Item item = Registry.ITEM.get(new ResourceLocation(compoundTag.getString(BwShop.currencyItemKey)));
-            int amount = compoundTag.getInt(BwShop.currencyAmountKey);
+            Item item = Registry.ITEM.get(new ResourceLocation(compoundTag.getString(BedwarsShop.currencyItemKey)));
+            int amount = compoundTag.getInt(BedwarsShop.currencyAmountKey);
             return new ItemStack(item, amount);
         } catch (Exception e) {
             return null;
@@ -90,7 +90,7 @@ public class BwShopUtil {
             if (invItem.isEmpty()) {
                 player.inventory.setItem(slot, itemStack);
                 return;
-            } else if (BwUtil.isBedWarsCurrency(invItem)) {
+            } else if (BedwarsUtil.isBedWarsCurrency(invItem)) {
                 player.inventory.setItem(slot, itemStack);
                 player.inventory.add(invItem);
                 return;
@@ -116,7 +116,7 @@ public class BwShopUtil {
         Inventory inv = player.inventory;
 
         for (int i = 0; i < inv.items.size(); i++) {
-            if (BwUtil.isDefaultSword(inv.getItem(i))) {
+            if (BedwarsUtil.isDefaultSword(inv.getItem(i))) {
                 inv.setItem(i, soldItem);
                 return;
             }
@@ -143,7 +143,7 @@ public class BwShopUtil {
 
     protected static ItemStack setBlockColor(ServerPlayer player, ItemStack original) {
         try {
-            String color = BwTeam.getPlayerTeamColor(new NexiaPlayer(player));
+            String color = BedwarsTeam.getPlayerTeamColor(new NexiaPlayer(player));
             Item item = original.getItem();
 
             if (original.getItem() == Items.WHITE_WOOL) {

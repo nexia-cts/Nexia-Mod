@@ -13,8 +13,8 @@ import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.discord.NexiaDiscord;
 import com.nexia.ffa.FfaUtil;
-import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
-import com.nexia.minigames.games.bedwars.util.BwUtil;
+import com.nexia.minigames.games.bedwars.players.BedwarsPlayerEvents;
+import com.nexia.minigames.games.bedwars.util.BedwarsUtil;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.nexus.api.world.World;
 import com.nexia.nexus.api.world.types.Minecraft;
@@ -111,8 +111,8 @@ public abstract class PlayerListMixin {
             return;
         }
 
-        if (BwUtil.isInBedWars(player))
-            BwPlayerEvents.respawned(player);
+        if (BedwarsUtil.isInBedWars(player))
+            BedwarsPlayerEvents.respawned(player);
         if (SkywarsGame.world.equals(respawn) || SkywarsGame.isSkywarsPlayer(player))
             player.setGameMode(Minecraft.GameMode.SPECTATOR);
     }

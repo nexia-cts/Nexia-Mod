@@ -4,8 +4,8 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.minigames.games.bedwars.BwGame;
-import com.nexia.minigames.games.bedwars.players.BwTeam;
+import com.nexia.minigames.games.bedwars.BedwarsGame;
+import com.nexia.minigames.games.bedwars.players.BedwarsTeam;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,24 +16,24 @@ import net.minecraft.world.effect.MobEffects;
 
 import java.util.HashMap;
 
-public class BwApplyTraps {
+public class BedwarsApplyTraps {
 
     public static void trapSecond() {
         // Loop all bedwars players
-        for (BwTeam attackerTeam : BwTeam.allTeams.values()) {
+        for (BedwarsTeam attackerTeam : BedwarsTeam.allTeams.values()) {
             for (NexiaPlayer attacker : attackerTeam.players) {
-                if (BwGame.respawningList.containsKey(attacker)) continue;
+                if (BedwarsGame.respawningList.containsKey(attacker)) continue;
 
                 // Loop all bedwars bases
-                for (EntityPos trapPos : BwTrap.trapLocations.keySet()) {
-                    BwTeam defenderTeam = BwTrap.trapLocations.get(trapPos);
+                for (EntityPos trapPos : BedwarsTrap.trapLocations.keySet()) {
+                    BedwarsTeam defenderTeam = BedwarsTrap.trapLocations.get(trapPos);
                     if (defenderTeam == attackerTeam || !trapPos.isInRadius(new EntityPos(attacker.unwrap()), 19)) continue;
 
                     // Loop all traps in a bedwars base
                     boolean trapActivated = false;
-                    HashMap<String, BwTrap> teamTrapSet = BwTrap.trapLocations.get(trapPos).traps;
+                    HashMap<String, BedwarsTrap> teamTrapSet = BedwarsTrap.trapLocations.get(trapPos).traps;
                     for (String trapKey : teamTrapSet.keySet()) {
-                        BwTrap trap = teamTrapSet.get(trapKey);
+                        BedwarsTrap trap = teamTrapSet.get(trapKey);
                         if (trap == null || !trap.bought) continue;
                         trapSetOff(attacker.unwrap(), trapKey);
                         trapActivated = true;
@@ -48,13 +48,13 @@ public class BwApplyTraps {
 
     private static void trapSetOff( ServerPlayer attacker, String trapKey) {
         switch (trapKey) {
-            case BwTrap.TRAP_KEY_ALARM -> alarmTrap(attacker);
-            case BwTrap.TRAP_KEY_SLOWNESS -> slownessTrap(attacker);
-            case BwTrap.TRAP_KEY_MINING_FATIGUE -> miningTrap(attacker);
+            case BedwarsTrap.TRAP_KEY_ALARM -> alarmTrap(attacker);
+            case BedwarsTrap.TRAP_KEY_SLOWNESS -> slownessTrap(attacker);
+            case BedwarsTrap.TRAP_KEY_MINING_FATIGUE -> miningTrap(attacker);
         }
     }
 
-    private static void alarmDefenders(BwTeam defenderTeam) {
+    private static void alarmDefenders(BedwarsTeam defenderTeam) {
         PlayerUtil.broadcastSound(defenderTeam.players, SoundEvents.ENDERMAN_TELEPORT, SoundSource.MASTER, 0.8f, 1.0f);
         for(NexiaPlayer player : defenderTeam.players) {
             player.sendTitle(Title.title(Component.text("Trap triggered!", ChatFormat.failColor), Component.text("")));

@@ -11,7 +11,7 @@ import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.ffa.base.BaseFfaUtil;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
-import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
+import com.nexia.minigames.games.bedwars.players.BedwarsPlayerEvents;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.football.FootballGameMode;
@@ -142,6 +142,7 @@ public class LobbyUtil {
 
         com.nexia.nexus.api.world.item.ItemStack queueSword = com.nexia.nexus.api.world.item.ItemStack.create(Minecraft.Item.IRON_SWORD);
         queueSword.setItemNBT(hideAttrubtesNBTObject.copy());
+        queueSword.setItemNBT(unbreakableNBTObject.copy());
         queueSword.setLore(new ArrayList<>(Arrays.asList(
                 Component.text("Right click to open the queue menu.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false),
                 Component.text("Hit a player to duel them.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false)
@@ -151,6 +152,7 @@ public class LobbyUtil {
 
         com.nexia.nexus.api.world.item.ItemStack teamSword = com.nexia.nexus.api.world.item.ItemStack.create(Minecraft.Item.IRON_AXE);
         teamSword.setItemNBT(hideAttrubtesNBTObject.copy());
+        teamSword.setItemNBT(unbreakableNBTObject.copy());
         teamSword.setLore(new ArrayList<>(Arrays.asList(
                 Component.text("Right click to list the team you're in.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false),
                 Component.text("Hit a player to invite them to your team.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false)
@@ -160,6 +162,7 @@ public class LobbyUtil {
 
         com.nexia.nexus.api.world.item.ItemStack customDuelSword = com.nexia.nexus.api.world.item.ItemStack.create(Minecraft.Item.DIAMOND_SWORD);
         customDuelSword.setItemNBT(hideAttrubtesNBTObject.copy());
+        customDuelSword.setItemNBT(unbreakableNBTObject.copy());
         customDuelSword.setLore(Component.text("Hit a player to duel them in your custom kit.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
         customDuelSword.setDisplayName(Component.text("Custom Duel Sword", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
 
@@ -276,7 +279,7 @@ public class LobbyUtil {
 
         if (game.equalsIgnoreCase("bedwars")) {
             if(message){ player.sendActionBarMessage(Component.text("You have joined §b\uD83E\uDE93 §c§lBedwars §e⚡"));}
-            BwPlayerEvents.tryToJoin(player, false);
+            BedwarsPlayerEvents.tryToJoin(player, false);
         }
 
         if (game.equalsIgnoreCase("duels")) {

@@ -6,7 +6,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
-public class BwShopCost {
+public class BedwarsShopCost {
 
     final static String costFormat = "\247r\2477Cost: ";
 

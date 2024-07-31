@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
-import com.nexia.minigames.games.bedwars.shop.BwLoadShop;
+import com.nexia.minigames.games.bedwars.shop.BedwarsLoadShop;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -19,7 +19,7 @@ public class BwReloadShopCommand {
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
 
-        boolean success = BwLoadShop.loadBedWarsShop(false);
+        boolean success = BedwarsLoadShop.loadBedWarsShop(false);
 
         if (success) {
             String message = LegacyChatFormat.brandColor1 + "Reloaded Bedwars shop successfully!";

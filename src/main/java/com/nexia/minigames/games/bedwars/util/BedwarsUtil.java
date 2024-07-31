@@ -9,11 +9,11 @@ import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.minigames.games.bedwars.BwGame;
-import com.nexia.minigames.games.bedwars.areas.BwAreas;
-import com.nexia.minigames.games.bedwars.custom.BwExplosiveSlime;
-import com.nexia.minigames.games.bedwars.players.BwPlayers;
-import com.nexia.minigames.games.bedwars.players.BwTeam;
+import com.nexia.minigames.games.bedwars.BedwarsGame;
+import com.nexia.minigames.games.bedwars.areas.BedwarsAreas;
+import com.nexia.minigames.games.bedwars.custom.BedwarsExplosiveSlime;
+import com.nexia.minigames.games.bedwars.players.BedwarsPlayers;
+import com.nexia.minigames.games.bedwars.players.BedwarsTeam;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -54,7 +54,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-public class BwUtil {
+public class BedwarsUtil {
 
     static HashMap<UUID, Integer> explosiveCooldown = new HashMap<>();
 
@@ -64,7 +64,7 @@ public class BwUtil {
     }
 
     private static void invisibilityTick() {
-        for (Iterator<NexiaPlayer> it = BwGame.invisiblePlayerArmor.keySet().iterator(); it.hasNext(); ) {
+        for (Iterator<NexiaPlayer> it = BedwarsGame.invisiblePlayerArmor.keySet().iterator(); it.hasNext(); ) {
             NexiaPlayer player = it.next();
             invisArmorCheck(player);
             if (!player.unwrap().hasEffect(MobEffects.INVISIBILITY)) {
@@ -85,8 +85,8 @@ public class BwUtil {
     }
 
     public static boolean skipQueue() {
-        if (BwGame.queueCountdown > 1) {
-            BwGame.queueCountdown = 1;
+        if (BedwarsGame.queueCountdown > 1) {
+            BedwarsGame.queueCountdown = 1;
             return true;
         }
         return false;
@@ -110,13 +110,13 @@ public class BwUtil {
         playerTeam.setColor(ChatFormatting.GRAY);
         playerTeam.setDeathMessageVisibility(Team.Visibility.NEVER);
 
-        BwGame.spectatorTeam = playerTeam;
+        BedwarsGame.spectatorTeam = playerTeam;
     }
 
     public static void throwSlime(ServerPlayer player, ItemStack itemStack) {
         if (explosiveCooldown.containsKey(player.getUUID())) return;
 
-        new BwExplosiveSlime(EntityType.SLIME, player);
+        new BedwarsExplosiveSlime(EntityType.SLIME, player);
         itemStack.shrink(1);
 
         explosiveCooldown.put(player.getUUID(), 10);
@@ -141,7 +141,7 @@ public class BwUtil {
     }
 
     private static void invisArmorCheck(NexiaPlayer player) {
-        ItemStack[] storedArmor = BwGame.invisiblePlayerArmor.get(player);
+        ItemStack[] storedArmor = BedwarsGame.invisiblePlayerArmor.get(player);
         if (storedArmor == null) return;
         List<ItemStack> currentArmor = player.unwrap().inventory.armor;
 
@@ -154,7 +154,7 @@ public class BwUtil {
     }
 
     private static void regainInvisArmor(NexiaPlayer player) {
-        ItemStack[] armor = BwGame.invisiblePlayerArmor.get(player);
+        ItemStack[] armor = BedwarsGame.invisiblePlayerArmor.get(player);
         if (armor == null) return;
 
         for (int i = 0; i < armor.length; i++) {
@@ -190,7 +190,7 @@ public class BwUtil {
         if (item instanceof PickaxeItem || item instanceof AxeItem || item instanceof ShearsItem) {
             return false;
         }
-        return !BwUtil.isDefaultSword(itemStack);
+        return !BedwarsUtil.isDefaultSword(itemStack);
     }
 
     public static boolean canDropItem(com.nexia.nexus.api.world.item.ItemStack itemStack) {
@@ -239,14 +239,13 @@ public class BwUtil {
 
     public static float modifyBlockExplosionRes(BlockPos blockPos, BlockState blockState, Entity source, float resistance) {
         if (source instanceof PrimedTnt) resistance *= 1.125F;
-        if (source instanceof BwExplosiveSlime) resistance *= 2f;
+        if (source instanceof BedwarsExplosiveSlime) resistance *= 2f;
 
-        if (BwAreas.isImmuneBlock(blockPos)) {
+        if (BedwarsAreas.isImmuneBlock(blockPos)) {
             if (resistance < 3F) resistance = 3F;
 
         } else if (blockState.getBlock() == Blocks.END_STONE) {
-            //if (source instanceof LargeFireball || source instanceof BwExplosiveSlime) resistance = 1200F;
-            if (!(source instanceof LargeFireball) && !(source instanceof BwExplosiveSlime)) resistance = 1200F;
+            if (!(source instanceof LargeFireball) && !(source instanceof BedwarsExplosiveSlime)) resistance = 1200F;
             else resistance *= 0.75F;
 
         } else if (BlockUtil.blockToText(blockState).endsWith("_wool")) {
@@ -260,8 +259,7 @@ public class BwUtil {
     }
 
     public static boolean shouldExplode(BlockPos blockPos, BlockState blockState) {
-        return !(BwAreas.isImmuneBlock(blockPos) || blockState.getBlock() instanceof BedBlock);
-        //return !BwAreas.isImmuneBlock(blockPos) && !(blockState.getBlock() instanceof BedBlock);
+        return !(BedwarsAreas.isImmuneBlock(blockPos) || blockState.getBlock() instanceof BedBlock);
     }
 
     public static float getExplosionDamage(float original) {
@@ -278,7 +276,7 @@ public class BwUtil {
         } else if (source instanceof PrimedTnt) {
             horizontal *= 3.5f;
             vertical *= 1.5f;
-        } else if (source instanceof BwExplosiveSlime) {
+        } else if (source instanceof BedwarsExplosiveSlime) {
             vertical *= 1.75f;
             horizontal *= 1.75f;
         }
@@ -326,9 +324,9 @@ public class BwUtil {
 
     public static void afterItemMerge(ItemEntity itemEntity) {
         for (String tag : itemEntity.getTags()) {
-            if (!tag.startsWith(BwGen.itemCapTagStart)) continue;
+            if (!tag.startsWith(BedwarsGen.itemCapTagStart)) continue;
             try {
-                int cap = Integer.parseInt(tag.replace(BwGen.itemCapTagStart, ""));
+                int cap = Integer.parseInt(tag.replace(BedwarsGen.itemCapTagStart, ""));
                 if (itemEntity.getItem().getCount() > cap) {
                     itemEntity.getItem().setCount(cap);
                 }
@@ -350,7 +348,7 @@ public class BwUtil {
             message = replaceDisplayName(message, mainColor, new NexiaPlayer(attacker));
         }
 
-        for(NexiaPlayer nexiaPlayer : BwPlayers.getViewers()) {
+        for(NexiaPlayer nexiaPlayer : BedwarsPlayers.getViewers()) {
             nexiaPlayer.unwrap().sendMessage(LegacyChatFormat.format(message), Util.NIL_UUID);
         }
     }
@@ -358,7 +356,7 @@ public class BwUtil {
     public static String replaceDisplayName(String message, String mainColor, NexiaPlayer player) {
         if (player == null) return message;
 
-        BwTeam team = BwTeam.getPlayerTeam(player);
+        BedwarsTeam team = BedwarsTeam.getPlayerTeam(player);
         if (team == null) return message;
 
         return message.replace(player.unwrap().getDisplayName().getString(),
@@ -389,7 +387,7 @@ public class BwUtil {
 
     public static boolean isBedWarsPlayer(NexiaPlayer player) {
         if (!isInBedWars(player)) return false;
-        for (NexiaPlayer nexiaPlayer : BwPlayers.getPlayers()) {
+        for (NexiaPlayer nexiaPlayer : BedwarsPlayers.getPlayers()) {
             if (player.equals(nexiaPlayer)) return true;
         }
         return false;

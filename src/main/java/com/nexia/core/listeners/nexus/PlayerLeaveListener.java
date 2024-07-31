@@ -29,7 +29,7 @@ public class PlayerLeaveListener {
 
     private static void processDisconnect(NexiaPlayer player){
         /*
-        if (BwUtil.isInBedWars(player)) BwPlayerEvents.leaveInBedWars(player);
+        if (BedwarsUtil.isInBedWars(player)) BedwarsPlayerEvents.leaveInBedWars(player);
         else if (FfaUtil.isFfaPlayer(player)) {
             FfaUtil.leaveOrDie(player, player.getLastDamageSource(), true);
         }

@@ -7,9 +7,9 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
-import com.nexia.minigames.games.bedwars.areas.BwAreas;
-import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
-import com.nexia.minigames.games.bedwars.util.BwUtil;
+import com.nexia.minigames.games.bedwars.areas.BedwarsAreas;
+import com.nexia.minigames.games.bedwars.players.BedwarsPlayerEvents;
+import com.nexia.minigames.games.bedwars.util.BedwarsUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.minigames.games.skywars.SkywarsGame;
@@ -39,7 +39,7 @@ public abstract class FoodDataMixin {
         if (!(player instanceof ServerPlayer serverPlayer)) return 1f;
         NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
 
-        if (BwAreas.isBedWarsWorld(serverPlayer.level) || FfaSkyUtil.INSTANCE.isFfaPlayer(nexiaPlayer)) {
+        if (BedwarsAreas.isBedWarsWorld(serverPlayer.level) || FfaSkyUtil.INSTANCE.isFfaPlayer(nexiaPlayer)) {
             return 0.5f;
         }
 
@@ -57,9 +57,9 @@ public abstract class FoodDataMixin {
 
         FoodData data = (FoodData)(Object)this;
 
-        if (BwUtil.isInBedWars(nexiaPlayer)) {
-            BwPlayerEvents.afterHungerTick((FoodData)(Object)this);
-            BwPlayerEvents.afterHungerTick(data);
+        if (BedwarsUtil.isInBedWars(nexiaPlayer)) {
+            BedwarsPlayerEvents.afterHungerTick((FoodData)(Object)this);
+            BedwarsPlayerEvents.afterHungerTick(data);
         }
 
         if(SkywarsGame.isSkywarsPlayer(nexiaPlayer)) return;

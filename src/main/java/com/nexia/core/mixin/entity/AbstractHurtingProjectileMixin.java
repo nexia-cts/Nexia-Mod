@@ -1,7 +1,7 @@
 package com.nexia.core.mixin.entity;
 
-import com.nexia.minigames.games.bedwars.areas.BwAreas;
-import com.nexia.minigames.games.bedwars.util.BwUtil;
+import com.nexia.minigames.games.bedwars.areas.BedwarsAreas;
+import com.nexia.minigames.games.bedwars.util.BedwarsUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
@@ -22,8 +22,8 @@ public abstract class AbstractHurtingProjectileMixin extends Entity {
     // Slow down fireballs
     @Inject(method = "getInertia", cancellable = true, at = @At("HEAD"))
     private void getInertia(CallbackInfoReturnable<Float> cir) {
-        if (BwAreas.isBedWarsWorld(level) && (Object)this instanceof LargeFireball) {
-            cir.setReturnValue(BwUtil.getFireballInertia());
+        if (BedwarsAreas.isBedWarsWorld(level) && (Object)this instanceof LargeFireball) {
+            cir.setReturnValue(BedwarsUtil.getFireballInertia());
         }
     }
 
