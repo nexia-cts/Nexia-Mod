@@ -7,10 +7,10 @@ import com.nexia.core.utilities.item.BlockUtil;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.time.TickUtil;
-import com.nexia.minigames.games.bedwars.BedwarsGame;
-import com.nexia.minigames.games.bedwars.areas.BedwarsAreas;
-import com.nexia.minigames.games.bedwars.players.BedwarsPlayers;
-import com.nexia.minigames.games.bedwars.players.BedwarsTeam;
+import com.nexia.minigames.games.bedwars.BwGame;
+import com.nexia.minigames.games.bedwars.areas.BwAreas;
+import com.nexia.minigames.games.bedwars.players.BwPlayers;
+import com.nexia.minigames.games.bedwars.players.BwTeam;
 import net.kyori.adventure.text.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
@@ -26,7 +26,7 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 import java.util.ArrayList;
 
-public class BedwarsScoreboard {
+public class BwScoreboard {
 
     private static final String objectiveName = "bedwars_sidebar";
     private static final TextComponent title = (TextComponent) ObjectMappings.convertComponent(Component.text("    Bedwars    ", ChatFormat.brandColor2).decorate(ChatFormat.bold));
@@ -39,7 +39,7 @@ public class BedwarsScoreboard {
             title, ObjectiveCriteria.RenderType.INTEGER);
 
     public static void setUpScoreboard() {
-        for (NexiaPlayer player : BedwarsPlayers.getPlayers()) {
+        for (NexiaPlayer player : BwPlayers.getPlayers()) {
             sendBedWarsScoreboard(player);
         }
         updateScoreboard();
@@ -51,11 +51,11 @@ public class BedwarsScoreboard {
     }
 
     public static void updateScoreboard() {
-        ServerLevel world = BedwarsAreas.bedWarsWorld;
+        ServerLevel world = BwAreas.bedWarsWorld;
         ArrayList<String> lines = new ArrayList<>();
 
         lines.add(" ");
-        for (BedwarsTeam team : BedwarsTeam.teamsInOrder) {
+        for (BwTeam team : BwTeam.teamsInOrder) {
             String statusDisplay = team.textColor + "\247l» \247r" + team.displayName + " ";
 
             if (team.players.isEmpty()) {
@@ -81,10 +81,10 @@ public class BedwarsScoreboard {
     }
 
     public static void updateTimer() {
-        int ticksLeft = BedwarsGame.gameLength * 20 - BedwarsGame.gameTicks - 1;
+        int ticksLeft = BwGame.gameLength * 20 - BwGame.gameTicks - 1;
         String[] timer = TickUtil.minuteTimeStamp(ticksLeft);
         String line = "Time left: " + LegacyChatFormat.brandColor2 + timer[0] + ":" + timer[1];
-        BedwarsScoreboard.replaceLine(BedwarsScoreboard.timerLine, line);
+        BwScoreboard.replaceLine(BwScoreboard.timerLine, line);
     }
 
     public static void replaceLine(int i, String newLine) {

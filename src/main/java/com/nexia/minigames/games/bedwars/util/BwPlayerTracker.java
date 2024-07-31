@@ -15,12 +15,12 @@ import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.logging.log4j.LogManager;
 
-public class BedwarsPlayerTracker {
+public class BwPlayerTracker {
 
     public static void trackerSecond() {
         for (ServerPlayer player : ServerTime.minecraftServer.getPlayerList().getPlayers()) {
             NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
-            if (BedwarsUtil.isBedWarsPlayer(nexiaPlayer)) {
+            if (BwUtil.isBedWarsPlayer(nexiaPlayer)) {
                 trackCompass(nexiaPlayer);
             }
         }
@@ -28,7 +28,7 @@ public class BedwarsPlayerTracker {
 
     // Update all tracker compasses
     public static void trackCompass(NexiaPlayer player) {
-        if (!BedwarsUtil.isBedWarsPlayer(player)) return;
+        if (!BwUtil.isBedWarsPlayer(player)) return;
 
         Inventory inventory = player.unwrap().inventory;
         for (int i = 0; i < 36; i++) {
@@ -77,7 +77,7 @@ public class BedwarsPlayerTracker {
         double closestPos = Double.MAX_VALUE;
 
         for (ServerPlayer trackable : ServerTime.minecraftServer.getPlayerList().getPlayers()) {
-            if (BedwarsUtil.isBedWarsPlayer(new NexiaPlayer(trackable)) && !trackable.getUUID().equals(player.getUUID())) {
+            if (BwUtil.isBedWarsPlayer(new NexiaPlayer(trackable)) && !trackable.getUUID().equals(player.getUUID())) {
 
                 double distance = (trackable.getX() - player.getX()) * (trackable.getX() - player.getX()) +
                         (trackable.getZ() - player.getZ()) * (trackable.getZ() - player.getZ());

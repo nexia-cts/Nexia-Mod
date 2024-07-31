@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.ffa.sky.utilities.SkyFfaAreas;
-import com.nexia.minigames.games.bedwars.areas.BedwarsAreas;
+import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -25,7 +25,7 @@ public class ProtectionMapCommand {
 
     public static int bedwars(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        BedwarsAreas.createProtectionMap(player);
+        BwAreas.createProtectionMap(player);
         return 1;
     }
 

@@ -8,8 +8,8 @@ import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
 import com.nexia.ffa.pot.utilities.FfaPotUtil;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
-import com.nexia.minigames.games.bedwars.players.BedwarsPlayerEvents;
-import com.nexia.minigames.games.bedwars.util.BedwarsUtil;
+import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
+import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import net.minecraft.server.level.ServerPlayer;
@@ -49,8 +49,8 @@ public class PotionItemMixin {
         if (this.player == null) return;
         NexiaPlayer nexiaPlayer = new NexiaPlayer(this.player);
 
-        if (BedwarsUtil.isBedWarsPlayer(nexiaPlayer)) {
-            BedwarsPlayerEvents.drankPotion(nexiaPlayer, itemStack);
+        if (BwUtil.isBedWarsPlayer(nexiaPlayer)) {
+            BwPlayerEvents.drankPotion(nexiaPlayer, itemStack);
         }
     }
 
@@ -59,7 +59,7 @@ public class PotionItemMixin {
         if (player == null) return new ItemStack(Items.GLASS_BOTTLE);
         NexiaPlayer nexiaPlayer = new NexiaPlayer(this.player);
 
-        if (BedwarsUtil.isBedWarsPlayer(nexiaPlayer) || FfaSkyUtil.INSTANCE.isFfaPlayer(nexiaPlayer)) {
+        if (BwUtil.isBedWarsPlayer(nexiaPlayer) || FfaSkyUtil.INSTANCE.isFfaPlayer(nexiaPlayer)) {
             nexiaPlayer.refreshInventory();
             return ItemStack.EMPTY;
         }

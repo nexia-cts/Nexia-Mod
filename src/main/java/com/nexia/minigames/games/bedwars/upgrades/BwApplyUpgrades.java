@@ -3,8 +3,8 @@ package com.nexia.minigames.games.bedwars.upgrades;
 import com.nexia.core.utilities.item.ItemStackUtil;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.minigames.games.bedwars.players.BedwarsTeam;
-import com.nexia.minigames.games.bedwars.util.BedwarsUtil;
+import com.nexia.minigames.games.bedwars.players.BwTeam;
+import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -15,10 +15,10 @@ import net.minecraft.world.item.enchantment.Enchantments;
 
 import java.util.Objects;
 
-public class BedwarsApplyUpgrades {
+public class BwApplyUpgrades {
 
     public static void upgradeSecond() {
-        for (BedwarsTeam team : BedwarsTeam.allTeams.values()) {
+        for (BwTeam team : BwTeam.allTeams.values()) {
             if (team == null || team.players == null) continue;
 
             applySharpness(team);
@@ -28,8 +28,8 @@ public class BedwarsApplyUpgrades {
         }
     }
 
-    private static void applySharpness(BedwarsTeam team) {
-        int level = team.upgrades.get(BedwarsUpgrade.UPGRADE_KEY_SHARPNESS).level;
+    private static void applySharpness(BwTeam team) {
+        int level = team.upgrades.get(BwUpgrade.UPGRADE_KEY_SHARPNESS).level;
 
         for (NexiaPlayer player : team.players) {
             for (ItemStack itemStack : player.unwrap().inventory.items) {
@@ -40,8 +40,8 @@ public class BedwarsApplyUpgrades {
         }
     }
 
-    private static void applyProtection(BedwarsTeam team) {
-        int level = team.upgrades.get(BedwarsUpgrade.UPGRADE_KEY_PROTECTION).level;
+    private static void applyProtection(BwTeam team) {
+        int level = team.upgrades.get(BwUpgrade.UPGRADE_KEY_PROTECTION).level;
         if (level < 1) return;
 
         for (NexiaPlayer player : team.players) {
@@ -53,21 +53,21 @@ public class BedwarsApplyUpgrades {
         }
     }
 
-    private static void applyHaste(BedwarsTeam team) {
-        int level = team.upgrades.get(BedwarsUpgrade.UPGRADE_KEY_HASTE).level;
+    private static void applyHaste(BwTeam team) {
+        int level = team.upgrades.get(BwUpgrade.UPGRADE_KEY_HASTE).level;
         if (level < 1) return;
 
         int effectLevel = level - 1;
         for (NexiaPlayer player : team.players) {
             if (!player.unwrap().hasEffect(MobEffects.DIG_SPEED) || Objects.requireNonNull(player.unwrap().getEffect(MobEffects.DIG_SPEED)).getAmplifier() != effectLevel) {
                 player.unwrap().addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 1000000, effectLevel, false, false));
-                BedwarsUtil.setAttackSpeed(player.unwrap());
+                BwUtil.setAttackSpeed(player.unwrap());
             }
         }
     }
 
-    private static void applyHealing(BedwarsTeam team) {
-        int level = team.upgrades.get(BedwarsUpgrade.UPGRADE_KEY_HEALING).level;
+    private static void applyHealing(BwTeam team) {
+        int level = team.upgrades.get(BwUpgrade.UPGRADE_KEY_HEALING).level;
         if (level < 1) return;
 
         for (NexiaPlayer player : team.players) {

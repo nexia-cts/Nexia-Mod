@@ -11,9 +11,9 @@ import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaUtil;
-import com.nexia.minigames.games.bedwars.players.BedwarsPlayerEvents;
-import com.nexia.minigames.games.bedwars.util.BedwarsScoreboard;
-import com.nexia.minigames.games.bedwars.util.BedwarsUtil;
+import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
+import com.nexia.minigames.games.bedwars.util.BwScoreboard;
+import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
@@ -150,8 +150,8 @@ public class NexiaPlayer extends WrappedPlayer {
     }
 
     public void leaveAllGames() {
-        if (BedwarsUtil.isInBedWars(this)) {
-            BedwarsPlayerEvents.leaveInBedWars(this);
+        if (BwUtil.isInBedWars(this)) {
+            BwPlayerEvents.leaveInBedWars(this);
         } else if (FfaUtil.isFfaPlayer(this)) {
             FfaUtil.leaveOrDie(this, this.unwrap().getLastDamageSource(), true);
         } else if (this.isInGameMode(PlayerGameMode.LOBBY)) {
@@ -166,7 +166,7 @@ public class NexiaPlayer extends WrappedPlayer {
 
         // sometimes those do not get removed
         PlayerUtil.sendBossbar(SkywarsGame.BOSSBAR, this, true);
-        BedwarsScoreboard.removeScoreboardFor(this);
+        BwScoreboard.removeScoreboardFor(this);
 
         for (String tag : LobbyUtil.removedTags) {
             if (this.hasTag(tag)) this.removeTag(tag);

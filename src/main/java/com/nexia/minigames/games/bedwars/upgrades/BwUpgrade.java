@@ -1,14 +1,14 @@
 package com.nexia.minigames.games.bedwars.upgrades;
 
 import com.nexia.core.utilities.item.ItemDisplayUtil;
-import com.nexia.minigames.games.bedwars.util.BedwarsGen;
+import com.nexia.minigames.games.bedwars.util.BwGen;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import java.util.HashMap;
 
-public class BedwarsUpgrade {
+public class BwUpgrade {
 
     // Nbt key for hashmap keys
     public static final String UPGRADE_TAG_KEY = "upgradeType";
@@ -27,7 +27,7 @@ public class BedwarsUpgrade {
     public int displayRow;
     public int displayColumn;
 
-    private BedwarsUpgrade(int[] costs, int displayRow, int displayColumn, ItemStack displayItem) {
+    private BwUpgrade(int[] costs, int displayRow, int displayColumn, ItemStack displayItem) {
         this.level = 0;
         this.costs = costs;
 
@@ -36,19 +36,19 @@ public class BedwarsUpgrade {
         this.displayColumn = displayColumn;
     }
 
-    public static HashMap<String, BedwarsUpgrade> newUpgradeSet() {
-        HashMap<String, BedwarsUpgrade> newSet = new HashMap<>();
+    public static HashMap<String, BwUpgrade> newUpgradeSet() {
+        HashMap<String, BwUpgrade> newSet = new HashMap<>();
 
-        newSet.put(UPGRADE_KEY_SHARPNESS, new BedwarsUpgrade(new int[]{4}, 0, 1,
+        newSet.put(UPGRADE_KEY_SHARPNESS, new BwUpgrade(new int[]{4}, 0, 1,
                 upgradeItemStack(Items.DIAMOND_SWORD, "Sharpened Blades", "Grants sharpness enchantment\nto all swords and tridents\nfor your team.")));
-        newSet.put(UPGRADE_KEY_PROTECTION, new BedwarsUpgrade(new int[]{2, 4, 8, 16}, 0, 2,
+        newSet.put(UPGRADE_KEY_PROTECTION, new BwUpgrade(new int[]{2, 4, 8, 16}, 0, 2,
                 upgradeItemStack(Items.IRON_CHESTPLATE, "Protection", "Grants protection enchantment\nto everyone in your team.")));
-        newSet.put(UPGRADE_KEY_HASTE, new BedwarsUpgrade(new int[]{2, 4}, 0, 3,
+        newSet.put(UPGRADE_KEY_HASTE, new BwUpgrade(new int[]{2, 4}, 0, 3,
                 upgradeItemStack(Items.GOLDEN_PICKAXE, "Haste", "Grants haste effect to\neveryone in your team.")));
-        newSet.put(UPGRADE_KEY_GENERATOR, new BedwarsUpgrade(BedwarsGen.upgradeCosts, 0, 4,
+        newSet.put(UPGRADE_KEY_GENERATOR, new BwUpgrade(BwGen.upgradeCosts, 0, 4,
                 upgradeItemStack(Items.FURNACE, "Better Generators",
                         null)));
-        newSet.put(UPGRADE_KEY_HEALING, new BedwarsUpgrade(new int[]{1}, 0, 5,
+        newSet.put(UPGRADE_KEY_HEALING, new BwUpgrade(new int[]{1}, 0, 5,
                 upgradeItemStack(Items.BEACON, "Heal Pool", "Grants regeneration effect to\nevery team member\nat home base.")));
 
         for (String key : newSet.keySet()) {

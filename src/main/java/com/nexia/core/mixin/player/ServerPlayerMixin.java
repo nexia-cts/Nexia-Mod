@@ -11,9 +11,9 @@ import com.nexia.core.gui.duels.DuelGUI;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.ffa.FfaUtil;
-import com.nexia.minigames.games.bedwars.areas.BedwarsAreas;
-import com.nexia.minigames.games.bedwars.players.BedwarsPlayerEvents;
-import com.nexia.minigames.games.bedwars.util.BedwarsUtil;
+import com.nexia.minigames.games.bedwars.areas.BwAreas;
+import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
+import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
@@ -64,7 +64,7 @@ public abstract class ServerPlayerMixin extends Player {
         ServerPlayer player = (ServerPlayer)(Object)this;
 
         NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
-        if (FfaUtil.isFfaPlayer(nexiaPlayer) || BedwarsUtil.isBedWarsPlayer(nexiaPlayer) || OitcGame.isOITCPlayer(nexiaPlayer)) {
+        if (FfaUtil.isFfaPlayer(nexiaPlayer) || BwUtil.isBedWarsPlayer(nexiaPlayer) || OitcGame.isOITCPlayer(nexiaPlayer)) {
             spawnInvulnerableTime = 0;
         }
     }
@@ -119,8 +119,8 @@ public abstract class ServerPlayerMixin extends Player {
         if (FfaUtil.isFfaPlayer(nexiaPlayer)) {
             FfaUtil.leaveOrDie(nexiaPlayer, damageSource, false);
         }
-        else if (BedwarsAreas.isBedWarsWorld(getLevel())) {
-            BedwarsPlayerEvents.death(nexiaPlayer );
+        else if (BwAreas.isBedWarsWorld(getLevel())) {
+            BwPlayerEvents.death(nexiaPlayer );
         }
         else if(gameMode == PlayerGameMode.OITC){
             OitcGame.death(nexiaPlayer, damageSource);

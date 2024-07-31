@@ -1,6 +1,6 @@
 package com.nexia.core.mixin.entity;
 
-import com.nexia.minigames.games.bedwars.custom.BedwarsBridgeEgg;
+import com.nexia.minigames.games.bedwars.custom.BwBridgeEgg;
 import net.minecraft.world.entity.projectile.ThrownEgg;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,7 +15,7 @@ public class ThrownEggMixin {
     private int modifyChickenSpawnOdds(Random random, int bound) {
 
         // Spawns chicken if return value is 0
-        if ((Object) this instanceof BedwarsBridgeEgg) {
+        if ((Object) this instanceof BwBridgeEgg) {
             return 1;
         }
         return random.nextInt(bound);

@@ -1,8 +1,8 @@
 package com.nexia.core.mixin.block;
 
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
-import com.nexia.minigames.games.bedwars.areas.BedwarsAreas;
-import com.nexia.minigames.games.bedwars.util.BedwarsUtil;
+import com.nexia.minigames.games.bedwars.areas.BwAreas;
+import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -25,7 +25,7 @@ public class BlockMixin {
     private static void dropResources(BlockState blockState, Level level, BlockPos blockPos, BlockEntity blockEntity, Entity breakerEntity, ItemStack tool, CallbackInfo ci) {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-        if ((BedwarsAreas.isBedWarsWorld(serverLevel) && !(BedwarsUtil.dropResources(blockState))) || FfaSkyUtil.INSTANCE.isFfaWorld(serverLevel)) {
+        if ((BwAreas.isBedWarsWorld(serverLevel) && !(BwUtil.dropResources(blockState))) || FfaSkyUtil.INSTANCE.isFfaWorld(serverLevel)) {
             ci.cancel();
         }
     }

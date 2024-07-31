@@ -15,10 +15,10 @@ import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.sky.utilities.SkyFfaAreas;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.ffa.uhc.utilities.UhcFfaAreas;
-import com.nexia.minigames.games.bedwars.BedwarsGame;
-import com.nexia.minigames.games.bedwars.areas.BedwarsAreas;
-import com.nexia.minigames.games.bedwars.areas.BedwarsDimension;
-import com.nexia.minigames.games.bedwars.shop.BedwarsLoadShop;
+import com.nexia.minigames.games.bedwars.BwGame;
+import com.nexia.minigames.games.bedwars.areas.BwAreas;
+import com.nexia.minigames.games.bedwars.areas.BwDimension;
+import com.nexia.minigames.games.bedwars.shop.BwLoadShop;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
@@ -69,9 +69,9 @@ public class ServerTime {
         SkyFfaAreas.setFfaWorld(server);
         UhcFfaAreas.setFfaWorld(server);
 
-        BedwarsLoadShop.loadBedWarsShop(true);
-        BedwarsDimension.register();
-        BedwarsGame.firstTick();
+        BwLoadShop.loadBedWarsShop(true);
+        BwDimension.register();
+        BwGame.firstTick();
         FootballGame.firstTick();
         WorldUtil.deleteTempWorlds();
 
@@ -87,7 +87,7 @@ public class ServerTime {
             }
 
             DuelGameHandler.starting();
-            BedwarsAreas.clearQueueBuild();
+            BwAreas.clearQueueBuild();
             SkyFfaBlocks.clearAllBlocks();
 
             WorldUtil.deleteTempWorlds();
@@ -99,7 +99,7 @@ public class ServerTime {
     public static void everyTick() {
         totalTickCount++;
 
-        BedwarsGame.tick();
+        BwGame.tick();
         SkyFfaBlocks.tick();
         FootballGame.tick();
         OitcGame.tick();
@@ -117,7 +117,7 @@ public class ServerTime {
             case 0 -> everySecond();
             case 2 -> {}
             case 4 -> {}
-            case 6 -> BedwarsGame.bedWarsSecond();
+            case 6 -> BwGame.bedWarsSecond();
         }
     }
 

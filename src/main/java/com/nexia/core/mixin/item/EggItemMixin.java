@@ -1,8 +1,8 @@
 package com.nexia.core.mixin.item;
 
 import com.nexia.base.player.NexiaPlayer;
-import com.nexia.minigames.games.bedwars.areas.BedwarsAreas;
-import com.nexia.minigames.games.bedwars.players.BedwarsPlayerEvents;
+import com.nexia.minigames.games.bedwars.areas.BwAreas;
+import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -35,8 +35,8 @@ public class EggItemMixin {
 
         if (livingEntity instanceof ServerPlayer player) {
 
-            if (BedwarsAreas.isBedWarsWorld(level)) {
-                return BedwarsPlayerEvents.throwEgg(new NexiaPlayer(player), player.getItemInHand(hand));
+            if (BwAreas.isBedWarsWorld(level)) {
+                return BwPlayerEvents.throwEgg(new NexiaPlayer(player), player.getItemInHand(hand));
             }
 
         }

@@ -3,7 +3,7 @@ package com.nexia.core.commands.staff.dev;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.nexia.minigames.games.bedwars.BedwarsGame;
+import com.nexia.minigames.games.bedwars.BwGame;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
@@ -38,7 +38,7 @@ public class ForceGameEndCommand {
             case "football" -> FootballGame.endGame(null);
             case "oitc" -> OitcGame.endGame(null);
             case "skywars" -> SkywarsGame.winNearestCenter();
-            case "bedwars" -> BedwarsGame.endBedwars();
+            case "bedwars" -> BwGame.endBedwars();
             default -> {
                 context.getSource().sendFailure(new TextComponent("Invalid game!"));
                 return 0;

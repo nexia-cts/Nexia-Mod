@@ -2,7 +2,7 @@ package com.nexia.minigames.games.bedwars.custom;
 
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.minigames.games.bedwars.areas.BedwarsAreas;
+import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.projectile.ThrownEgg;
@@ -10,7 +10,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
-public class BedwarsBridgeEgg extends ThrownEgg {
+public class BwBridgeEgg extends ThrownEgg {
 
     public static final int throwTime = 2 * 20;
     public static final String itemTagKey = "BedWarsBridgeEgg";
@@ -22,7 +22,7 @@ public class BedwarsBridgeEgg extends ThrownEgg {
     public Block trailBlock;
     public int age;
 
-    public BedwarsBridgeEgg(Level level, NexiaPlayer player, Block trailBlock) {
+    public BwBridgeEgg(Level level, NexiaPlayer player, Block trailBlock) {
         super(level, player.unwrap());
 
         this.owner = player;
@@ -41,7 +41,7 @@ public class BedwarsBridgeEgg extends ThrownEgg {
         if (oldestPos != null) {
             for (BlockPos blockPos : getSurroundingBlocks(oldestPos)) {
                 if (level.getBlockState(blockPos).getBlock() == Blocks.AIR) {
-                    if (!BedwarsAreas.canBuildAt(owner, blockPos, false)) continue;
+                    if (!BwAreas.canBuildAt(owner, blockPos, false)) continue;
                     level.setBlock(blockPos, trailBlock.defaultBlockState(), 3);
                 }
             }

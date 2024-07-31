@@ -16,9 +16,9 @@ import com.nexia.ffa.kits.utilities.FfaKitsUtil;
 import com.nexia.ffa.pot.utilities.FfaPotUtil;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
-import com.nexia.minigames.games.bedwars.areas.BedwarsAreas;
-import com.nexia.minigames.games.bedwars.players.BedwarsPlayerEvents;
-import com.nexia.minigames.games.bedwars.util.BedwarsUtil;
+import com.nexia.minigames.games.bedwars.areas.BwAreas;
+import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
+import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
@@ -56,7 +56,7 @@ public class ServerGamePacketListenerMixin {
     private void mobInteract(ServerboundInteractPacket packet, CallbackInfo ci) {
         ServerLevel level = player.getLevel();
 
-        if (BedwarsAreas.isBedWarsWorld(level) && !BedwarsPlayerEvents.interact(player, packet)) {
+        if (BwAreas.isBedWarsWorld(level) && !BwPlayerEvents.interact(player, packet)) {
             ci.cancel();
 
         }
@@ -90,8 +90,8 @@ public class ServerGamePacketListenerMixin {
     private void handleUseItemOn(ServerboundUseItemOnPacket packet, CallbackInfo ci) {
         NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
-        if (BedwarsUtil.isInBedWars(nexiaPlayer)) {
-            if (!BedwarsPlayerEvents.useItem(player, packet.getHand())) {
+        if (BwUtil.isInBedWars(nexiaPlayer)) {
+            if (!BwPlayerEvents.useItem(player, packet.getHand())) {
                 ci.cancel();
                 BlockPos blockPos = packet.getHitResult().getBlockPos().relative(packet.getHitResult().getDirection());
                 player.connection.send(new ClientboundBlockUpdatePacket(blockPos, player.level.getBlockState(blockPos)));
@@ -104,8 +104,8 @@ public class ServerGamePacketListenerMixin {
     private void handleUseItem(ServerboundUseItemPacket serverboundUseItemPacket, CallbackInfo ci) {
         NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
-        if (BedwarsUtil.isInBedWars(nexiaPlayer)) {
-            if (!BedwarsPlayerEvents.useItem(player, serverboundUseItemPacket.getHand())) {
+        if (BwUtil.isInBedWars(nexiaPlayer)) {
+            if (!BwPlayerEvents.useItem(player, serverboundUseItemPacket.getHand())) {
                 ci.cancel();
             }
         }
@@ -127,15 +127,15 @@ public class ServerGamePacketListenerMixin {
             }
         }
 
-        if (BedwarsUtil.isBedWarsPlayer(nexiaPlayer)) {
-            if (!BedwarsPlayerEvents.containerClick(nexiaPlayer, clickPacket)) {
+        if (BwUtil.isBedWarsPlayer(nexiaPlayer)) {
+            if (!BwPlayerEvents.containerClick(nexiaPlayer, clickPacket)) {
                 ci.cancel();
                 nexiaPlayer.refreshInventory();
                 return;
             }
         }
 
-        if (FfaUtil.isFfaPlayer(nexiaPlayer) || BedwarsUtil.isBedWarsPlayer(nexiaPlayer)) {
+        if (FfaUtil.isFfaPlayer(nexiaPlayer) || BwUtil.isBedWarsPlayer(nexiaPlayer)) {
             // If clicks on crafting slot
             if (containerId == 0 && slot >= 1 && slot <= 4) {
                 ci.cancel();
@@ -176,8 +176,8 @@ public class ServerGamePacketListenerMixin {
         NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
         net.kyori.adventure.text.Component noSpectateMSG = net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor);
 
-        if (BedwarsUtil.isInBedWars(nexiaPlayer)) {
-            if (!BedwarsPlayerEvents.spectatorTeleport(nexiaPlayer, packet)) {
+        if (BwUtil.isInBedWars(nexiaPlayer)) {
+            if (!BwPlayerEvents.spectatorTeleport(nexiaPlayer, packet)) {
                 ci.cancel();
                 return;
             }

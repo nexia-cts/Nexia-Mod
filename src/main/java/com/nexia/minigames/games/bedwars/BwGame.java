@@ -9,17 +9,17 @@ import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.minigames.games.bedwars.areas.BedwarsAreas;
-import com.nexia.minigames.games.bedwars.custom.BedwarsTrident;
-import com.nexia.minigames.games.bedwars.players.BedwarsPlayers;
-import com.nexia.minigames.games.bedwars.players.BedwarsTeam;
-import com.nexia.minigames.games.bedwars.upgrades.BedwarsApplyTraps;
-import com.nexia.minigames.games.bedwars.upgrades.BedwarsApplyUpgrades;
-import com.nexia.minigames.games.bedwars.upgrades.BedwarsTrap;
-import com.nexia.minigames.games.bedwars.util.BedwarsGen;
-import com.nexia.minigames.games.bedwars.util.BedwarsPlayerTracker;
-import com.nexia.minigames.games.bedwars.util.BedwarsScoreboard;
-import com.nexia.minigames.games.bedwars.util.BedwarsUtil;
+import com.nexia.minigames.games.bedwars.areas.BwAreas;
+import com.nexia.minigames.games.bedwars.custom.BwTrident;
+import com.nexia.minigames.games.bedwars.players.BwPlayers;
+import com.nexia.minigames.games.bedwars.players.BwTeam;
+import com.nexia.minigames.games.bedwars.upgrades.BwApplyTraps;
+import com.nexia.minigames.games.bedwars.upgrades.BwApplyUpgrades;
+import com.nexia.minigames.games.bedwars.upgrades.BwTrap;
+import com.nexia.minigames.games.bedwars.util.BwGen;
+import com.nexia.minigames.games.bedwars.util.BwPlayerTracker;
+import com.nexia.minigames.games.bedwars.util.BwScoreboard;
+import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.minecraft.server.level.ServerLevel;
@@ -37,7 +37,7 @@ import java.util.function.Predicate;
 
 import static com.nexia.core.NexiaCore.BEDWARS_DATA_MANAGER;
 
-public class BedwarsGame {
+public class BwGame {
 
     public static final String bedWarsDirectory = NxFileUtil.addConfigDir("bedwars");
 
@@ -59,7 +59,6 @@ public class BedwarsGame {
     public static boolean isQueueCountdownActive = false;
 
     public static boolean winScreen = false;
-    public static boolean isPlayerRespawning = false;
     protected static final int winScreenTime = 7;
     protected static int winScreenTimer = winScreenTime;
 
@@ -72,7 +71,7 @@ public class BedwarsGame {
     public static HashMap<NexiaPlayer, Integer> invulnerabilityList = new HashMap<>();
     public static final int invulnerabilityTime = 1;
     public static HashMap<NexiaPlayer, ItemStack[]> invisiblePlayerArmor = new HashMap<>();
-    public static HashMap<NexiaPlayer, ArrayList<BedwarsTrident>> gameTridents = new HashMap<>();
+    public static HashMap<NexiaPlayer, ArrayList<BwTrident>> gameTridents = new HashMap<>();
 
     public static ArrayList<NexiaPlayer> winners = new ArrayList<>();
     public static Integer winnerColor = null;
@@ -80,17 +79,17 @@ public class BedwarsGame {
     // ----- TICK METHODS --------------------------------------------------------------------------------
 
     public static void firstTick() {
-        BedwarsAreas.setBedWarsWorld(ServerTime.minecraftServer);
-        BedwarsAreas.spawnQueueBuild();
-        BedwarsTeam.resetTeams();
-        BedwarsUtil.createSpectatorTeam();
+        BwAreas.setBedWarsWorld(ServerTime.minecraftServer);
+        BwAreas.spawnQueueBuild();
+        BwTeam.resetTeams();
+        BwUtil.createSpectatorTeam();
     }
 
     public static void tick() {
         gameTicks++;
-        BedwarsGen.genTick();
-        BedwarsUtil.utilTick();
-        BedwarsAreas.tick();
+        BwGen.genTick();
+        BwUtil.utilTick();
+        BwAreas.tick();
         invulnerabilityTick();
         respawnTick();
 
@@ -114,8 +113,7 @@ public class BedwarsGame {
             respawningList.replace(player, timeLeft - 1);
             if (respawningList.get(player) <= 0) {
                 it.remove();
-                if (BedwarsUtil.isBedWarsPlayer(player)) BedwarsPlayers.sendToSpawn(player);
-                isPlayerRespawning = false;
+                if (BwUtil.isBedWarsPlayer(player)) BwPlayers.sendToSpawn(player);
             }
         }
     }
@@ -126,7 +124,7 @@ public class BedwarsGame {
             invulnerabilityList.replace(player, invulnerabilityList.get(player) - 1);
             if (invulnerabilityList.get(player) <= 0) {
                 it.remove();
-                if (BedwarsUtil.isBedWarsPlayer(player)) player.setInvulnerable(false);
+                if (BwUtil.isBedWarsPlayer(player)) player.setInvulnerable(false);
             }
         }
     }
@@ -138,9 +136,9 @@ public class BedwarsGame {
         if (winScreen) winScreenSecond();
 
         if (isGameActive && !winScreen) {
-            BedwarsPlayerTracker.trackerSecond();
-            BedwarsApplyUpgrades.upgradeSecond();
-            BedwarsApplyTraps.trapSecond();
+            BwPlayerTracker.trackerSecond();
+            BwApplyUpgrades.upgradeSecond();
+            BwApplyTraps.trapSecond();
             timerSecond();
         }
     }
@@ -168,7 +166,7 @@ public class BedwarsGame {
     private static void winScreenSecond() {
 
         if (winScreenTimer <= winScreenTime && winScreenTimer >= 3) {
-            BedwarsTeam.winnerRockets(winners, winnerColor);
+            BwTeam.winnerRockets(winners, winnerColor);
         }
 
         if (winScreenTimer <= 0) {
@@ -181,14 +179,14 @@ public class BedwarsGame {
     }
 
     private static void timerSecond() {
-        BedwarsScoreboard.updateTimer();
+        BwScoreboard.updateTimer();
 
         int secondsLeft = gameLength - gameTicks / 20;
 
         if (secondsLeft <= gameEndWarningTimes.getFirst()) {
             for (Integer warningTime : gameEndWarningTimes) {
                 if (secondsLeft == warningTime) {
-                    for(NexiaPlayer player : BedwarsPlayers.getViewers()) {
+                    for(NexiaPlayer player : BwPlayers.getViewers()) {
                         player.sendMessage(Component.text("The game will end in ").color(ChatFormat.Minecraft.gray)
                                 .append(Component.text(secondsLeft).color(ChatFormat.Minecraft.red))
                                 .append(Component.text(" seconds.").color(ChatFormat.Minecraft.gray))
@@ -220,29 +218,29 @@ public class BedwarsGame {
     public static void startBedWars() {
         gameTicks = 0;
 
-        BedwarsAreas.clearBedWarsMap();
-        BedwarsAreas.clearQueueBuild();
+        BwAreas.clearBedWarsMap();
+        BwAreas.clearQueueBuild();
         clearGameEntities();
 
-        BedwarsTeam.spreadIntoTeams(queueList);
-        BedwarsTeam.setSpawns();
-        BedwarsTeam.createBeds();
-        BedwarsGen.createGens();
-        BedwarsTrap.resetTrapLocations();
-        BedwarsScoreboard.setUpScoreboard();
+        BwTeam.spreadIntoTeams(queueList);
+        BwTeam.setSpawns();
+        BwTeam.createBeds();
+        BwGen.createGens();
+        BwTrap.resetTrapLocations();
+        BwScoreboard.setUpScoreboard();
         preparePlayers();
 
         isGameActive = true;
     }
 
     private static void preparePlayers() {
-        for (BedwarsTeam team : BedwarsTeam.allTeams.values()) {
+        for (BwTeam team : BwTeam.allTeams.values()) {
             if (team.players == null) continue;
 
             for (NexiaPlayer player : team.players) {
                 player.unwrap().getEnderChestInventory().clearContent();
                 player.getInventory().clear();
-                BedwarsPlayers.sendToSpawn(player);
+                BwPlayers.sendToSpawn(player);
 
                 player.sendMessage(Component.text("The game has started. ", ChatFormat.Minecraft.gray)
                         .append(Component.text("Good luck!", ChatFormat.brandColor2))
@@ -264,14 +262,14 @@ public class BedwarsGame {
     }
 
     private static void tickAfterStart() {
-        PlayerUtil.broadcastSound(BedwarsPlayers.getPlayers(),
+        PlayerUtil.broadcastSound(BwPlayers.getPlayers(),
                 SoundEvents.NOTE_BLOCK_PLING, SoundSource.MASTER, 0.05f, 2f);
     }
 
     public static void endBedwars() {
         winScreen = true;
 
-        ArrayList<BedwarsTeam> aliveTeams = BedwarsTeam.getAliveTeams();
+        ArrayList<BwTeam> aliveTeams = BwTeam.getAliveTeams();
         if (aliveTeams.size() == 1) {
             winners = aliveTeams.getFirst().players;
             winnerColor = aliveTeams.getFirst().armorColor;
@@ -283,22 +281,22 @@ public class BedwarsGame {
         sendGameEndMessage();
 
         invisiblePlayerArmor.clear();
-        spectatorList.addAll(BedwarsPlayers.getPlayers());
+        spectatorList.addAll(BwPlayers.getPlayers());
         respawningList.clear();
         clearGameEntities();
-        BedwarsTeam.resetTeams();
-        BedwarsGen.resetGens();
+        BwTeam.resetTeams();
+        BwGen.resetGens();
     }
 
     private static void sendGameEndMessage() {
-        ArrayList<BedwarsTeam> aliveTeams = BedwarsTeam.getAliveTeams();
+        ArrayList<BwTeam> aliveTeams = BwTeam.getAliveTeams();
 
         Component victoryTitle = Component.text("Victory!", ChatFormat.goldColor);
         Component gameEndTitle = Component.text("Game over!", ChatFormat.goldColor);
         Title.Times time = Title.Times.of(Duration.ofMillis(250), Duration.ofSeconds(4), Duration.ofSeconds(1));
 
         if (aliveTeams.size() == 1) {
-            BedwarsTeam winnerTeam = aliveTeams.getFirst();
+            BwTeam winnerTeam = aliveTeams.getFirst();
             String whoWon;
             if (winnerTeam.players.size() == 1) {
                 PlayerDataManager.getDataManager(BEDWARS_DATA_MANAGER).get(winnerTeam.players.stream().findFirst().get()).savedData.incrementInteger("wins");
@@ -320,7 +318,7 @@ public class BedwarsGame {
                 player.sendTitle(Title.title(gameEndTitle, subtitle, time));
             }
 
-            for(NexiaPlayer player : BedwarsPlayers.getViewers()) {
+            for(NexiaPlayer player : BwPlayers.getViewers()) {
                 player.sendMessage(subtitle);
             }
 
@@ -330,7 +328,7 @@ public class BedwarsGame {
                     .append(Component.text("!", ChatFormat.Minecraft.gray));
 
 
-            for(NexiaPlayer player : BedwarsPlayers.getViewers()) {
+            for(NexiaPlayer player : BwPlayers.getViewers()) {
                 player.sendTitle(Title.title(gameEndTitle, subtitle, time));
                 player.sendMessage(subtitle);
             }
@@ -338,18 +336,18 @@ public class BedwarsGame {
     }
 
     private static void clearGameEntities() {
-        BlockVec3 corner1 = new BlockVec3(BedwarsAreas.bedWarsCorner1);
+        BlockVec3 corner1 = new BlockVec3(BwAreas.bedWarsCorner1);
         corner1.y = 0;
-        BlockVec3 corner2 = new BlockVec3(BedwarsAreas.bedWarsCorner2);
+        BlockVec3 corner2 = new BlockVec3(BwAreas.bedWarsCorner2);
         corner2.y = 300;
         AABB aabb = new AABB(corner1.toBlockPos(), corner2.toBlockPos());
         Predicate<Entity> predicate = o -> true;
-        for (Entity entity : BedwarsAreas.bedWarsWorld.getEntities(EntityType.ITEM, aabb, predicate)) {
+        for (Entity entity : BwAreas.bedWarsWorld.getEntities(EntityType.ITEM, aabb, predicate)) {
             entity.remove();
         }
-        entityLoop: for (Entity entity : BedwarsAreas.bedWarsWorld.getEntities(EntityType.ARMOR_STAND, aabb, predicate)) {
+        entityLoop: for (Entity entity : BwAreas.bedWarsWorld.getEntities(EntityType.ARMOR_STAND, aabb, predicate)) {
             for (String tag : entity.getTags()) {
-                if (tag.equals(BedwarsGen.genTimerDisplayTag) || tag.equals(BedwarsGen.genItemDisplayTag)) {
+                if (tag.equals(BwGen.genTimerDisplayTag) || tag.equals(BwGen.genItemDisplayTag)) {
                     entity.remove();
                     continue entityLoop;
                 }
@@ -357,7 +355,7 @@ public class BedwarsGame {
         }
 
         for (NexiaPlayer player : gameTridents.keySet()) {
-            for (BedwarsTrident trident : gameTridents.get(player)) {
+            for (BwTrident trident : gameTridents.get(player)) {
                 trident.remove();
             }
         }
@@ -367,13 +365,13 @@ public class BedwarsGame {
     private static void resetBedWars() {
         isGameActive = false;
 
-        BedwarsAreas.spawnQueueBuild();
+        BwAreas.spawnQueueBuild();
 
         try {
             for (NexiaPlayer player : spectatorList) {
                 if (player == null || player.unwrap() == null) continue;
                 player.runCommand("/hub", 0, false);
-                BedwarsScoreboard.removeScoreboardFor(player);
+                BwScoreboard.removeScoreboardFor(player);
             }
         } catch (Exception exception) {
             if(NexiaCore.config.debugMode) NexiaCore.logger.error(exception.getMessage());

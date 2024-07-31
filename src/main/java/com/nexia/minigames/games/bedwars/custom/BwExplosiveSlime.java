@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.phys.Vec3;
 
-public class BedwarsExplosiveSlime extends Slime {
+public class BwExplosiveSlime extends Slime {
 
     public int age;
     public LivingEntity owner;
@@ -23,7 +23,7 @@ public class BedwarsExplosiveSlime extends Slime {
         return itemStack.getTag().getBoolean("BedWarsExplosiveSlime");
     }
 
-    public BedwarsExplosiveSlime(EntityType<? extends Slime> entityType, ServerPlayer player) {
+    public BwExplosiveSlime(EntityType<? extends Slime> entityType, ServerPlayer player) {
         super(entityType, player.getLevel());
         this.age = 0;
         this.owner = player;

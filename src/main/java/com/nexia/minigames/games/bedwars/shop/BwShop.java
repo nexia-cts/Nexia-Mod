@@ -19,7 +19,7 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 
-public class BedwarsShop extends SimpleGui {
+public class BwShop extends SimpleGui {
 
     public static ItemStack[] bedWarsShopItems = null;
     public static ItemStack[][] bedWarsUpgradeableItems = null;
@@ -33,17 +33,17 @@ public class BedwarsShop extends SimpleGui {
     final static String currencyItemKey = "bwCurrencyItem";
     final static String currencyAmountKey = "bwCurrencyAmount";
 
-    public BedwarsShop(MenuType<?> type, ServerPlayer player, boolean includePlayer) {
+    public BwShop(MenuType<?> type, ServerPlayer player, boolean includePlayer) {
         super(type, player, includePlayer);
     }
 
     public static void openShopGui(ServerPlayer player) {
-        BedwarsShop shop = new BedwarsShop(MenuType.GENERIC_9x6, player, false);
+        BwShop shop = new BwShop(MenuType.GENERIC_9x6, player, false);
         shop.setTitle(title);
         for (int i = 0; i < bedWarsShopItems.length; i++) {
-            ItemStack itemStack = BedwarsShopUtil.getShopItem(player, i);
+            ItemStack itemStack = BwShopUtil.getShopItem(player, i);
             if (itemStack == null) continue;
-            itemStack = BedwarsShopUtil.toGuiItem(itemStack);
+            itemStack = BwShopUtil.toGuiItem(itemStack);
             if (itemStack == null) continue;
 
             shop.setSlot(indexToGuiSlot(i), itemStack);
@@ -68,12 +68,12 @@ public class BedwarsShop extends SimpleGui {
     }
 
     private void tryToPurchase(ServerPlayer player, ItemStack soldItem, int slot, int targetInvSlot) {
-        ItemStack cost = BedwarsShopUtil.getCost(soldItem);
+        ItemStack cost = BwShopUtil.getCost(soldItem);
         if (cost == null) return;
 
         boolean isArmorItem = soldItem.getItem() instanceof ArmorItem;
         boolean isSword = soldItem.getItem() instanceof SwordItem;
-        boolean isUpgradeable = soldItem.getOrCreateTag().contains(BedwarsShopUpgradeables.upgradeableInfoKey);
+        boolean isUpgradeable = soldItem.getOrCreateTag().contains(BwShopUpgradeables.upgradeableInfoKey);
 
         if (isArmorItem) {
             int playerLevel = ItemStackUtil.getArmorTier(player.inventory.getItem(36).getItem());
@@ -87,7 +87,7 @@ public class BedwarsShop extends SimpleGui {
                 return;
             }
         }
-        if (isUpgradeable && BedwarsShopUpgradeables.hasSameUpgradeItem(player, soldItem)) {
+        if (isUpgradeable && BwShopUpgradeables.hasSameUpgradeItem(player, soldItem)) {
             sendFail(player, "You have reached the maximum level of this item");
             return;
         }
@@ -95,8 +95,8 @@ public class BedwarsShop extends SimpleGui {
             sendFail(player, "You can't afford this item");
             return;
         }
-        soldItem = BedwarsShopUtil.setBlockColor(player, soldItem);
-        BedwarsShopUtil.removeShopNbt(soldItem);
+        soldItem = BwShopUtil.setBlockColor(player, soldItem);
+        BwShopUtil.removeShopNbt(soldItem);
         if (!ItemStackUtil.hasRoomFor(player.inventory, soldItem) && !isArmorItem) {
             sendFail(player, "Your inventory is full.");
             return;
@@ -112,18 +112,18 @@ public class BedwarsShop extends SimpleGui {
         playPurchaseSound(player, false);
 
         if (isUpgradeable) {
-            BedwarsShopUpgradeables.replaceUpgradeItem(player, soldItem, targetInvSlot);
-            ItemStack shopSlotItem = BedwarsShopUpgradeables.getUpgradeItem(player, guiSlotToIndex(slot));
-            this.setSlot(slot, BedwarsShopUtil.toGuiItem(shopSlotItem));
+            BwShopUpgradeables.replaceUpgradeItem(player, soldItem, targetInvSlot);
+            ItemStack shopSlotItem = BwShopUpgradeables.getUpgradeItem(player, guiSlotToIndex(slot));
+            this.setSlot(slot, BwShopUtil.toGuiItem(shopSlotItem));
 
         } else if (isArmorItem) {
-            BedwarsShopUtil.giveArmorItems(player, soldItem);
+            BwShopUtil.giveArmorItems(player, soldItem);
 
         } else if (isSword) {
-            BedwarsShopUtil.giveSword(player, soldItem);
+            BwShopUtil.giveSword(player, soldItem);
 
         } else {
-            BedwarsShopUtil.giveItem(player, soldItem, targetInvSlot);
+            BwShopUtil.giveItem(player, soldItem, targetInvSlot);
         }
     }
 

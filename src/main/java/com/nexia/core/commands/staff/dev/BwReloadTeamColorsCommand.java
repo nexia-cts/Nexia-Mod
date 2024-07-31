@@ -3,7 +3,7 @@ package com.nexia.core.commands.staff.dev;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.nexia.minigames.games.bedwars.players.BedwarsTeam;
+import com.nexia.minigames.games.bedwars.players.BwTeam;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -18,7 +18,7 @@ public class BwReloadTeamColorsCommand {
     }
 
     public static int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        BedwarsTeam.reloadPlayerTeamColors();
+        BwTeam.reloadPlayerTeamColors();
         return 1;
     }
 

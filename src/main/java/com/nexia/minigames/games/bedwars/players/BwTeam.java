@@ -6,11 +6,11 @@ import com.nexia.core.utilities.item.BlockUtil;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.minigames.games.bedwars.BedwarsGame;
-import com.nexia.minigames.games.bedwars.areas.BedwarsAreas;
-import com.nexia.minigames.games.bedwars.upgrades.BedwarsTrap;
-import com.nexia.minigames.games.bedwars.upgrades.BedwarsUpgrade;
-import com.nexia.minigames.games.bedwars.util.BedwarsScoreboard;
+import com.nexia.minigames.games.bedwars.BwGame;
+import com.nexia.minigames.games.bedwars.areas.BwAreas;
+import com.nexia.minigames.games.bedwars.upgrades.BwTrap;
+import com.nexia.minigames.games.bedwars.upgrades.BwUpgrade;
+import com.nexia.minigames.games.bedwars.util.BwScoreboard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.minecraft.core.BlockPos;
@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.function.Predicate;
 
-public class BedwarsTeam {
+public class BwTeam {
 
     public String displayName;
     public String color;
@@ -54,10 +54,10 @@ public class BedwarsTeam {
     public EntityPos genLocation = null;
     public ArrayList<NexiaPlayer> players = new ArrayList<>();
 
-    public HashMap<String, BedwarsUpgrade> upgrades = BedwarsUpgrade.newUpgradeSet();
-    public HashMap<String, BedwarsTrap> traps = BedwarsTrap.newTrapSet();
+    public HashMap<String, BwUpgrade> upgrades = BwUpgrade.newUpgradeSet();
+    public HashMap<String, BwTrap> traps = BwTrap.newTrapSet();
 
-    private BedwarsTeam(String displayName, String colorName, String colorId, String textColorName, int r, int g, int b) {
+    private BwTeam(String displayName, String colorName, String colorId, String textColorName, int r, int g, int b) {
         this.displayName = displayName;
         this.color = colorName;
         this.textColor = "\247" + colorId;
@@ -87,35 +87,35 @@ public class BedwarsTeam {
 
     // Team list --------------------------------------------------------------------------
 
-    public static HashMap<String, BedwarsTeam> allTeams;
-    public static ArrayList<BedwarsTeam> teamsInOrder;
+    public static HashMap<String, BwTeam> allTeams;
+    public static ArrayList<BwTeam> teamsInOrder;
 
     public static void resetTeams() {
         allTeams = new HashMap<>();
         teamsInOrder = new ArrayList<>();
 
-        addTeam(new BedwarsTeam("Red", "red", "c", "red", 255, 0, 0));
-        addTeam(new BedwarsTeam("Orange", "orange", "6", "gold", 255, 130, 30));
-        addTeam(new BedwarsTeam("Yellow", "yellow", "e", "yellow", 255, 255, 0));
-        addTeam(new BedwarsTeam("Lime", "lime", "a", "green", 20, 255, 25));
-        addTeam(new BedwarsTeam("Green", "green", "2", "dark_green", 0, 120, 0));
-        addTeam(new BedwarsTeam("Aqua", "light_blue", "b", "aqua", 10, 240, 255));
-        addTeam(new BedwarsTeam("Blue", "blue", "9", "blue", 0, 50, 255));
-        addTeam(new BedwarsTeam("Purple", "purple", "d", "light_purple", 150, 0, 150));
+        addTeam(new BwTeam("Red", "red", "c", "red", 255, 0, 0));
+        addTeam(new BwTeam("Orange", "orange", "6", "gold", 255, 130, 30));
+        addTeam(new BwTeam("Yellow", "yellow", "e", "yellow", 255, 255, 0));
+        addTeam(new BwTeam("Lime", "lime", "a", "green", 20, 255, 25));
+        addTeam(new BwTeam("Green", "green", "2", "dark_green", 0, 120, 0));
+        addTeam(new BwTeam("Aqua", "light_blue", "b", "aqua", 10, 240, 255));
+        addTeam(new BwTeam("Blue", "blue", "9", "blue", 0, 50, 255));
+        addTeam(new BwTeam("Purple", "purple", "d", "light_purple", 150, 0, 150));
 
-        BedwarsGame.maxPlayerCount = BedwarsGame.playersInTeam * allTeams.size();
+        BwGame.maxPlayerCount = BwGame.playersInTeam * allTeams.size();
     }
 
-    private static void addTeam(BedwarsTeam team) {
+    private static void addTeam(BwTeam team) {
         allTeams.put(team.color, team);
         teamsInOrder.add(team);
     }
 
     // PLayer util --------------------------------------------------------------------------
 
-    public static ArrayList<BedwarsTeam> getAliveTeams() {
-        ArrayList<BedwarsTeam> aliveTeams = new ArrayList<>();
-        for (BedwarsTeam team : allTeams.values()) {
+    public static ArrayList<BwTeam> getAliveTeams() {
+        ArrayList<BwTeam> aliveTeams = new ArrayList<>();
+        for (BwTeam team : allTeams.values()) {
             if (!team.players.isEmpty()) {
                 aliveTeams.add(team);
             }
@@ -125,14 +125,14 @@ public class BedwarsTeam {
 
     public static void spreadIntoTeams(ArrayList<NexiaPlayer> queueList) {
         ServerScoreboard scoreboard = ServerTime.minecraftServer.getScoreboard();
-        Random random = BedwarsAreas.bedWarsWorld.getRandom();
+        Random random = BwAreas.bedWarsWorld.getRandom();
 
-        ArrayList<BedwarsTeam> availableTeams = new ArrayList<>(teamsInOrder);
+        ArrayList<BwTeam> availableTeams = new ArrayList<>(teamsInOrder);
 
         while (!queueList.isEmpty() && !availableTeams.isEmpty()) {
             NexiaPlayer player = queueList.getFirst();
 
-            BedwarsTeam team = availableTeams.get(random.nextInt(availableTeams.size()));
+            BwTeam team = availableTeams.get(random.nextInt(availableTeams.size()));
             team.players.add(player);
             availableTeams.remove(team);
 
@@ -146,8 +146,8 @@ public class BedwarsTeam {
         queueList.clear();
     }
 
-    public static BedwarsTeam getPlayerTeam(NexiaPlayer player) {
-        for (BedwarsTeam team : allTeams.values()) {
+    public static BwTeam getPlayerTeam(NexiaPlayer player) {
+        for (BwTeam team : allTeams.values()) {
             if (team.players.contains(player)) {
                 return team;
             }
@@ -156,7 +156,7 @@ public class BedwarsTeam {
     }
 
     public static boolean fixTeamPlayer(NexiaPlayer player) {
-        for (BedwarsTeam team : allTeams.values()) {
+        for (BwTeam team : allTeams.values()) {
             for (int i = 0; i < team.players.size(); i++) {
                 if (team.players.get(i).getUUID().equals(player.getUUID())) {
                     team.players.set(i, player);
@@ -168,7 +168,7 @@ public class BedwarsTeam {
     }
 
     public static String getPlayerTeamColor(NexiaPlayer player) {
-        BedwarsTeam team = getPlayerTeam(player);
+        BwTeam team = getPlayerTeam(player);
         if (team == null) return null;
 
         return team.color;
@@ -180,10 +180,10 @@ public class BedwarsTeam {
     public static final String bedTagStart = "bedLocation_";
 
     public static void setSpawns() {
-        AABB aabb = new AABB(BedwarsAreas.bedWarsCorner1, BedwarsAreas.bedWarsCorner2);
+        AABB aabb = new AABB(BwAreas.bedWarsCorner1, BwAreas.bedWarsCorner2);
         Predicate<Entity> predicate = o -> true;
 
-        for (Entity entity : BedwarsAreas.bedWarsWorld.getEntities(EntityType.ARMOR_STAND, aabb, predicate)) {
+        for (Entity entity : BwAreas.bedWarsWorld.getEntities(EntityType.ARMOR_STAND, aabb, predicate)) {
             for (String tag : entity.getTags()) {
                 if (tag.startsWith(spawnTagStart)) {
                     tag = tag.replaceFirst(spawnTagStart, "");
@@ -195,10 +195,10 @@ public class BedwarsTeam {
     }
 
     public static void createBeds() {
-        AABB aabb = new AABB(BedwarsAreas.bedWarsCorner1, BedwarsAreas.bedWarsCorner2);
+        AABB aabb = new AABB(BwAreas.bedWarsCorner1, BwAreas.bedWarsCorner2);
         Predicate<Entity> predicate = o -> true;
 
-        for (Entity entity : BedwarsAreas.bedWarsWorld.getEntities(EntityType.ARMOR_STAND, aabb, predicate)) {
+        for (Entity entity : BwAreas.bedWarsWorld.getEntities(EntityType.ARMOR_STAND, aabb, predicate)) {
             for (String tag : entity.getTags()) {
                 if (tag.startsWith(bedTagStart)) {
                     addPossibleBed(entity, tag);
@@ -211,31 +211,31 @@ public class BedwarsTeam {
         tag = tag.replaceFirst(bedTagStart, "");
         if (!allTeams.containsKey(tag)) return;
 
-        BedwarsTeam team = allTeams.get(tag);
+        BwTeam team = allTeams.get(tag);
         BlockPos blockPos = new BlockPos(entity.position());
 
         if (team.players.isEmpty()) {
-            BedwarsAreas.bedWarsWorld.setBlock(blockPos, Blocks.AIR.defaultBlockState(), 3);
+            BwAreas.bedWarsWorld.setBlock(blockPos, Blocks.AIR.defaultBlockState(), 3);
             return;
         }
 
         Block block = Registry.BLOCK.get(new ResourceLocation(team.color + "_bed"));
         if (!(block instanceof BedBlock)) return;
-        BlockUtil.placeBed(BedwarsAreas.bedWarsWorld, (BedBlock)block, blockPos, entity.yRot);
+        BlockUtil.placeBed(BwAreas.bedWarsWorld, (BedBlock)block, blockPos, entity.yRot);
         team.bedLocation = blockPos;
     }
 
-    public static boolean bedExists(BedwarsTeam team) {
+    public static boolean bedExists(BwTeam team) {
         if (team.bedLocation == null) return false;
 
-        BlockState blockState = BedwarsAreas.bedWarsWorld.getBlockState(team.bedLocation);
+        BlockState blockState = BwAreas.bedWarsWorld.getBlockState(team.bedLocation);
         return BlockUtil.blockToText(blockState).equals(team.color + "_bed");
     }
 
     // ----- UTILITIES -------------------------------------------------------------------------------
 
     public static void reloadPlayerTeamColors() {
-        for (BedwarsTeam team : teamsInOrder) {
+        for (BwTeam team : teamsInOrder) {
             ServerTime.nexusServer.runCommand(String.format("team modify %s color %s", team.scoreboardTeam.getName(), team.textColorName), 4, false);
         }
     }
@@ -245,10 +245,10 @@ public class BedwarsTeam {
 
         ArrayList<EntityPos> positions = new ArrayList<>();
         for (NexiaPlayer player : winners) {
-            Random random = BedwarsAreas.bedWarsWorld.getRandom();
+            Random random = BwAreas.bedWarsWorld.getRandom();
             positions.add(new EntityPos(player.unwrap()).add(random.nextInt(9) - 4, 2, random.nextInt(9) - 4));
         }
-        positions.add(BedwarsAreas.bedWarsCenter.c().add(0.5, 2, 0.5));
+        positions.add(BwAreas.bedWarsCenter.c().add(0.5, 2, 0.5));
 
         ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET);
         try {
@@ -257,17 +257,17 @@ public class BedwarsTeam {
         } catch (Exception ignored) {}
 
         for (EntityPos pos : positions) {
-            FireworkRocketEntity rocket = new FireworkRocketEntity(BedwarsAreas.bedWarsWorld, pos.x, pos.y, pos.z, itemStack);
-            BedwarsAreas.bedWarsWorld.addFreshEntity(rocket);
+            FireworkRocketEntity rocket = new FireworkRocketEntity(BwAreas.bedWarsWorld, pos.x, pos.y, pos.z, itemStack);
+            BwAreas.bedWarsWorld.addFreshEntity(rocket);
         }
     }
 
     public void announceBedBreak(NexiaPlayer breaker, BlockPos blockPos) {
         String breakerColor = "";
-        BedwarsTeam breakerTeam = getPlayerTeam(breaker);
+        BwTeam breakerTeam = getPlayerTeam(breaker);
         if (breakerTeam != null) breakerColor = breakerTeam.textColor;
 
-        for(NexiaPlayer viewer : BedwarsPlayers.getViewers()) {
+        for(NexiaPlayer viewer : BwPlayers.getViewers()) {
             viewer.sendMessage(Component.text(String.format("%s%s bed", textColor, displayName))
                     .append(Component.text(" has been destroyed by ").color(ChatFormat.Minecraft.white))
                     .append(Component.text(breakerColor + breaker.getRawName()))
@@ -278,9 +278,9 @@ public class BedwarsTeam {
             player.sendTitle(Title.title(Component.text("Bed Destroyed").color(ChatFormat.failColor), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0))));
         }
 
-        BedwarsScoreboard.updateScoreboard();
+        BwScoreboard.updateScoreboard();
 
-        for (NexiaPlayer player : BedwarsPlayers.getViewers()) {
+        for (NexiaPlayer player : BwPlayers.getViewers()) {
             float volume;
             if (players.contains(player)) {
                 volume = 0.04f;
