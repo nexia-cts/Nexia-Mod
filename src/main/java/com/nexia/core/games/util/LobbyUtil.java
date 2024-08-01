@@ -27,7 +27,10 @@ import com.nexia.nexus.api.world.nbt.NBTObject;
 import com.nexia.nexus.api.world.nbt.NBTValue;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.nexus.api.world.util.Location;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyori.adventure.text.Component;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -117,6 +120,11 @@ public class LobbyUtil {
 
 
         ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).gameMode = PlayerGameMode.LOBBY;
+        if (ServerPlayNetworking.canSend(player.unwrap(), NexiaCore.CONVENTIONAL_BRIDGING_UPDATE_ID)) {
+            FriendlyByteBuf buf = PacketByteBufs.create();
+            buf.writeBoolean(true);
+            ServerPlayNetworking.send(player.unwrap(), NexiaCore.CONVENTIONAL_BRIDGING_UPDATE_ID, buf);
+        }
     }
 
     public static void giveItems(NexiaPlayer player) {
@@ -229,6 +237,11 @@ public class LobbyUtil {
 
         if (checkGameModeBan(player, game)) {
             return;
+        }
+        if (ServerPlayNetworking.canSend(player.unwrap(), NexiaCore.CONVENTIONAL_BRIDGING_UPDATE_ID)) {
+            FriendlyByteBuf buf = PacketByteBufs.create();
+            buf.writeBoolean(true);
+            ServerPlayNetworking.send(player.unwrap(), NexiaCore.CONVENTIONAL_BRIDGING_UPDATE_ID, buf);
         }
 
         for (BaseFfaUtil util : BaseFfaUtil.ffaUtils) {

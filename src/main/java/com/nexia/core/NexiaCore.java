@@ -27,6 +27,8 @@ public class NexiaCore implements ModInitializer, NexusPlugin {
 
 	public NetworkingHandler networkingHandler;
 
+	public static final ResourceLocation CONVENTIONAL_BRIDGING_UPDATE_ID = new ResourceLocation("c", "update_status");
+
 	public static final ResourceLocation CORE_DATA_MANAGER = id("core");
 
 	public static final ResourceLocation DISCORD_DATA_MANAGER = id("discord");
