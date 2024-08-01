@@ -17,7 +17,7 @@ public class SudoCommand {
         dispatcher.register(CommandUtils.literal("sudo")
                 .requires(commandSourceInfo -> CommandUtil.hasPermission(commandSourceInfo, "nexia.staff.sudo"))
                 .then(CommandUtils.argument("player", EntityArgument.player())
-                    .then(CommandUtils.argument("command", StringArgumentType.string())
+                    .then(CommandUtils.argument("command", StringArgumentType.greedyString())
                         .executes(context -> SudoCommand.execute(context, context.getArgument("player", EntitySelector.class).findSinglePlayer(CommandUtil.getCommandSourceStack(context.getSource(), false)), StringArgumentType.getString(context, "command")))))
         );
     }
