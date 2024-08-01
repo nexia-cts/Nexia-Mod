@@ -114,7 +114,6 @@ public class FfaSkyUtil extends BaseFfaUtil {
         super.joinOrRespawn(player, tp);
         wasInSpawn.add(player.getUUID());
         player.reset(true, Minecraft.GameMode.SURVIVAL);
-        player.unwrap().addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1000000, 1, true, true));
         setInventory(player);
     }
 

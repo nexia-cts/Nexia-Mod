@@ -68,7 +68,7 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(other, net.kyori.adventure.text.Component.text("Discover other games.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 0);
 
         ItemStack bedwars = new ItemStack(Items.RED_BED, 1);
-        bedwars.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("BedWars", ChatFormat.Minecraft.red).decoration(ChatFormat.italic, false)));
+        bedwars.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Bedwars", ChatFormat.Minecraft.red).decoration(ChatFormat.italic, false)));
         ItemDisplayUtil.addGlint(bedwars);
         bedwars.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
@@ -81,7 +81,7 @@ public class PlayGUI extends SimpleGui {
 
 
         ItemStack skywars = new ItemStack(Items.GRASS_BLOCK, 1);
-        skywars.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("SkyWars", ChatFormat.Minecraft.green).decoration(ChatFormat.italic, false)));
+        skywars.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Skywars", ChatFormat.Minecraft.green).decoration(ChatFormat.italic, false)));
         skywars.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
 
         ItemDisplayUtil.addLore(skywars, "§5", 0);
@@ -274,12 +274,12 @@ public class PlayGUI extends SimpleGui {
                 this.setFFALayout();
             }
 
-            if(name.getString().contains("BedWars")){
+            if(name.getString().contains("Bedwars")){
                 LobbyUtil.sendGame(nexiaPlayer, "bedwars", true, true);
                 this.close();
             }
 
-            if(name.getString().contains("SkyWars")){
+            if(name.getString().contains("Skywars")){
                 LobbyUtil.sendGame(nexiaPlayer, "skywars", true, true);
                 this.close();
             }
