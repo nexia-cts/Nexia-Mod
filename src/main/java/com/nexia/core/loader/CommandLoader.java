@@ -20,7 +20,6 @@ public class CommandLoader {
     public static void registerNexusCommands() {
         CommandDispatcher<CommandSourceInfo> commandDispatcher = ServerTime.nexusServer.getCommandDispatcher();
 
-        SprintFixCommand.register(commandDispatcher);
         HelpCommand.register(commandDispatcher);
         DiscordCommand.register(commandDispatcher);
         LeaveCommand.register(commandDispatcher);
@@ -55,15 +54,14 @@ public class CommandLoader {
         BanCommand.register(commandDispatcher);
         UnBanCommand.register(commandDispatcher);
         StatsCommand.register(commandDispatcher);
-        SprintFixCommand.register(commandDispatcher);
         RulesCommand.register(commandDispatcher);
         ReportCommand.register(commandDispatcher);
-        SprintFixCommand.register(commandDispatcher);
         SprintFixCommand.register(commandDispatcher);
         MessageCommand.registerMsg(commandDispatcher);
         MessageCommand.registerReply(commandDispatcher);
         HealCommand.register(commandDispatcher);
         DetectCommand.register(commandDispatcher);
+        SudoCommand.register(commandDispatcher);
     }
 
     public static void registerCommands() {
