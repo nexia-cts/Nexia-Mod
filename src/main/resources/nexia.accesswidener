@@ -3,3 +3,4 @@ accessible method net/minecraft/world/entity/player/Player destroyVanishingCurse
 accessible field net/minecraft/world/entity/projectile/AbstractArrow inGround Z
 accessible method net/minecraft/world/entity/decoration/ArmorStand setNoBasePlate (Z)V
 accessible field net/minecraft/network/protocol/game/ServerboundCustomPayloadPacket data Lnet/minecraft/network/FriendlyByteBuf;
+accessible field net/minecraft/world/level/block/entity/RandomizableContainerBlockEntity lootTable Lnet/minecraft/resources/ResourceLocation;

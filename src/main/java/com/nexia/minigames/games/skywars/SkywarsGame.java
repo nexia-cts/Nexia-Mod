@@ -22,6 +22,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.bossevents.CustomBossEvent;
@@ -46,6 +47,7 @@ import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.function.BiConsumer;
 
 import static com.nexia.core.NexiaCore.SKYWARS_DATA_MANAGER;
 import static com.nexia.core.utilities.world.WorldUtil.getChunkGenerator;
@@ -98,7 +100,7 @@ public class SkywarsGame {
 
     public static CustomBossEvent BOSSBAR;
 
-    public static List<BlockEntity> blockEntities = null;
+    public static HashMap<RandomizableContainerBlockEntity, ResourceLocation> blockEntities = null;
 
     public static void leave(NexiaPlayer player) {
         if (player != winner) SkywarsGame.death(player, player.unwrap().getLastDamageSource());
@@ -267,7 +269,14 @@ public class SkywarsGame {
         SkywarsGame.alive.addAll(SkywarsGame.queue);
 
         SkywarsGame.map.structureMap.pasteMap(SkywarsGame.world);
-        blockEntities = new ArrayList<>(world.blockEntityList);
+
+        blockEntities = new HashMap<>();
+        world.blockEntityList.forEach(blockEntity -> {
+            if (blockEntity instanceof RandomizableContainerBlockEntity randomizableContainerBlock) {
+                blockEntities.put(randomizableContainerBlock, randomizableContainerBlock.lootTable);
+            }
+        });
+
         if(NexiaCore.config.debugMode) NexiaCore.logger.info(String.format("[DEBUG]: Skywars Map (%s) has been pasted on skywars:%s.", SkywarsGame.map.id, SkywarsGame.id));
 
         ArrayList<EntityPos> positions = new ArrayList<>(SkywarsGame.map.positions);
@@ -366,19 +375,16 @@ public class SkywarsGame {
 
     public static void refillChests() {
         SkywarsGame.chestsRefilled = true;
-        blockEntities.forEach(blockEntity -> {
-            if (blockEntity instanceof RandomizableContainerBlockEntity randomizableContainerBlock) {
-                LootTable lootTable = world.getServer().getLootTables().get(new ResourceLocation("chest/mid"));
-                LootContext.Builder builder = (new LootContext.Builder(world)).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(world.getSharedSpawnPos())).withOptionalRandomSeed(world.random.nextLong());
+        for (Map.Entry<RandomizableContainerBlockEntity, ResourceLocation> chest : blockEntities.entrySet()) {
+            if (world.getBlockEntity(chest.getKey().getBlockPos()) != chest.getKey()) continue;
+            LootTable lootTable = world.getServer().getLootTables().get(chest.getValue());
 
-                world.setBlockAndUpdate(blockEntity.getBlockPos(), blockEntity.getBlockState());
-                world.playSound(null, blockEntity.getBlockPos(), SoundEvents.CHEST_OPEN, SoundSource.MASTER, 1, 1);
-                lootTable.fill(randomizableContainerBlock, builder.create(LootContextParamSets.CHEST));
-            }
-        });
+            LootContext.Builder builder = new LootContext.Builder(world).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(chest.getKey().getBlockPos()));
+            lootTable.fill(chest.getKey(), builder.create(LootContextParamSets.CHEST));
+        }
 
         for(NexiaPlayer player : SkywarsGame.getViewers()) {
-            player.sendSound(new EntityPos(player.unwrap()), SoundEvents.RESPAWN_ANCHOR_CHARGE, SoundSource.AMBIENT, 1000, 1);
+            player.sendSound(new EntityPos(player.unwrap()), SoundEvents.CHEST_OPEN, SoundSource.AMBIENT, 1000, 1);
             player.sendMessage(
                     Component.text("[").color(ChatFormat.lineColor)
                             .append(Component.text("⚠").color(ChatFormat.failColor))
