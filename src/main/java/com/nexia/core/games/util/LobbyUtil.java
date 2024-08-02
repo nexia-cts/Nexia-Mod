@@ -58,7 +58,7 @@ public class LobbyUtil {
     }
 
     public static boolean isLobbyWorld(World world) {
-        return world.getIdentifier().toString().equals("minecraft:overworld");
+        return world.getIdentifier().pure().equals("minecraft:overworld");
     }
 
     public static void setLobbyWorld(MinecraftServer server) {
