@@ -115,4 +115,14 @@ public class WorldUtil {
             WorldUtil.deleteWorld(deletion);
         }
     }
+
+    public static ArrayList<String> getAllWorldsId() {
+        ArrayList<String> arrayList = new ArrayList<>();
+
+        for(World world : ServerTime.nexusServer.getWorlds()) {
+            arrayList.add(world.getIdentifier().pure());
+        }
+
+        return arrayList;
+    }
 }

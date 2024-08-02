@@ -29,6 +29,7 @@ public class MapCommand {
                 .then(CommandUtils.argument("type", StringArgumentType.string())
                         .suggests(((context, builder) -> SharedSuggestionProvider.suggest((new String[]{"delete", "create", "tp"}), builder)))
                         .then(CommandUtils.argument("map", StringArgumentType.greedyString())
+                                .suggests(((context, builder) -> SharedSuggestionProvider.suggest((WorldUtil.getAllWorldsId()), builder)))
                                 .executes(MapCommand::run)
                         )
                 )
