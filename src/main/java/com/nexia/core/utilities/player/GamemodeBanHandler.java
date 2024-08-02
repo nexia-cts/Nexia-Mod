@@ -67,7 +67,7 @@ public class GamemodeBanHandler {
         try {
             JSONObject jsonObject = new JSONObject();
 
-            jsonObject.put("uuid", player.getUUID());
+            jsonObject.put("uuid", player.getUUID().toString());
             jsonObject.put("gamemode", gameMode.id);
             jsonObject.put("reason", reason);
             jsonObject.put("duration", duration.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
