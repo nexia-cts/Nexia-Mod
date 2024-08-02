@@ -97,10 +97,10 @@ public abstract class BaseFfaUtil {
         List<ServerPlayer> players = getFfaWorld().players();
         if(players.isEmpty()) return true;
 
-        return checkBot(players);
+        return checkBot();
     }
     
-    public boolean checkBot(List<ServerPlayer> players) {
+    public boolean checkBot() {
         return false;
     }
 

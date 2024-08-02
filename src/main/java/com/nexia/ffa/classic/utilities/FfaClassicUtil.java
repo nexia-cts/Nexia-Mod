@@ -7,8 +7,14 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.base.BaseFfaUtil;
+import com.nexia.nexus.api.world.entity.player.Player;
+import com.nexia.nexus.api.world.util.Location;
 import net.kyori.adventure.text.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.timers.FunctionCallback;
+import net.minecraft.world.level.timers.TimerQueue;
 
 import java.util.List;
 
@@ -35,23 +41,32 @@ public class FfaClassicUtil extends BaseFfaUtil {
     }
     
     @Override
-    public boolean checkBot(List<ServerPlayer> players) {
-        ServerPlayer bot = null;
+    public boolean checkBot() {
+        Player bot = ServerTime.nexusServer.getPlayer("femboy.ai");
 
-        for(ServerPlayer player : players) {
-            if(player.getScoreboardName().equals("femboy.ai")) {
-                bot = player;
-                break;
-            }
-        }
-
-        if(bot != null && players.size() == 1) {
+        if (bot != null && getNexusFfaWorld().getPlayers().size() == 1) {
             bot.kill(); // despawns the bot
             return true;
         }
 
-        if(bot == null && !players.isEmpty()) {
-            ServerTime.nexusServer.runCommand("/function core:bot/bot", 4, false); // spawns the bot
+        if (bot == null && !getNexusFfaWorld().getPlayers().isEmpty()) {
+            // spawn the bot
+            ServerTime.nexusServer.runCommand("/player femboy.ai spawn", 4, false);
+
+            bot = ServerTime.nexusServer.getPlayer("femboy.ai");
+            bot.runCommand("ffa classic");
+
+            ServerTime.nexusServer.runCommand("/player femboy.ai move forward", 4, false);
+
+            TimerQueue<MinecraftServer> timerQueue = ServerTime.minecraftServer.getWorldData().overworldData().getScheduledEvents();
+            timerQueue.schedule("core:bot/look", 1, new FunctionCallback(new ResourceLocation("core:bot/look")));
+            timerQueue.schedule("core:bot/attack", 7, new FunctionCallback(new ResourceLocation("core:bot/look")));
+            timerQueue.schedule("core:bot/attack2", 10, new FunctionCallback(new ResourceLocation("core:bot/look")));
+            timerQueue.schedule("core:bot/strafe", 4, new FunctionCallback(new ResourceLocation("core:bot/look")));
+
+            bot.addTag("bot");
+            bot.teleport(new Location(0.5, 128, 0.5, getNexusFfaWorld()));
+            ServerTime.nexusServer.runCommand("/player femboy.ai move forward", 4, false);
             return false;
         }
 
