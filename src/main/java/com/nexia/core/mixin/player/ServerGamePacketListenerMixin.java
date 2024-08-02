@@ -174,7 +174,7 @@ public class ServerGamePacketListenerMixin {
     private void handleSpectatorTeleport(ServerboundTeleportToEntityPacket packet, CallbackInfo ci) {
 
         NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
-        net.kyori.adventure.text.Component noSpectateMSG = net.kyori.adventure.text.Component.text("You can't spectate players in other games.").color(ChatFormat.failColor);
+        net.kyori.adventure.text.Component noSpectateMSG = net.kyori.adventure.text.Component.text("You can't spectate players in other games.", ChatFormat.failColor);
 
         if (BwUtil.isInBedWars(nexiaPlayer)) {
             if (!BwPlayerEvents.spectatorTeleport(nexiaPlayer, packet)) {

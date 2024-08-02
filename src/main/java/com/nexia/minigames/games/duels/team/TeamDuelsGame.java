@@ -112,11 +112,9 @@ public class TeamDuelsGame extends DuelsGame {
 
             player.setGameMode(Minecraft.GameMode.ADVENTURE);
 
-            player.sendMessage(ChatFormat.nexiaMessage
-                    .append(Component.text("Your opponent: ").color(ChatFormat.normalColor)
-                            .decoration(ChatFormat.bold, false)
-                            .append(Component.text(team2.getLeader().getRawName() + "'s Team")
-                                    .color(ChatFormat.brandColor2))));
+            player.sendNexiaMessage(Component.text("Your opponent: ", ChatFormat.normalColor)
+                    .append(Component.text(team2.getLeader().getRawName() + "'s Team", ChatFormat.brandColor2))
+            );
 
             DuelGameHandler.loadInventory(player, stringGameMode);
 
@@ -143,11 +141,10 @@ public class TeamDuelsGame extends DuelsGame {
 
             selectedMap.p2Pos.teleportPlayer(duelLevel, player.unwrap());
 
-            player.sendMessage(ChatFormat.nexiaMessage
-                    .append(Component.text("Your opponent: ").color(ChatFormat.normalColor)
-                            .decoration(ChatFormat.bold, false)
-                            .append(Component.text(team1.getLeader().getRawName() + "'s Team")
-                                    .color(ChatFormat.brandColor2))));
+            player.sendNexiaMessage(
+                    Component.text("Your opponent: ", ChatFormat.normalColor)
+                            .append(Component.text(team1.getLeader().getRawName() + "'s Team", ChatFormat.brandColor2))
+            );
 
             DuelGameHandler.loadInventory(player, stringGameMode);
 
@@ -170,10 +167,7 @@ public class TeamDuelsGame extends DuelsGame {
         String isBroken = this.detectBrokenGame();
         if (isBroken != null) {
             Component error = ChatFormat.nexiaMessage
-                    .append(Component.text(
-                                    "The game you were in was identified as broken, please contact a developer with a video of the last 30 seconds.")
-                            .color(ChatFormat.normalColor)
-                            .decoration(ChatFormat.bold, false));
+                    .append(Component.text("The game you were in was identified as broken, please contact a developer with a video of the last 30 seconds.", ChatFormat.normalColor));
 
             Component errormsg = Component.text("Cause: " + isBroken);
 
@@ -291,8 +285,8 @@ public class TeamDuelsGame extends DuelsGame {
 
         Component win = Component.text("The game was a ")
                 .color(ChatFormat.normalColor)
-                .append(Component.text("draw").color(ChatFormat.brandColor2))
-                .append(Component.text("!").color(ChatFormat.normalColor));
+                .append(Component.text("draw", ChatFormat.brandColor2))
+                .append(Component.text("!", ChatFormat.normalColor));
 
         Component titleLose = Component.text("Draw")
                 .color(ChatFormat.brandColor2);
@@ -309,16 +303,16 @@ public class TeamDuelsGame extends DuelsGame {
             return;
         }
 
-        win = Component.text(winnerTeam.getLeader().getRawName() + "'s Team").color(ChatFormat.brandColor2)
-                .append(Component.text(" has won the duel!").color(ChatFormat.normalColor));
+        win = Component.text(winnerTeam.getLeader().getRawName() + "'s Team", ChatFormat.brandColor2)
+                .append(Component.text(" has won the duel!", ChatFormat.normalColor));
 
-        titleLose = Component.text("You lost!").color(ChatFormat.brandColor2);
+        titleLose = Component.text("You lost!", ChatFormat.brandColor2);
         subtitleLose = Component.text("You have lost against ")
                 .color(ChatFormat.normalColor)
                 .append(Component.text(winnerTeam.getLeader().getRawName() + "'s Team")
                         .color(ChatFormat.brandColor2));
 
-        titleWin = Component.text("You won!").color(ChatFormat.brandColor2);
+        titleWin = Component.text("You won!", ChatFormat.brandColor2);
         subtitleWin = Component.text("You have won against ")
                 .color(ChatFormat.normalColor)
                 .append(Component.text(loserTeam.getLeader().getRawName() + "'s Team")

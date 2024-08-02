@@ -1,5 +1,6 @@
 package com.nexia.minigames.games.skywars;
 
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.LobbyUtil;
@@ -7,7 +8,6 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.CorePlayerData;
-import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
@@ -18,11 +18,9 @@ import com.nexia.minigames.games.skywars.util.player.SkywarsPlayerData;
 import com.nexia.nexus.api.world.types.Minecraft;
 import net.fabricmc.loader.impl.util.StringUtil;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.bossevents.CustomBossEvent;
@@ -34,7 +32,6 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.biome.Biomes;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -46,8 +43,10 @@ import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.time.Duration;
-import java.util.*;
-import java.util.function.BiConsumer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import static com.nexia.core.NexiaCore.SKYWARS_DATA_MANAGER;
 import static com.nexia.core.utilities.world.WorldUtil.getChunkGenerator;
@@ -166,13 +165,13 @@ public class SkywarsGame {
 
                     player.sendActionBarMessage(
                             Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
-                                    .append(Component.text(StringUtil.capitalize(SkywarsGame.map.id)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                                    .append(Component.text(StringUtil.capitalize(SkywarsGame.map.id), ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                                     .append(Component.text(" (" + SkywarsGame.queue.size() + "/" + SkywarsMap.maxJoinablePlayers + ")").color(TextColor.fromHexString("#b3b3b3")))
                                     .append(Component.text(" | ").color(ChatFormat.lineColor))
                                     .append(Component.text("Time » ").color(TextColor.fromHexString("#b3b3b3")))
-                                    .append(Component.text(SkywarsGame.queueTime).color(ChatFormat.brandColor2))
+                                    .append(Component.text(SkywarsGame.queueTime, ChatFormat.brandColor2))
                                     .append(Component.text(" | ").color(ChatFormat.lineColor))
-                                    .append(Component.text("Teaming is not allowed!").color(ChatFormat.failColor))
+                                    .append(Component.text("Teaming is not allowed!", ChatFormat.failColor))
                     );
                 }
                 if (SkywarsGame.queueTime <= 5 || SkywarsGame.queueTime == 10 || SkywarsGame.queueTime == 15) {
@@ -195,12 +194,12 @@ public class SkywarsGame {
 
     @NotNull
     private static Title getTitle() {
-        TextColor color = NamedTextColor.GREEN;
+        TextColor color = ChatFormat.Minecraft.green;
 
         if(SkywarsGame.queueTime <= 3 && SkywarsGame.queueTime > 1) {
-            color = NamedTextColor.YELLOW;
+            color = ChatFormat.Minecraft.yellow;
         } else if(SkywarsGame.queueTime <= 1) {
-            color = NamedTextColor.RED;
+            color = ChatFormat.Minecraft.red;
         }
 
         return Title.title(Component.text(SkywarsGame.queueTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
@@ -331,10 +330,10 @@ public class SkywarsGame {
         PlayerDataManager.getDataManager(SKYWARS_DATA_MANAGER).get(player).savedData.incrementInteger("wins");
 
         for(NexiaPlayer serverPlayer : SkywarsGame.getViewers()){
-            serverPlayer.sendTitle(Title.title(Component.text(player.getRawName()).color(ChatFormat.brandColor2), Component.text("has won the game!").color(ChatFormat.normalColor)
+            serverPlayer.sendTitle(Title.title(Component.text(player.getRawName(), ChatFormat.brandColor2), Component.text("has won the game!", ChatFormat.normalColor)
                     .append(Component.text(" [")
                             .color(ChatFormat.lineColor))
-                    .append(Component.text(FfaUtil.calculateHealth(player.getHealth()) + "❤").color(ChatFormat.failColor))
+                    .append(Component.text(FfaUtil.calculateHealth(player.getHealth()) + "❤", ChatFormat.failColor))
                     .append(Component.text("]").color(ChatFormat.lineColor))
             ));
         }
@@ -346,12 +345,12 @@ public class SkywarsGame {
         for(NexiaPlayer player : SkywarsGame.getViewers()) {
             player.sendActionBarMessage(
                     Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
-                            .append(Component.text(StringUtil.capitalize(SkywarsGame.map.id)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                            .append(Component.text(StringUtil.capitalize(SkywarsGame.map.id), ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
                             .append(Component.text("Players » ").color(TextColor.fromHexString("#b3b3b3")))
-                            .append(Component.text(SkywarsGame.alive.size()).color(ChatFormat.brandColor2))
+                            .append(Component.text(SkywarsGame.alive.size(), ChatFormat.brandColor2))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
-                            .append(Component.text("Teaming is not allowed!").color(ChatFormat.failColor))
+                            .append(Component.text("Teaming is not allowed!", ChatFormat.failColor))
             );
         }
 
@@ -387,13 +386,13 @@ public class SkywarsGame {
             player.sendSound(new EntityPos(player.unwrap()), SoundEvents.CHEST_OPEN, SoundSource.AMBIENT, 1000, 1);
             player.sendMessage(
                     Component.text("[").color(ChatFormat.lineColor)
-                            .append(Component.text("⚠").color(ChatFormat.failColor))
+                            .append(Component.text("⚠", ChatFormat.failColor))
                             .append(Component.text("]").color(ChatFormat.lineColor))
                             .append(Component.text(" All chests have been refilled.").color(TextColor.fromHexString("#FFE588")))
             );
 
             player.sendTitle(
-                    Title.title(Component.text("⚠").color(ChatFormat.failColor),
+                    Title.title(Component.text("⚠", ChatFormat.failColor),
                             Component.text(" All chests have been refilled.").color(TextColor.fromHexString("#FFE588")))
             );
         }
@@ -404,13 +403,13 @@ public class SkywarsGame {
             player.sendSound(new EntityPos(player.unwrap()), SoundEvents.RESPAWN_ANCHOR_CHARGE, SoundSource.AMBIENT, 1000, 1);
             player.sendMessage(
                     Component.text("[").color(ChatFormat.lineColor)
-                            .append(Component.text("⚠").color(ChatFormat.failColor))
+                            .append(Component.text("⚠", ChatFormat.failColor))
                             .append(Component.text("]").color(ChatFormat.lineColor))
                             .append(Component.text(" In 1 minute, the closest player to center will win.").color(TextColor.fromHexString("#FFE588")))
             );
 
             player.sendTitle(
-                    Title.title(Component.text("⚠").color(ChatFormat.failColor),
+                    Title.title(Component.text("⚠", ChatFormat.failColor),
                             Component.text(" In 1 minute, the closest player to center will win.").color(TextColor.fromHexString("#FFE588")))
             );
         }

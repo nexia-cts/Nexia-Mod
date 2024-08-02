@@ -21,7 +21,7 @@ public class SprintFixCommand {
         NexiaPlayer player = new NexiaPlayer(context.getSource().getPlayerOrException());
         CoreSavedPlayerData data = (CoreSavedPlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player).savedData;
 
-        player.sendMessage(ChatFormat.nexiaMessage.append(Component.text((data.setSprintFix(!data.isSprintFix()) ? "Enabled" : "Disabled") + " Sprint Fix!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
+        player.sendNexiaMessage(Component.text((data.setSprintFix(!data.isSprintFix()) ? "Enabled" : "Disabled") + " Sprint Fix!", ChatFormat.normalColor));
 
         return 1;
     }

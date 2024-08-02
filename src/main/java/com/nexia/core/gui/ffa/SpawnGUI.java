@@ -4,6 +4,7 @@ import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.ffa.kits.utilities.KitFfaAreas;
+import com.nexia.nexus.api.world.util.Location;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
@@ -22,7 +23,7 @@ public class SpawnGUI extends SimpleGui {
         super(type, player, includePlayer);
     }
 
-    public static HashMap<String, int[]> mapLocations = new HashMap<>();
+    public static HashMap<String, Location> mapLocations = new HashMap<>();
 
     private void fillEmptySlots(ItemStack itemStack){
         for(int i = 0; i < 45; i++){
@@ -108,18 +109,17 @@ public class SpawnGUI extends SimpleGui {
     }
 
     public static void teleportPlayer(ServerPlayer minecraftPlayer, String name) {
-        int[] pos = mapLocations.get(name);
+        Location pos = mapLocations.get(name);
         NexiaPlayer player = new NexiaPlayer(minecraftPlayer);
         if(pos != null){
-            minecraftPlayer.teleportTo(KitFfaAreas.ffaWorld, pos[0], pos[1], pos[2], pos[3], pos[4]);
-            player.sendMessage(
-                    ChatFormat.nexiaMessage
-                                    .append(Component.text("You have been teleported to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                            .append(Component.text(name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                            .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+            player.teleport(pos);
+            player.sendNexiaMessage(
+                    Component.text("You have been teleported to: ", ChatFormat.normalColor)
+                            .append(Component.text(name, ChatFormat.brandColor2))
+                            .append(Component.text(".", ChatFormat.normalColor))
             );
         } else {
-            player.sendMessage(Component.text("Invalid biome!").color(ChatFormat.failColor));
+            player.sendMessage(Component.text("Invalid biome!", ChatFormat.failColor));
         }
     }
 
@@ -157,15 +157,15 @@ public class SpawnGUI extends SimpleGui {
         // 115 40 -151 | Mushrooms
         // 0 40 0 | Plains (Center)
 
-        mapLocations.put("nether forest", new int[]{186, 49, -71, -133, -5});
-        mapLocations.put("blackstone", new int[]{161, 57, 82, -130, -11});
-        mapLocations.put("mesa", new int[]{74, 48, 169, 130, -1});
-        mapLocations.put("savanna", new int[]{-166, 43, 50, 156, -3});
-        mapLocations.put("snow", new int[]{-35, 47, -206, 51, 1});
-        mapLocations.put("forest", new int[]{-174, 42, -38, 132, -2});
-        mapLocations.put("desert", new int[]{-73, 41, 181, 121, -2});
-        mapLocations.put("mushrooms", new int[]{115, 41, -151, -136, -1});
-        mapLocations.put("plains", new int[]{0, 41, 0, 0, 0});
+        mapLocations.put("nether forest", new Location(186, 49, -71, -133, -5, KitFfaAreas.nexusFfaWorld));
+        mapLocations.put("blackstone", new Location(161, 57, 82, -130, -11, KitFfaAreas.nexusFfaWorld));
+        mapLocations.put("mesa", new Location(74, 48, 169, 130, -1, KitFfaAreas.nexusFfaWorld));
+        mapLocations.put("savanna", new Location(-166, 43, 50, 156, -3, KitFfaAreas.nexusFfaWorld));
+        mapLocations.put("snow", new Location(-35, 47, -206, 51, 1, KitFfaAreas.nexusFfaWorld));
+        mapLocations.put("forest", new Location(-174, 42, -38, 132, -2, KitFfaAreas.nexusFfaWorld));
+        mapLocations.put("desert", new Location(-73, 41, 181, 121, -2, KitFfaAreas.nexusFfaWorld));
+        mapLocations.put("mushrooms", new Location(115, 41, -151, -136, -1, KitFfaAreas.nexusFfaWorld));
+        mapLocations.put("plains", new Location(0, 41, 0, 0, 0, KitFfaAreas.nexusFfaWorld));
 
     }
 }

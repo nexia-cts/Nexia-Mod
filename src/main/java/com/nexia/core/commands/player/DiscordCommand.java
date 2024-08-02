@@ -21,11 +21,13 @@ public class DiscordCommand {
     public static int run(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         context.getSource().sendMessage(
                 ChatFormat.nexiaMessage
-                                .append(Component.text("Link to discord: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                                        .append(Component.text(NexiaDiscord.config.discordLink).color(ChatFormat.brandColor2)
-                                                .hoverEvent(HoverEvent.showText(Component.text("Click me").color(ChatFormat.greenColor)))
-                                                .clickEvent(ClickEvent.openUrl(NexiaDiscord.config.discordLink)))
-        ));
+                        .append(Component.text("Link to discord: ", ChatFormat.normalColor))
+                        .append(Component.text(NexiaDiscord.config.discordLink, ChatFormat.brandColor2)
+                                        .hoverEvent(HoverEvent.showText(Component.text("Click me", ChatFormat.greenColor)))
+                                        .clickEvent(ClickEvent.openUrl(NexiaDiscord.config.discordLink))
+                        )
+
+        );
 
         return 1;
     }

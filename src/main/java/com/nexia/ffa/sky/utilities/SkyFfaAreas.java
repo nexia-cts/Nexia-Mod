@@ -106,7 +106,7 @@ public class SkyFfaAreas implements FfaAreas {
 
     public static boolean canBuild(NexiaPlayer player, BlockPos blockPos) {
         if (protectionMap == null) {
-            player.sendMessage(Component.text("Something went wrong, please inform the admins").color(ChatFormat.failColor));
+            player.sendMessage(Component.text("Something went wrong, please inform the admins", ChatFormat.failColor));
             return false;
         }
 

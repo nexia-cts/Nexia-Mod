@@ -49,29 +49,22 @@ public class SpectateCommand {
     public static int gameModeSpectate(CommandContext<CommandSourceInfo> context) throws CommandSyntaxException {
         NexiaPlayer executor = new NexiaPlayer(context.getSource().getPlayerOrException());
 
-        if(((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(executor)).gameMode != PlayerGameMode.FFA) {
-            executor.sendMessage(ChatFormat.nexiaMessage.append(
-                    Component.text("This can only be used in FFA!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-            ));
-            executor.sendMessage(ChatFormat.nexiaMessage.append(
-                    Component.text("If you are in duels then you do /spectate <player>.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-            ));
+        if(!executor.isInGameMode(PlayerGameMode.FFA)) {
+            executor.sendNexiaMessage("This can only be used in FFA!");
+            executor.sendNexiaMessage("If you are in duels then you do /spectate <player>.");
             return 0;
         }
 
         if(!executor.hasPermission("nexia.prefix.supporter")) {
-            executor.sendMessage(ChatFormat.nexiaMessage.append(
-                    Component.text("This feature is only available for").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
+            executor.sendNexiaMessage(
+                    Component.text("This feature is only available for", ChatFormat.normalColor)
                             .append(Component.text("Supporters")
                                     .color(ChatFormat.brandColor1)
                                     .decoration(ChatFormat.bold, true)
-                                    .hoverEvent(HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor1)))
-                                    .clickEvent(ClickEvent.suggestCommand("/ranks")
-                                    )
-                                    .append(Component.text("!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                    .hoverEvent(HoverEvent.showText(Component.text("Click me", ChatFormat.brandColor1)))
+                                    .clickEvent(ClickEvent.suggestCommand("/ranks"))
+                                    .append(Component.text("!", ChatFormat.normalColor))
                             )
-                    )
-
             );
         }
 
@@ -80,9 +73,7 @@ public class SpectateCommand {
         }
 
         if(Math.round(executor.getHealth()) < 20) {
-            executor.sendMessage(ChatFormat.nexiaMessage.append(
-                    Component.text("You must be fully healed to go into spectator!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-            );
+            executor.sendNexiaMessage("You must be fully healed to go into spectator!");
             return 0;
         }
 
@@ -95,24 +86,22 @@ public class SpectateCommand {
         NexiaPlayer nexiaExecutor = new NexiaPlayer(context.getSource().getPlayerOrException());
         NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
 
-        if(((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(nexiaPlayer)).gameMode == PlayerGameMode.LOBBY) {
+        if(nexiaPlayer.isInGameMode(PlayerGameMode.LOBBY)) {
             GamemodeHandler.spectatePlayer(nexiaExecutor, nexiaPlayer);
             return 1;
         }
 
         if(!nexiaExecutor.hasPermission("nexia.prefix.supporter")) {
-            nexiaExecutor.sendMessage(ChatFormat.nexiaMessage.append(
-                            Component.text("This feature is only available for").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
+            nexiaExecutor.sendNexiaMessage(
+                            Component.text("This feature is only available for", ChatFormat.normalColor)
                                     .append(Component.text("Supporters")
                                             .color(ChatFormat.brandColor1)
                                             .decoration(ChatFormat.bold, true)
-                                            .hoverEvent(HoverEvent.showText(Component.text("Click me").color(ChatFormat.brandColor1)))
+                                            .hoverEvent(HoverEvent.showText(Component.text("Click me", ChatFormat.brandColor1)))
                                             .clickEvent(ClickEvent.suggestCommand("/ranks")
                                             )
-                                            .append(Component.text("!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                            .append(Component.text("!", ChatFormat.normalColor))
                                     )
-                    )
-
             );
         }
 
@@ -121,27 +110,19 @@ public class SpectateCommand {
         }
 
         if(((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(nexiaExecutor)).gameMode != PlayerGameMode.FFA) {
-            nexiaExecutor.sendMessage(ChatFormat.nexiaMessage.append(
-                    Component.text("This can only be used in FFA!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-            ));
-            nexiaExecutor.sendMessage(ChatFormat.nexiaMessage.append(
-                    Component.text("If you are in duels then you do /spectate <player>.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-            ));
+            nexiaExecutor.sendNexiaMessage("This can only be used in FFA!");
+            nexiaExecutor.sendNexiaMessage("If you are in duels then you do /spectate <player>.");
         }
 
         if(!FfaUtil.isFfaPlayer(nexiaPlayer)) {
-            nexiaExecutor.sendMessage(ChatFormat.nexiaMessage.append(
-                    Component.text("That player is not in FFA!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-            ));
+            nexiaExecutor.sendNexiaMessage("That player is not in FFA!");
             return 0;
         }
 
         // Check if player is in combat (or full health), then put them in spectator.
 
         if(Math.round(nexiaExecutor.getHealth()) < 20) {
-            nexiaExecutor.sendMessage(ChatFormat.nexiaMessage.append(
-                    Component.text("You must be fully healed to go into spectator!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-            );
+            nexiaExecutor.sendNexiaMessage("You must be fully healed to go into spectator!");
             return 0;
         }
 

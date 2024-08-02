@@ -40,7 +40,7 @@ public class StaffPrefixCommand {
                                             if(rank == null) {
                                                 context.getSource().sendMessage(
                                                         ChatFormat.nexiaMessage
-                                                                .append(Component.text("Invalid rank!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                                .append(Component.text("Invalid rank!", ChatFormat.normalColor))
                                                 );
                                                 return 0;
                                             }
@@ -48,18 +48,17 @@ public class StaffPrefixCommand {
                                             if(type.equalsIgnoreCase("set")){
                                                 context.getSource().sendMessage(
                                                         ChatFormat.nexiaMessage
-                                                                .append(Component.text("You have set the prefix of ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                                                .append(Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor2))
-                                                                .append(Component.text(" to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                                                .append(Component.text(rank.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
-                                                                .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold,false).decoration(ChatFormat.bold, false))
+                                                                .append(Component.text("You have set the prefix of ", ChatFormat.normalColor))
+                                                                .append(Component.text(otherPlayer.getRawName(), ChatFormat.brandColor2))
+                                                                .append(Component.text(" to: ", ChatFormat.normalColor))
+                                                                .append(Component.text(rank.name, ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                                                                .append(Component.text(".", ChatFormat.normalColor).decoration(ChatFormat.bold,false))
                                                 );
 
-                                                otherPlayer.sendMessage(
-                                                        ChatFormat.nexiaMessage
-                                                                .append(Component.text("Your prefix has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                                                .append(Component.text(rank.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
-                                                                .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                                otherPlayer.sendNexiaMessage(
+                                                        Component.text("Your prefix has been set to: ", ChatFormat.normalColor)
+                                                                .append(Component.text(rank.name, ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                                                                .append(Component.text(".", ChatFormat.normalColor))
                                                 );
 
                                                 NexiaRank.setPrefix(rank, otherPlayer);
@@ -68,11 +67,11 @@ public class StaffPrefixCommand {
                                             if(type.equalsIgnoreCase("remove")){
                                                 context.getSource().sendMessage(
                                                         ChatFormat.nexiaMessage
-                                                                .append(Component.text("You have removed the prefix ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                                                .append(Component.text(rank.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true).decoration(ChatFormat.bold, false))
-                                                                .append(Component.text(" from: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                                                .append(Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                                                                .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold,false))
+                                                                .append(Component.text("You have removed the prefix ", ChatFormat.normalColor))
+                                                                .append(Component.text(rank.name, ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                                                                .append(Component.text(" from: ", ChatFormat.normalColor))
+                                                                .append(Component.text(otherPlayer.getRawName(), ChatFormat.brandColor2))
+                                                                .append(Component.text(".", ChatFormat.normalColor).decoration(ChatFormat.bold,false))
                                                 );
 
                                                 NexiaRank.removePrefix(rank, otherPlayer);
@@ -81,11 +80,11 @@ public class StaffPrefixCommand {
                                             if(type.equalsIgnoreCase("add")){
                                                 context.getSource().sendMessage(
                                                         ChatFormat.nexiaMessage
-                                                                .append(Component.text("You have added the prefix ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                                                .append(Component.text(rank.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
-                                                                .append(Component.text(" to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                                                .append(Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                                                                .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold,false))
+                                                                .append(Component.text("You have added the prefix ", ChatFormat.normalColor))
+                                                                .append(Component.text(rank.name, ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                                                                .append(Component.text(" to: ", ChatFormat.normalColor))
+                                                                .append(Component.text(otherPlayer.getRawName(), ChatFormat.brandColor2))
+                                                                .append(Component.text(".", ChatFormat.normalColor).decoration(ChatFormat.bold,false))
                                                 );
                                                 NexiaRank.addPrefix(rank, otherPlayer, false);
                                             }

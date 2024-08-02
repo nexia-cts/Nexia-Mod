@@ -15,6 +15,8 @@ import com.nexia.core.utilities.commands.CommandUtil;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.discord.NexiaDiscord;
+import com.nexia.nexus.api.world.entity.player.Player;
+import com.nexia.nexus.builder.implementation.world.entity.player.WrappedPlayer;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.kyori.adventure.text.Component;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -59,48 +61,35 @@ public class ReportCommand {
         NexiaPlayer executor = new NexiaPlayer(context.getSource().getPlayerOrException());
 
         if(((CoreSavedPlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(executor).savedData).isReportBanned()) {
-            executor.sendMessage(
-                    ChatFormat.nexiaMessage
-                            .append(Component.text("You are report banned!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false)
-                            )
-
-            );
+            executor.sendNexiaMessage("You are report banned!");
             return 1;
         }
 
         if(executor.getUUID().equals(player.getUUID())){
-            executor.sendMessage(
-                    ChatFormat.nexiaMessage
-                            .append(Component.text("You cannot report yourself!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
-
-            );
+            executor.sendNexiaMessage("You cannot report yourself!");
             return 1;
         }
 
-        executor.sendMessage(
-                ChatFormat.nexiaMessage
-                        .append(Component.text("You have reported ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                        .append(Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2))
-                        .append(Component.text(" for ").color(ChatFormat.normalColor))
-                        .append(Component.text(reason).color(ChatFormat.brandColor2))
+        executor.sendNexiaMessage(
+                Component.text("You have reported ", ChatFormat.normalColor)
+                        .append(Component.text(player.getScoreboardName(), ChatFormat.brandColor2))
+                        .append(Component.text(" for ", ChatFormat.normalColor))
+                        .append(Component.text(reason, ChatFormat.brandColor2))
         );
 
         if(!sendWebhook(executor.getRawName(), player.getScoreboardName(), reason)) {
-            executor.sendMessage(
-                    ChatFormat.nexiaMessage
-                            .append(Component.text("Failed to send webhook! Don't worry, staff who are currently online will see your report!").decoration(ChatFormat.bold, false).color(ChatFormat.normalColor))
-            );
+            executor.sendNexiaMessage("Failed to send webhook! Don't worry, staff who are currently online will see your report!");
         }
 
         Component staffReportMessage = ChatFormat.nexiaMessage
-                .append(Component.text(executor.getRawName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                .append(Component.text(" has reported ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                .append(Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                .append(Component.text(" for ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                .append(Component.text(reason).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false));
+                .append(Component.text(executor.getRawName(), ChatFormat.brandColor2))
+                .append(Component.text(" has reported ", ChatFormat.normalColor))
+                .append(Component.text(player.getScoreboardName(), ChatFormat.brandColor2))
+                .append(Component.text(" for ", ChatFormat.normalColor))
+                .append(Component.text(reason, ChatFormat.brandColor2));
 
-        for (ServerPlayer staffPlayer : ServerTime.minecraftServer.getPlayerList().getPlayers()){
-            if(Permissions.check(staffPlayer, "nexia.staff.report", 1)) ServerTime.nexusServer.getPlayer(staffPlayer.getUUID()).sendMessage(staffReportMessage);
+        for (Player staffPlayer : ServerTime.nexusServer.getPlayers()){
+            if(Permissions.check(((WrappedPlayer) staffPlayer).unwrap(), "nexia.staff.report", 1)) staffPlayer.sendMessage(staffReportMessage);
         }
 
         return 1;

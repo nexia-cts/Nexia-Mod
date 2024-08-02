@@ -87,9 +87,7 @@ public class LinkSlashCommand extends BaseSlashCommand {
 
         player.sendMessage(
                 ChatFormat.nexiaMessage
-                        .append(Component.text("Your account has been linked with the discord user: ")
-                                .decoration(ChatFormat.bold, false)
-                                .color(ChatFormat.normalColor)
+                        .append(Component.text("Your account has been linked with the discord user: ", ChatFormat.normalColor)
                                 .append(Component.text("@" + user.getName())
                                         .color(ChatFormat.brandColor1)
                                         .decoration(ChatFormat.bold, true))

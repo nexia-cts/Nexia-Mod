@@ -50,17 +50,16 @@ public class ShoutCommand {
 
         if(longTime - System.currentTimeMillis() > 0) {
             String time = ShoutCommand.timeToText(longTime - System.currentTimeMillis());
-            executor.sendMessage(ChatFormat.nexiaMessage.append(
-                    Component.text("You are still on cooldown, you have ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                            .append(Component.text(time).color(ChatFormat.brandColor1).decoration(ChatFormat.bold, true))
-                            .append(Component.text(" left!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-            ));
+            executor.sendNexiaMessage(
+                    Component.text("You are still on cooldown, you have ", ChatFormat.normalColor)
+                            .append(Component.text(time, ChatFormat.brandColor1).decoration(ChatFormat.bold, true))
+                            .append(Component.text(" left!", ChatFormat.normalColor))
+            );
             return 0;
         }
 
-        Component cmessage = Component.text(executor.getRawName()).color(ChatFormat.brandColor1).decoration(ChatFormat.bold, true)
-                .append(Component.text( " shouts: " + message).color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                );
+        Component cmessage = Component.text(executor.getRawName(), ChatFormat.brandColor1).decoration(ChatFormat.bold, true)
+                .append(Component.text( " shouts: " + message, ChatFormat.normalColor));
 
         for(Player player : ServerTime.nexusServer.getPlayers()) {
             player.sendMessage(cmessage);

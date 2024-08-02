@@ -81,16 +81,16 @@ public class MessageCommand {
         if (PlayerMutes.muted(sender) || sender.equals(receiver)) return;
 
         sender.sendMessage(
-                Component.text(String.format("To %s", receiver.getRawName())).color(ChatFormat.brandColor2)
+                Component.text(String.format("To %s", receiver.getRawName()), ChatFormat.brandColor2)
                                 .append(Component.text(" » ").color(ChatFormat.arrowColor)
-                                                .append(Component.text(message).color(ChatFormat.brandColor2))
+                                                .append(Component.text(message, ChatFormat.brandColor2))
 
         ));
 
         receiver.sendMessage(
-                Component.text(String.format("From %s", sender.getRawName())).color(ChatFormat.brandColor2)
+                Component.text(String.format("From %s", sender.getRawName()), ChatFormat.brandColor2)
                         .append(Component.text(" » ").color(ChatFormat.arrowColor)
-                                .append(Component.text(message).color(ChatFormat.brandColor2))
+                                .append(Component.text(message, ChatFormat.brandColor2))
 
                         ));
 

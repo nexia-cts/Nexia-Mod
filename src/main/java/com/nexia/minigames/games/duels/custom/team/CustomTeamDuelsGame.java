@@ -84,11 +84,10 @@ public class CustomTeamDuelsGame extends TeamDuelsGame {
 
             selectedMap.p1Pos.teleportPlayer(duelLevel, serverPlayer);
 
-            player.sendMessage(ChatFormat.nexiaMessage
-                    .append(Component.text("Your opponent: ").color(ChatFormat.normalColor)
-                            .decoration(ChatFormat.bold, false)
-                            .append(Component.text(team2.getLeader().getRawName() + "'s Team")
-                                    .color(ChatFormat.brandColor2))));
+            player.sendNexiaMessage(
+                    Component.text("Your opponent: ", ChatFormat.normalColor)
+                            .append(Component.text(team2.getLeader().getRawName() + "'s Team", ChatFormat.brandColor2))
+            );
 
             if(kitFile.exists()) InventoryUtil.loadInventory(player, "duels/custom/" + team1.getLeader().getUUID(), kitID.toLowerCase());
             else InventoryUtil.loadInventory(player, "duels", "classic");
@@ -113,12 +112,10 @@ public class CustomTeamDuelsGame extends TeamDuelsGame {
 
             selectedMap.p2Pos.teleportPlayer(duelLevel, serverPlayer);
 
-            player.sendMessage(ChatFormat.nexiaMessage
-                    .append(Component.text("Your opponent: ").color(ChatFormat.normalColor)
-                            .decoration(ChatFormat.bold, false)
-                            .append(Component.text(team1.getLeader().getRawName() + "'s Team")
-                                    .color(ChatFormat.brandColor2))));
-
+            player.sendNexiaMessage(
+                    Component.text("Your opponent: ", ChatFormat.normalColor)
+                            .append(Component.text(team1.getLeader().getRawName() + "'s Team", ChatFormat.brandColor2))
+            );
 
             if(game.perCustomDuel) {
                 if(p2File != null && p2File.exists()) InventoryUtil.loadInventory(player, "duels/custom/" + team2.getLeader().getUUID(), perCustomKitID.toLowerCase());

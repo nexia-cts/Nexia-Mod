@@ -40,16 +40,15 @@ public class RankCommand {
         if (nexiaRank == null) {
             context.getSource().sendMessage(
                     ChatFormat.nexiaMessage
-                            .append(Component.text("Invalid rank!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                            .append(Component.text("Invalid rank!", ChatFormat.normalColor))
             );
             return 0;
         }
 
-        nexiaPlayer.sendMessage(
-                ChatFormat.nexiaMessage
-                        .append(Component.text("Your rank has been set to: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                        .append(Component.text(nexiaRank.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
-                        .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+        nexiaPlayer.sendNexiaMessage(
+                Component.text("Your rank has been set to: ", ChatFormat.normalColor)
+                        .append(Component.text(nexiaRank.name, ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                        .append(Component.text(".", ChatFormat.normalColor))
         );
 
         NexiaRank.setRank(nexiaRank, nexiaPlayer);

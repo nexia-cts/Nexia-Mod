@@ -104,7 +104,7 @@ public class BwGame {
             if (timeLeft % 20 == 0) {
                 player.sendTitle(Title.title(Component.text("You died!").color(ChatFormat.Minecraft.red),
                         Component.text("Respawning in ").color(ChatFormat.Minecraft.gray)
-                                .append(Component.text(timeLeft / 20).color(ChatFormat.brandColor2))
+                                .append(Component.text(timeLeft / 20, ChatFormat.brandColor2))
                                 .append(Component.text("...").color(ChatFormat.Minecraft.gray)),
                         Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0))
                 ));
@@ -151,7 +151,7 @@ public class BwGame {
         } else if (announcedQueueSeconds.contains(queueCountdown)) {
             for(NexiaPlayer player : queueList) {
                 player.sendMessage(Component.text("The game will start in ").color(ChatFormat.Minecraft.gray)
-                        .append(Component.text(queueCountdown).color(ChatFormat.brandColor2)
+                        .append(Component.text(queueCountdown, ChatFormat.brandColor2)
                                 .append(Component.text( " seconds.").color(ChatFormat.Minecraft.gray)))
                 );
             }

@@ -275,7 +275,7 @@ public class BwTeam {
         }
 
         for(NexiaPlayer player : players) {
-            player.sendTitle(Title.title(Component.text("Bed Destroyed").color(ChatFormat.failColor), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0))));
+            player.sendTitle(Title.title(Component.text("Bed Destroyed", ChatFormat.failColor), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0))));
         }
 
         BwScoreboard.updateScoreboard();

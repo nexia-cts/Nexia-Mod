@@ -80,13 +80,14 @@ public class CustomDuelsGame extends DuelsGame {
         removeQueue(p2, null, true);
 
 
-        p2.sendMessage(ChatFormat.nexiaMessage
-                .append(Component.text("Your opponent: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                .append(Component.text(p1.getRawName()).color(ChatFormat.brandColor2))));
+        p1.sendNexiaMessage(
+                Component.text("Your opponent: ", ChatFormat.normalColor)
+                        .append(Component.text(p2.getRawName(), ChatFormat.brandColor2)));
 
-        p1.sendMessage(ChatFormat.nexiaMessage
-                .append(Component.text("Your opponent: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                .append(Component.text(p2.getRawName())).color(ChatFormat.brandColor2)));
+        p2.sendNexiaMessage(
+                Component.text("Your opponent: ", ChatFormat.normalColor)
+                        .append(Component.text(p1.getRawName(), ChatFormat.brandColor2)));
+
 
         File p1File = new File(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom" + File.separator + p1.getUUID(), kitID.toLowerCase() + ".txt");
         if (p1File.exists()) {

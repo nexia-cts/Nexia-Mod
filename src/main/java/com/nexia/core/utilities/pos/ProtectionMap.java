@@ -58,12 +58,11 @@ public class ProtectionMap {
             }
         }
 
-        new NexiaPlayer(player).sendMessage(ChatFormat.nexiaMessage
-                .append(Component.text("Map created successfully with ").color(ChatFormat.normalColor)
-                        .append(Component.text(blockCount).color(ChatFormat.brandColor2)
-                                .append(Component.text(" protected blocks.").color(ChatFormat.normalColor))
-                        )
-        ));
+        new NexiaPlayer(player).sendNexiaMessage(
+                Component.text("Map created successfully with ", ChatFormat.normalColor)
+                        .append(Component.text(blockCount, ChatFormat.brandColor2))
+                        .append(Component.text(" protected blocks.", ChatFormat.normalColor))
+        );
     }
 
     private void exportMap(ServerPlayer mcPlayer, String filePath) {
@@ -76,11 +75,12 @@ public class ProtectionMap {
             fileWriter.write(json);
             fileWriter.close();
 
-            player.sendMessage(ChatFormat.nexiaMessage.append(Component.text("Successfully exported protection map.").color(ChatFormat.normalColor)));
+            player.sendNexiaMessage("Successfully exported protection map.");
 
         } catch (Exception e) {
             e.printStackTrace();
-            player.sendMessage(ChatFormat.nexiaMessage.append(Component.text("Failed to export protection map.").color(ChatFormat.failColor)));
+            player.sendNexiaMessage("Failed to export protection map.");
+            player.sendMessage(Component.text(e.getClass().getSimpleName() + ": " + e.getMessage(), ChatFormat.normalColor));
         }
     }
 
@@ -92,7 +92,7 @@ public class ProtectionMap {
             Gson gson = new Gson();
             map = gson.fromJson(possibleJson, byte[][][].class);
         } catch (Exception e) {
-            System.out.println(NexiaCore.MOD_NAME + ": Failed to import protection map from " + filePath);
+            NexiaCore.logger.error(NexiaCore.MOD_NAME + ": Failed to import protection map from {}", filePath);
             return null;
         }
         return new ProtectionMap(map, listedBlocks, notListedBlock, outsideMessage);
@@ -127,7 +127,7 @@ public class ProtectionMap {
         if (mapPos.getX() < 0 || mapPos.getX() >= map.length ||
                 mapPos.getY() < 0 || mapPos.getY() >= map[0].length ||
                 mapPos.getZ() < 0 || mapPos.getZ() >= map[0][0].length) {
-            if (sendMessage) player.sendMessage(Component.text(outsideMessage).color(ChatFormat.failColor));
+            if (sendMessage) player.sendMessage(Component.text(outsideMessage, ChatFormat.failColor));
             return false;
         }
 
@@ -135,7 +135,7 @@ public class ProtectionMap {
         ProtectionBlock protectionBlock = this.getMappingBlock(id);
 
         if (!protectionBlock.canBuild) {
-            if (sendMessage) player.sendMessage(Component.text(protectionBlock.noBuildMessage).color(ChatFormat.failColor));
+            if (sendMessage) player.sendMessage(Component.text(protectionBlock.noBuildMessage, ChatFormat.failColor));
             return false;
         }
         return true;

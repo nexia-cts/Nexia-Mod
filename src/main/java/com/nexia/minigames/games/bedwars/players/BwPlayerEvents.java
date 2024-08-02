@@ -56,13 +56,13 @@ public class BwPlayerEvents {
 
     public static void tryToJoin(NexiaPlayer player, boolean throughEvent) {
         if (BwUtil.isInBedWars(player)) {
-            //player.sendMessage(Component.text("You are already in the game.").color(ChatFormat.failColor));
+            //player.sendMessage(Component.text("You are already in the game.", ChatFormat.failColor));
             LobbyUtil.returnToLobby(player, false);
             tryToJoin(player, throughEvent);
             return;
         }
         if (BwGame.queueList.size() >= BwGame.maxPlayerCount) {
-            player.sendMessage(Component.text("The game is full.").color(ChatFormat.failColor));
+            player.sendMessage(Component.text("The game is full.", ChatFormat.failColor));
             LobbyUtil.returnToLobby(player, false);
             return;
         }
@@ -76,7 +76,7 @@ public class BwPlayerEvents {
 
     public static boolean spectatorTeleport(NexiaPlayer player, ServerboundTeleportToEntityPacket packet) {
         if (BwUtil.isBedWarsPlayer(player)) {
-            player.sendMessage(Component.text("You can't spectate others while in the game.").color(ChatFormat.failColor));
+            player.sendMessage(Component.text("You can't spectate others while in the game.", ChatFormat.failColor));
             return false;
         }
 
@@ -86,7 +86,7 @@ public class BwPlayerEvents {
             NexiaPlayer nexiaTarget = new NexiaPlayer(target);
 
             if (!BwUtil.isBedWarsPlayer(nexiaTarget)) {
-                player.sendMessage(Component.text("You can't spectate players in other games.").color(ChatFormat.failColor));
+                player.sendMessage(Component.text("You can't spectate players in other games.", ChatFormat.failColor));
                 return false;
             }
         }

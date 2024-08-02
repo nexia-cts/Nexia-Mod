@@ -38,8 +38,8 @@ public class LinkCommand {
         LinkSlashCommand.idMinecraft.put(id, player.getUUID());
 
         player.sendNexiaMessage(
-                Component.text("Your code is: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                        .append(Component.text(id).color(ChatFormat.brandColor1)
+                Component.text("Your code is: ", ChatFormat.normalColor)
+                        .append(Component.text(id, ChatFormat.brandColor1)
                                 .decoration(ChatFormat.bold, true)
                                 .hoverEvent(HoverEvent.showText(Component.text("Click me to copy").color(ChatFormat.greenColor)))
                                 .clickEvent(ClickEvent.copyToClipboard(String.valueOf(id)))

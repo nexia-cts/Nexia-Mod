@@ -44,7 +44,7 @@ public class FfaKitsUtil extends BaseFfaUtil {
     @Override
     public void completeFiveTick(NexiaPlayer player) {
         if(!isInFfaSpawn(player) && ((KitFFAPlayerData) PlayerDataManager.getDataManager(NexiaCore.FFA_KITS_DATA_MANAGER).get(player)).kit == null) {
-            player.sendTitle(Title.title(Component.text("No kit selected!").color(ChatFormat.failColor), Component.text("You need to select a kit!").color(ChatFormat.failColor)));
+            player.sendTitle(Title.title(Component.text("No kit selected!", ChatFormat.failColor), Component.text("You need to select a kit!", ChatFormat.failColor)));
             player.playSound(Minecraft.Sound.NOTE_BLOCK_DIDGERIDOO, 10, 1);
             sendToSpawn(player);
             return;
@@ -52,7 +52,7 @@ public class FfaKitsUtil extends BaseFfaUtil {
 
         if(wasInSpawn.contains(player.getUUID()) && !isInFfaSpawn(player)){
             wasInSpawn.remove(player.getUUID());
-            player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your kit was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
+            player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your kit was saved.", ChatFormat.normalColor)));
         }
     }
 

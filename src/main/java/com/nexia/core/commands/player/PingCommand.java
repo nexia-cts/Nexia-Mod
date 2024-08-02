@@ -1,15 +1,14 @@
 package com.nexia.core.commands.player;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.nexia.base.player.NexiaPlayer;
-import com.nexia.nexus.api.command.CommandSourceInfo;
-import com.nexia.nexus.api.command.CommandUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.commands.CommandUtil;
+import com.nexia.nexus.api.command.CommandSourceInfo;
+import com.nexia.nexus.api.command.CommandUtils;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.server.level.ServerPlayer;
@@ -33,10 +32,10 @@ public class PingCommand {
 
         context.getSource().sendMessage(
                 ChatFormat.nexiaMessage
-                                .append(Component.text("Your ping is ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                                        .append(Component.text(ping + "ms").color(ChatFormat.brandColor2))
-                                                .append(Component.text(".").color(ChatFormat.normalColor))
-                                                        .append(Component.text(" (ping may not be accurate)").color(NamedTextColor.GRAY).decorate(ChatFormat.italic))
+                                .append(Component.text("Your ping is ", ChatFormat.normalColor)
+                                        .append(Component.text(ping + "ms", ChatFormat.brandColor2))
+                                                .append(Component.text(".", ChatFormat.normalColor))
+                                                        .append(Component.text(" (ping may not be accurate)", ChatFormat.Minecraft.dark_gray).decorate(ChatFormat.italic))
         ));
 
         return ping;
@@ -47,12 +46,12 @@ public class PingCommand {
 
         context.getSource().sendMessage(
                 ChatFormat.nexiaMessage
-                                .append(Component.text("The ping of ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                        .append(Component.text(player.getScoreboardName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                                                .append(Component.text(" is ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                                                        .append(Component.text(ping + "ms").color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                                                                                                .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                                                                                        .append(Component.text(" (ping may not be accurate)").color(NamedTextColor.GRAY).decorate(ChatFormat.italic).decoration(ChatFormat.bold, false))
+                                .append(Component.text("The ping of ", ChatFormat.normalColor))
+                                        .append(Component.text(player.getScoreboardName(), ChatFormat.brandColor2))
+                                                .append(Component.text(" is ", ChatFormat.normalColor))
+                                                                        .append(Component.text(ping + "ms", ChatFormat.brandColor2))
+                                                                                                .append(Component.text(".", ChatFormat.normalColor))
+                                                                                                        .append(Component.text(" (ping may not be accurate)", ChatFormat.Minecraft.dark_gray).decorate(ChatFormat.italic))
         );
 
         return ping;

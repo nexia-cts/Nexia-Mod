@@ -43,9 +43,9 @@ public class UnBanCommand {
 
                 context.getSender().sendMessage(
                         ChatFormat.nexiaMessage
-                                .append(Component.text("You have unbanned ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                .append(Component.text(gameProfile.getName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                                .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                .append(Component.text("You have unbanned ", ChatFormat.normalColor))
+                                .append(Component.text(gameProfile.getName(), ChatFormat.brandColor2))
+                                .append(Component.text(".", ChatFormat.normalColor))
                 );
 
             }
@@ -54,7 +54,7 @@ public class UnBanCommand {
         if (i == 0) {
             context.sendMessage(
                     ChatFormat.nexiaMessage
-                            .append(Component.text("That player is not banned.").color(ChatFormat.failColor))
+                            .append(Component.text("That player is not banned.", ChatFormat.failColor))
             );
 
         } else {

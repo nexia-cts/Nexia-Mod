@@ -47,10 +47,10 @@ public class HelpCommand {
 
             message = message.append(Component.text("\n/" + commandInfo[0])
                     .color(ChatFormat.brandColor1)
-                    .decoration(ChatFormat.bold, false)
+
                     .decoration(ChatFormat.strikeThrough, false)
-                    .append(Component.text(" | ").color(ChatFormat.lineColor).decoration(ChatFormat.bold, false).decoration(ChatFormat.strikeThrough, false))
-                    .append(Component.text(commandInfo[1]).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false).decoration(ChatFormat.strikeThrough, false)));
+                    .append(Component.text(" | ").color(ChatFormat.lineColor).decoration(ChatFormat.strikeThrough, false))
+                    .append(Component.text(commandInfo[1], ChatFormat.brandColor2).decoration(ChatFormat.strikeThrough, false)));
 
             //message += "\n" + ChatFormat.brandColor1 + "/" + commandInfo[0] + ChatFormat.lineColor + " | " + ChatFormat.brandColor2 + commandInfo[1];
         }

@@ -88,23 +88,22 @@ public class RanksGUI extends SimpleGui {
             NexiaPlayer nexiaPlayer = new NexiaPlayer(this.player);
 
             if(name.getString().contains("Supporter")){
-                nexiaPlayer.sendMessage(ChatFormat.nexiaMessage.append(
-                                net.kyori.adventure.text.Component.text("In order to get the ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                                        .append(net.kyori.adventure.text.Component.text("Supporter").color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
-                                        .append(net.kyori.adventure.text.Component.text(" rank, you need to either ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                nexiaPlayer.sendNexiaMessage(
+                                net.kyori.adventure.text.Component.text("In order to get the ", ChatFormat.normalColor)
+                                        .append(net.kyori.adventure.text.Component.text("Supporter", ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                                        .append(net.kyori.adventure.text.Component.text(" rank, you need to either ", ChatFormat.normalColor))
                                         .append(net.kyori.adventure.text.Component.text("buy from our patreon")
                                                 .color(TextColor.fromHexString("#f96b59"))
                                                 .decoration(ChatFormat.bold, true)
                                                 .hoverEvent(HoverEvent.showText(net.kyori.adventure.text.Component.text("Click me").color(TextColor.fromHexString("#f96b59"))))
                                                 .clickEvent(ClickEvent.openUrl("https://www.patreon.com/Nexia")))
-                                        .append(net.kyori.adventure.text.Component.text(" or ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                        .append(net.kyori.adventure.text.Component.text(" or ", ChatFormat.normalColor))
                                         .append(net.kyori.adventure.text.Component.text("boost our discord server")
                                                 .color(TextColor.fromHexString("#8c00ff"))
                                                 .decoration(ChatFormat.bold, true)
                                                 .hoverEvent(HoverEvent.showText(net.kyori.adventure.text.Component.text("Click me").color(TextColor.fromHexString("#8c00ff"))))
                                                 .clickEvent(ClickEvent.openUrl(NexiaDiscord.config.discordLink)))
-                                        .append(net.kyori.adventure.text.Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                        )
+                                        .append(net.kyori.adventure.text.Component.text(".", ChatFormat.normalColor))
                 );
             }
 

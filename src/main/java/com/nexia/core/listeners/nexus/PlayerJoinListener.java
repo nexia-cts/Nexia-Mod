@@ -1,23 +1,22 @@
 package com.nexia.core.listeners.nexus;
 
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerData;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
-import com.nexia.core.utilities.player.CorePlayerData;
-import com.nexia.nexus.api.event.player.PlayerJoinEvent;
-import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
-import com.nexia.base.player.NexiaPlayer;
+import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.discord.NexiaDiscord;
+import com.nexia.nexus.api.event.player.PlayerJoinEvent;
+import com.nexia.nexus.api.world.entity.player.Player;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.TextColor;
 
 import java.util.Objects;
 
@@ -54,32 +53,33 @@ public class PlayerJoinListener {
     private static void sendJoinMessage(Player player){
         player.sendMessage(ChatFormat.separatorLine("Welcome"));
         player.sendMessage(
-                Component.text(" » ").color(ChatFormat.brandColor2)
-                                .append(Component.text("Welcome ").color(ChatFormat.normalColor))
-                                        .append(Component.text(player.getRawName()).color(ChatFormat.brandColor2))
-                                                .append(Component.text(" to ").color(ChatFormat.normalColor))
-                                                        .append(Component.text("Nexia").color(ChatFormat.brandColor2))
-                                                                .append(Component.text("!").color(ChatFormat.normalColor))
+                Component.text(" » ", ChatFormat.brandColor2)
+                                .append(Component.text("Welcome ", ChatFormat.normalColor))
+                                        .append(Component.text(player.getRawName(), ChatFormat.brandColor2))
+                                                .append(Component.text(" to ", ChatFormat.normalColor))
+                                                        .append(Component.text("Nexia", ChatFormat.brandColor2))
+                                                                .append(Component.text("!", ChatFormat.normalColor))
         );
         player.sendMessage(
-                Component.text(" » ").color(ChatFormat.brandColor2)
-                                .append(Component.text("Players online: ").color(ChatFormat.normalColor))
-                                        .append(Component.text(ServerTime.minecraftServer.getPlayerCount()).color(ChatFormat.brandColor2))
+                Component.text(" » ", ChatFormat.brandColor2)
+                                .append(Component.text("Players online: ", ChatFormat.normalColor))
+                                        .append(Component.text(ServerTime.minecraftServer.getPlayerCount(), ChatFormat.brandColor2))
                                                 .append(Component.text("/").color(ChatFormat.lineColor))
-                                                        .append(Component.text(ServerTime.nexusServer.getMaxPlayerCount()).color(ChatFormat.brandColor2))
+                                                        .append(Component.text(ServerTime.nexusServer.getMaxPlayerCount(), ChatFormat.brandColor2))
         );
         player.sendMessage(
-                Component.text(" » ").color(ChatFormat.brandColor2)
-                                .append(Component.text("Read the rules: ").color(ChatFormat.normalColor))
-                                        .append(Component.text("/rules")).color(ChatFormat.brandColor2).hoverEvent(HoverEvent.showText(Component.text("Click me").color(TextColor.fromHexString("#73ff54"))))
-                        .clickEvent(ClickEvent.suggestCommand("/rules"))
+                Component.text(" » ", ChatFormat.brandColor2)
+                                .append(Component.text("Read the rules: ", ChatFormat.normalColor))
+                                        .append(Component.text("/rules", ChatFormat.brandColor2)
+                                                .hoverEvent(HoverEvent.showText(Component.text("Click me", ChatFormat.Minecraft.green))))
+                                                .clickEvent(ClickEvent.suggestCommand("/rules"))
         );
         player.sendMessage(
-                Component.text(" » ").color(ChatFormat.brandColor2)
-                                .append(Component.text("Join our discord: ").color(ChatFormat.normalColor))
+                Component.text(" » ", ChatFormat.brandColor2)
+                                .append(Component.text("Join our discord: ", ChatFormat.normalColor))
                                         .append(Component.text(NexiaDiscord.config.discordLink)
                                                 .color(ChatFormat.brandColor2)
-                                                .hoverEvent(HoverEvent.showText(Component.text("Click me").color(TextColor.fromHexString("#73ff54"))))
+                                                .hoverEvent(HoverEvent.showText(Component.text("Click me", ChatFormat.Minecraft.green)))
                                                 .clickEvent(ClickEvent.openUrl(NexiaDiscord.config.discordLink))
                                         )
         );

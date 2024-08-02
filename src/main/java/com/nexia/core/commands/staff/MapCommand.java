@@ -47,7 +47,7 @@ public class MapCommand {
         if(map.trim().isEmpty() || type.trim().isEmpty()) {
             context.getSource().sendMessage(
                     ChatFormat.nexiaMessage
-                            .append(Component.text("Invalid name!").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
+                            .append(Component.text("Invalid name!", ChatFormat.failColor))
             );
             return 1;
         }
@@ -61,10 +61,9 @@ public class MapCommand {
             if (player != null) {
                 player.teleport(new Location(0, 80, 0, 0, 0, WorldUtil.getWorld(level)));
 
-                player.sendMessage(
-                        ChatFormat.nexiaMessage
-                                .append(Component.text("Created map called: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                .append(Component.text(map).color(ChatFormat.brandColor2))
+                player.sendNexiaMessage(
+                        Component.text("Created map called: ", ChatFormat.normalColor)
+                                .append(Component.text(map, ChatFormat.brandColor2))
                 );
             }
 
@@ -75,10 +74,9 @@ public class MapCommand {
         if (type.equalsIgnoreCase("delete")) {
             ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(mapname[0], mapname[1])).location(), null).delete();
             if(player != null) {
-                player.sendMessage(
-                        ChatFormat.nexiaMessage
-                                .append(Component.text("Deleted map called: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                .append(Component.text(map).color(ChatFormat.brandColor2))
+                player.sendNexiaMessage(
+                        Component.text("Deleted map called: ", ChatFormat.normalColor)
+                                .append(Component.text(map, ChatFormat.brandColor2))
                 );
             }
 
@@ -94,10 +92,9 @@ public class MapCommand {
             if(player != null) {
                 player.teleport(new Location(0, 80, 0, 0, 0, WorldUtil.getWorld(level)));
 
-                player.sendMessage(
-                        ChatFormat.nexiaMessage
-                                .append(Component.text("Teleported to map called: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                                .append(Component.text(map).color(ChatFormat.brandColor2))
+                player.sendNexiaMessage(
+                        Component.text("Teleported to map called: ", ChatFormat.normalColor)
+                                .append(Component.text(map, ChatFormat.brandColor2))
                 );
             }
 

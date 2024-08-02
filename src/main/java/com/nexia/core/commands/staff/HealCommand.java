@@ -29,7 +29,7 @@ public class HealCommand {
 
         executor.sendMessage(
                 ChatFormat.nexiaMessage
-                                .append(Component.text("You have been healed.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                                .append(Component.text("You have been healed.", ChatFormat.normalColor))
         );
 
         return 1;
@@ -41,17 +41,13 @@ public class HealCommand {
 
        context.getSource().sendMessage(
                ChatFormat.nexiaMessage
-                       .append(Component.text("You have healed ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                       .append(Component.text(otherPlayer.getScoreboardName()).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                       .append(Component.text(".").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                       .append(Component.text("You have healed ", ChatFormat.normalColor))
+                       .append(Component.text(otherPlayer.getScoreboardName(), ChatFormat.brandColor2))
+                       .append(Component.text(".", ChatFormat.normalColor))
        );
 
 
-        new NexiaPlayer(otherPlayer).sendMessage(
-                ChatFormat.nexiaMessage
-                        .append(Component.text("You have been healed.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-        );
-
+        new NexiaPlayer(otherPlayer).sendNexiaMessage("You have been healed.");
         return 1;
     }
 }

@@ -100,35 +100,35 @@ public class FfaUtil {
         String name = player.getRawName();
 
         Component invalid = Component.text("Wow,").color(ChatFormat.chatColor2)
-                .append(Component.text(" ☠ " + name).color(ChatFormat.failColor))
+                .append(Component.text(" ☠ " + name, ChatFormat.failColor))
                 .append(Component.text(" somehow killed themselves.").color(ChatFormat.chatColor2));
 
         if(source == null) return invalid;
 
         if (source == DamageSource.OUT_OF_WORLD) {
-            return Component.text("⚐ " + name).color(ChatFormat.failColor)
+            return Component.text("⚐ " + name, ChatFormat.failColor)
                     .append(Component.text(" took a ride to the void.").color(ChatFormat.chatColor2));
         } else if (source == DamageSource.LAVA) {
-            return Component.text("\uD83D\uDD25 " + name).color(ChatFormat.failColor)
+            return Component.text("\uD83D\uDD25 " + name, ChatFormat.failColor)
                     .append(Component.text(" was deepfried in lava.").color(ChatFormat.chatColor2));
         } else if (source == DamageSource.HOT_FLOOR) {
-            return Component.text("\uD83D\uDD25 " + name).color(ChatFormat.failColor)
+            return Component.text("\uD83D\uDD25 " + name, ChatFormat.failColor)
                     .append(Component.text(" stepped on hot legos.").color(ChatFormat.chatColor2));
         } else if (source == DamageSource.IN_FIRE || source == DamageSource.ON_FIRE) {
-            return Component.text("\uD83D\uDD25 " + name).color(ChatFormat.failColor)
+            return Component.text("\uD83D\uDD25 " + name, ChatFormat.failColor)
                     .append(Component.text(" comBusted.").color(ChatFormat.chatColor2));
         } else if (source == DamageSource.FALL) {
-            return Component.text("⚓ " + name).color(ChatFormat.failColor)
+            return Component.text("⚓ " + name, ChatFormat.failColor)
                     .append(Component.text(" turned into a human doormat.").color(ChatFormat.chatColor2));
         } else if (source == DamageSource.CACTUS) {
             return Component.text("ʕっ·ᴥ·ʔっ ").color(ChatFormat.chatColor2)
-                    .append(Component.text("☠ " + name).color(ChatFormat.failColor))
+                    .append(Component.text("☠ " + name, ChatFormat.failColor))
                     .append(Component.text(" hugged a cactus.").color(ChatFormat.chatColor2));
         } else if (source == DamageSource.DROWN || source == DamageSource.DRY_OUT) {
-            return Component.text("\uD83C\uDF0A " + name).color(ChatFormat.failColor)
+            return Component.text("\uD83C\uDF0A " + name, ChatFormat.failColor)
                     .append(Component.text(" had a bit too much to drink.").color(ChatFormat.chatColor2));
         } else if (source == DamageSource.MAGIC) {
-            return Component.text("\uD83E\uDDEA " + name).color(ChatFormat.failColor)
+            return Component.text("\uD83E\uDDEA " + name, ChatFormat.failColor)
                     .append(Component.text(" had a bit too much pot.").color(ChatFormat.chatColor2));
         }
 
@@ -155,11 +155,11 @@ public class FfaUtil {
         }
 
 
-        return Component.text("☠ " + player.getRawName()).color(ChatFormat.failColor)
+        return Component.text("☠ " + player.getRawName(), ChatFormat.failColor)
                 .append(Component.text(" was killed by ").color(ChatFormat.chatColor2))
                 .append(Component.text(symbol + " " + attacker.getRawName()).color(ChatFormat.greenColor))
                 .append(Component.text(" with ").color(ChatFormat.chatColor2))
-                .append(Component.text(FfaUtil.calculateHealth(attacker.getHealth()) + "❤").color(ChatFormat.failColor))
+                .append(Component.text(FfaUtil.calculateHealth(attacker.getHealth()) + "❤", ChatFormat.failColor))
                 .append(Component.text(" left.").color(ChatFormat.chatColor2));
     }
 

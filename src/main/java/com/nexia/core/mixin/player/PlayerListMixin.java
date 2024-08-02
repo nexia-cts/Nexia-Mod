@@ -146,9 +146,9 @@ public abstract class PlayerListMixin {
 
         return ObjectMappings.convertComponent(
                 net.kyori.adventure.text.Component.text("[").color(ChatFormat.lineColor)
-                        .append(net.kyori.adventure.text.Component.text("-").color(ChatFormat.failColor)
+                        .append(net.kyori.adventure.text.Component.text("-", ChatFormat.failColor)
                                 .append(net.kyori.adventure.text.Component.text("] ").color(ChatFormat.lineColor))
-                                .append(net.kyori.adventure.text.Component.text(name).color(ChatFormat.failColor)))
+                                .append(net.kyori.adventure.text.Component.text(name, ChatFormat.failColor)))
         );
     }
 

@@ -89,14 +89,14 @@ public class BwAreas {
 
         if (protectionMap == null) {
             if (sendMessage) {
-                player.sendMessage(Component.text("An error occurred, please inform the admins.").color(ChatFormat.failColor));
+                player.sendMessage(Component.text("An error occurred, please inform the admins.", ChatFormat.failColor));
             }
             return false;
         }
 
         if ((player != null && !isBedWarsWorld(player.unwrap().getLevel())) || !isInsideBorder(mapPos, protectionMap.map)) {
             if (sendMessage) {
-                player.sendMessage(Component.text("You have reached the built limit.").color(ChatFormat.failColor));
+                player.sendMessage(Component.text("You have reached the built limit.", ChatFormat.failColor));
             }
             return false;
         }

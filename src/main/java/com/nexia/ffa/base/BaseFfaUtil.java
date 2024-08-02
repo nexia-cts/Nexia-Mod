@@ -127,7 +127,7 @@ public abstract class BaseFfaUtil {
             fileWriter.close();
         } catch (Exception var6) {
             LobbyUtil.returnToLobby(player, true);
-            player.sendMessage(Component.text("Failed to save " + getName() + " FFA inventory. Please try again or contact a developer.").color(ChatFormat.failColor));
+            player.sendMessage(Component.text("Failed to save " + getName() + " FFA inventory. Please try again or contact a developer.", ChatFormat.failColor));
         }
     }
 
@@ -152,11 +152,11 @@ public abstract class BaseFfaUtil {
             for (ServerPlayer serverPlayer : getFfaWorld().players()) {
                 new NexiaPlayer(serverPlayer).sendMessage(
                         Component.text("[").color(ChatFormat.lineColor)
-                                .append(Component.text("☠").color(ChatFormat.failColor))
+                                .append(Component.text("☠", ChatFormat.failColor))
                                 .append(Component.text("] ").color(ChatFormat.lineColor))
-                                .append(Component.text(attacker.getRawName()).color(ChatFormat.normalColor))
+                                .append(Component.text(attacker.getRawName(), ChatFormat.normalColor))
                                 .append(Component.text(" now has a killstreak of ").color(ChatFormat.chatColor2))
-                                .append(Component.text(killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
+                                .append(Component.text(killstreak, ChatFormat.failColor).decoration(ChatFormat.bold, true))
                                 .append(Component.text("!").color(ChatFormat.chatColor2))
                 );
             }
@@ -186,11 +186,11 @@ public abstract class BaseFfaUtil {
             for (ServerPlayer serverPlayer : getFfaWorld().players()) {
                 new NexiaPlayer(serverPlayer).sendMessage(
                         Component.text("[").color(ChatFormat.lineColor)
-                                .append(Component.text("☠").color(ChatFormat.failColor))
+                                .append(Component.text("☠", ChatFormat.failColor))
                                 .append(Component.text("] ").color(ChatFormat.lineColor))
-                                .append(Component.text(player.getRawName()).color(ChatFormat.normalColor))
+                                .append(Component.text(player.getRawName(), ChatFormat.normalColor))
                                 .append(Component.text(" has lost their killstreak of ").color(ChatFormat.chatColor2))
-                                .append(Component.text(killstreak).color(ChatFormat.failColor).decoration(ChatFormat.bold, true))
+                                .append(Component.text(killstreak, ChatFormat.failColor).decoration(ChatFormat.bold, true))
                                 .append(Component.text(".").color(ChatFormat.chatColor2))
                 );
             }
@@ -256,7 +256,7 @@ public abstract class BaseFfaUtil {
 
         if(defaultInventory == null) {
             LobbyUtil.returnToLobby(player, true);
-            player.sendMessage(Component.text("Failed to set " + getName() + " FFA inventory. Please try again or contact a developer.").color(ChatFormat.failColor));
+            player.sendMessage(Component.text("Failed to set " + getName() + " FFA inventory. Please try again or contact a developer.", ChatFormat.failColor));
             return;
         }
 

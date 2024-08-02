@@ -17,7 +17,6 @@ import com.nexia.ffa.FfaGameMode;
 import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.nexia.nexus.api.command.CommandUtils;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
@@ -40,11 +39,11 @@ public class StatsCommand {
         CorePlayerData playerData = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player);
 
 
-        Component start = Component.text("  »").color(NamedTextColor.GRAY);
+        Component start = Component.text("  »").color(ChatFormat.arrowColor);
 
         Component user = start
-                .append(Component.text(" User: ").color(ChatFormat.brandColor2))
-                        .append(Component.text(player.getRawName()).color(ChatFormat.normalColor));
+                .append(Component.text(" User: ", ChatFormat.brandColor2))
+                        .append(Component.text(player.getRawName(), ChatFormat.normalColor));
 
 
 
@@ -77,21 +76,21 @@ public class StatsCommand {
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
-                    .append(Component.text(" Kills: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(" Kills: ", ChatFormat.brandColor2))
                     .append(Component.text(kills).color(ChatFormat.greenColor))
             );
             player.sendMessage(start
-                    .append(Component.text(" Deaths: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(deaths).color(ChatFormat.failColor))
+                    .append(Component.text(" Deaths: ", ChatFormat.brandColor2))
+                    .append(Component.text(deaths, ChatFormat.failColor))
             );
 
             player.sendMessage(start
-                    .append(Component.text(" KDR: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(" KDR: ", ChatFormat.brandColor2))
                     .append(Component.text(calculateKDR(kills, deaths)).color(ChatFormat.greenColor))
             );
 
             player.sendMessage(start
-                    .append(Component.text(" Killstreak: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(" Killstreak: ", ChatFormat.brandColor2))
                     .append(Component.text(killstreak).color(ChatFormat.goldColor))
                     .append(Component.text("/").color(ChatFormat.arrowColor))
                     .append(Component.text(bestKillstreak).color(ChatFormat.goldColor))
@@ -104,12 +103,12 @@ public class StatsCommand {
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
-                    .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(" Wins: ", ChatFormat.brandColor2))
                     .append(Component.text(data.get(Integer.class, "wins")).color(ChatFormat.greenColor))
             );
             player.sendMessage(start
-                    .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
+                    .append(Component.text(" Losses: ", ChatFormat.brandColor2))
+                    .append(Component.text(data.get(Integer.class, "losses"), ChatFormat.failColor))
             );
         }
 
@@ -120,16 +119,16 @@ public class StatsCommand {
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
-                    .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(" Wins: ", ChatFormat.brandColor2))
                     .append(Component.text(data.get(Integer.class, "wins")).color(ChatFormat.greenColor))
             );
             player.sendMessage(start
-                    .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
+                    .append(Component.text(" Losses: ", ChatFormat.brandColor2))
+                    .append(Component.text(data.get(Integer.class, "losses"), ChatFormat.failColor))
             );
             player.sendMessage(start
-                    .append(Component.text(" Beds broken: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.get(Integer.class, "bedsBroken")).color(ChatFormat.failColor))
+                    .append(Component.text(" Beds broken: ", ChatFormat.brandColor2))
+                    .append(Component.text(data.get(Integer.class, "bedsBroken"), ChatFormat.failColor))
             );
         }
 
@@ -140,16 +139,16 @@ public class StatsCommand {
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
-                    .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(" Wins: ", ChatFormat.brandColor2))
                     .append(Component.text(data.get(Integer.class, "wins")).color(ChatFormat.greenColor))
             );
             player.sendMessage(start
-                    .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
+                    .append(Component.text(" Losses: ", ChatFormat.brandColor2))
+                    .append(Component.text(data.get(Integer.class, "losses"), ChatFormat.failColor))
             );
             player.sendMessage(start
-                    .append(Component.text(" Kills: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.get(Integer.class, "kills")).color(ChatFormat.failColor))
+                    .append(Component.text(" Kills: ", ChatFormat.brandColor2))
+                    .append(Component.text(data.get(Integer.class, "kills"), ChatFormat.failColor))
             );
         }
 
@@ -160,16 +159,16 @@ public class StatsCommand {
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
-                    .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(" Wins: ", ChatFormat.brandColor2))
                     .append(Component.text(data.get(Integer.class, "wins")).color(ChatFormat.greenColor))
             );
             player.sendMessage(start
-                    .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
+                    .append(Component.text(" Losses: ", ChatFormat.brandColor2))
+                    .append(Component.text(data.get(Integer.class, "losses"), ChatFormat.failColor))
             );
             player.sendMessage(start
-                    .append(Component.text(" Goals: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.get(Integer.class, "goals")).color(ChatFormat.failColor))
+                    .append(Component.text(" Goals: ", ChatFormat.brandColor2))
+                    .append(Component.text(data.get(Integer.class, "goals"), ChatFormat.failColor))
             );
         }
 
@@ -180,16 +179,16 @@ public class StatsCommand {
             player.sendMessage(message);
             player.sendMessage(user);
             player.sendMessage(start
-                    .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(" Wins: ", ChatFormat.brandColor2))
                     .append(Component.text(data.get(Integer.class, "wins")).color(ChatFormat.greenColor))
             );
             player.sendMessage(start
-                    .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
+                    .append(Component.text(" Losses: ", ChatFormat.brandColor2))
+                    .append(Component.text(data.get(Integer.class, "losses"), ChatFormat.failColor))
             );
             player.sendMessage(start
-                    .append(Component.text(" Kills: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.get(Integer.class, "kills")).color(ChatFormat.failColor))
+                    .append(Component.text(" Kills: ", ChatFormat.brandColor2))
+                    .append(Component.text(data.get(Integer.class, "kills"), ChatFormat.failColor))
             );
         }
         player.sendMessage(ChatFormat.separatorLine(null));
@@ -208,8 +207,8 @@ public class StatsCommand {
         Component start = Component.text("  »").color(ChatFormat.arrowColor);
 
         Component user = start
-                .append(Component.text(" User: ").color(ChatFormat.brandColor2))
-                .append(Component.text(otherPlayer.getScoreboardName()).color(ChatFormat.normalColor))
+                .append(Component.text(" User: ", ChatFormat.brandColor2))
+                .append(Component.text(otherPlayer.getScoreboardName(), ChatFormat.normalColor))
                 ;
 
 
@@ -243,21 +242,21 @@ public class StatsCommand {
             source.sendMessage(message);
             source.sendMessage(user);
             source.sendMessage(start
-                    .append(Component.text(" Kills: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(" Kills: ", ChatFormat.brandColor2))
                     .append(Component.text(kills).color(ChatFormat.greenColor))
             );
             source.sendMessage(start
-                    .append(Component.text(" Deaths: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(deaths).color(ChatFormat.failColor))
+                    .append(Component.text(" Deaths: ", ChatFormat.brandColor2))
+                    .append(Component.text(deaths, ChatFormat.failColor))
             );
 
             source.sendMessage(start
-                    .append(Component.text(" KDR: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(" KDR: ", ChatFormat.brandColor2))
                     .append(Component.text(calculateKDR(kills, deaths)).color(ChatFormat.greenColor))
             );
 
             source.sendMessage(start
-                    .append(Component.text(" Killstreak: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(" Killstreak: ", ChatFormat.brandColor2))
                     .append(Component.text(killstreak).color(ChatFormat.goldColor))
                     .append(Component.text("/").color(ChatFormat.arrowColor))
                     .append(Component.text(bestKillstreak).color(ChatFormat.goldColor))
@@ -270,12 +269,12 @@ public class StatsCommand {
             source.sendMessage(message);
             source.sendMessage(user);
             source.sendMessage(start
-                    .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(" Wins: ", ChatFormat.brandColor2))
                     .append(Component.text(data.get(Integer.class, "wins")).color(ChatFormat.greenColor))
             );
             source.sendMessage(start
-                    .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
+                    .append(Component.text(" Losses: ", ChatFormat.brandColor2))
+                    .append(Component.text(data.get(Integer.class, "losses"), ChatFormat.failColor))
             );
         }
 
@@ -286,16 +285,16 @@ public class StatsCommand {
             source.sendMessage(message);
             source.sendMessage(user);
             source.sendMessage(start
-                    .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(" Wins: ", ChatFormat.brandColor2))
                     .append(Component.text(data.get(Integer.class, "wins")).color(ChatFormat.greenColor))
             );
             source.sendMessage(start
-                    .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
+                    .append(Component.text(" Losses: ", ChatFormat.brandColor2))
+                    .append(Component.text(data.get(Integer.class, "losses"), ChatFormat.failColor))
             );
             source.sendMessage(start
-                    .append(Component.text(" Beds broken: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.get(Integer.class, "bedsBroken")).color(ChatFormat.failColor))
+                    .append(Component.text(" Beds broken: ", ChatFormat.brandColor2))
+                    .append(Component.text(data.get(Integer.class, "bedsBroken"), ChatFormat.failColor))
             );
         }
 
@@ -306,16 +305,16 @@ public class StatsCommand {
             source.sendMessage(message);
             source.sendMessage(user);
             source.sendMessage(start
-                    .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(" Wins: ", ChatFormat.brandColor2))
                     .append(Component.text(data.get(Integer.class, "wins")).color(ChatFormat.greenColor))
             );
             source.sendMessage(start
-                    .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
+                    .append(Component.text(" Losses: ", ChatFormat.brandColor2))
+                    .append(Component.text(data.get(Integer.class, "losses"), ChatFormat.failColor))
             );
             source.sendMessage(start
-                    .append(Component.text(" Kills: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.get(Integer.class, "kills")).color(ChatFormat.failColor))
+                    .append(Component.text(" Kills: ", ChatFormat.brandColor2))
+                    .append(Component.text(data.get(Integer.class, "kills"), ChatFormat.failColor))
             );
         }
 
@@ -326,16 +325,16 @@ public class StatsCommand {
             source.sendMessage(message);
             source.sendMessage(user);
             source.sendMessage(start
-                    .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(" Wins: ", ChatFormat.brandColor2))
                     .append(Component.text(data.get(Integer.class, "wins")).color(ChatFormat.greenColor))
             );
             source.sendMessage(start
-                    .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
+                    .append(Component.text(" Losses: ", ChatFormat.brandColor2))
+                    .append(Component.text(data.get(Integer.class, "losses"), ChatFormat.failColor))
             );
             source.sendMessage(start
-                    .append(Component.text(" Goals: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.get(Integer.class, "goals")).color(ChatFormat.failColor))
+                    .append(Component.text(" Goals: ", ChatFormat.brandColor2))
+                    .append(Component.text(data.get(Integer.class, "goals"), ChatFormat.failColor))
             );
         }
 
@@ -346,16 +345,16 @@ public class StatsCommand {
             source.sendMessage(message);
             source.sendMessage(user);
             source.sendMessage(start
-                    .append(Component.text(" Wins: ").color(ChatFormat.brandColor2))
+                    .append(Component.text(" Wins: ", ChatFormat.brandColor2))
                     .append(Component.text(data.get(Integer.class, "wins")).color(ChatFormat.greenColor))
             );
             source.sendMessage(start
-                    .append(Component.text(" Losses: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.get(Integer.class, "losses")).color(ChatFormat.failColor))
+                    .append(Component.text(" Losses: ", ChatFormat.brandColor2))
+                    .append(Component.text(data.get(Integer.class, "losses"), ChatFormat.failColor))
             );
             source.sendMessage(start
-                    .append(Component.text(" Kills: ").color(ChatFormat.brandColor2))
-                    .append(Component.text(data.get(Integer.class, "kills")).color(ChatFormat.failColor))
+                    .append(Component.text(" Kills: ", ChatFormat.brandColor2))
+                    .append(Component.text(data.get(Integer.class, "kills"), ChatFormat.failColor))
             );
         }
         source.sendMessage(ChatFormat.separatorLine(null));

@@ -61,7 +61,7 @@ public class KitGUI extends SimpleGui {
         NexiaPlayer player = new NexiaPlayer(minecraftPlayer);
         FfaKit kit = FfaKit.identifyKit(name);
         if(kit != null) kit.giveKit(new NexiaPlayer(minecraftPlayer), false);
-        else player.sendMessage(Component.text("Invalid kit!").color(ChatFormat.failColor));
+        else player.sendMessage(Component.text("Invalid kit!", ChatFormat.failColor));
     }
 
     public boolean click(int index, ClickType clickType, net.minecraft.world.inventory.ClickType action){

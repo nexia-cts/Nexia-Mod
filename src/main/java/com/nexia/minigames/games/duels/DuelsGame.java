@@ -123,14 +123,13 @@ public class DuelsGame {
         removeQueue(p1, null, true);
         removeQueue(p2, null, true);
 
+        p1.sendNexiaMessage(
+                Component.text("Your opponent: ", ChatFormat.normalColor)
+                        .append(Component.text(p2.getRawName(), ChatFormat.brandColor2)));
 
-        p2.sendMessage(ChatFormat.nexiaMessage
-                .append(Component.text("Your opponent: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                .append(Component.text(p1.getRawName()).color(ChatFormat.brandColor2))));
-
-        p1.sendMessage(ChatFormat.nexiaMessage
-                .append(Component.text("Your opponent: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                .append(Component.text(p2.getRawName()).color(ChatFormat.brandColor2))));
+        p2.sendNexiaMessage(
+                Component.text("Your opponent: ", ChatFormat.normalColor)
+                        .append(Component.text(p1.getRawName(), ChatFormat.brandColor2)));
 
         DuelGameHandler.loadInventory(p1, stringGameMode);
         DuelGameHandler.loadInventory(p2, stringGameMode);
@@ -255,8 +254,8 @@ public class DuelsGame {
 
         Component win = Component.text("The game was a ")
                 .color(ChatFormat.normalColor)
-                .append(Component.text("draw").color(ChatFormat.brandColor2))
-                .append(Component.text("!").color(ChatFormat.normalColor)
+                .append(Component.text("draw", ChatFormat.brandColor2))
+                .append(Component.text("!", ChatFormat.normalColor)
                 );
 
         Component titleLose = Component.text("Draw")
@@ -268,27 +267,27 @@ public class DuelsGame {
 
 
         if (!attackerNull) {
-            win = Component.text(attacker.getRawName()).color(ChatFormat.brandColor2)
-                    .append(Component.text(" has won the duel!").color(ChatFormat.normalColor)
+            win = Component.text(attacker.getRawName(), ChatFormat.brandColor2)
+                    .append(Component.text(" has won the duel!", ChatFormat.normalColor)
                             .append(Component.text(" [")
                                     .color(ChatFormat.lineColor))
-                            .append(Component.text(FfaUtil.calculateHealth(attacker.getHealth()) + "❤").color(ChatFormat.failColor))
+                            .append(Component.text(FfaUtil.calculateHealth(attacker.getHealth()) + "❤", ChatFormat.failColor))
                             .append(Component.text("]").color(ChatFormat.lineColor))
                     );
 
-            titleLose = Component.text("You lost!").color(ChatFormat.brandColor2);
+            titleLose = Component.text("You lost!", ChatFormat.brandColor2);
             subtitleLose = Component.text("You have lost against ")
                     .color(ChatFormat.normalColor)
                     .append(Component.text(attacker.getRawName())
                             .color(ChatFormat.brandColor2)
                             .append(Component.text(" [")
                                     .color(ChatFormat.lineColor)
-                            .append(Component.text(FfaUtil.calculateHealth(attacker.getHealth()) + "❤").color(ChatFormat.failColor))
+                            .append(Component.text(FfaUtil.calculateHealth(attacker.getHealth()) + "❤", ChatFormat.failColor))
                             .append(Component.text("]").color(ChatFormat.lineColor))
                             )
                     );
 
-            titleWin = Component.text("You won!").color(ChatFormat.brandColor2);
+            titleWin = Component.text("You won!", ChatFormat.brandColor2);
             subtitleWin = Component.text("You have won against ")
                     .color(ChatFormat.normalColor)
                     .append(Component.text(victim.getRawName())

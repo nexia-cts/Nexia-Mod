@@ -50,12 +50,11 @@ public class PlayerMutes {
                 .append(Component.text(mutedData.getMuteReason(), ChatFormat.brandColor2))
         );
 
-        new NexiaPlayer(muted).sendMessage(
-                ChatFormat.nexiaMessage
-                                .append(Component.text("You have been muted for ").decoration(ChatFormat.bold, false))
-                                        .append(Component.text(muteTimeToText(mutedData.getMuteEnd())).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                                                .append(Component.text(".\nReason: ").decoration(ChatFormat.bold, false))
-                                                        .append(Component.text(reason).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+        new NexiaPlayer(muted).sendNexiaMessage(
+                Component.text("You have been muted for ", ChatFormat.normalColor)
+                        .append(Component.text(muteTimeToText(mutedData.getMuteEnd()), ChatFormat.brandColor2))
+                        .append(Component.text(".\nReason: ", ChatFormat.normalColor))
+                        .append(Component.text(reason, ChatFormat.brandColor2))
         );
 
     }
@@ -65,22 +64,22 @@ public class PlayerMutes {
         LocalDateTime currentMuteTime = unMutedData.getMuteEnd();
 
         if (LocalDateTime.now().isAfter(currentMuteTime)) {
-            sender.sendMessage(Component.text("This player is not muted.", ChatFormat.systemColor));
+            sender.sendMessage(ChatFormat.nexiaMessage.append(Component.text("This player is not muted.", ChatFormat.normalColor)));
             return;
         }
 
         unMutedData.setMuteEnd(LocalDateTime.MIN);
         unMutedData.setMuteReason(null);
 
-        sender.sendMessage(Component.text("Unmuted ", ChatFormat.systemColor)
-                .append(Component.text(unMuted.getScoreboardName(), ChatFormat.brandColor2))
-                .append(Component.text(".", ChatFormat.systemColor))
+        sender.sendMessage(
+                ChatFormat.nexiaMessage.append(
+                        Component.text("Unmuted ", ChatFormat.normalColor)
+                                .append(Component.text(unMuted.getScoreboardName(), ChatFormat.brandColor2))
+                                .append(Component.text(".", ChatFormat.normalColor))
+                )
         );
 
-        new NexiaPlayer(unMuted).sendMessage(
-                ChatFormat.nexiaMessage
-                                .append(Component.text("You have been unmuted.").decoration(ChatFormat.bold, false))
-        );
+        new NexiaPlayer(unMuted).sendNexiaMessage("You have been unmuted.");
     }
 
     public static boolean muted(NexiaPlayer player) {
@@ -90,12 +89,10 @@ public class PlayerMutes {
 
         if (LocalDateTime.now().isBefore(muteTime)) {
 
-            player.sendMessage(
-                    ChatFormat.nexiaMessage
-                            .append(Component.text("You have been muted for ").decoration(ChatFormat.bold, false))
-                            .append(Component.text(muteTimeToText(muteTime)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                            .append(Component.text(".\nReason: ").decoration(ChatFormat.bold, false))
-                            .append(Component.text(reason).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+            player.sendNexiaMessage(Component.text("You have been muted for ", ChatFormat.normalColor)
+                            .append(Component.text(muteTimeToText(muteTime), ChatFormat.brandColor2))
+                            .append(Component.text(".\nReason: "))
+                            .append(Component.text(reason, ChatFormat.brandColor2))
             );
             return true;
         }

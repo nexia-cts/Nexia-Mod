@@ -186,18 +186,18 @@ public class OitcGame {
 
                     player.sendActionBarMessage(
                             Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
-                                    .append(Component.text(OitcGame.map.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                                    .append(Component.text(OitcGame.map.name, ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                                     .append(Component.text(" (" + OitcGame.queue.size() + "/" + OitcGame.map.maxPlayers + ")").color(TextColor.fromHexString("#b3b3b3")))
                                     .append(Component.text(" | ").color(ChatFormat.lineColor))
                                     .append(Component.text("Time » ").color(TextColor.fromHexString("#b3b3b3")))
-                                    .append(Component.text(OitcGame.queueTime).color(ChatFormat.brandColor2))
+                                    .append(Component.text(OitcGame.queueTime, ChatFormat.brandColor2))
                                     .append(Component.text(" | ").color(ChatFormat.lineColor))
-                                    .append(Component.text("Teaming is not allowed!").color(ChatFormat.failColor))
+                                    .append(Component.text("Teaming is not allowed!", ChatFormat.failColor))
                     );
 
                     if(OitcGame.queueTime <= 5 || OitcGame.queueTime == 10 || OitcGame.queueTime == 15) {
                         player.sendMessage(Component.text("The game will start in ").color(TextColor.fromHexString("#b3b3b3"))
-                                .append(Component.text(OitcGame.queueTime).color(ChatFormat.brandColor1))
+                                .append(Component.text(OitcGame.queueTime, ChatFormat.brandColor1))
                                 .append(Component.text(" seconds.").color(TextColor.fromHexString("#b3b3b3")))
                         );
                     }
@@ -252,7 +252,7 @@ public class OitcGame {
         data.savedData.incrementInteger("wins");
 
         for(NexiaPlayer viewer : OitcGame.getViewers()){
-            viewer.sendTitle(Title.title(Component.text(player.getRawName()).color(ChatFormat.brandColor2), Component.text("has won the game! (" + data.kills + " kills)").color(ChatFormat.normalColor)));
+            viewer.sendTitle(Title.title(Component.text(player.getRawName(), ChatFormat.brandColor2), Component.text("has won the game! (" + data.kills + " kills)", ChatFormat.normalColor)));
         }
     }
 
@@ -261,13 +261,13 @@ public class OitcGame {
         for(NexiaPlayer player : OitcGame.getViewers()) {
             player.sendActionBarMessage(
                     Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
-                            .append(Component.text(OitcGame.map.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                            .append(Component.text(OitcGame.map.name, ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
                             .append(Component.text("Time » ").color(TextColor.fromHexString("#b3b3b3")))
-                            .append(Component.text(timer[0] + ":" + timer[1]).color(ChatFormat.brandColor2))
+                            .append(Component.text(timer[0] + ":" + timer[1], ChatFormat.brandColor2))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
                             .append(Component.text("Kills » ").color(TextColor.fromHexString("#b3b3b3")))
-                            .append(Component.text(((OITCPlayerData)PlayerDataManager.getDataManager(OITC_DATA_MANAGER).get(player)).kills).color(ChatFormat.brandColor2))
+                            .append(Component.text(((OITCPlayerData)PlayerDataManager.getDataManager(OITC_DATA_MANAGER).get(player)).kills, ChatFormat.brandColor2))
             );
         }
     }

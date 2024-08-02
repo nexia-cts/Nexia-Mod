@@ -37,7 +37,7 @@ public class UnGamemodeBanCommand {
         if(gameMode == null) {
             sender.sendMessage(
                     ChatFormat.nexiaMessage
-                            .append(Component.text("Invalid gamemode!").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
+                            .append(Component.text("Invalid gamemode!", ChatFormat.normalColor))
             );
 
             return 1;

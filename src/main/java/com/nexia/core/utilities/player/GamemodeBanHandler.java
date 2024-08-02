@@ -133,12 +133,11 @@ public class GamemodeBanHandler {
 
         LobbyUtil.returnToLobby(player, true);
 
-        player.sendMessage(
-                ChatFormat.nexiaMessage
-                        .append(Component.text("You have been gamemode (" + gameMode.name + ") banned for ").decoration(ChatFormat.bold, false))
-                        .append(Component.text(BanHandler.banTimeToText(banTime)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                        .append(Component.text(".\nReason: ").decoration(ChatFormat.bold, false))
-                        .append(Component.text(reason).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+        player.sendNexiaMessage(
+                Component.text("You have been gamemode (" + gameMode.name + ") banned for ", ChatFormat.normalColor)
+                        .append(Component.text(BanHandler.banTimeToText(banTime), ChatFormat.brandColor2))
+                        .append(Component.text(".\nReason: ", ChatFormat.normalColor))
+                        .append(Component.text(reason, ChatFormat.brandColor2))
         );
     }
 
@@ -148,11 +147,14 @@ public class GamemodeBanHandler {
             return;
         }
 
-        sender.sendMessage(Component.text("Un-gamemode-banned ", ChatFormat.systemColor)
-                .append(Component.text(player.getRawName(), ChatFormat.brandColor2))
-                .append(Component.text(" in ", ChatFormat.systemColor))
-                .append(Component.text(gameMode.name, ChatFormat.brandColor2))
-                .append(Component.text("."))
+        sender.sendMessage(
+                ChatFormat.nexiaMessage.append(
+                        Component.text("Un-gamemode-banned ", ChatFormat.normalColor)
+                                .append(Component.text(player.getRawName(), ChatFormat.brandColor2))
+                                .append(Component.text(" in ", ChatFormat.normalColor))
+                                .append(Component.text(gameMode.name, ChatFormat.brandColor2))
+                                .append(Component.text(".", ChatFormat.normalColor))
+                )
         );
     }
 }

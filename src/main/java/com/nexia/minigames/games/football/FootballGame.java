@@ -1,5 +1,6 @@
 package com.nexia.minigames.games.football;
 
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.LobbyUtil;
@@ -7,7 +8,6 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.CorePlayerData;
-import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.time.TickUtil;
@@ -16,7 +16,6 @@ import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.football.util.player.FootballPlayerData;
 import com.nexia.nexus.api.world.types.Minecraft;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import net.minecraft.core.BlockPos;
@@ -150,16 +149,16 @@ public class FootballGame {
 
                     player.sendActionBarMessage(
                             Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
-                                    .append(Component.text(FootballGame.map.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                                    .append(Component.text(FootballGame.map.name, ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                                     .append(Component.text(" (" + FootballGame.queue.size() + ")").color(TextColor.fromHexString("#b3b3b3")))
                                     .append(Component.text(" | ").color(ChatFormat.lineColor))
                                     .append(Component.text("Time » ").color(TextColor.fromHexString("#b3b3b3")))
-                                    .append(Component.text(FootballGame.queueTime).color(ChatFormat.brandColor2))
+                                    .append(Component.text(FootballGame.queueTime, ChatFormat.brandColor2))
                     );
 
                     if(FootballGame.queueTime <= 5 || FootballGame.queueTime == 10 || FootballGame.queueTime == 15) {
                         player.sendMessage(Component.text("The game will start in ").color(TextColor.fromHexString("#b3b3b3"))
-                                .append(Component.text(FootballGame.queueTime).color(ChatFormat.brandColor1))
+                                .append(Component.text(FootballGame.queueTime, ChatFormat.brandColor1))
                                 .append(Component.text(" seconds.").color(TextColor.fromHexString("#b3b3b3")))
                         );
                     }
@@ -196,7 +195,7 @@ public class FootballGame {
             entity.moveTo(0, 80, 0, 0, 0);
 
             for(NexiaPlayer player : FootballGame.getViewers()) {
-                player.sendTitle(Title.title(Component.text("Team " + teamID).color(ChatFormat.brandColor2), Component.text("has scored a goal!").color(ChatFormat.normalColor)));
+                player.sendTitle(Title.title(Component.text("Team " + teamID, ChatFormat.brandColor2), Component.text("has scored a goal!", ChatFormat.normalColor)));
             }
 
             for(NexiaPlayer player : FootballGame.team1.players) {
@@ -214,12 +213,12 @@ public class FootballGame {
 
     @NotNull
     private static Title getTitle(int queueTime) {
-        TextColor color = NamedTextColor.GREEN;
+        TextColor color = ChatFormat.Minecraft.green;
 
         if (queueTime <= 3 && queueTime > 1) {
-            color = NamedTextColor.YELLOW;
+            color = ChatFormat.Minecraft.yellow;
         } else if (queueTime <= 1) {
-            color = NamedTextColor.RED;
+            color = ChatFormat.Minecraft.red;
         }
 
         return Title.title(Component.text(queueTime).color(color), Component.text(""), Title.Times.of(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)));
@@ -248,8 +247,8 @@ public class FootballGame {
         if(winnerTeam == null) {
             Component msg = Component.text("The game was a ")
                     .color(ChatFormat.normalColor)
-                    .append(Component.text("draw").color(ChatFormat.brandColor2))
-                    .append(Component.text("!").color(ChatFormat.normalColor)
+                    .append(Component.text("draw", ChatFormat.brandColor2))
+                    .append(Component.text("!", ChatFormat.normalColor)
                     );
             for(NexiaPlayer player : FootballGame.getViewers()){
                 if(player != null && player.unwrap() != null) player.sendTitle(Title.title(msg, Component.text("")));
@@ -269,7 +268,7 @@ public class FootballGame {
         }
 
         for(NexiaPlayer player : FootballGame.getViewers()){
-            player.sendTitle(Title.title(Component.text("Team " + teamID).color(ChatFormat.brandColor2), Component.text("has won the game! (" + winnerTeam.goals + " goals)").color(ChatFormat.normalColor)));
+            player.sendTitle(Title.title(Component.text("Team " + teamID, ChatFormat.brandColor2), Component.text("has won the game! (" + winnerTeam.goals + " goals)", ChatFormat.normalColor)));
         }
     }
 
@@ -285,16 +284,16 @@ public class FootballGame {
 
             player.sendActionBarMessage(
                     Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
-                            .append(Component.text(FootballGame.map.name).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
+                            .append(Component.text(FootballGame.map.name, ChatFormat.brandColor2).decoration(ChatFormat.bold, true))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
                             .append(Component.text("Time » ").color(TextColor.fromHexString("#b3b3b3")))
-                            .append(Component.text(timer[0] + ":" + timer[1]).color(ChatFormat.brandColor2))
+                            .append(Component.text(timer[0] + ":" + timer[1], ChatFormat.brandColor2))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
                             .append(Component.text("Goals » ").color(TextColor.fromHexString("#b3b3b3")))
-                            .append(Component.text(playerTeam.goals + "/" + FootballGame.map.maxGoals).color(ChatFormat.brandColor2))
+                            .append(Component.text(playerTeam.goals + "/" + FootballGame.map.maxGoals, ChatFormat.brandColor2))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
                             .append(Component.text("Enemy Team Goals » ").color(TextColor.fromHexString("#b3b3b3")))
-                            .append(Component.text(otherTeam.goals + "/" + FootballGame.map.maxGoals).color(ChatFormat.brandColor2))
+                            .append(Component.text(otherTeam.goals + "/" + FootballGame.map.maxGoals, ChatFormat.brandColor2))
             );
         }
     }

@@ -63,7 +63,7 @@ public class FfaClassicUtil extends BaseFfaUtil {
         if(wasInSpawn.contains(player.getUUID()) && !isInFfaSpawn(player)){
             wasInSpawn.remove(player.getUUID());
             saveInventory(player);
-            player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your inventory layout was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
+            player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your inventory layout was saved.", ChatFormat.normalColor)));
         }
     }
 

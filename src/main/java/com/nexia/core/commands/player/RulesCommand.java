@@ -26,7 +26,7 @@ public class RulesCommand {
         Component message = Component.text("")
                 .append(Component.text("                          ").color(ChatFormat.lineColor).decoration(ChatFormat.strikeThrough, true))
                 .append(Component.text("[ ").color(ChatFormat.lineColor).decoration(ChatFormat.strikeThrough, false)
-                        .append(Component.text("Rules").color(ChatFormat.brandColor1).decoration(ChatFormat.strikeThrough, false))
+                        .append(Component.text("Rules", ChatFormat.brandColor1).decoration(ChatFormat.strikeThrough, false))
                         .append(Component.text(" ]").color(ChatFormat.lineColor).decoration(ChatFormat.strikeThrough, false))
                         .append(Component.text("                           ").color(ChatFormat.lineColor).decoration(ChatFormat.strikeThrough, true)));
 
@@ -38,10 +38,10 @@ public class RulesCommand {
                     .decoration(ChatFormat.strikeThrough, false)
                     .append(Component.text("» ")
                             .color(ChatFormat.arrowColor)
-                            .decoration(ChatFormat.bold, false)
+                            
                             .decoration(ChatFormat.strikeThrough, false)
                             .append(Component.text(NexiaCore.config.rules[i])
-                                    .decoration(ChatFormat.bold, false)
+                                    
                                     .decoration(ChatFormat.strikeThrough, false)
                                     .color(ChatFormat.normalColor)
                             )

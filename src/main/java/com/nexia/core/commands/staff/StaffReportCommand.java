@@ -35,15 +35,15 @@ public class StaffReportCommand {
 
                                     if(type.equalsIgnoreCase("ban")) {
                                         if(((CoreSavedPlayerData)data.savedData).isReportBanned()) {
-                                            context.getSource().sendMessage(Component.text("That player is already report banned!").color(ChatFormat.failColor));
+                                            context.getSource().sendMessage(Component.text("That player is already report banned!", ChatFormat.failColor));
                                             return 0;
                                         }
                                         ((CoreSavedPlayerData)data.savedData).setReportBanned(true);
                                         context.getSource().sendMessage(
                                                 ChatFormat.nexiaMessage
-                                                        .append(Component.text("You have report banned ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                                                                .append(Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor1).decoration(ChatFormat.bold, true))
-                                                                .append(Component.text(".")).color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
+                                                        .append(Component.text("You have report banned ", ChatFormat.normalColor)
+                                                                .append(Component.text(otherPlayer.getRawName(), ChatFormat.brandColor1).decoration(ChatFormat.bold, true))
+                                                                .append(Component.text(".", ChatFormat.normalColor))
                                                         )
                                         );
                                         return Command.SINGLE_SUCCESS;
@@ -51,21 +51,20 @@ public class StaffReportCommand {
 
                                     if(type.equalsIgnoreCase("unban") || type.equalsIgnoreCase("pardon")) {
                                         if(!((CoreSavedPlayerData)data.savedData).isReportBanned()) {
-                                            context.getSource().sendMessage(Component.text("That player is not report banned!").color(ChatFormat.failColor));
+                                            context.getSource().sendMessage(Component.text("That player is not report banned!", ChatFormat.failColor));
                                             return 0;
                                         }
                                         ((CoreSavedPlayerData)data.savedData).setReportBanned(false);
                                         context.getSource().sendMessage(
                                                 ChatFormat.nexiaMessage
-                                                        .append(Component.text("You have report unbanned ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                                                                .append(Component.text(otherPlayer.getRawName()).color(ChatFormat.brandColor1).decoration(ChatFormat.bold, true))
-                                                                .append(Component.text(".")).color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)
-                                                        )
+                                                        .append(Component.text("You have report unbanned ", ChatFormat.normalColor))
+                                                                .append(Component.text(otherPlayer.getRawName(), ChatFormat.brandColor1).decoration(ChatFormat.bold, true))
+                                                                .append(Component.text(".", ChatFormat.normalColor))
                                         );
                                         return Command.SINGLE_SUCCESS;
                                     }
 
-                                    context.getSource().sendMessage(Component.text("Invalid argument").color(ChatFormat.failColor));
+                                    context.getSource().sendMessage(Component.text("Invalid argument", ChatFormat.failColor));
 
                                     return 0;
                                 }))

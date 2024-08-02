@@ -47,8 +47,8 @@ public class MuteCommand {
         } catch (Exception e) {
 
             context.getSource().sendMessage(ChatFormat.nexiaMessage
-                    .append(Component.text("Invalid duration. Examples: ").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                    .append(Component.text("1s / 2m / 3h / 4d / 5w").color(ChatFormat.failColor).decoration(ChatFormat.bold, false))
+                    .append(Component.text("Invalid duration. Examples: ", ChatFormat.normalColor))
+                    .append(Component.text("1s / 2m / 3h / 4d / 5w", ChatFormat.failColor))
             );
 
             return 1;

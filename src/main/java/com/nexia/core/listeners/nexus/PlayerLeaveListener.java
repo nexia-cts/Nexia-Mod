@@ -15,9 +15,9 @@ public class PlayerLeaveListener {
             if(NexiaCore.config.events.statusMessages){
                 playerDisconnectEvent.setLeaveMessage(
                         Component.text("[").color(ChatFormat.lineColor)
-                                .append(Component.text("-").color(ChatFormat.failColor)
+                                .append(Component.text("-", ChatFormat.failColor)
                                 .append(Component.text("] ").color(ChatFormat.lineColor))
-                                .append(Component.text(player.getRawName()).color(ChatFormat.failColor)))
+                                .append(Component.text(player.getRawName(), ChatFormat.failColor)))
                 );
             }
 

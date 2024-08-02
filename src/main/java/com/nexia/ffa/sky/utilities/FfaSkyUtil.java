@@ -72,7 +72,7 @@ public class FfaSkyUtil extends BaseFfaUtil {
             wasInSpawn.remove(player.getUUID());
             player.unwrap().getCooldowns().addCooldown(Items.ENDER_PEARL, 10);
             saveInventory(player);
-            player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your inventory layout was saved.").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false)));
+            player.sendActionBarMessage(ChatFormat.nexiaMessage.append(Component.text("Your inventory layout was saved.", ChatFormat.normalColor)));
         }
     }
 
@@ -151,18 +151,18 @@ public class FfaSkyUtil extends BaseFfaUtil {
         // Inform player about given rewards
 
         attacker.sendMessage(Component.text("[").color(ChatFormat.arrowColor)
-                .append(Component.text("☠").color(ChatFormat.brandColor1))
+                .append(Component.text("☠", ChatFormat.brandColor1))
                 .append(Component.text("] ").color(ChatFormat.arrowColor))
-                .append(Component.text(player.getRawName()).color(ChatFormat.brandColor2))
+                .append(Component.text(player.getRawName(), ChatFormat.brandColor2))
         );
 
         for (ItemStack givenReward : givenRewards) {
             String itemName = LegacyChatFormat.removeColors(givenReward.getHoverName().getString());
             if (givenReward.getCount() > 1) itemName += "s";
             attacker.sendMessage(Component.text("[").color(ChatFormat.arrowColor)
-                    .append(Component.text("+" + givenReward.getCount()).color(ChatFormat.brandColor1))
+                    .append(Component.text("+" + givenReward.getCount(), ChatFormat.brandColor1))
                     .append(Component.text("] ").color(ChatFormat.arrowColor))
-                    .append(Component.text(itemName).color(ChatFormat.brandColor2))
+                    .append(Component.text(itemName, ChatFormat.brandColor2))
             );
         }
         attacker.sendSound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.MASTER, 0.75f, 1f);

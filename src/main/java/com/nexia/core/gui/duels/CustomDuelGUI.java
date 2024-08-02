@@ -127,9 +127,9 @@ public class CustomDuelGUI extends SimpleGui {
             ItemDisplayUtil.removeLore(item, 1);
 
             net.kyori.adventure.text.Component infoMsg = net.kyori.adventure.text.Component.text("INFO: ", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false).decoration(ChatFormat.bold, true)
-                    .append(net.kyori.adventure.text.Component.text("This kit is a ", ChatFormat.Minecraft.yellow)).decoration(ChatFormat.italic, false).decoration(ChatFormat.bold, false)
+                    .append(net.kyori.adventure.text.Component.text("This kit is a ", ChatFormat.Minecraft.yellow)).decoration(ChatFormat.italic, false)
                     .append(net.kyori.adventure.text.Component.text("per-custom ", ChatFormat.Minecraft.yellow)).decoration(ChatFormat.italic, false).decoration(ChatFormat.bold, true)
-                    .append(net.kyori.adventure.text.Component.text("kit.", ChatFormat.Minecraft.yellow)).decoration(ChatFormat.italic, false).decoration(ChatFormat.bold, false);
+                    .append(net.kyori.adventure.text.Component.text("kit.", ChatFormat.Minecraft.yellow)).decoration(ChatFormat.italic, false);
 
             if(inventory.equalsIgnoreCase("vanilla")) {
                 item = new ItemStack(Items.RESPAWN_ANCHOR);

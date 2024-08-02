@@ -208,20 +208,16 @@ public class LobbyUtil {
                         GamemodeBanHandler.removeBanFromList(player.getUUID(), gameMode);
                         return false;
                     } else {
-                        player.sendMessage(
-                                ChatFormat.nexiaMessage
-                                        .append(Component.text("You are gamemode (" + gameMode.name + ") banned for ").decoration(ChatFormat.bold, false))
-                                        .append(Component.text(BanHandler.banTimeToText(banTime)).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
-                                        .append(Component.text(".\nReason: ").decoration(ChatFormat.bold, false))
-                                        .append(Component.text((String) banJSON.get("reason")).color(ChatFormat.brandColor2).decoration(ChatFormat.bold, false))
+                        player.sendNexiaMessage(
+                                Component.text("You are gamemode (" + gameMode.name + ") banned for ", ChatFormat.Minecraft.white)
+                                        .append(Component.text(BanHandler.banTimeToText(banTime), ChatFormat.brandColor2))
+                                        .append(Component.text(".\nReason: ", ChatFormat.Minecraft.white))
+                                        .append(Component.text((String) banJSON.get("reason"), ChatFormat.brandColor2))
                         );
                         return true;
                     }
                 } else {
-                    player.sendMessage(
-                            ChatFormat.nexiaMessage
-                                    .append(Component.text("You are gamemode (" + gameMode.name + ") banned!"))
-                    );
+                    player.sendNexiaMessage("You are gamemode (%s) banned!", gameMode.name);
                 }
 
                 LobbyUtil.returnToLobby(player, true);
@@ -246,7 +242,7 @@ public class LobbyUtil {
 
         for (BaseFfaUtil util : BaseFfaUtil.ffaUtils) {
             if (game.equalsIgnoreCase(util.getNameLowercase() + " ffa") && !util.canGoToSpawn(player)) {
-                player.sendMessage(Component.text("You must be fully healed to go to spawn!").color(ChatFormat.failColor));
+                player.sendNexiaMessage("You must be fully healed to go to spawn!");
                 return;
             }
         }
@@ -297,11 +293,8 @@ public class LobbyUtil {
 
             if(message){
                 player.sendActionBarMessage(Component.text("You have joined §f☯ §c§lDuels §7\uD83E\uDE93"));
-                player.sendMessage(
-                        ChatFormat.nexiaMessage
-                                .append(Component.text("Duels has now moved here. (main hub)").color(ChatFormat.normalColor).decoration(ChatFormat.bold, false))
-                );
-                player.sendMessage(Component.text("Meaning you can now use /duel, /queue and /spectate inside of the normal hub WITHOUT going to duels!").decoration(ChatFormat.bold, false));
+                player.sendNexiaMessage("Duels has now moved here. (main hub)");
+                player.sendMessage(Component.text("Meaning you can now use /duel, /queue and /spectate inside of the normal hub WITHOUT going to duels!"));
             }
         }
 

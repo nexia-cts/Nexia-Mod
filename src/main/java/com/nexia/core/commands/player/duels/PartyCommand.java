@@ -86,7 +86,7 @@ public class PartyCommand {
         DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(executor);
 
         if(data.duelOptions.duelsTeam == null) {
-            executor.sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
+            executor.sendMessage(Component.text("You aren't in a team!", ChatFormat.failColor));
             return 1;
         }
 
@@ -114,7 +114,7 @@ public class PartyCommand {
         DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(executor);
 
         if(data.duelOptions.duelsTeam == null) {
-            executor.sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
+            executor.sendMessage(Component.text("You aren't in a team!", ChatFormat.failColor));
             return 1;
         }
 
@@ -128,7 +128,7 @@ public class PartyCommand {
         DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(executor);
 
         if(data.duelOptions.duelsTeam == null) {
-            executor.sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
+            executor.sendMessage(Component.text("You aren't in a team!", ChatFormat.failColor));
             return 1;
         }
 
@@ -142,7 +142,7 @@ public class PartyCommand {
         DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
 
         if(data.duelOptions.duelsTeam == null) {
-            player.sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
+            player.sendMessage(Component.text("You aren't in a team!", ChatFormat.failColor));
             return 1;
         }
 
@@ -155,7 +155,7 @@ public class PartyCommand {
         DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
 
         if(data.duelOptions.duelsTeam == null) {
-            player.sendMessage(Component.text("You aren't in a team!").color(ChatFormat.failColor));
+            player.sendMessage(Component.text("You aren't in a team!", ChatFormat.failColor));
             return 1;
         }
 
