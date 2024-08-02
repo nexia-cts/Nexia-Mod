@@ -1,7 +1,5 @@
 package com.nexia.core.utilities.item;
 
-import com.nexia.nexus.api.world.nbt.NBTList;
-import com.nexia.nexus.api.world.nbt.NBTObject;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.nbt.CompoundTag;
@@ -11,29 +9,15 @@ import net.minecraft.world.item.ItemStack;
 
 public class ItemDisplayUtil {
 
-    public static void addLore(ItemStack itemStack, String string, int line) {
-        CompoundTag compoundTag = itemStack.getOrCreateTag();
-        CompoundTag display = compoundTag.getCompound("display");
-        ListTag listTag = display.getList("Lore", 8);
-
-        string = "{\"text\":\"" + string + "\"}";
-        if (line < 0) {
-            listTag.add(listTag.size() + line + 1, StringTag.valueOf(string));
-        } else {
-            listTag.add(line, StringTag.valueOf(string));
-        }
-
-        display.put("Lore", listTag);
-        compoundTag.put("display", display);
-        itemStack.setTag(compoundTag);
+    public static ItemStack addLore(ItemStack itemStack, String string, int line) {
+        return addUnformattedLore(itemStack, "{\"text\":\"" + string + "\"}", line);
     }
 
-    public static void addLore(ItemStack itemStack, Component component, int line) {
+    private static ItemStack addUnformattedLore(ItemStack itemStack, String string, int line) {
         CompoundTag compoundTag = itemStack.getOrCreateTag();
         CompoundTag display = compoundTag.getCompound("display");
         ListTag listTag = display.getList("Lore", 8);
 
-        String string = GsonComponentSerializer.gson().serialize(component);
         if (line < 0) {
             listTag.add(listTag.size() + line + 1, StringTag.valueOf(string));
         } else {
@@ -43,6 +27,12 @@ public class ItemDisplayUtil {
         display.put("Lore", listTag);
         compoundTag.put("display", display);
         itemStack.setTag(compoundTag);
+
+        return itemStack;
+    }
+
+    public static ItemStack addLore(ItemStack itemStack, Component component, int line) {
+        return addUnformattedLore(itemStack, GsonComponentSerializer.gson().serialize(component), line);
     }
 
     public static void removeLore(ItemStack itemStack, int line) {
@@ -76,19 +66,4 @@ public class ItemDisplayUtil {
             }
         } catch (Exception ignored) {}
     }
-
-    public static void addGlint(com.nexia.nexus.api.world.item.ItemStack itemStack) {
-        try {
-            System.out.println(itemStack.getEnchantments());
-            if (itemStack.getEnchantments().isEmpty()) {
-                NBTList list = NBTList.create();
-                NBTObject object = NBTObject.create();
-
-                object.set("Enchantments", list);
-
-                itemStack.setItemNBT(object);
-            }
-        } catch (Exception ignored) {}
-    }
-
 }

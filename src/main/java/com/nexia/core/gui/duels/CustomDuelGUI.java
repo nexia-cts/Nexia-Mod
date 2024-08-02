@@ -56,7 +56,7 @@ public class CustomDuelGUI extends SimpleGui {
             airSlots++;
         }
         for(DuelsMap map : DuelsMap.duelsMaps){
-            this.setSlot(slot, map.item.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text(map.id, ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false))));
+            this.setSlot(slot, map.item);
             slot++;
         }
     }
@@ -81,7 +81,6 @@ public class CustomDuelGUI extends SimpleGui {
             airSlots++;
         }
 
-        //this.setSlot(4, HeadFunctions.getPlayerHead(otherp.getScoreboardName(), 1));
 
         ItemStack playerHead = PlayerUtil.getPlayerHead(otherp.getUUID());
         playerHead.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text(otherp.getScoreboardName(), ChatFormat.Minecraft.yellow).decoration(ChatFormat.bold, true).decoration(ChatFormat.italic, false)));
@@ -100,7 +99,7 @@ public class CustomDuelGUI extends SimpleGui {
 
             ItemDisplayUtil.addLore(item,
                     net.kyori.adventure.text.Component.text("Use ", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false)
-                            .append(net.kyori.adventure.text.Component.text("/kiteditor edit", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false).decoration(ChatFormat.bold, true))
+                            .append(net.kyori.adventure.text.Component.text("/kiteditor edit <1, 2, 3, smp, vanilla>", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false).decoration(ChatFormat.bold, true))
                             .append(net.kyori.adventure.text.Component.text(" to edit/create a custom kit!", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false))
                     , 0);
 

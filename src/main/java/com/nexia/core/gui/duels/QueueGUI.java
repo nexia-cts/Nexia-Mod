@@ -1,9 +1,11 @@
 package com.nexia.core.gui.duels;
 
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
+import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
@@ -52,26 +54,27 @@ public class QueueGUI extends SimpleGui {
                 slot = 28;
             }
 
-
-            item = DuelGameMode.duelsItems.get(i1).setHoverName(new TextComponent("§f" + duel.toUpperCase().replaceAll("_", " ")));
+            item = DuelGameMode.duelsItems.get(i1);
             DuelGameMode gameMode = GamemodeHandler.identifyGamemode(duel);
 
             ItemDisplayUtil.removeLore(item, 0);
             assert gameMode != null;
-            ItemDisplayUtil.addLore(item, "§7There are §7§l" + gameMode.queue.size() + " §7people queued up.", 0);
+            ItemDisplayUtil.addLore(item,
+                    net.kyori.adventure.text.Component.text("There are ", ChatFormat.Minecraft.gray)
+                            .append(net.kyori.adventure.text.Component.text(gameMode.queue.size(), ChatFormat.brandColor1).decoration(ChatFormat.bold, true))
+                            .append(net.kyori.adventure.text.Component.text(" people queued up.", ChatFormat.Minecraft.gray))
+            , 0);
 
+            ItemDisplayUtil.removeLore(item, 1);
             if(GamemodeHandler.isInQueue(new NexiaPlayer(this.player), gameMode)) {
-                ItemDisplayUtil.removeLore(item, 1);
-                ItemDisplayUtil.addLore(item, "§7Click to leave the queue.", 1);
-            } else {
-                ItemDisplayUtil.removeLore(item, 1);
+                ItemDisplayUtil.addLore(item, net.kyori.adventure.text.Component.text("Click to leave the queue.", ChatFormat.Minecraft.gray), 1);
             }
 
             this.setSlot(slot, item);
             slot++;
             i1++;
         }
-        this.setSlot(40, new ItemStack(Items.BARRIER).setHoverName(new TextComponent("§c§lLeave ALL Queues")));
+        this.setSlot(40, new ItemStack(Items.BARRIER).setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Leave ALL Queues", ChatFormat.Minecraft.red).decoration(ChatFormat.bold, true).decoration(ChatFormat.italic, false))));
     }
 
     public boolean click(int index, ClickType clickType, net.minecraft.world.inventory.ClickType action){
@@ -83,24 +86,20 @@ public class QueueGUI extends SimpleGui {
             NexiaPlayer nexiaPlayer = new NexiaPlayer(this.player);
 
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
-                if(name.getString().substring(4).equalsIgnoreCase("Leave ALL Queues")) {
-                    //PlayerUtil.getNexusPlayer(player).runCommand("/queue LEAVE", 0, false);
+                if(name.getString().equalsIgnoreCase("Leave ALL Queues")) {
                     GamemodeHandler.removeQueue(nexiaPlayer, null, false);
-
-                    this.close();
-                    return super.click(index, clickType, action);
                 }
 
-                String modifiedName = name.getString().substring(2).replaceAll(" ", "_");
+                String modifiedName = name.getString().replaceAll(" ", "_");
                 DuelGameMode gameMode = GamemodeHandler.identifyGamemode(modifiedName);
 
                 if(gameMode != null && GamemodeHandler.isInQueue(nexiaPlayer, gameMode)) {
                     GamemodeHandler.removeQueue(nexiaPlayer, modifiedName, false);
-                    this.close();
                 } else {
                     GamemodeHandler.joinQueue(nexiaPlayer, modifiedName, false);
-                    this.close();
                 }
+
+                this.close();
             }
 
         }

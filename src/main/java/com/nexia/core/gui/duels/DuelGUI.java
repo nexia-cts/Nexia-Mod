@@ -1,14 +1,14 @@
 package com.nexia.core.gui.duels;
 
-import com.nexia.nexus.api.world.types.Minecraft;
-import com.nexia.nexus.builder.implementation.util.ObjectMappings;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
-import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.map.DuelsMap;
+import com.nexia.nexus.api.world.types.Minecraft;
+import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
@@ -56,7 +56,7 @@ public class DuelGUI extends SimpleGui {
         }
         for(DuelsMap map : DuelsMap.duelsMaps){
             if(gameMode.gameMode == Minecraft.GameMode.ADVENTURE && !map.isAdventureSupported) continue;
-            this.setSlot(slot, map.item.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text(map.id, ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false))));
+            this.setSlot(slot, map.item);
             slot++;
         }
     }
@@ -97,7 +97,7 @@ public class DuelGUI extends SimpleGui {
             if(slot == 26) {
                 slot = 28;
             }
-            item = DuelGameMode.duelsItems.get(i1).setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text(duel.toUpperCase().replaceAll("_", " "), ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false)));
+            item = DuelGameMode.duelsItems.get(i1);
             ItemDisplayUtil.removeLore(item, 0);
             ItemDisplayUtil.removeLore(item, 1);
 
