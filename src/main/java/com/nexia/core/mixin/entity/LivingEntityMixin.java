@@ -39,6 +39,8 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Shadow public abstract ItemStack getBlockingItem();
 
+    @Shadow public abstract float getHealth();
+
     // Make void death instant
     @WrapOperation(method = "outOfWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
     protected boolean killInVoid(LivingEntity instance, DamageSource damageSource, float f, Operation<Boolean> original) {
@@ -47,7 +49,7 @@ public abstract class LivingEntityMixin extends Entity {
                 return original.call(instance, damageSource, f);
             }
         }
-        return original.call(instance, damageSource, Float.MAX_VALUE);
+        return original.call(instance, damageSource, this.getHealth());
     }
 
 
