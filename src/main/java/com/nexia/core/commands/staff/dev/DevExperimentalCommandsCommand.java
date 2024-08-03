@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.uhc.utilities.UhcFfaAreas;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.minigames.games.skywars.SkywarsMap;
@@ -23,15 +24,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Difficulty;
-import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.biome.Biomes;
-import net.minecraft.world.level.dimension.DimensionType;
-import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.io.FileWriter;
-
-import static com.nexia.core.utilities.world.WorldUtil.getChunkGenerator;
 
 public class DevExperimentalCommandsCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
@@ -58,23 +52,7 @@ public class DevExperimentalCommandsCommand {
         if(name.contains("-")) name = name.split("-")[1];
 
         if(argument.contains("cffa")){
-            ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("ffa", name)).location(), (
-                    new RuntimeWorldConfig()
-                            .setDimensionType(DimensionType.OVERWORLD_LOCATION)
-                            .setGenerator(getChunkGenerator(Biomes.PLAINS))
-                            .setDifficulty(Difficulty.HARD)
-                            .setGameRule(GameRules.RULE_KEEPINVENTORY, true)
-                            .setGameRule(GameRules.RULE_MOBGRIEFING, false)
-                            .setGameRule(GameRules.RULE_WEATHER_CYCLE, false)
-                            .setGameRule(GameRules.RULE_DAYLIGHT, true)
-                            .setGameRule(GameRules.RULE_DO_IMMEDIATE_RESPAWN, true)
-                            .setGameRule(GameRules.RULE_DOMOBSPAWNING, false)
-                            .setGameRule(GameRules.RULE_SHOWDEATHMESSAGES, false)
-                            .setGameRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS, false)
-                            .setGameRule(GameRules.RULE_DISABLE_ELYTRA_MOVEMENT_CHECK, true)
-                            .setGameRule(GameRules.RULE_DROWNING_DAMAGE, true)
-                            .setGameRule(GameRules.RULE_SPAWN_RADIUS, 0))).asWorld();
-
+            ServerLevel level = ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("ffa", name)).location(), FfaUtil.ffaWorldConfig).asWorld();
             player.teleportTo(level, 0, 80, 0, 0, 0);
         } else if(argument.equalsIgnoreCase("rluhc")) {
             UhcFfaAreas.resetMap(true);

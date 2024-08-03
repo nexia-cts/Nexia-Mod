@@ -6,6 +6,7 @@ import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.CorePlayerData;
+import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.ffa.classic.utilities.ClassicFfaAreas;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
@@ -17,17 +18,47 @@ import com.nexia.ffa.sky.utilities.SkyFfaAreas;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.ffa.uhc.utilities.UhcFfaAreas;
 import net.kyori.adventure.text.Component;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.dimension.DimensionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.text.DecimalFormat;
 
+import static com.nexia.core.utilities.world.WorldUtil.getChunkGenerator;
+
 public class FfaUtil {
+    public static final RuntimeWorldConfig ffaWorldConfig = new RuntimeWorldConfig()
+            .setDimensionType(DimensionType.OVERWORLD_LOCATION)
+            .setGenerator(getChunkGenerator(Biomes.PLAINS))
+            .setDifficulty(Difficulty.HARD)
+            .setGameRule(GameRules.RULE_KEEPINVENTORY, true)
+            .setGameRule(GameRules.RULE_MOBGRIEFING, false)
+            .setGameRule(GameRules.RULE_WEATHER_CYCLE, false)
+            .setGameRule(GameRules.RULE_DAYLIGHT, true)
+            .setGameRule(GameRules.RULE_DO_IMMEDIATE_RESPAWN, true)
+            .setGameRule(GameRules.RULE_DOMOBSPAWNING, false)
+            .setGameRule(GameRules.RULE_SHOWDEATHMESSAGES, false)
+            .setGameRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS, false)
+            .setGameRule(GameRules.RULE_DISABLE_ELYTRA_MOVEMENT_CHECK, true)
+            .setGameRule(GameRules.RULE_DROWNING_DAMAGE, true)
+            .setGameRule(GameRules.RULE_SPAWN_RADIUS, 0);
+
+    public static ServerLevel generateWorld(String id) {
+        return ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("ffa", id)).location(), FfaUtil.ffaWorldConfig).asWorld();
+    }
 
     public static boolean isFfaPlayer(NexiaPlayer player) {
         return ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).gameMode == PlayerGameMode.FFA;

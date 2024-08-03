@@ -5,6 +5,7 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.ffa.FfaAreas;
+import com.nexia.ffa.FfaUtil;
 import com.nexia.nexus.api.util.Identifier;
 import com.nexia.nexus.api.world.World;
 import com.nexia.nexus.api.world.entity.player.Player;
@@ -51,7 +52,7 @@ public class UhcFfaAreas implements FfaAreas {
 
         if (announce) {
             for (Player player : nexusFfaWorld.getPlayers()) {
-                player.sendMessage(Component.text("[!] Map has been reloaded!").color(ChatFormat.lineTitleColor));
+                player.sendMessage(ChatFormat.nexiaMessage.append(Component.text("The map has been reloaded!", ChatFormat.normalColor)));
             }
         }
     }
@@ -98,11 +99,15 @@ public class UhcFfaAreas implements FfaAreas {
         for (ServerLevel level : server.getAllLevels()) {
             if (isFfaWorldStatic(level)) {
                 ffaWorld = level;
-                nexusFfaWorld = WorldUtil.getWorld(level);
                 break;
             }
         }
 
+        if(ffaWorld == null) {
+            ffaWorld = FfaUtil.generateWorld("uhc");
+        }
+
+        nexusFfaWorld = WorldUtil.getWorld(ffaWorld);
         nexusFfaLocation = new Location(spawn.x, spawn.y, spawn.z, spawn.yaw, spawn.pitch, nexusFfaWorld);
     }
 }

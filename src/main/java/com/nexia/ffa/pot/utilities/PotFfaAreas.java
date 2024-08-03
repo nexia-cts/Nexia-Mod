@@ -3,6 +3,7 @@ package com.nexia.ffa.pot.utilities;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.ffa.FfaAreas;
+import com.nexia.ffa.FfaUtil;
 import com.nexia.nexus.api.world.World;
 import com.nexia.nexus.api.world.util.Location;
 import net.minecraft.core.BlockPos;
@@ -66,11 +67,15 @@ public class PotFfaAreas implements FfaAreas {
         for (ServerLevel level : server.getAllLevels()) {
             if (isFfaWorldStatic(level)) {
                 ffaWorld = level;
-                nexusFfaWorld = WorldUtil.getWorld(level);
                 break;
             }
         }
 
+        if(ffaWorld == null) {
+            ffaWorld = FfaUtil.generateWorld("pot");
+        }
+
+        nexusFfaWorld = WorldUtil.getWorld(ffaWorld);
         nexusFfaLocation = new Location(spawn.x, spawn.y, spawn.z, spawn.yaw, spawn.pitch, nexusFfaWorld);
     }
 }
