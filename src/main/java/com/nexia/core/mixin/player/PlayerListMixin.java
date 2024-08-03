@@ -201,7 +201,7 @@ public abstract class PlayerListMixin {
             MutableComponent message = new TextComponent(messageString).withStyle(ChatFormatting.WHITE);
 
             if(player.hasPermission("nexia.chat.formatting", 4)) {
-                message = (MutableComponent) ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("§f").append(MineDown.parse(messageString)));
+                message = (MutableComponent) ObjectMappings.convertComponent(MineDown.parse("&white&" + messageString));
             }
 
             return name.append(suffix).append(message);
