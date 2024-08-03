@@ -25,9 +25,12 @@ import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import com.nexia.nexus.builder.implementation.world.entity.player.WrappedPlayer;
 import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -241,5 +244,15 @@ public class NexiaPlayer extends WrappedPlayer {
     public void sendSound(EntityPos position, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch) {
         this.unwrap().connection.send(new ClientboundSoundPacket(soundEvent, soundSource,
                 position.x, position.y, position.z, 16f * volume, pitch));
+    }
+
+    public boolean setBedrockBridging(boolean allowed) {
+        if (ServerPlayNetworking.canSend(this.unwrap(), NexiaCore.CONVENTIONAL_BRIDGING_UPDATE_ID)) {
+            FriendlyByteBuf buf = PacketByteBufs.create();
+            buf.writeBoolean(allowed);
+            ServerPlayNetworking.send(this.unwrap(), NexiaCore.CONVENTIONAL_BRIDGING_UPDATE_ID, buf);
+            return true;
+        }
+        return false;
     }
 }

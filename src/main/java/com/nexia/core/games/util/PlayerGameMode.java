@@ -46,7 +46,10 @@ public class PlayerGameMode {
             if(playerGameMode.id.equalsIgnoreCase(gameMode)) return playerGameMode;
         }
         return null;
+    }
 
-
+    @Override
+    public String toString() {
+        return this.name;
     }
 }

@@ -8,6 +8,7 @@ import com.nexia.core.utilities.player.BanHandler;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.GamemodeBanHandler;
 import com.nexia.core.utilities.pos.EntityPos;
+import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.ffa.base.BaseFfaUtil;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
@@ -27,10 +28,7 @@ import com.nexia.nexus.api.world.nbt.NBTObject;
 import com.nexia.nexus.api.world.nbt.NBTValue;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.nexus.api.world.util.Location;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.kyori.adventure.text.Component;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -110,21 +108,16 @@ public class LobbyUtil {
             player.setRespawnPosition(nexusLobbyLocation, lobbySpawn.yaw, true, false);
             player.teleport(nexusLobbyLocation);
 
-            if(player.hasPermission("nexia.prefix.supporter")) {
+            if(player.hasPrefix(NexiaRank.SUPPORTER)) {
                 player.setAbleToFly(true);
             }
 
             LobbyUtil.giveItems(player);
         }
 
-
-
         ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).gameMode = PlayerGameMode.LOBBY;
-        if (ServerPlayNetworking.canSend(player.unwrap(), NexiaCore.CONVENTIONAL_BRIDGING_UPDATE_ID)) {
-            FriendlyByteBuf buf = PacketByteBufs.create();
-            buf.writeBoolean(true);
-            ServerPlayNetworking.send(player.unwrap(), NexiaCore.CONVENTIONAL_BRIDGING_UPDATE_ID, buf);
-        }
+
+        player.setBedrockBridging(true);
     }
 
     public static void giveItems(NexiaPlayer player) {
@@ -134,7 +127,6 @@ public class LobbyUtil {
 
         NBTObject unbreakableNBTObject = hideAttrubtesNBTObject.copy();
         unbreakableNBTObject.set("Unbreakable", NBTValue.of(1));
-
 
         com.nexia.nexus.api.world.item.ItemStack compass = com.nexia.nexus.api.world.item.ItemStack.create(Minecraft.Item.COMPASS);
         compass.setItemNBT(hideAttrubtesNBTObject.copy());
@@ -171,7 +163,7 @@ public class LobbyUtil {
         customDuelSword.setLore(Component.text("Hit a player to duel them in your custom kit.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
         customDuelSword.setDisplayName(Component.text("Custom Duel Sword", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
 
-        if(player.hasPermission("nexia.prefix.supporter")) {
+        if(player.hasPrefix(NexiaRank.SUPPORTER)) {
 
             com.nexia.nexus.api.world.item.ItemStack elytra = com.nexia.nexus.api.world.item.ItemStack.create(Minecraft.Item.ELYTRA);
             elytra.setItemNBT(unbreakableNBTObject.copy());
@@ -234,11 +226,8 @@ public class LobbyUtil {
         if (checkGameModeBan(player, game)) {
             return;
         }
-        if (ServerPlayNetworking.canSend(player.unwrap(), NexiaCore.CONVENTIONAL_BRIDGING_UPDATE_ID)) {
-            FriendlyByteBuf buf = PacketByteBufs.create();
-            buf.writeBoolean(true);
-            ServerPlayNetworking.send(player.unwrap(), NexiaCore.CONVENTIONAL_BRIDGING_UPDATE_ID, buf);
-        }
+
+        player.setBedrockBridging(true);
 
         for (BaseFfaUtil util : BaseFfaUtil.ffaUtils) {
             if (game.equalsIgnoreCase(util.getNameLowercase() + " ffa") && !util.canGoToSpawn(player)) {

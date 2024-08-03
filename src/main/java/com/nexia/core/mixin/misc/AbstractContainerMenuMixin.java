@@ -24,6 +24,7 @@ public class AbstractContainerMenuMixin {
                 player.inventory.setCarried(ItemStack.EMPTY);
             }
             ci.cancel();
+            nexiaPlayer.refreshInventory();
         }
     }
 

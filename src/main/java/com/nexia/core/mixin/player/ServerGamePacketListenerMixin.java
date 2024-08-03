@@ -167,6 +167,7 @@ public class ServerGamePacketListenerMixin {
                 !EventUtil.dropItem(nexiaPlayer, inv.getItem(player.inventory.selected))) {
             player.connection.send(new ClientboundContainerSetSlotPacket(0, 36 + inv.selected, inv.getSelected()));
             ci.cancel();
+            nexiaPlayer.refreshInventory();
         }
     }
 

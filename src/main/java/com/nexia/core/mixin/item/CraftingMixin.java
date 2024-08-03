@@ -46,7 +46,10 @@ public class CraftingMixin {
         if (crafter == null) return itemStack;
         NexiaPlayer nexiaPlayer = new NexiaPlayer(crafter);
 
-        if (!EventUtil.craftItem(nexiaPlayer)) return ItemStack.EMPTY;
+        if (!EventUtil.craftItem(nexiaPlayer)) {
+            nexiaPlayer.refreshInventory();
+            return ItemStack.EMPTY;
+        }
 
         return itemStack;
     }

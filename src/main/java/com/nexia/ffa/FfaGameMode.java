@@ -18,4 +18,9 @@ public class FfaGameMode {
         this.name = name;
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }

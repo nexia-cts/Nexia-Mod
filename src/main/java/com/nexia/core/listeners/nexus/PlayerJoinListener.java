@@ -96,7 +96,7 @@ public class PlayerJoinListener {
         } catch (Exception ignored) { }
 
         if(discordUser == null) {
-            if(player.hasPermission("nexia.prefix.supporter")) {
+            if(player.hasPrefix(NexiaRank.SUPPORTER)) {
                 if(player.hasPermission("nexia.rank")) {
                     NexiaRank.removePrefix(NexiaRank.SUPPORTER, player);
                     return;
@@ -108,11 +108,11 @@ public class PlayerJoinListener {
 
         Role supporterRole = jda.getRoleById("1107264322951979110");
         boolean hasRole = discordUser.getRoles().contains(supporterRole);
-        boolean hasSupporterPrefix = player.hasPermission("nexia.prefix.supporter");
+        boolean hasSupporterPrefix = player.hasPrefix(NexiaRank.SUPPORTER);
 
         if(hasRole && !hasSupporterPrefix) {
             if(player.hasPermission("nexia.rank")) {
-                NexiaRank.addPrefix(NexiaRank.SUPPORTER, player, true);
+                NexiaRank.addPrefix(NexiaRank.SUPPORTER, player, false);
                 return;
             }
             NexiaRank.setRank(NexiaRank.SUPPORTER, player);
