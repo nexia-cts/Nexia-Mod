@@ -15,6 +15,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -114,6 +115,7 @@ public class FfaSkyUtil extends BaseFfaUtil {
         super.joinOrRespawn(player, tp);
         wasInSpawn.add(player.getUUID());
         player.reset(true, Minecraft.GameMode.SURVIVAL);
+        player.unwrap().addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1000000, 1, true, true));
         setInventory(player);
     }
 
@@ -191,7 +193,7 @@ public class FfaSkyUtil extends BaseFfaUtil {
 
     private static ItemStack gApplePotion() {
         ItemStack potion = new ItemStack(Items.POTION);
-        potion.setHoverName(ObjectMappings.convertComponent(MiniMessage.get().parse(String.format("<gradient:%s:%s>Piss Juice™</gradient>", "#ffaa00", "#ffc40e")).decoration(TextDecoration.ITALIC, false)));
+        potion.setHoverName(new TextComponent("\247ePiss Juice\2477™"));
         potion.getOrCreateTag().putInt("CustomPotionColor", 16771584);
 
         ArrayList<MobEffectInstance> effects = new ArrayList<>();
