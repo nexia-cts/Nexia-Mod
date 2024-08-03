@@ -46,10 +46,10 @@ public class PlayerRespawnListener {
             }
 
             if(data.gameMode == PlayerGameMode.BEDWARS)
-                respawnEvent.setRespawnMode(Minecraft.GameMode.SURVIVAL);
+                respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
 
             if(data.gameMode == PlayerGameMode.OITC)
-                respawnEvent.setRespawnMode(Minecraft.GameMode.ADVENTURE);
+                respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
 
             if(duelsData.gameOptions == null) return;
 
