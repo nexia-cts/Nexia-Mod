@@ -42,15 +42,15 @@ public class ChatFormat {
     public class Minecraft {
         public static TextColor dark_red = TextColor.fromHexString("#b51413");
 
-        public static TextColor red = ChatFormat.failColor;
+        public static TextColor red = TextColor.fromHexString("#ff2b1c");
 
-        public static TextColor gold = ChatFormat.goldColor;
+        public static TextColor gold = TextColor.fromHexString("#f5bc42");
 
         public static TextColor yellow = TextColor.fromHexString("#fff60c");
 
         public static TextColor dark_green = TextColor.fromHexString("#1b9c19");
 
-        public static TextColor green = ChatFormat.greenColor;
+        public static TextColor green = TextColor.fromHexString("#38e312");
 
         public static TextColor aqua = TextColor.fromHexString("#28e2ff");
 
@@ -60,9 +60,9 @@ public class ChatFormat {
 
         public static TextColor blue = TextColor.fromHexString("#2955ff");
 
-        public static TextColor light_purple = ChatFormat.brandColor2;
+        public static TextColor light_purple = TextColor.fromHexString("#e700f0");
 
-        public static TextColor dark_purple = ChatFormat.brandColor1;
+        public static TextColor dark_purple = TextColor.fromHexString("#a400fc");
 
         public static TextColor white = TextColor.fromHexString("#ffffff");
 
