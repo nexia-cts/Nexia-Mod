@@ -60,14 +60,14 @@ public class QueueGUI extends SimpleGui {
             ItemDisplayUtil.removeLore(item, 0);
             assert gameMode != null;
             ItemDisplayUtil.addLore(item,
-                    net.kyori.adventure.text.Component.text("There are ", ChatFormat.Minecraft.gray)
-                            .append(net.kyori.adventure.text.Component.text(gameMode.queue.size(), ChatFormat.brandColor1).decoration(ChatFormat.bold, true))
-                            .append(net.kyori.adventure.text.Component.text(" people queued up.", ChatFormat.Minecraft.gray))
+                    net.kyori.adventure.text.Component.text("There are ", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false)
+                            .append(net.kyori.adventure.text.Component.text(gameMode.queue.size(), ChatFormat.brandColor1).decoration(ChatFormat.bold, true).decoration(ChatFormat.italic, false))
+                            .append(net.kyori.adventure.text.Component.text(" people queued up.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false))
             , 0);
 
             ItemDisplayUtil.removeLore(item, 1);
             if(GamemodeHandler.isInQueue(new NexiaPlayer(this.player), gameMode)) {
-                ItemDisplayUtil.addLore(item, net.kyori.adventure.text.Component.text("Click to leave the queue.", ChatFormat.Minecraft.gray), 1);
+                ItemDisplayUtil.addLore(item, net.kyori.adventure.text.Component.text("Click to leave the queue.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 1);
             }
 
             this.setSlot(slot, item);
@@ -86,7 +86,7 @@ public class QueueGUI extends SimpleGui {
             NexiaPlayer nexiaPlayer = new NexiaPlayer(this.player);
 
             if(itemStack.getItem() != Items.BLACK_STAINED_GLASS_PANE && itemStack.getItem() != Items.AIR){
-                if(name.getString().equalsIgnoreCase("Leave ALL Queues")) {
+                if(name.getString().contains("Leave ALL Queues")) {
                     GamemodeHandler.removeQueue(nexiaPlayer, null, false);
                 }
 

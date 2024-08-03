@@ -48,19 +48,19 @@ public class GamemodeHandler {
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
 
         if (gameMode == null) {
-            if (!silent) player.sendMessage(Component.text("Invalid gamemode!", ChatFormat.failColor));
+            if (!silent) player.sendNexiaMessage("Invalid gamemode!");
             return;
         }
 
         DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
 
         if (data.duelOptions.duelsTeam != null) {
-            if (!silent) player.sendMessage(Component.text("You are in a team!", ChatFormat.failColor));
+            if (!silent) player.sendNexiaMessage("You are in a team!");
             return;
         }
 
         if (!silent) {
-            player.sendMessage(
+            player.sendNexiaMessage(
                     Component.text("You have queued up for ", ChatFormat.normalColor)
                             .append(Component.text(stringGameMode.toUpperCase(), ChatFormat.brandColor2))
                             .append(Component.text("."))
@@ -86,7 +86,7 @@ public class GamemodeHandler {
 
         DuelGameMode gameMode = GamemodeHandler.identifyGamemode(stringGameMode);
         if (gameMode == null) {
-            if (!silent) player.sendMessage(Component.text("Invalid gamemode!", ChatFormat.failColor));
+            if (!silent) player.sendNexiaMessage("Invalid gamemode!");
             return;
         }
 
@@ -122,14 +122,6 @@ public class GamemodeHandler {
         if (executorData.gameMode == DuelGameMode.SPECTATING) {
             unspectatePlayer(executor, player, false);
         }
-
-        /*
-        if(playerData.teamDuelsGame != null) {
-            nexusExecutor.sendMessage(Component.text("Spectating Team Duels is currently not available. We are sorry for the inconvenience.", ChatFormat.failColor));
-            return;
-        }
-         */
-        // what could go wrong?
 
         executor.setGameMode(Minecraft.GameMode.SPECTATOR);
         executor.teleport(player.getLocation());
@@ -331,7 +323,6 @@ public class GamemodeHandler {
     }
 
     public static void declineDuel(@NotNull NexiaPlayer executor, @NotNull NexiaPlayer player) {
-        //KitFFAPlayerData executorData = PlayerDataManager.get(executor);
         DuelsPlayerData playerData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
 
         if (executor.equals(player)) {
@@ -488,6 +479,11 @@ public class GamemodeHandler {
         DuelsPlayerData executorData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(executor);
         DuelOptions.InviteOptions inviteOptions = executorData.inviteOptions;
 
+        if (executor.equals(player)) {
+            executor.sendMessage(Component.text("You cannot duel yourself!", ChatFormat.failColor));
+            return;
+        }
+
         if(customKit.equalsIgnoreCase("vanilla") || customKit.equalsIgnoreCase("smp")) ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(executor)).inviteOptions.inviteKit2 = customKit;
 
         if (!DuelGameHandler.validCustomKit(executor, customKit)) {
@@ -498,11 +494,6 @@ public class GamemodeHandler {
         if(inviteOptions.inviteKit2 != null && !DuelGameHandler.validCustomKit(player, inviteOptions.inviteKit2)) {
             executor.sendMessage(Component.text("The other player does not have a valid custom kit for " + customKit + ".", ChatFormat.failColor));
             inviteOptions.inviteKit2 = null;
-            return;
-        }
-
-        if (executor == player) {
-            executor.sendMessage(Component.text("You cannot duel yourself!", ChatFormat.failColor));
             return;
         }
         
@@ -592,7 +583,7 @@ public class GamemodeHandler {
                 .append(Component.text("]  ", ChatFormat.Minecraft.dark_gray)
                 );
 
-        Component no = Component.text("[", ChatFormat.Minecraft.dark_aqua)
+        Component no = Component.text("[", ChatFormat.Minecraft.dark_gray)
                 .append(Component.text("DECLINE")
                         .color(ChatFormat.failColor)
                         .decorate(ChatFormat.bold)
