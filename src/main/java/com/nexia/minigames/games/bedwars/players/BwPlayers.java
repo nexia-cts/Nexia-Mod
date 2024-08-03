@@ -113,6 +113,8 @@ public class BwPlayers {
     }
 
     public static void sendToSpawn(NexiaPlayer player) {
+        player = player.refreshPlayer();
+
         player.safeReset(true, Minecraft.GameMode.SURVIVAL);
         giveSpawnItems(player);
         player.unwrap().setInvulnerable(true);

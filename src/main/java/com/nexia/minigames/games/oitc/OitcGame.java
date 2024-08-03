@@ -145,12 +145,11 @@ public class OitcGame {
                             spawnInRandomPos(player);
                             OitcGame.deathPlayers.remove(player);
                             //ServerTime.nexusServer.runCommand("/gamemode adventure " + player.get().getScoreboardName(), 4, false);
-                            player.setGameMode(Minecraft.GameMode.ADVENTURE);
-                            ServerTime.scheduler.schedule(() -> {
-                                giveKit(player);
-                                player.setGameMode(Minecraft.GameMode.ADVENTURE);
-                            }, 5);
 
+                            player = player.refreshPlayer();
+
+                            player.setGameMode(Minecraft.GameMode.ADVENTURE);
+                            giveKit(player);
                         }
                     }));
                 } catch (Exception ignored) { }

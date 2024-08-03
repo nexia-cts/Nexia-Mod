@@ -22,7 +22,6 @@ import com.nexia.nexus.api.world.effect.StatusEffectInstance;
 import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.nexus.api.world.item.ItemStack;
 import com.nexia.nexus.api.world.types.Minecraft;
-import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import com.nexia.nexus.builder.implementation.world.entity.player.WrappedPlayer;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -80,21 +79,21 @@ public class NexiaPlayer extends WrappedPlayer {
         return ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(this)).gameMode;
     }
 
+    public NexiaPlayer refreshPlayer() {
+        return new NexiaPlayer(ServerTime.nexusServer.getPlayer(this.getUUID()));
+    }
+
     public boolean isInGameMode(PlayerGameMode gameMode) {
         return this.getCurrentGameMode().equals(gameMode);
     }
 
-    public void setGameMode(Minecraft.GameMode gameMode) {
-        this.unwrap().setGameMode(ObjectMappings.GAME_MODES.get(gameMode));
-    }
-
     public void safeReset(boolean heal, Minecraft.GameMode gameMode) {
+        this.setGameMode(gameMode);
+
         this.setInvulnerabilityTime(20);
         this.clearEffects();
         this.setRemainingFireTicks(0);
         this.setGlowing(false);
-
-        this.setGameMode(gameMode);
 
         if (heal) {
             this.setHealth(this.getMaxHealth());
