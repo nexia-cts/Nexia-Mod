@@ -71,9 +71,9 @@ dependencies {
 
 	// somewhat useful stuff
 	modApi("me.lucko:fabric-permissions-api:${project.fabric_permissions_api_version}")
-	include(implementation("net.kyori:adventure-text-minimessage:"))
-	include(implementation("net.kyori:adventure-text-serializer-gson:4.1.0-SNAPSHOT"))
-	include(compileOnly("de.themoep:minedown-adventure:1.7.3-SNAPSHOT"))
+	include(implementation("net.kyori:adventure-text-minimessage:${project.adventure_version}"))
+	include(implementation("net.kyori:adventure-text-serializer-gson:${project.adventure_version}"))
+	include(compileOnly("de.themoep:minedown-adventure:${project.minedown_adventure_version}"))
 	compileOnly("net.luckperms:api:${project.luckperms_api_version}")
 
 	// discord shit
