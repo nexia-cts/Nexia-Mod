@@ -60,8 +60,14 @@ public class PlayerRespawnListener {
                 player.getInventory().clear();
                 LobbyUtil.giveItems(player);
 
+                Location respawn = new Location(0,80, 0, WorldUtil.getWorld(duelsGame.level));
+
+                if(duelsGame.winner != null) {
+                    respawn = duelsGame.winner.getLocation();
+                }
+
                 respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
-                respawnEvent.setSpawnpoint(duelsGame.winner.getLocation());
+                respawnEvent.setSpawnpoint(respawn);
             } else if(teamDuelsGame != null && duelsData.duelOptions.duelsTeam != null) {
                 player.getInventory().clear();
                 LobbyUtil.giveItems(player);
