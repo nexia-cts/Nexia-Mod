@@ -98,6 +98,7 @@ public class PrefixGUI extends SimpleGui {
                 }
 
                 if(name.equalsIgnoreCase("player")) name = "default";
+                if(name.equalsIgnoreCase("nexia")) name = "supporter";
 
                 player.addTag(name.toLowerCase());
                 this.setMainLayout(this.player);

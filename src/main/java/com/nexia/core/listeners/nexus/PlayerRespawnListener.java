@@ -40,7 +40,7 @@ public class PlayerRespawnListener {
 
                 boolean isPlaying = ((SkywarsPlayerData)PlayerDataManager.getDataManager(NexiaCore.SKYWARS_DATA_MANAGER).get(player)).gameMode == SkywarsGameMode.PLAYING;
                 ServerPlayer serverPlayer = PlayerUtil.getPlayerAttacker(player.unwrap());
-                if(serverPlayer != null && serverPlayer != player.unwrap() && isPlaying) {
+                if(serverPlayer != null && !serverPlayer.equals(player.unwrap()) && isPlaying) {
                     respawn.setX(serverPlayer.getX());
                     respawn.setY(serverPlayer.getY());
                     respawn.setZ(serverPlayer.getZ());

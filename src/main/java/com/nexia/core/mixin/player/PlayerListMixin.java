@@ -167,7 +167,16 @@ public abstract class PlayerListMixin {
             String textBanTime = banTimeToText(banTime);
 
             if(LocalDateTime.now().isBefore(banTime)){
-                cir.setReturnValue(new TextComponent("§c§lYou have been banned.\n§7Duration: §d" + textBanTime + "\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + NexiaDiscord.config.discordLink));
+                cir.setReturnValue(ObjectMappings.convertComponent(
+                        net.kyori.adventure.text.Component.text("You have been banned.", ChatFormat.failColor)
+                                .append(net.kyori.adventure.text.Component.text("\nDuration: ", ChatFormat.systemColor))
+                                .append(net.kyori.adventure.text.Component.text(textBanTime, ChatFormat.brandColor2))
+                                .append(net.kyori.adventure.text.Component.text("\nReason: ", ChatFormat.systemColor))
+                                .append(net.kyori.adventure.text.Component.text(reason, ChatFormat.brandColor2))
+                                .append(net.kyori.adventure.text.Component.text("\nYou can appeal your ban at ", ChatFormat.systemColor))
+                                .append(net.kyori.adventure.text.Component.text(NexiaDiscord.config.discordLink, ChatFormat.brandColor2))
+                ));
+
             } else {
                 BanHandler.removeBanFromList(gameProfile);
             }

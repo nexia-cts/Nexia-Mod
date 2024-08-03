@@ -1,15 +1,14 @@
 package com.nexia.core.utilities.player;
 
-import com.nexia.nexus.api.command.CommandSourceInfo;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.StringReader;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.discord.NexiaDiscord;
+import com.nexia.nexus.api.command.CommandSourceInfo;
+import com.nexia.nexus.api.world.entity.player.Player;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.server.level.ServerPlayer;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -121,10 +120,18 @@ public class BanHandler {
                 .append(Component.text(reason, ChatFormat.brandColor2))
         );
 
-        ServerPlayer banned = ServerTime.minecraftServer.getPlayerList().getPlayer(profile.getId());
+        Player banned = ServerTime.nexusServer.getPlayer(profile.getId());
 
         if (banned != null) {
-            banned.connection.disconnect(new TextComponent("§c§lYou have been banned.\n§7Duration: §d" + banTimeToText(banTime) + "\n§7Reason: §d" + reason + "\n§7You can appeal your ban at §d" + NexiaDiscord.config.discordLink));
+            banned.disconnect(
+                    net.kyori.adventure.text.Component.text("You have been banned.", ChatFormat.failColor)
+                            .append(net.kyori.adventure.text.Component.text("\nDuration: ", ChatFormat.systemColor))
+                            .append(net.kyori.adventure.text.Component.text(banTimeToText(banTime), ChatFormat.brandColor2))
+                            .append(net.kyori.adventure.text.Component.text("\nReason: ", ChatFormat.systemColor))
+                            .append(net.kyori.adventure.text.Component.text(reason, ChatFormat.brandColor2))
+                            .append(net.kyori.adventure.text.Component.text("\nYou can appeal your ban at ", ChatFormat.systemColor))
+                            .append(net.kyori.adventure.text.Component.text(NexiaDiscord.config.discordLink, ChatFormat.brandColor2))
+            );
         }
     }
 
