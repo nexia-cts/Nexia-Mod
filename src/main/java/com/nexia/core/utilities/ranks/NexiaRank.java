@@ -110,7 +110,7 @@ public class NexiaRank {
 
     public static final NexiaRank SUPPORTER = new NexiaRank(
             "Nexia",
-            "nexia",
+            "supporter",
             new NexiaPlayerTeam("Nexia", "XASupporter", ChatFormat.brandColor1.asHexString(), ChatFormat.brandColor2.asHexString(), ChatFormatting.WHITE)
     );
 
@@ -171,7 +171,7 @@ public class NexiaRank {
             player.removeTag(rank1.id);
         }
 
-        ServerTime.nexusServer.runCommand(String.format("/lp user %s parent set %s", player.getRawName(), rank.id));
+        ServerTime.nexusServer.runCommand(String.format("/lp user %s parent set %s", player.getRawName(), rank.id),4, false);
         player.addTag(rank.id);
     }
 
@@ -188,9 +188,7 @@ public class NexiaRank {
             setPrefix(NexiaRank.DEFAULT, player);
         }
 
-        ServerTime.nexusServer.runCommand(String.format("/lp user %s permission unset nexia.prefix.%s",
-                player.getRawName(), rank.id)
-        );
+        ServerTime.nexusServer.runCommand(String.format("/lp user %s permission unset nexia.prefix.%s", player.getRawName(), rank.id),4, false);
     }
 
     public static void addPrefix(NexiaRank rank, NexiaPlayer player, boolean setPrefix) {
@@ -198,8 +196,6 @@ public class NexiaRank {
             setPrefix(rank, player);
         }
 
-        ServerTime.nexusServer.runCommand(String.format("/lp user %s permission set nexia.prefix.%s",
-                player.getRawName(), rank.id)
-        );
+        ServerTime.nexusServer.runCommand(String.format("/lp user %s permission set nexia.prefix.%s", player.getRawName(), rank.id), 4, false);
     }
 }
