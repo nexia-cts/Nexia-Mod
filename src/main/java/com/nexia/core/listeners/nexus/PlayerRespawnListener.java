@@ -29,12 +29,6 @@ public class PlayerRespawnListener {
             DuelsPlayerData duelsData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
             CorePlayerData data = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player);
 
-            if(duelsData.gameOptions == null) return;
-
-            DuelsGame duelsGame = duelsData.gameOptions.duelsGame;
-            TeamDuelsGame teamDuelsGame = duelsData.gameOptions.teamDuelsGame;
-
-
             if(data.gameMode == PlayerGameMode.SKYWARS) {
                 Location respawn = new Location(0,100, 0, WorldUtil.getWorld(SkywarsGame.world));
 
@@ -56,7 +50,12 @@ public class PlayerRespawnListener {
 
             if(data.gameMode == PlayerGameMode.OITC)
                 respawnEvent.setRespawnMode(Minecraft.GameMode.ADVENTURE);
-            
+
+            if(duelsData.gameOptions == null) return;
+
+            DuelsGame duelsGame = duelsData.gameOptions.duelsGame;
+            TeamDuelsGame teamDuelsGame = duelsData.gameOptions.teamDuelsGame;
+
             if(duelsGame != null && duelsGame.isEnding && duelsGame.winner != null) {
                 player.getInventory().clear();
                 LobbyUtil.giveItems(player);
