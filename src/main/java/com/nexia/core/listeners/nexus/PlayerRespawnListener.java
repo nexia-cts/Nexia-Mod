@@ -4,15 +4,12 @@ import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.LobbyUtil;
-import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.base.BaseFfaUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
-import com.nexia.minigames.games.bedwars.players.BwPlayers;
-import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
@@ -44,10 +41,7 @@ public class PlayerRespawnListener {
                     if (ffaUtil != null) {
                         respawnEvent.setRespawnMode(ffaUtil.getMinecraftGameMode());
                         respawnEvent.setSpawnpoint(ffaUtil.getRespawnLocation());
-                        respawnEvent.runAfterwards(() -> {
-                            respawnEvent.getPlayer();
-                            ffaUtil.respawn(new NexiaPlayer(respawnEvent.getPlayer()));
-                        });
+                        respawnEvent.runAfterwards(() -> ffaUtil.respawn(new NexiaPlayer(respawnEvent.getPlayer())));
                     }
                     return;
                 case "skywars":

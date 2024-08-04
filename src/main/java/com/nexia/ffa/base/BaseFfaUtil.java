@@ -130,7 +130,7 @@ public abstract class BaseFfaUtil {
         }
     }
 
-    public void calculateKill(NexiaPlayer attacker, NexiaPlayer player) {
+    public void calculateKill(NexiaPlayer attacker, NexiaPlayer player, boolean sendMessage) {
         killHeal(attacker);
 
         doPreKill(attacker, player);
@@ -147,7 +147,7 @@ public abstract class BaseFfaUtil {
 
         giveKillLoot(attacker, player);
 
-        if (killstreak % 5 == 0) {
+        if (killstreak % 5 == 0 && sendMessage) {
             for (ServerPlayer serverPlayer : getFfaWorld().players()) {
                 new NexiaPlayer(serverPlayer).sendMessage(
                         Component.text("[").color(ChatFormat.lineColor)
@@ -223,7 +223,7 @@ public abstract class BaseFfaUtil {
                 Component component = FfaUtil.returnClassicDeathMessage(player, nexiaAttacker);
                 if(component != null) msg = component;
 
-                calculateKill(nexiaAttacker, player);
+                calculateKill(nexiaAttacker, player, true);
             }
         }
 
