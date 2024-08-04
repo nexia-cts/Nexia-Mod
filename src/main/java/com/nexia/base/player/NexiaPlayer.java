@@ -80,7 +80,7 @@ public class NexiaPlayer extends WrappedPlayer {
     }
 
     public NexiaPlayer refreshPlayer() {
-        return new NexiaPlayer(ServerTime.nexusServer.getPlayer(this.getUUID()));
+        return new NexiaPlayer(PlayerUtil.getMinecraftPlayer(this.getUUID()));
     }
 
     public boolean isInGameMode(PlayerGameMode gameMode) {

@@ -14,6 +14,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -111,12 +112,12 @@ public class FfaSkyUtil extends BaseFfaUtil {
 
     public void respawn(NexiaPlayer player) {
         super.respawn(player);
-        player.addEffectInstance(StatusEffectInstance.create(Minecraft.Effect.RESISTANCE, 1000000));
+        player.addEffectInstance(StatusEffectInstance.create(Minecraft.Effect.RESISTANCE, 1000000, 0, false));
     }
 
     public void join(NexiaPlayer player, boolean tp) {
         super.join(player, tp);
-        player.addEffectInstance(StatusEffectInstance.create(Minecraft.Effect.RESISTANCE, 1000000));
+        player.addEffectInstance(StatusEffectInstance.create(Minecraft.Effect.RESISTANCE, 1000000, 0, false));
     }
 
     private static ItemStack setWoolColor(ItemStack itemStack) {
@@ -211,6 +212,11 @@ public class FfaSkyUtil extends BaseFfaUtil {
             return false;
         }
         return canBuild(player, blockPos);
+    }
+
+    @Override
+    public void setDeathMessage(@NotNull NexiaPlayer player, @Nullable ServerPlayer attacker, @Nullable DamageSource source) {
+        calculateDeath(player, false);
     }
 
     @Override

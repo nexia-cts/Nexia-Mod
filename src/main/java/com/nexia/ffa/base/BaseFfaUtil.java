@@ -20,7 +20,6 @@ import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.nexus.api.world.util.BoundingBox;
 import com.nexia.nexus.api.world.util.Location;
-import com.nexia.nexus.api.world.util.Vector3D;
 import com.nexia.nexus.builder.implementation.world.entity.projectile.WrappedProjectile;
 import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
@@ -173,7 +172,7 @@ public abstract class BaseFfaUtil {
     public void doPreKill(NexiaPlayer attacker, NexiaPlayer player) {
     }
 
-    public void calculateDeath(NexiaPlayer player){
+    public void calculateDeath(NexiaPlayer player, boolean sendMessage){
         if (player.hasTag("bot")) return;
 
         SavedPlayerData data = getDataManager().get(player).savedData;
@@ -182,9 +181,9 @@ public abstract class BaseFfaUtil {
         if (killstreak > data.get(Integer.class, "bestKillstreak"))
             data.set(Integer.class, "bestKillstreak", killstreak);
 
-        if (killstreak >= 5) {
-            for (ServerPlayer serverPlayer : getFfaWorld().players()) {
-                new NexiaPlayer(serverPlayer).sendMessage(
+        if (killstreak >= 5 && sendMessage) {
+            for (Player nexusPlayer : getNexusFfaWorld().getPlayers()) {
+                nexusPlayer.sendMessage(
                         Component.text("[").color(ChatFormat.lineColor)
                                 .append(Component.text("☠", ChatFormat.failColor))
                                 .append(Component.text("] ").color(ChatFormat.lineColor))
@@ -214,7 +213,7 @@ public abstract class BaseFfaUtil {
 
 
     public void setDeathMessage(@NotNull NexiaPlayer player, @Nullable ServerPlayer attacker, @Nullable DamageSource source) {
-        calculateDeath(player);
+        calculateDeath(player, true);
 
         Component msg = FfaUtil.returnDeathMessage(player, source);
 
