@@ -9,6 +9,7 @@
     "block.CommandBlockMixin",
     "block.MultipleBlockMixins",
     "block.SignBlockMixin",
+    "block.TrapDoorBlockMixin",
     "entity.AbstractArrowMixin",
     "entity.AbstractHurtingProjectileMixin",
     "entity.ArmorStandMixin",
