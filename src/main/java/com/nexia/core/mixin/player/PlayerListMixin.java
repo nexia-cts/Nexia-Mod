@@ -91,32 +91,6 @@ public abstract class PlayerListMixin {
         }
     }
 
-    @Inject(at = @At("RETURN"), method = "respawn")
-    private void respawned(ServerPlayer oldPlayer, boolean bl, CallbackInfoReturnable<ServerPlayer> cir, @Local(ordinal = 1) ServerPlayer newPlayer) {
-        NexiaPlayer player = new NexiaPlayer(newPlayer);
-
-        World respawn = player.getRespawnPosition().getWorld();
-
-        if (FfaUtil.isFfaPlayer(player)) {
-            FfaUtil.joinOrRespawn(player);
-            return;
-        }
-
-        if(respawn != null && LobbyUtil.isLobbyWorld(respawn)) {
-            player.getInventory().clear();
-            LobbyUtil.giveItems(player);
-            player.setGameMode(Minecraft.GameMode.ADVENTURE);
-
-            player.runCommand("/hub", 0, false);
-            return;
-        }
-
-        if (BwUtil.isInBedWars(player))
-            BwPlayerEvents.respawned(player);
-        if (SkywarsGame.world.equals(respawn) || SkywarsGame.isSkywarsPlayer(player))
-            player.setGameMode(Minecraft.GameMode.SPECTATOR);
-    }
-
     @Unique
     private static Component joinFormat(Component original, ServerPlayer joinPlayer) {
         String name = joinPlayer.getScoreboardName();

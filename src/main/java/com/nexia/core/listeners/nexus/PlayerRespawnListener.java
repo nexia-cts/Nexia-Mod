@@ -8,6 +8,11 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.world.WorldUtil;
+import com.nexia.ffa.FfaUtil;
+import com.nexia.ffa.base.BaseFfaUtil;
+import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
+import com.nexia.minigames.games.bedwars.players.BwPlayers;
+import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
@@ -29,27 +34,38 @@ public class PlayerRespawnListener {
             DuelsPlayerData duelsData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
             CorePlayerData data = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player);
 
-            if(data.gameMode == PlayerGameMode.SKYWARS) {
-                Location respawn = new Location(0,100, 0, WorldUtil.getWorld(SkywarsGame.world));
-
-                boolean isPlaying = ((SkywarsPlayerData)PlayerDataManager.getDataManager(NexiaCore.SKYWARS_DATA_MANAGER).get(player)).gameMode == SkywarsGameMode.PLAYING;
-                ServerPlayer serverPlayer = PlayerUtil.getPlayerAttacker(player.unwrap());
-                if(serverPlayer != null && !serverPlayer.equals(player.unwrap()) && isPlaying) {
-                    respawn.setX(serverPlayer.getX());
-                    respawn.setY(serverPlayer.getY());
-                    respawn.setZ(serverPlayer.getZ());
+            switch (data.gameMode.id) {
+                case "lobby":
+                    LobbyUtil.returnToLobby(player, true);
+                    return;
+                case "ffa":
+                    BaseFfaUtil ffaUtil = FfaUtil.getFfaUtil(data.ffaGameMode);
+                    if (ffaUtil != null) {
+                        ffaUtil.respawn(player);
+                        respawnEvent.setRespawnMode(ffaUtil.getMinecraftGameMode());
+                        respawnEvent.setSpawnpoint(ffaUtil.getRespawnLocation());
+                    }
+                    return;
+                case "skywars":
+                    Location respawn = new Location(0,100, 0, WorldUtil.getWorld(SkywarsGame.world));
+                    boolean isPlaying = ((SkywarsPlayerData)PlayerDataManager.getDataManager(NexiaCore.SKYWARS_DATA_MANAGER).get(player)).gameMode == SkywarsGameMode.PLAYING;
+                    ServerPlayer serverPlayer = PlayerUtil.getPlayerAttacker(player.unwrap());
                     respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
                     respawnEvent.setSpawnpoint(respawn);
-                }
-
-                return;
+                    if(serverPlayer != null && !serverPlayer.equals(player.unwrap()) && isPlaying) {
+                        respawn.setX(serverPlayer.getX());
+                        respawn.setY(serverPlayer.getY());
+                        respawn.setZ(serverPlayer.getZ());
+                    }
+                    return;
+                case "bedwars":
+                    BwPlayerEvents.respawned(player);
+                    respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
+                    return;
+                case "oitc":
+                    respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
+                    return;
             }
-
-            if(data.gameMode == PlayerGameMode.BEDWARS)
-                respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
-
-            if(data.gameMode == PlayerGameMode.OITC)
-                respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
 
             if(duelsData.gameOptions == null) return;
 

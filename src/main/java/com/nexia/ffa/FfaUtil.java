@@ -7,6 +7,7 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.time.ServerTime;
+import com.nexia.ffa.base.BaseFfaUtil;
 import com.nexia.ffa.classic.utilities.ClassicFfaAreas;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
@@ -194,31 +195,12 @@ public class FfaUtil {
                 .append(Component.text(" left.").color(ChatFormat.chatColor2));
     }
 
-    public static void joinOrRespawn(NexiaPlayer player) {
-        CorePlayerData data = (CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player);
-
-        if(data.ffaGameMode == FfaGameMode.CLASSIC) {
-            FfaClassicUtil.INSTANCE.joinOrRespawn(player);
-            return;
+    public static BaseFfaUtil getFfaUtil(FfaGameMode ffaGameMode) {
+        for (BaseFfaUtil ffaUtil : BaseFfaUtil.ffaUtils) {
+            if (ffaUtil.getName().equalsIgnoreCase(ffaGameMode.id)) {
+                return ffaUtil;
+            }
         }
-
-        if(data.ffaGameMode == FfaGameMode.KITS) {
-            FfaKitsUtil.INSTANCE.joinOrRespawn(player);
-            return;
-        }
-
-        if(data.ffaGameMode == FfaGameMode.POT) {
-            FfaPotUtil.INSTANCE.joinOrRespawn(player);
-            return;
-        }
-
-        if(data.ffaGameMode == FfaGameMode.SKY) {
-            FfaSkyUtil.INSTANCE.joinOrRespawn(player);
-            return;
-        }
-
-        if(data.ffaGameMode == FfaGameMode.UHC) {
-            FfaUhcUtil.INSTANCE.joinOrRespawn(player);
-        }
+        return null;
     }
 }

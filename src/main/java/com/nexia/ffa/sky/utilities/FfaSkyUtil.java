@@ -108,12 +108,16 @@ public class FfaSkyUtil extends BaseFfaUtil {
         }
     }
 
-    public void joinOrRespawn(NexiaPlayer player, boolean tp) {
-        super.joinOrRespawn(player, tp);
+    public void respawn(NexiaPlayer player) {
+        super.respawn(player);
         wasInSpawn.add(player.getUUID());
-        player.reset(true, Minecraft.GameMode.SURVIVAL);
-        player.unwrap().addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1000000, 1, true, true));
-        setInventory(player);
+        player.unwrap().getActiveEffects().add(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1000000, 1, true, true));
+    }
+
+    public void join(NexiaPlayer player, boolean tp) {
+        super.join(player, tp);
+        wasInSpawn.add(player.getUUID());
+        player.unwrap().getActiveEffects().add(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1000000, 1, true, true));
     }
 
     private static ItemStack setWoolColor(ItemStack itemStack) {

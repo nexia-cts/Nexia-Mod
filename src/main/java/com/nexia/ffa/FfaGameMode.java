@@ -4,7 +4,7 @@ public class FfaGameMode {
 
     String name;
     String id;
-    public static final FfaGameMode CLASSIC = new FfaGameMode("FFA Classic", "classic");
+    public static final FfaGameMode CLASSIC = new FfaGameMode("Classic FFA", "classic");
 
     public static final FfaGameMode KITS = new FfaGameMode("Kit FFA", "kits");
 

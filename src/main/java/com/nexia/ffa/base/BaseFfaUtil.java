@@ -292,7 +292,6 @@ public abstract class BaseFfaUtil {
         if(source != null && source.getEntity() != null) attacker = PlayerUtil.getPlayerAttacker(player.unwrap(), source.getEntity());
         else attacker = PlayerUtil.getPlayerAttacker(player.unwrap());
 
-
         if (attacker != null) {
             NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
 
@@ -302,10 +301,7 @@ public abstract class BaseFfaUtil {
 
         clearProjectiles(player);
 
-        if (leaving) return;
-
-        setDeathMessage(player, attacker, source);
-        sendToSpawn(player);
+        if (!leaving) setDeathMessage(player, attacker, source);
     }
 
     public void fulfilKill(@NotNull NexiaPlayer player, @Nullable DamageSource source, @Nullable NexiaPlayer attacker) {
@@ -322,12 +318,16 @@ public abstract class BaseFfaUtil {
         finishSendToSpawn(player);
     }
 
-    public void joinOrRespawn(NexiaPlayer player, boolean tp) {
+    public void respawn(NexiaPlayer player) {
+        finishSendToSpawn(player);
+    }
+
+    public void join(NexiaPlayer player, boolean tp) {
         if (tp) sendToSpawn(player);
     }
 
-    public final void joinOrRespawn(NexiaPlayer player) {
-        joinOrRespawn(player, true);
+    public final void join(NexiaPlayer player) {
+        join(player, true);
     }
 
     public Minecraft.GameMode getMinecraftGameMode() {

@@ -263,7 +263,7 @@ public class LobbyUtil {
                     player.setRespawnPosition(util.getRespawnLocation(), util.getSpawn().yaw, true, false);
                 }
 
-                util.joinOrRespawn(player, false);
+                util.join(player, false);
                 util.clearProjectiles(player);
             }
         }
