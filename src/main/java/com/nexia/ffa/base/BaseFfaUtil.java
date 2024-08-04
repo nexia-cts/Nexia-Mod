@@ -173,7 +173,7 @@ public abstract class BaseFfaUtil {
     }
 
     public void calculateDeath(NexiaPlayer player, boolean sendMessage){
-        if (player.hasTag("bot")) return;
+        if (PlayerUtil.getPlayerAttacker(player.unwrap()).getTags().contains("bot")) return;
 
         SavedPlayerData data = getDataManager().get(player).savedData;
         data.incrementInteger("deaths");
