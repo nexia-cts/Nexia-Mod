@@ -291,6 +291,7 @@ public abstract class BaseFfaUtil {
         ServerPlayer attacker;
         if(source != null && source.getEntity() != null) attacker = PlayerUtil.getPlayerAttacker(player.unwrap(), source.getEntity());
         else attacker = PlayerUtil.getPlayerAttacker(player.unwrap());
+        wasInSpawn.remove(player.getUUID());
 
         if (attacker != null) {
             NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);
@@ -314,11 +315,11 @@ public abstract class BaseFfaUtil {
 
         player.safeReset(true, getMinecraftGameMode());
         getSpawn().teleportPlayer(getNexusFfaWorld(), player);
-        player.setVelocity(new Vector3D(0, 0, 0));
         finishSendToSpawn(player);
     }
 
     public void respawn(NexiaPlayer player) {
+        wasInSpawn.add(player.getUUID());
         finishSendToSpawn(player);
     }
 

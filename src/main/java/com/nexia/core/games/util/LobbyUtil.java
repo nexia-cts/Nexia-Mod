@@ -256,14 +256,12 @@ public class LobbyUtil {
         for (BaseFfaUtil util : BaseFfaUtil.ffaUtils) {
             if (game.equalsIgnoreCase(util.getNameLowercase() + " ffa")) {
                 player.addTag(NO_FALL_DAMAGE_TAG);
-                util.wasInSpawn.add(player.getUUID());
                 ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).ffaGameMode = util.getGameMode();
                 if (tp) {
-                    util.sendToSpawn(player);
                     player.setRespawnPosition(util.getRespawnLocation(), util.getSpawn().yaw, true, false);
                 }
 
-                util.join(player, false);
+                util.join(player, tp);
                 util.clearProjectiles(player);
             }
         }

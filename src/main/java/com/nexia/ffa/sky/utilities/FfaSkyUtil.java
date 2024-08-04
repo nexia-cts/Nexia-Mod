@@ -8,6 +8,7 @@ import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.base.BaseFfaUtil;
 import com.nexia.ffa.sky.SkyFfaBlocks;
+import com.nexia.nexus.api.world.effect.StatusEffectInstance;
 import com.nexia.nexus.api.world.types.Minecraft;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
@@ -110,14 +111,12 @@ public class FfaSkyUtil extends BaseFfaUtil {
 
     public void respawn(NexiaPlayer player) {
         super.respawn(player);
-        wasInSpawn.add(player.getUUID());
-        player.unwrap().getActiveEffects().add(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1000000, 1, true, true));
+        player.addEffectInstance(StatusEffectInstance.create(Minecraft.Effect.RESISTANCE, 1000000));
     }
 
     public void join(NexiaPlayer player, boolean tp) {
         super.join(player, tp);
-        wasInSpawn.add(player.getUUID());
-        player.unwrap().getActiveEffects().add(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1000000, 1, true, true));
+        player.addEffectInstance(StatusEffectInstance.create(Minecraft.Effect.RESISTANCE, 1000000));
     }
 
     private static ItemStack setWoolColor(ItemStack itemStack) {

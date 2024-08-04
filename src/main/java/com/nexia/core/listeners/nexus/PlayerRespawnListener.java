@@ -36,14 +36,18 @@ public class PlayerRespawnListener {
 
             switch (data.gameMode.id) {
                 case "lobby":
+                    if (duelsData.gameOptions != null) break;
                     LobbyUtil.returnToLobby(player, true);
                     return;
                 case "ffa":
                     BaseFfaUtil ffaUtil = FfaUtil.getFfaUtil(data.ffaGameMode);
                     if (ffaUtil != null) {
-                        ffaUtil.respawn(player);
                         respawnEvent.setRespawnMode(ffaUtil.getMinecraftGameMode());
                         respawnEvent.setSpawnpoint(ffaUtil.getRespawnLocation());
+                        respawnEvent.runAfterwards(() -> {
+                            respawnEvent.getPlayer();
+                            ffaUtil.respawn(new NexiaPlayer(respawnEvent.getPlayer()));
+                        });
                     }
                     return;
                 case "skywars":
@@ -51,12 +55,14 @@ public class PlayerRespawnListener {
                     boolean isPlaying = ((SkywarsPlayerData)PlayerDataManager.getDataManager(NexiaCore.SKYWARS_DATA_MANAGER).get(player)).gameMode == SkywarsGameMode.PLAYING;
                     ServerPlayer serverPlayer = PlayerUtil.getPlayerAttacker(player.unwrap());
                     respawnEvent.setRespawnMode(Minecraft.GameMode.SPECTATOR);
-                    respawnEvent.setSpawnpoint(respawn);
+
                     if(serverPlayer != null && !serverPlayer.equals(player.unwrap()) && isPlaying) {
                         respawn.setX(serverPlayer.getX());
                         respawn.setY(serverPlayer.getY());
                         respawn.setZ(serverPlayer.getZ());
                     }
+
+                    respawnEvent.setSpawnpoint(respawn);
                     return;
                 case "bedwars":
                     BwPlayerEvents.respawned(player);
