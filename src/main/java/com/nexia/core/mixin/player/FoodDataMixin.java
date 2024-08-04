@@ -13,6 +13,8 @@ import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.minigames.games.skywars.SkywarsGame;
+import com.nexia.minigames.games.skywars.SkywarsGameMode;
+import com.nexia.minigames.games.skywars.util.player.SkywarsPlayerData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
@@ -62,7 +64,8 @@ public abstract class FoodDataMixin {
             BwPlayerEvents.afterHungerTick(data);
         }
 
-        if(SkywarsGame.isSkywarsPlayer(nexiaPlayer)) return;
+        SkywarsPlayerData playerData = (SkywarsPlayerData) PlayerDataManager.getDataManager(NexiaCore.SKYWARS_DATA_MANAGER).get(nexiaPlayer);
+        if(SkywarsGame.isSkywarsPlayer(nexiaPlayer) && playerData.gameMode.equals(SkywarsGameMode.PLAYING)) return;
 
         // Duels
         DuelGameMode duelGameMode = ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(nexiaPlayer)).gameMode;
