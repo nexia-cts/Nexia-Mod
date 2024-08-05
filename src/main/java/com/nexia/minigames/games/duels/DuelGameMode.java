@@ -49,7 +49,7 @@ public class DuelGameMode {
     public static final DuelGameMode CART = new DuelGameMode("cart", true, false, Minecraft.GameMode.SURVIVAL, Items.TNT_MINECART, false);
 
     public static final DuelGameMode DIAMOND_CRYSTAL = new DuelGameMode("diamond_crystal", true, false, Minecraft.GameMode.SURVIVAL, Items.END_CRYSTAL, false);
-    public static final DuelGameMode VANILLA = new DuelGameMode("vanilla", true, true, Minecraft.GameMode.SURVIVAL, Items.RESPAWN_ANCHOR, false);
+    public static final DuelGameMode VANILLA = new DuelGameMode("vanilla", true, false, Minecraft.GameMode.SURVIVAL, Items.RESPAWN_ANCHOR, false);
 
 
 
