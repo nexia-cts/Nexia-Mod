@@ -11,6 +11,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Team;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -86,6 +87,10 @@ public class NexiaRank {
             playerTeam.setColor(this.color);
             playerTeam.setPlayerPrefix(this.prefix);
 
+            playerTeam.setCollisionRule(Team.CollisionRule.NEVER);
+            playerTeam.setDeathMessageVisibility(Team.Visibility.NEVER);
+            playerTeam.setSeeFriendlyInvisibles(false);
+            
             return playerTeam;
         }
     }
