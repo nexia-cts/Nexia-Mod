@@ -51,7 +51,7 @@ public class FfaUtil {
             .setGameRule(GameRules.RULE_DAYLIGHT, true)
             .setGameRule(GameRules.RULE_DO_IMMEDIATE_RESPAWN, true)
             .setGameRule(GameRules.RULE_DOMOBSPAWNING, false)
-            .setGameRule(GameRules.RULE_SHOWDEATHMESSAGES, false)
+            .setGameRule(GameRules.RULE_SHOWDEATHMESSAGES, true)
             .setGameRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS, false)
             .setGameRule(GameRules.RULE_DISABLE_ELYTRA_MOVEMENT_CHECK, true)
             .setGameRule(GameRules.RULE_DROWNING_DAMAGE, true)

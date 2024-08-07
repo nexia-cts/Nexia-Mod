@@ -79,7 +79,7 @@ public class KitRoom {
                 .setGameRule(GameRules.RULE_DO_IMMEDIATE_RESPAWN, false)
                 .setGameRule(GameRules.RULE_DOMOBSPAWNING, false)
                 .setGameRule(GameRules.RULE_NATURAL_REGENERATION, true)
-                .setGameRule(GameRules.RULE_SHOWDEATHMESSAGES, false)
+                .setGameRule(GameRules.RULE_SHOWDEATHMESSAGES, true)
                 .setGameRule(GameRules.RULE_SPAWN_RADIUS, 0)
                 .setGameRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS, false)
                 .setTimeOfDay(6000);

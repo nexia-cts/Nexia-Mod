@@ -176,7 +176,7 @@ public class DuelGameHandler {
                 .setGameRule(GameRules.RULE_DO_IMMEDIATE_RESPAWN, false)
                 .setGameRule(GameRules.RULE_DOMOBSPAWNING, false)
                 .setGameRule(GameRules.RULE_NATURAL_REGENERATION, doRegeneration)
-                .setGameRule(GameRules.RULE_SHOWDEATHMESSAGES, false)
+                .setGameRule(GameRules.RULE_SHOWDEATHMESSAGES, true)
                 .setGameRule(GameRules.RULE_SPAWN_RADIUS, 0)
                 .setGameRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS, false)
                 .setGameRule(GameRules.RULE_DOFIRETICK, false)
