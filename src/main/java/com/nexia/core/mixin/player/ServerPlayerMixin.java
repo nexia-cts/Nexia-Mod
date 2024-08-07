@@ -11,8 +11,6 @@ import com.nexia.core.gui.duels.CustomDuelGUI;
 import com.nexia.core.gui.duels.DuelGUI;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.ffa.FfaUtil;
-import com.nexia.minigames.games.bedwars.areas.BwAreas;
-import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.minigames.games.football.FootballGame;
@@ -117,9 +115,6 @@ public abstract class ServerPlayerMixin extends Player {
 
         if (FfaUtil.isFfaPlayer(nexiaPlayer)) {
             FfaUtil.leaveOrDie(nexiaPlayer, damageSource, false);
-        }
-        else if (BwAreas.isBedWarsWorld(getLevel())) {
-            BwPlayerEvents.death(nexiaPlayer);
         }
         else if(gameMode == PlayerGameMode.LOBBY && duelsData.gameOptions != null) {
             if(duelsData.gameOptions.duelsGame != null) duelsData.gameOptions.duelsGame.death(nexiaPlayer, damageSource);
