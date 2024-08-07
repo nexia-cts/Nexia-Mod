@@ -15,6 +15,7 @@ import com.nexia.core.utilities.time.TickUtil;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.skywars.util.player.SkywarsPlayerData;
+import com.nexia.nexus.api.event.player.PlayerDeathEvent;
 import com.nexia.nexus.api.world.types.Minecraft;
 import net.fabricmc.loader.impl.util.StringUtil;
 import net.kyori.adventure.text.Component;
@@ -29,7 +30,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
@@ -40,6 +40,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.time.Duration;
@@ -102,7 +103,7 @@ public class SkywarsGame {
     public static HashMap<RandomizableContainerBlockEntity, ResourceLocation> blockEntities = null;
 
     public static void leave(NexiaPlayer player) {
-        if (player != winner) SkywarsGame.death(player, player.unwrap().getLastDamageSource());
+        if (!player.equals(winner)) SkywarsGame.death(player, null);
 
         SkywarsPlayerData data = (SkywarsPlayerData) PlayerDataManager.getDataManager(SKYWARS_DATA_MANAGER).get(player);
         SkywarsGame.spectator.remove(player);
@@ -427,7 +428,13 @@ public class SkywarsGame {
         return ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).gameMode == PlayerGameMode.SKYWARS || player.hasTag("skywars");
     }
 
-    public static void death(NexiaPlayer victim, DamageSource source){
+    public static void death(NexiaPlayer victim, @Nullable PlayerDeathEvent playerDeathEvent) {
+        if(playerDeathEvent != null) {
+            playerDeathEvent.setDropEquipment(false);
+            playerDeathEvent.setDropExperience(false);
+            playerDeathEvent.setDropLoot(false);
+        }
+
         if (SkywarsGame.winner != null) return;
         SkywarsPlayerData victimData = (SkywarsPlayerData) PlayerDataManager.getDataManager(SKYWARS_DATA_MANAGER).get(victim);
         if(SkywarsGame.isStarted && SkywarsGame.alive.contains(victim) && victimData.gameMode == SkywarsGameMode.PLAYING) {
@@ -440,6 +447,12 @@ public class SkywarsGame {
                 attackerData.savedData.incrementInteger("kills");
             }
 
+            if(playerDeathEvent != null) {
+                playerDeathEvent.setDropLoot(true);
+                playerDeathEvent.setDropExperience(true);
+                playerDeathEvent.setDropLoot(true);
+            }
+            // TODO: re-implement these three ↑↑↑ into nexus, and remove ↓↓ these two
             victim.unwrap().destroyVanishingCursedItems();
             victim.unwrap().inventory.dropAll();
 

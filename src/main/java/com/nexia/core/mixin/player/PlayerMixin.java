@@ -3,14 +3,12 @@ package com.nexia.core.mixin.player;
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
-import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.misc.EventUtil;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.CoreSavedPlayerData;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
-import com.nexia.ffa.base.BaseFfaUtil;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
@@ -87,45 +85,6 @@ public abstract class PlayerMixin extends LivingEntity {
         }
     }
 
-    @Inject(method = "hurt", cancellable = true, at = @At("HEAD"))
-    private void beforeHurt(DamageSource damageSource, float damage, CallbackInfoReturnable<Boolean> cir) {
-        if (!((Object) this instanceof ServerPlayer player)) return;
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
-
-        for (BaseFfaUtil util : BaseFfaUtil.ffaUtils) {
-            if (util.isFfaPlayer(nexiaPlayer) && !util.beforeDamage(nexiaPlayer, damageSource)) {
-                cir.setReturnValue(false);
-                return;
-            }
-        }
-
-        if(player.getLevel().equals(LobbyUtil.lobbyWorld) && damageSource == DamageSource.OUT_OF_WORLD) {
-            LobbyUtil.lobbySpawn.teleportPlayer(LobbyUtil.lobbyWorld, player);
-            cir.setReturnValue(false);
-            return;
-        }
-
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player, damageSource.getEntity());
-
-        if (player.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
-            cir.setReturnValue(false);
-            return;
-        }
-
-        if(attacker != null) {
-            if(attacker.getTags().contains(LobbyUtil.NO_DAMAGE_TAG)) {
-                cir.setReturnValue(false);
-            }
-
-            /*
-            DuelsTeam team = PlayerDataManager.get(player).duelOptions.duelsTeam;
-            if(team != null && team.all.contains(AccuratePlayer.create(attacker)) && PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player).gameMode == PlayerGameMode.LOBBY) {
-                cir.setReturnValue(false);
-            }
-            */
-        }
-    }
-
     // Make void death instant
     @Inject(method = "actuallyHurt", at = @At("TAIL"))
     private void afterHurt(DamageSource damageSource, float damage, CallbackInfo ci) {
@@ -190,7 +149,7 @@ public abstract class PlayerMixin extends LivingEntity {
 
     @ModifyArg(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;setSprinting(Z)V"))
     public boolean setSprintFix(boolean par1) {
-        return ((CoreSavedPlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(new NexiaPlayer((ServerPlayer) (Object) this)).savedData).isSprintFix();
+        return ((CoreSavedPlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(this.getUUID()).savedData).isSprintFix();
     }
 
     @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)

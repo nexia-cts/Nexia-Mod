@@ -6,9 +6,12 @@ public class ListenerHelper {
     public static void registerListeners() {
         // Nexus Listeners
         new PlayerJoinListener().registerListener();
+        new PlayerDamageListener().registerListener();
+        new PlayerDeathListener().registerListener();
+        new PlayerHungerListener().registerListener();
         new PlayerLeaveListener().registerListener();
         new PlayerSwapHandItemsListener().registerListener();
-        new UseItemListener().registerListener();
+        new PlayerUseItemListener().registerListener();
         new PlayerDropItemListener().registerListener();
         new PlayerRespawnListener().registerListener();
     }

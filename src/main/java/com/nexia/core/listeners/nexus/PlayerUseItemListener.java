@@ -9,7 +9,7 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.base.player.NexiaPlayer;
 import net.kyori.adventure.text.Component;
 
-public class UseItemListener {
+public class PlayerUseItemListener {
     public void registerListener() {
         PlayerUseItemEvent.BACKEND.register(playerUseItemEvent -> {
 

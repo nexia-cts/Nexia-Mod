@@ -1,16 +1,9 @@
 package com.nexia.core.mixin.entity;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.nexia.base.player.PlayerDataManager;
-import com.nexia.core.NexiaCore;
-import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.CombatRules;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -38,20 +31,6 @@ public abstract class LivingEntityMixin extends Entity {
     @Shadow public abstract double getAttributeValue(Attribute attribute);
 
     @Shadow public abstract ItemStack getBlockingItem();
-
-    @Shadow public abstract float getHealth();
-
-    // Make void death instant
-    @WrapOperation(method = "outOfWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
-    protected boolean killInVoid(LivingEntity instance, DamageSource damageSource, float f, Operation<Boolean> original) {
-        if ((Object)this instanceof ServerPlayer serverPlayer) {
-            if (((CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(serverPlayer.getUUID())).gameMode == PlayerGameMode.LOBBY) {
-                return original.call(instance, damageSource, f);
-            }
-        }
-        return original.call(instance, damageSource, this.getHealth());
-    }
-
 
     /**
      * @author NotCoded

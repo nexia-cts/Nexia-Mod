@@ -11,12 +11,12 @@ import com.nexia.core.utilities.ranks.NexiaRank;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.discord.NexiaDiscord;
 import com.nexia.nexus.api.event.player.PlayerJoinEvent;
-import com.nexia.nexus.api.world.entity.player.Player;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
+import net.minecraft.stats.Stats;
 
 import java.util.Objects;
 
@@ -27,30 +27,42 @@ public class PlayerJoinListener {
         PlayerJoinEvent.BACKEND.register(playerJoinEvent -> {
 
             NexiaPlayer player = new NexiaPlayer(playerJoinEvent.getPlayer());
-            processJoin(player);
+            if(((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).clientType.equals(CorePlayerData.ClientType.VIAFABRICPLUS)) return;
 
-            /*
-            if(minecraftPlayer.getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) <= 1) {
-                playerJoinEvent.setJoinMessage(
-                        Component.text("[").color(ChatFormat.lineColor)
-                                .append(Component.text("!").color(TextColor.fromHexString("#ff9940")))
-                                                        .append(Component.text("] ").color(ChatFormat.lineColor))
-                                                                .append(Component.text(player.getRawName()).color(TextColor.fromHexString("#ff9940")))
-                );
-            } else {
-                playerJoinEvent.setJoinMessage(
-                        Component.text("[").color(ChatFormat.lineColor)
-                                        .append(Component.text("+").color(ChatFormat.greenColor))
-                                                .append(Component.text("] ").color(ChatFormat.lineColor))
-                                                        .append(Component.text(player.getRawName()).color(ChatFormat.greenColor))
-                );
-            }
-             */
+            //setJoinMessage(player, playerJoinEvent);
+
+            PlayerDataManager.dataManagerMap.forEach((resourceLocation, playerDataManager) -> playerDataManager.addPlayerData(player));
+
+            LobbyUtil.returnToLobby(player, true);
+            checkBooster(player);
+
+            ServerTime.scheduler.schedule(() -> {
+                sendJoinMessage(player);
+            }, 10);
+
+
         });
     }
 
+    private static void setJoinMessage(NexiaPlayer player, PlayerJoinEvent playerJoinEvent) {
+        if(player.unwrap().getStats().getValue(Stats.CUSTOM.get(Stats.LEAVE_GAME)) < 1) {
+            playerJoinEvent.setJoinMessage(
+                    net.kyori.adventure.text.Component.text("[").color(ChatFormat.lineColor)
+                            .append(net.kyori.adventure.text.Component.text("!").color(ChatFormat.goldColor)
+                                    .append(net.kyori.adventure.text.Component.text("] ").color(ChatFormat.lineColor))
+                                    .append(net.kyori.adventure.text.Component.text(player.getRawName()).color(ChatFormat.goldColor)))
+            );
+        } else {
+            playerJoinEvent.setJoinMessage(
+                    net.kyori.adventure.text.Component.text("[").color(ChatFormat.lineColor)
+                            .append(net.kyori.adventure.text.Component.text("+").color(ChatFormat.greenColor))
+                            .append(net.kyori.adventure.text.Component.text("] ").color(ChatFormat.lineColor))
+                            .append(net.kyori.adventure.text.Component.text(player.getRawName()).color(ChatFormat.greenColor))
+            );
+        }
+    }
 
-    private static void sendJoinMessage(Player player){
+    private static void sendJoinMessage(NexiaPlayer player){
         player.sendMessage(ChatFormat.separatorLine("Welcome"));
         player.sendMessage(
                 Component.text(" » ", ChatFormat.brandColor2)
@@ -123,16 +135,5 @@ public class PlayerJoinListener {
             }
             NexiaRank.setRank(NexiaRank.DEFAULT, player);
         }
-    }
-
-    private static void processJoin(NexiaPlayer player) {
-        if(((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).clientType.equals(CorePlayerData.ClientType.VIAFABRICPLUS)) return;
-
-        PlayerDataManager.dataManagerMap.forEach((resourceLocation, playerDataManager) -> playerDataManager.addPlayerData(player));
-
-        LobbyUtil.returnToLobby(player, true);
-
-        checkBooster(player);
-        sendJoinMessage(player);
     }
 }

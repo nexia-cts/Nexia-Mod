@@ -1,12 +1,13 @@
 package com.nexia.minigames.games.bedwars.areas;
 
-import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.base.player.NexiaPlayer;
+import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.pos.BlockVec3;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.pos.ProtectionBlock;
 import com.nexia.core.utilities.pos.ProtectionMap;
 import com.nexia.minigames.games.bedwars.BwGame;
+import com.nexia.nexus.api.world.World;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
@@ -60,7 +61,11 @@ public class BwAreas {
     // ------------------------------------------------------------
 
     public static boolean isBedWarsWorld(Level level) {
-        return level.dimension().equals(BwDimension.LEVEL_KEY) || level.dimension().toString().contains(BwDimension.DIMENSION_ID + ":" + BwDimension.DIMENSION_NAME);
+        return level.dimension().equals(BwDimension.LEVEL_KEY) || level.dimension().location().toString().contains(BwDimension.DIMENSION_ID + ":" + BwDimension.DIMENSION_NAME);
+    }
+
+    public static boolean isBedWarsWorld(World world) {
+        return world.getIdentifier().pure().equals(BwDimension.DIMENSION_ID + ":" + BwDimension.DIMENSION_NAME);
     }
 
     public static void setBedWarsWorld(MinecraftServer minecraftServer) {

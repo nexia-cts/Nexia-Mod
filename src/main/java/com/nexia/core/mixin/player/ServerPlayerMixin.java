@@ -1,6 +1,7 @@
 package com.nexia.core.mixin.player;
 
 import com.mojang.authlib.GameProfile;
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.commands.staff.DetectCommand;
@@ -9,7 +10,6 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.gui.duels.CustomDuelGUI;
 import com.nexia.core.gui.duels.DuelGUI;
 import com.nexia.core.utilities.player.CorePlayerData;
-import com.nexia.base.player.NexiaPlayer;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
@@ -17,7 +17,6 @@ import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
-import com.nexia.minigames.games.skywars.SkywarsGame;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -120,19 +119,12 @@ public abstract class ServerPlayerMixin extends Player {
             FfaUtil.leaveOrDie(nexiaPlayer, damageSource, false);
         }
         else if (BwAreas.isBedWarsWorld(getLevel())) {
-            BwPlayerEvents.death(nexiaPlayer );
-        }
-        else if(gameMode == PlayerGameMode.OITC){
-            OitcGame.death(nexiaPlayer, damageSource);
-        }
-        else if(gameMode == PlayerGameMode.SKYWARS) {
-            SkywarsGame.death(nexiaPlayer, damageSource);
+            BwPlayerEvents.death(nexiaPlayer);
         }
         else if(gameMode == PlayerGameMode.LOBBY && duelsData.gameOptions != null) {
             if(duelsData.gameOptions.duelsGame != null) duelsData.gameOptions.duelsGame.death(nexiaPlayer, damageSource);
             if(duelsData.gameOptions.teamDuelsGame != null) duelsData.gameOptions.teamDuelsGame.death(nexiaPlayer, damageSource);
         }
-
     }
 
     @Redirect(method = "doCloseContainer", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/AbstractContainerMenu;removed(Lnet/minecraft/world/entity/player/Player;)V"))

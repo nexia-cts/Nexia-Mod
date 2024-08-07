@@ -41,7 +41,10 @@ public class PlayerRespawnListener {
                     if (ffaUtil != null) {
                         respawnEvent.setRespawnMode(ffaUtil.getMinecraftGameMode());
                         respawnEvent.setSpawnpoint(ffaUtil.getRespawnLocation());
-                        respawnEvent.runAfterwards(() -> ffaUtil.respawn(new NexiaPlayer(respawnEvent.getPlayer())));
+                        respawnEvent.runAfterwards(() -> {
+                            ffaUtil.respawn(player.refreshPlayer());
+                            player.setInvulnerabilityTime(0);
+                        });
                     }
                     return;
                 case "skywars":

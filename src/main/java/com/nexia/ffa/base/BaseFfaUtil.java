@@ -16,6 +16,7 @@ import com.nexia.ffa.FfaAreas;
 import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.nexus.api.world.World;
+import com.nexia.nexus.api.world.damage.DamageData;
 import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.nexus.api.world.util.BoundingBox;
@@ -172,8 +173,8 @@ public abstract class BaseFfaUtil {
     public void doPreKill(NexiaPlayer attacker, NexiaPlayer player) {
     }
 
-    public void calculateDeath(NexiaPlayer player, boolean sendMessage){
-        if (PlayerUtil.getPlayerAttacker(player.unwrap()).getTags().contains("bot")) return;
+    public void calculateDeath(NexiaPlayer player, @Nullable ServerPlayer attacker, boolean sendMessage){
+        if(player.hasTag("bot") || (attacker != null && attacker.getTags().contains("bot"))) return;
 
         SavedPlayerData data = getDataManager().get(player).savedData;
         data.incrementInteger("deaths");
@@ -197,8 +198,8 @@ public abstract class BaseFfaUtil {
         data.set(Integer.class, "killstreak", 0);
     }
 
-    public boolean beforeDamage(NexiaPlayer player, DamageSource damageSource) {
-        if (damageSource == DamageSource.OUT_OF_WORLD) return true;
+    public boolean beforeDamage(NexiaPlayer player, DamageData damageData) {
+        if (damageData.getType().equals(DamageData.Type.VOID)) return true;
 
         return !isInFfaSpawn(player);
     }
@@ -213,7 +214,7 @@ public abstract class BaseFfaUtil {
 
 
     public void setDeathMessage(@NotNull NexiaPlayer player, @Nullable ServerPlayer attacker, @Nullable DamageSource source) {
-        calculateDeath(player, true);
+        calculateDeath(player, attacker, true);
 
         Component msg = FfaUtil.returnDeathMessage(player, source);
 

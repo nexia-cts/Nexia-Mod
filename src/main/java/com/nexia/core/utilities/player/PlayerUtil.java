@@ -5,6 +5,8 @@ import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.nexus.api.util.http.HttpAPI;
 import com.nexia.nexus.api.util.minecraft.MinecraftAPI;
+import com.nexia.nexus.api.world.damage.DamageData;
+import com.nexia.nexus.api.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.TextComponent;
@@ -44,8 +46,6 @@ public class PlayerUtil {
 
         return null;
     }
-
-
 
     public static ItemStack getPlayerHead(@NotNull UUID playerUUID) {
         ItemStack playerHead = Items.PLAYER_HEAD.getDefaultInstance();
@@ -145,6 +145,16 @@ public class PlayerUtil {
         }
 
         return getPlayerAttacker(attackerEntity);
+    }
+
+    public static Player getPlayerAttacker(@NotNull DamageData damageData) {
+        if (damageData.getDamagingEntity() instanceof Projectile projectile && projectile.getOwner() instanceof Player player) {
+            return player;
+        } else if (damageData.getDamagingEntity() instanceof Player player) {
+            return player;
+        }
+
+        return null;
     }
 
     public static ServerPlayer getPlayerAttacker(@NotNull ServerPlayer player) {

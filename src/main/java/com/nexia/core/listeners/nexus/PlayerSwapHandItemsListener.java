@@ -6,12 +6,11 @@ import com.nexia.base.player.NexiaPlayer;
 
 public class PlayerSwapHandItemsListener {
     public void registerListener(){
-        PlayerSwapHandItemsEvent.BACKEND.register(playerDropItemEvent -> {
-
-            NexiaPlayer player = new NexiaPlayer(playerDropItemEvent.getPlayer());
+        PlayerSwapHandItemsEvent.BACKEND.register(playerSwapHandItemsEvent -> {
+            NexiaPlayer player = new NexiaPlayer(playerSwapHandItemsEvent.getPlayer());
 
             if(LobbyUtil.isLobbyWorld(player.getWorld())) {
-                playerDropItemEvent.setCancelled(true);
+                playerSwapHandItemsEvent.setCancelled(true);
             }
         });
     }

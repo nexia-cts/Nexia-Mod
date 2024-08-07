@@ -1,5 +1,6 @@
 package com.nexia.minigames.games.oitc;
 
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.LobbyUtil;
@@ -8,7 +9,6 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.ItemDisplayUtil;
 import com.nexia.core.utilities.misc.RandomUtil;
 import com.nexia.core.utilities.player.CorePlayerData;
-import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
@@ -16,6 +16,7 @@ import com.nexia.core.utilities.time.TickUtil;
 import com.nexia.core.utilities.world.WorldUtil;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.oitc.util.player.OITCPlayerData;
+import com.nexia.nexus.api.event.player.PlayerDeathEvent;
 import com.nexia.nexus.api.world.types.Minecraft;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -27,7 +28,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -36,6 +36,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public class OitcGame {
 
 
     public static void leave(NexiaPlayer player) {
-        OitcGame.death(player, player.unwrap().getLastDamageSource());
+        OitcGame.death(player, null);
 
         OITCPlayerData data = (OITCPlayerData) PlayerDataManager.getDataManager(OITC_DATA_MANAGER).get(player);
         OitcGame.spectator.remove(player);
@@ -336,8 +337,15 @@ public class OitcGame {
         return ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).gameMode == PlayerGameMode.OITC || player.hasTag("oitc") || player.hasTag("in_oitc_game");
     }
 
-    public static void death(NexiaPlayer victim, DamageSource source){
+    public static void death(NexiaPlayer victim, @Nullable PlayerDeathEvent playerDeathEvent){
         OITCPlayerData victimData = (OITCPlayerData) PlayerDataManager.getDataManager(OITC_DATA_MANAGER).get(victim);
+
+        if(playerDeathEvent != null) {
+            playerDeathEvent.setDropEquipment(false);
+            playerDeathEvent.setDropExperience(false);
+            playerDeathEvent.setDropLoot(false);
+        }
+
         if(OitcGame.isStarted && !OitcGame.deathPlayers.containsKey(victim) && victimData.gameMode == OitcGameMode.PLAYING) {
             ServerPlayer attacker = PlayerUtil.getPlayerAttacker(victim.unwrap());
             if(attacker != null) {

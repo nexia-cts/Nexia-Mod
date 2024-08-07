@@ -288,7 +288,7 @@ public class LobbyUtil {
         if(game.equalsIgnoreCase("oitc")){
             player.addTag(OitcGame.OITC_TAG);
             ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).gameMode = PlayerGameMode.OITC;
-            OitcGame.death(player, player.unwrap().getLastDamageSource());
+            OitcGame.death(player, null);
 
             ((OITCPlayerData)PlayerDataManager.getDataManager(NexiaCore.OITC_DATA_MANAGER).get(player)).gameMode = OitcGameMode.LOBBY;
 
@@ -311,7 +311,7 @@ public class LobbyUtil {
         if(game.equalsIgnoreCase("skywars")){
             player.addTag(PlayerGameMode.SKYWARS.tag);
             ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).gameMode = PlayerGameMode.SKYWARS;
-            SkywarsGame.death(player, player.unwrap().getLastDamageSource());
+            SkywarsGame.death(player, null);
 
             ((SkywarsPlayerData)PlayerDataManager.getDataManager(NexiaCore.SKYWARS_DATA_MANAGER).get(player)).gameMode = SkywarsGameMode.LOBBY;
 

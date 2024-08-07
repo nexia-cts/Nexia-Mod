@@ -216,7 +216,7 @@ public class FfaSkyUtil extends BaseFfaUtil {
 
     @Override
     public void setDeathMessage(@NotNull NexiaPlayer player, @Nullable ServerPlayer attacker, @Nullable DamageSource source) {
-        calculateDeath(player, false);
+        calculateDeath(player, attacker,false);
 
         if(attacker != null) {
             NexiaPlayer nexiaAttacker = new NexiaPlayer(attacker);

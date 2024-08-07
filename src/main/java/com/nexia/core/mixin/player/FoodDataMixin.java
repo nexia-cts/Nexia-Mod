@@ -1,20 +1,9 @@
 package com.nexia.core.mixin.player;
 
 import com.nexia.base.player.NexiaPlayer;
-import com.nexia.base.player.PlayerDataManager;
-import com.nexia.core.NexiaCore;
-import com.nexia.core.games.util.PlayerGameMode;
-import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
-import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
-import com.nexia.minigames.games.bedwars.util.BwUtil;
-import com.nexia.minigames.games.duels.DuelGameMode;
-import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
-import com.nexia.minigames.games.skywars.SkywarsGame;
-import com.nexia.minigames.games.skywars.SkywarsGameMode;
-import com.nexia.minigames.games.skywars.util.player.SkywarsPlayerData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
@@ -51,28 +40,4 @@ public abstract class FoodDataMixin {
 
         return 1f;
     }
-
-    @Inject(method = "tick", at = @At("TAIL"))
-    private void modifyHunger(Player player, CallbackInfo ci) {
-        if (!(player instanceof ServerPlayer serverPlayer)) return;
-        NexiaPlayer nexiaPlayer = new NexiaPlayer(serverPlayer);
-
-        FoodData data = (FoodData)(Object)this;
-
-        if (BwUtil.isInBedWars(nexiaPlayer)) {
-            BwPlayerEvents.afterHungerTick((FoodData)(Object)this);
-            BwPlayerEvents.afterHungerTick(data);
-        }
-
-        SkywarsPlayerData playerData = (SkywarsPlayerData) PlayerDataManager.getDataManager(NexiaCore.SKYWARS_DATA_MANAGER).get(nexiaPlayer);
-        if(SkywarsGame.isSkywarsPlayer(nexiaPlayer) && playerData.gameMode.equals(SkywarsGameMode.PLAYING)) return;
-
-        // Duels
-        DuelGameMode duelGameMode = ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(nexiaPlayer)).gameMode;
-        PlayerGameMode gameMode = ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(nexiaPlayer)).gameMode;
-        if(gameMode.equals(PlayerGameMode.LOBBY) && (duelGameMode != null && !duelGameMode.hasSaturation)) return;
-
-        data.setFoodLevel(20);
-    }
-
 }

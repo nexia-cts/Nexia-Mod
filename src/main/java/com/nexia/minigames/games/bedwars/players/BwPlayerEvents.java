@@ -1,14 +1,12 @@
 package com.nexia.minigames.games.bedwars.players;
 
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
-import com.nexia.minigames.games.bedwars.util.player.BedwarsPlayerData;
-import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.item.BlockUtil;
 import com.nexia.core.utilities.item.ItemStackUtil;
-import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
@@ -22,6 +20,8 @@ import com.nexia.minigames.games.bedwars.shop.BwShopUpgradeables;
 import com.nexia.minigames.games.bedwars.upgrades.BwUpgradeShop;
 import com.nexia.minigames.games.bedwars.util.BwScoreboard;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
+import com.nexia.minigames.games.bedwars.util.player.BedwarsPlayerData;
+import com.nexia.nexus.api.world.types.Minecraft;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -41,7 +41,6 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrownEgg;
 import net.minecraft.world.entity.projectile.ThrownTrident;
-import net.minecraft.world.food.FoodData;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -293,9 +292,4 @@ public class BwPlayerEvents {
 
         return true;
     }
-
-    public static void afterHungerTick(FoodData foodData) {
-        foodData.setFoodLevel(20);
-    }
-
 }
