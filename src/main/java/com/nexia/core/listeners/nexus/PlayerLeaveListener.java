@@ -14,7 +14,6 @@ public class PlayerLeaveListener {
 
             //setLeaveMessage(player, playerDisconnectEvent);
 
-            if (playerDisconnectEvent.getPlayer().hasTag("bot")) return;
             PlayerDataManager.dataManagerMap.forEach((resourceLocation, playerDataManager) -> playerDataManager.removePlayerData(player));
         });
     }

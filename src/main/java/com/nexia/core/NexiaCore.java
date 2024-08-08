@@ -1,7 +1,6 @@
 package com.nexia.core;
 
 import com.nexia.base.player.PlayerDataManager;
-import com.nexia.core.utilities.database.MongoManager;
 import com.nexia.nexus.api.NexusAPI;
 import com.nexia.nexus.api.NexusServer;
 import com.nexia.nexus.api.entrypoint.NexusPlugin;
@@ -27,7 +26,6 @@ public class NexiaCore implements ModInitializer, NexusPlugin {
 	public static final String modConfigDir = NxFileUtil.makeDir(FabricLoader.getInstance().getConfigDir().toString() + "/nexia");
 
 	public NetworkingHandler networkingHandler;
-	public static MongoManager mongoManager;
 
 	public static final ResourceLocation CONVENTIONAL_BRIDGING_UPDATE_ID = new ResourceLocation("c", "update_status");
 
@@ -63,16 +61,11 @@ public class NexiaCore implements ModInitializer, NexusPlugin {
 		logger.info("Registered commands.");
 
 		networkingHandler = new NetworkingHandler();
-
 	}
 
 	@Override
 	@SuppressWarnings("FutureReturnValueIgnored")
 	public void onNexusLoad(NexusAPI api, NexusServer server) {
-		logger.info("Connecting to database...");
-		mongoManager = new MongoManager();
-		logger.info("Connected to database.");
-
 		logger.info("Loading Nexus API...");
 
 		ServerTime.nexusServer = server;

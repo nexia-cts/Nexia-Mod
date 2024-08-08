@@ -60,11 +60,6 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${project.mixin_extras_version}")))
 
-	// MongoDB
-	include(implementation("org.mongodb:mongodb-driver-sync:${project.mongodb_version}"))
-	include(implementation("org.mongodb:mongodb-driver-core:${project.mongodb_version}"))
-	include(implementation("org.mongodb:bson:${project.mongodb_version}"))
-
 	// Will be replaced by Nexus
 	include(modApi("eu.pb4:sgui:${project.sgui_version}")  { exclude(group: "net.fabricmc.fabric-api") })
 	modApi("xyz.nucleoid:fantasy:${project.fantasy_version}") {exclude(group: "net.fabricmc.fabric-api") }
