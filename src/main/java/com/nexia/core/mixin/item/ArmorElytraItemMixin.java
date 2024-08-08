@@ -41,9 +41,8 @@ public class ArmorElytraItemMixin {
                 soundEvent = SoundEvents.ARMOR_EQUIP_ELYTRA;
             }
 
-            //player.playSound(soundEvent, 1.0F, 1.0F);
             player.connection.send(new ClientboundSoundPacket(soundEvent, player.getSoundSource(),
-                    player.position().x, player.position().y, player.position().z, 16f * 1.0F, 1.0F));
+                    player.position().x, player.position().y, player.position().z, 16f, 1.0F));
         }
     }
 
@@ -52,7 +51,7 @@ public class ArmorElytraItemMixin {
         ItemStack itemStack = player.getItemInHand(interactionHand);
         EquipmentSlot equipmentSlot = Mob.getEquipmentSlotForItem(itemStack);
         ItemStack itemStack2 = player.getItemBySlot(equipmentSlot);
-        if ((EnchantmentHelper.hasBindingCurse(itemStack2) && !player.isCreative()) || ItemStack.matches(itemStack, itemStack2)) {
+        if (EnchantmentHelper.hasBindingCurse(itemStack2) && !player.isCreative() || ItemStack.matches(itemStack, itemStack2)) {
             cir.setReturnValue(InteractionResultHolder.fail(itemStack));
             return;
         }

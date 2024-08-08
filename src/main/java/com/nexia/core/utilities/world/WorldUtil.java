@@ -39,6 +39,7 @@ public class WorldUtil {
             .setGameRule(GameRules.RULE_WEATHER_CYCLE, false)
             .setGameRule(GameRules.RULE_DAYLIGHT, false)
             .setGameRule(GameRules.RULE_DO_IMMEDIATE_RESPAWN, false)
+            .setGameRule(GameRules.RULE_DOMOBLOOT, false)
             .setGameRule(GameRules.RULE_DOMOBSPAWNING, false)
             .setGameRule(GameRules.RULE_SHOWDEATHMESSAGES, true)
             .setGameRule(GameRules.RULE_SPAWN_RADIUS, 0);
