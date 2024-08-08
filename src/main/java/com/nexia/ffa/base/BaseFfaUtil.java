@@ -24,6 +24,7 @@ import com.nexia.nexus.api.world.util.Location;
 import com.nexia.nexus.builder.implementation.world.entity.projectile.WrappedProjectile;
 import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
+import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -120,15 +121,7 @@ public abstract class BaseFfaUtil {
         SavableInventory savableInventory = new SavableInventory(player.unwrap().inventory);
         String stringInventory = savableInventory.toSave();
 
-        try {
-            String file = getDataManager().getDataDirectory() + "/inventory/savedInventories/" + player.getUUID() + ".json";
-            FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write(stringInventory);
-            fileWriter.close();
-        } catch (Exception var6) {
-            LobbyUtil.returnToLobby(player, true);
-            player.sendMessage(Component.text("Failed to save " + getName() + " FFA inventory. Please try again or contact a developer.", ChatFormat.failColor));
-        }
+        getDataManager().get(player).savedData.set(String.class, "savedInventory", stringInventory);
     }
 
     public void calculateKill(NexiaPlayer attacker, NexiaPlayer player, boolean sendMessage) {
@@ -240,7 +233,7 @@ public abstract class BaseFfaUtil {
         SavableInventory layout = null;
 
         try {
-            String file = getDataManager().getDataDirectory() + "/inventory";
+            String file = FabricLoader.getInstance().getConfigDir() + "/nexia/ffa/" + this.getNameLowercase() + "/inventory";
             String defaultJson = Files.readString(Path.of(file + "/default.json"));
             Gson gson = new Gson();
             defaultInventory = gson.fromJson(defaultJson, SavableInventory.class);
