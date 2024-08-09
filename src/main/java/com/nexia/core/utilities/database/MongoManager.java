@@ -23,9 +23,7 @@ import static com.nexia.core.NexiaCore.config;
 
 @SuppressWarnings("unused")
 public class MongoManager {
-    private final static Gson GSON = new GsonBuilder()
-            .registerTypeAdapter(UUID.class, TypeAdapters.UUID)
-            .create();
+    private final static Gson GSON = new GsonBuilder().create();
 
     private final ExecutorService service;
 
@@ -44,13 +42,29 @@ public class MongoManager {
                 config.password.toCharArray()
         );
 
+        String connectionString = String.format("mongodb://%s:%s@%s:%d/%s?authSource=%s",
+                config.username,
+                config.password,
+                config.host,
+                config.port,
+                config.database,
+                "admin" // Authentication database, change this if your user is created in another database
+        );
+
+        // Configure the MongoClientSettings
         MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
                 .credential(mongoCredential)
-                .applyConnectionString(new ConnectionString("mongodb://" + config.host + ":" + config.port))
+                .applyConnectionString(new ConnectionString(connectionString))
                 .build();
 
-        this.client = MongoClients.create(mongoClientSettings);
-        this.database = this.client.getDatabase(config.database);
+        try {
+            this.client = MongoClients.create(mongoClientSettings);
+            this.database = this.client.getDatabase(config.database);
+            System.out.println("Connection to MongoDB established successfully.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Failed to connect to MongoDB: " + e.getMessage());
+        }
     }
 
     public void closeConnection() {

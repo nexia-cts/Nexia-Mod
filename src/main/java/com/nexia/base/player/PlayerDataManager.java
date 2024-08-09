@@ -118,19 +118,23 @@ public class PlayerDataManager {
         document.append("uuid", uuid.toString());
         document.remove("data");
 
-        UpdateResult isReplaced = NexiaCore.mongoManager.getCollection(collectionName).replaceOne(Filters.eq("uuid", uuid), document);
+        UpdateResult isReplaced = NexiaCore.mongoManager.getCollection(collectionName).replaceOne(Filters.eq("uuid", uuid.toString()), document);
 
-        if (!isReplaced.wasAcknowledged()) {
+        if (isReplaced.getMatchedCount() == 0) {
             NexiaCore.mongoManager.getCollection(collectionName).insertOne(document);
         }
     }
 
     private <T extends SavedPlayerData> T loadPlayerData(UUID uuid, Class<T> toLoad) throws InstantiationException, IllegalAccessException {
-        T savedPlayerData = NexiaCore.mongoManager.getObject(collectionName, Filters.eq("uuid", uuid), toLoad);
+        T savedPlayerData = NexiaCore.mongoManager.getObject(collectionName, Filters.eq("uuid", uuid.toString()), toLoad);
         if (savedPlayerData != null) {
             return savedPlayerData;
         }
 
-        return toLoad.newInstance();
+        try {
+            return toLoad.getDeclaredConstructor().newInstance();
+        } catch (InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

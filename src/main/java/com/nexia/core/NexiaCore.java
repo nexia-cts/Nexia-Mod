@@ -63,16 +63,12 @@ public class NexiaCore implements ModInitializer, NexusPlugin {
 		logger.info("Registered commands.");
 
 		networkingHandler = new NetworkingHandler();
-
+		mongoManager = new MongoManager();
 	}
 
 	@Override
 	@SuppressWarnings("FutureReturnValueIgnored")
 	public void onNexusLoad(NexusAPI api, NexusServer server) {
-		logger.info("Connecting to database...");
-		mongoManager = new MongoManager();
-		logger.info("Connected to database.");
-
 		logger.info("Loading Nexus API...");
 
 		ServerTime.nexusServer = server;

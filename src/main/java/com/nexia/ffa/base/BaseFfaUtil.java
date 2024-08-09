@@ -238,10 +238,10 @@ public abstract class BaseFfaUtil {
             Gson gson = new Gson();
             defaultInventory = gson.fromJson(defaultJson, SavableInventory.class);
 
-            String layoutPath = String.format(file + "/savedInventories/%s.json", player.getUUID());
-            if(new File(layoutPath).exists()) {
-                String layoutJson = Files.readString(Path.of(layoutPath));
-                layout = gson.fromJson(layoutJson, SavableInventory.class);
+            String savedInventory = getDataManager().get(player).savedData.get(String.class, "savedInventory");
+
+            if(!savedInventory.equals(defaultJson) && !savedInventory.isEmpty()) {
+                layout = gson.fromJson(savedInventory, SavableInventory.class);
             }
         } catch (Exception var4) {
             var4.printStackTrace();
