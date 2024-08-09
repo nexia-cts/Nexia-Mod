@@ -28,19 +28,4 @@ public abstract class ThrownTridentMixin extends AbstractArrow {
             super.tickDespawn();
         }
     }
-
-    @Redirect(method = "onHitEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/enchantment/EnchantmentHelper;getDamageBonus(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;)F"))
-    private float getDamageBonus(ItemStack itemStack, LivingEntity livingEntity) {
-        float bonus = EnchantmentHelper.getDamageBonus(itemStack, livingEntity);
-
-        /*
-        if ((Object)this instanceof BwTrident) {
-            bonus -= 1;
-        }
-        */
-
-        bonus -= 2;
-        return bonus;
-    }
-
 }

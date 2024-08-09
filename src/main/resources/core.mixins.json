@@ -44,7 +44,6 @@
     "misc.ExplosionMixin",
     "misc.ItemCombinerMenuMixin",
     "misc.MinecraftServerMixin",
-    "misc.ProtectionEnchantmentMixin",
     "misc.ServerLevelMixin",
     "misc.commands.BanCommandMixin",
     "misc.commands.EmoteCommandMixin",
