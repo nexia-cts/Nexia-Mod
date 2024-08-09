@@ -51,7 +51,7 @@ public class ArmorElytraItemMixin {
         ItemStack itemStack = player.getItemInHand(interactionHand);
         EquipmentSlot equipmentSlot = Mob.getEquipmentSlotForItem(itemStack);
         ItemStack itemStack2 = player.getItemBySlot(equipmentSlot);
-        if (EnchantmentHelper.hasBindingCurse(itemStack2) && !player.isCreative() || ItemStack.matches(itemStack, itemStack2)) {
+        if ((EnchantmentHelper.hasBindingCurse(itemStack2) && !player.isCreative()) || ItemStack.matches(itemStack, itemStack2)) {
             cir.setReturnValue(InteractionResultHolder.fail(itemStack));
             return;
         }
