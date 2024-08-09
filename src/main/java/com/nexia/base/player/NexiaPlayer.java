@@ -90,7 +90,7 @@ public class NexiaPlayer extends WrappedPlayer {
     public void safeReset(boolean heal, Minecraft.GameMode gameMode) {
         this.setGameMode(gameMode);
 
-        this.setInvulnerabilityTime(20);
+        this.setInvulnerabilityTime(0);
         this.clearEffects();
         this.setRemainingFireTicks(0);
         this.setGlowing(false);
