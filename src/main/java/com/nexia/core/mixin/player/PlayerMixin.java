@@ -15,6 +15,7 @@ import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -61,13 +62,11 @@ public abstract class PlayerMixin extends LivingEntity {
         this.level.broadcastEntityEvent(this, (byte)30);
         ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
         if(attacker != null){
-            //this.level.broadcastEntityEvent(attacker, (byte)30);
-
             SoundSource soundSource = null;
             for (SoundSource source : SoundSource.values()) {
                 soundSource = source;
             }
-            new NexiaPlayer(attacker).sendSound(new EntityPos(attacker.position()), SoundEvents.SHIELD_BREAK, soundSource, 2, 1);
+            this.level.playSound(null, new BlockPos(attacker.position()), SoundEvents.SHIELD_BREAK, soundSource, 2f, 1f);
         }
         return true;
     }
@@ -150,13 +149,5 @@ public abstract class PlayerMixin extends LivingEntity {
     @ModifyArg(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;setSprinting(Z)V"))
     public boolean setSprintFix(boolean par1) {
         return ((CoreSavedPlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(this.getUUID()).savedData).isSprintFix();
-    }
-
-    @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)
-    public void shieldBlockExplosion(DamageSource damageSource, float f, CallbackInfoReturnable<Boolean> cir) {
-        if (damageSource.isExplosion() && this.useItem.getItem() == Items.SHIELD) {
-            this.hurtCurrentlyUsedShield(f);
-            cir.setReturnValue(false);
-        }
     }
 }
