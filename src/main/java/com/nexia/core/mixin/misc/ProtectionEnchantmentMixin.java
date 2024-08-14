@@ -19,7 +19,7 @@ public class ProtectionEnchantmentMixin {
     public static double getExplosionKnockbackAfterDampener(LivingEntity livingEntity, double d) {
         int i = EnchantmentHelper.getEnchantmentLevel(Enchantments.BLAST_PROTECTION, livingEntity);
         if (i > 0) {
-            d *= Mth.clamp(1.0 - (double)i * 0.15, 0.0, 1.0);
+            d *= Mth.clamp(1.0 - (double)i * 0.08, 0.0, 1.0);
         }
 
         return d;
