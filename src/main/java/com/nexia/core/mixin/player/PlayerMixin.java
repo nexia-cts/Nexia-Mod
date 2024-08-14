@@ -49,28 +49,6 @@ public abstract class PlayerMixin extends LivingEntity {
         super(entityType, level);
     }
 
-
-    /**
-     * @author NotCoded
-     * @reason Make shield break actually play the sound to other players.
-     */
-    @Overwrite
-    public boolean disableShield(float f) {
-        this.getCooldowns().addCooldown(Items.SHIELD, (int)(f * 20.0F));
-        this.stopUsingItem();
-        Player player = (Player) (Object) this;
-        this.level.broadcastEntityEvent(this, (byte)30);
-        ServerPlayer attacker = PlayerUtil.getPlayerAttacker(player);
-        if(attacker != null){
-            SoundSource soundSource = null;
-            for (SoundSource source : SoundSource.values()) {
-                soundSource = source;
-            }
-            this.level.playSound(null, new BlockPos(attacker.position()), SoundEvents.SHIELD_BREAK, soundSource, 2f, 1f);
-        }
-        return true;
-    }
-
     @Inject(method = "canEat", cancellable = true, at = @At("HEAD"))
     private void preventFFAUsers(boolean bl, CallbackInfoReturnable<Boolean> cir) {
         if (!((Object) this instanceof ServerPlayer player)) return;
