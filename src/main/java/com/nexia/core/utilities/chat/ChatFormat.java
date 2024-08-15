@@ -39,7 +39,7 @@ public class ChatFormat {
 
     // Minecraft Chat Colours (but better)
 
-    public class Minecraft {
+    public static class Minecraft {
         public static TextColor dark_red = TextColor.fromHexString("#b51413");
 
         public static TextColor red = TextColor.fromHexString("#ff2b1c");
