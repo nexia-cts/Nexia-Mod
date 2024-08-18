@@ -7,18 +7,13 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.misc.EventUtil;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.player.CoreSavedPlayerData;
-import com.nexia.core.utilities.player.PlayerUtil;
-import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
 import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
@@ -127,5 +122,13 @@ public abstract class PlayerMixin extends LivingEntity {
     @ModifyArg(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;setSprinting(Z)V"))
     public boolean setSprintFix(boolean par1) {
         return ((CoreSavedPlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(this.getUUID()).savedData).isSprintFix();
+    }
+
+    @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)
+    public void shieldBlockExplosion(DamageSource damageSource, float f, CallbackInfoReturnable<Boolean> cir) {
+        if (damageSource.isExplosion() && this.useItem.getItem() == Items.SHIELD) {
+            this.hurtCurrentlyUsedShield(f);
+            cir.setReturnValue(false);
+        }
     }
 }
