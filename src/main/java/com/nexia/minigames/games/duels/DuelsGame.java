@@ -2,6 +2,7 @@ package com.nexia.minigames.games.duels;
 
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
+import com.nexia.nexus.api.event.player.PlayerDeathEvent;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
@@ -20,7 +21,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.damagesource.DamageSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -301,7 +301,7 @@ public class DuelsGame {
         victim.sendTitle(Title.title(titleLose, subtitleLose));
     }
 
-    public void death(@NotNull NexiaPlayer victim, @Nullable DamageSource source){
+    public void death(@NotNull NexiaPlayer victim){
         DuelsPlayerData victimData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(victim);
         if(victimData.gameOptions == null || getDuelsGame(victimData.gameOptions) == null || getDuelsGame(victimData.gameOptions).isEnding) return;
 

@@ -15,6 +15,7 @@ import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.map.DuelsMap;
 import com.nexia.minigames.games.duels.util.DuelOptions;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
+import com.nexia.nexus.api.event.player.PlayerDeathEvent;
 import com.nexia.nexus.api.world.types.Minecraft;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
@@ -22,7 +23,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.damagesource.DamageSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -331,7 +331,7 @@ public class TeamDuelsGame extends DuelsGame {
         }
     }
 
-    public void death(@NotNull NexiaPlayer victim, @Nullable DamageSource source) {
+    public void death(@NotNull NexiaPlayer victim, PlayerDeathEvent source) {
         DuelsPlayerData victimData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(victim);
         DuelsTeam victimTeam = victimData.duelOptions.duelsTeam;
 

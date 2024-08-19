@@ -106,10 +106,10 @@ public class DuelGameHandler {
         DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(DUELS_DATA_MANAGER).get(player);
         data.gameMode = DuelGameMode.LOBBY;
         if (data.gameOptions != null && data.gameOptions.duelsGame != null) {
-            data.gameOptions.duelsGame.death(player, player.unwrap().getLastDamageSource());
+            data.gameOptions.duelsGame.death(player);
         }
         if (data.gameOptions != null && data.gameOptions.teamDuelsGame != null) {
-            data.gameOptions.teamDuelsGame.death(player, player.unwrap().getLastDamageSource());
+            data.gameOptions.teamDuelsGame.death(player);
         }
 
         if (data.gameMode == DuelGameMode.SPECTATING) {

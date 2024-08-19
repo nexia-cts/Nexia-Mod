@@ -11,6 +11,7 @@ import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.nexus.api.event.player.PlayerDeathEvent;
+import com.nexia.nexus.api.world.scoreboard.ScoreboardTeam;
 
 public class PlayerDeathListener {
     public void registerListener() {
@@ -28,6 +29,7 @@ public class PlayerDeathListener {
 
             if (BwAreas.isBedWarsWorld(nexiaPlayer.getWorld())) {
                 BwPlayerEvents.death(nexiaPlayer);
+                playerDeathEvent.setVisibleFor(ScoreboardTeam.VisibleFor.NO_ONE);
                 return;
             }
 
@@ -41,18 +43,15 @@ public class PlayerDeathListener {
                 return;
             }
 
-            /*
             if(gameMode == PlayerGameMode.LOBBY && duelsData.gameOptions != null) {
                 if(duelsData.gameOptions.duelsGame != null) {
-                    duelsData.gameOptions.duelsGame.death(nexiaPlayer, playerDeathEvent);
+                    duelsData.gameOptions.duelsGame.death(nexiaPlayer);
                     return;
                 }
                 if(duelsData.gameOptions.teamDuelsGame != null) {
                     duelsData.gameOptions.teamDuelsGame.death(nexiaPlayer, playerDeathEvent);
-                    return;
                 }
             }
-            */
         });
     }
 }

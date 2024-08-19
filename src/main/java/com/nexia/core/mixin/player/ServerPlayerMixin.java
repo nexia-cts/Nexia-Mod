@@ -110,15 +110,9 @@ public abstract class ServerPlayerMixin extends Player {
     private void die(DamageSource damageSource, CallbackInfo ci) {
         ServerPlayer player = (ServerPlayer)(Object)this;
         NexiaPlayer nexiaPlayer = new NexiaPlayer(player);
-        PlayerGameMode gameMode = ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(nexiaPlayer)).gameMode;
-        DuelsPlayerData duelsData = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(nexiaPlayer);
 
         if (FfaUtil.isFfaPlayer(nexiaPlayer)) {
             FfaUtil.leaveOrDie(nexiaPlayer, damageSource, false);
-        }
-        else if(gameMode == PlayerGameMode.LOBBY && duelsData.gameOptions != null) {
-            if(duelsData.gameOptions.duelsGame != null) duelsData.gameOptions.duelsGame.death(nexiaPlayer, damageSource);
-            if(duelsData.gameOptions.teamDuelsGame != null) duelsData.gameOptions.teamDuelsGame.death(nexiaPlayer, damageSource);
         }
     }
 
