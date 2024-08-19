@@ -373,6 +373,8 @@ public class BwGame {
                 player.runCommand("/hub", 0, false);
                 BwScoreboard.removeScoreboardFor(player);
             }
+
+            winners.forEach(winner -> winner.runCommand("/hub", 0, false));
         } catch (Exception exception) {
             if(NexiaCore.config.debugMode) NexiaCore.logger.error(exception.getMessage());
         }
