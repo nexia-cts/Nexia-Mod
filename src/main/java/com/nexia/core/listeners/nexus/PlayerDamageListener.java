@@ -24,7 +24,6 @@ public class PlayerDamageListener {
             }
 
             if(LobbyUtil.isLobbyWorld(player.getWorld()) && damageData.getType().equals(DamageData.Type.VOID)) {
-                LobbyUtil.lobbySpawn.teleportPlayer(LobbyUtil.nexusLobbyWorld, player);
                 player.teleport(LobbyUtil.nexusLobbyLocation);
                 livingEntityDamageEvent.setCancelled(true);
                 return;
