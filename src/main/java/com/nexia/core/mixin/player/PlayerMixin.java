@@ -123,12 +123,4 @@ public abstract class PlayerMixin extends LivingEntity {
     public boolean setSprintFix(boolean par1) {
         return ((CoreSavedPlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(this.getUUID()).savedData).isSprintFix();
     }
-
-    @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)
-    public void shieldBlockExplosion(DamageSource damageSource, float f, CallbackInfoReturnable<Boolean> cir) {
-        if (damageSource.isExplosion() && this.useItem.getItem() == Items.SHIELD) {
-            this.hurtCurrentlyUsedShield(f);
-            cir.setReturnValue(false);
-        }
-    }
 }
