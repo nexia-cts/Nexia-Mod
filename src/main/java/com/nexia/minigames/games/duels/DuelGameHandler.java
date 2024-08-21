@@ -94,7 +94,7 @@ public class DuelGameHandler {
         }
 
         if(layout != null) {
-            InventoryMerger.mergeSafe(player.unwrap(), layout.asPlayerInventory(), defaultInventory.asPlayerInventory());
+            player.unwrap().inventory.replaceWith(layout.asPlayerInventory());
         } else {
             InventoryUtil.loadInventory(player, "duels", gameMode.toLowerCase());
         }
