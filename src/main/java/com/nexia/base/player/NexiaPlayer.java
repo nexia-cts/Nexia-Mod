@@ -52,6 +52,7 @@ public class NexiaPlayer extends WrappedPlayer {
     public void reset(boolean heal, Minecraft.GameMode gameMode) {
         this.setInvulnerabilityTime(0);
         this.clearEffects();
+        this.unwrap().setAbsorptionAmount(0);
         this.getInventory().clear();
         this.setRemainingFireTicks(0);
         this.setExperienceLevel(0);
@@ -92,6 +93,7 @@ public class NexiaPlayer extends WrappedPlayer {
 
         this.setInvulnerabilityTime(0);
         this.clearEffects();
+        this.unwrap().setAbsorptionAmount(0);
         this.setRemainingFireTicks(0);
         this.setGlowing(false);
 
