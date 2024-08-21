@@ -198,27 +198,35 @@ public class TeamDuelsGame extends DuelsGame {
                     this.level, color);
             this.currentEndTime++;
             if (this.currentEndTime >= this.endTime || !this.shouldWait) {
-                DuelsTeam winnerTeam = this.winner;
-                DuelsTeam loserTeam = this.loser;
+                DuelsTeam winnerTeam = this.winner == null ? this.team1 : this.winner;
+                DuelsTeam loserTeam = this.loser == null ? this.team2 : this.loser;
 
                 for (NexiaPlayer spectator : this.spectators) {
+                    spectator = spectator.refreshPlayer();
                     spectator.runCommand("/hub", 0, false);
                 }
 
                 this.isEnding = false;
 
-                for (NexiaPlayer player : loserTeam.all) {
-                    ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).gameOptions = null;
-                    player.runCommand("/hub", 0, false);
+                if(loserTeam != null) {
+                    for (NexiaPlayer player : loserTeam.all) {
+                        player = player.refreshPlayer();
+                        ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).gameOptions = null;
+                        player.runCommand("/hub", 0, false);
+                    }
+                    loserTeam.refreshTeam();
                 }
-                for (NexiaPlayer player : winnerTeam.all) {
-                    ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).gameOptions = null;
-                    player.runCommand("/hub", 0, false);
+
+                if(winnerTeam != null) {
+                    for (NexiaPlayer player : winnerTeam.all) {
+                        player = player.refreshPlayer();
+                        ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).gameOptions = null;
+                        player.runCommand("/hub", 0, false);
+                    }
+                    winnerTeam.refreshTeam();
                 }
 
                 DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
-                this.team1.refreshTeam();
-                this.team2.refreshTeam();
                 removeDuelsGame();
                 return;
             }
