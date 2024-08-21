@@ -254,7 +254,7 @@ public abstract class BaseFfaUtil {
         }
 
         if(layout != null) {
-            InventoryMerger.mergeSafe(player.unwrap(), layout.asPlayerInventory(), defaultInventory.asPlayerInventory());
+            player.unwrap().inventory.replaceWith(layout.asPlayerInventory());
         } else {
             player.unwrap().inventory.replaceWith(defaultInventory.asPlayerInventory());
         }
