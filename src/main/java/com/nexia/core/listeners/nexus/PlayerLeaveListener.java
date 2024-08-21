@@ -6,6 +6,8 @@ import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.nexus.api.event.player.PlayerDisconnectEvent;
 import net.kyori.adventure.text.Component;
 
+import java.util.concurrent.CompletableFuture;
+
 public class PlayerLeaveListener {
     public void registerListener() {
         PlayerDisconnectEvent.BACKEND.register(playerDisconnectEvent -> {
@@ -15,7 +17,7 @@ public class PlayerLeaveListener {
             //setLeaveMessage(player, playerDisconnectEvent);
 
             if (playerDisconnectEvent.getPlayer().hasTag("bot")) return;
-            PlayerDataManager.dataManagerMap.forEach((resourceLocation, playerDataManager) -> playerDataManager.removePlayerData(player));
+            CompletableFuture.runAsync(() -> PlayerDataManager.dataManagerMap.forEach((resourceLocation, playerDataManager) -> playerDataManager.removePlayerData(player)));
         });
     }
 

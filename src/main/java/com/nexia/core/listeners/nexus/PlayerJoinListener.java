@@ -19,6 +19,7 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.minecraft.stats.Stats;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import static com.nexia.discord.NexiaDiscord.jda;
 
@@ -31,7 +32,7 @@ public class PlayerJoinListener {
 
             //setJoinMessage(player, playerJoinEvent);
 
-            PlayerDataManager.dataManagerMap.forEach((resourceLocation, playerDataManager) -> playerDataManager.addPlayerData(player));
+            CompletableFuture.runAsync(() -> PlayerDataManager.dataManagerMap.forEach((resourceLocation, playerDataManager) -> playerDataManager.addPlayerData(player)));
 
             LobbyUtil.returnToLobby(player, true);
             checkBooster(player);
