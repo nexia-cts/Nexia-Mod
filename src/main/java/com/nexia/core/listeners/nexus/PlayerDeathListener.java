@@ -40,7 +40,6 @@ public class PlayerDeathListener {
 
             if(gameMode == PlayerGameMode.SKYWARS) {
                 SkywarsGame.death(nexiaPlayer, playerDeathEvent);
-                return;
             }
 
             if(gameMode == PlayerGameMode.LOBBY && duelsData.gameOptions != null) {

@@ -7,7 +7,6 @@ import com.nexia.base.player.NexiaPlayer;
 public class PlayerDropItemListener {
     public void registerListener(){
         PlayerHotbarDropItemEvent.BACKEND.register(playerDropItemEvent -> {
-
             NexiaPlayer player = new NexiaPlayer(playerDropItemEvent.getPlayer());
 
             if (!EventUtil.dropItem(player, playerDropItemEvent.getItemStack())) {

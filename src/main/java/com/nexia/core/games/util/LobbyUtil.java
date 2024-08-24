@@ -122,20 +122,20 @@ public class LobbyUtil {
 
     public static void giveItems(NexiaPlayer player) {
 
-        NBTObject hideAttrubtesNBTObject = NBTObject.create();
-        hideAttrubtesNBTObject.set("HideFlags", NBTValue.of(39));
+        NBTObject hideAttributesNBTObject = NBTObject.create();
+        hideAttributesNBTObject.set("HideFlags", NBTValue.of(39));
 
-        NBTObject unbreakableNBTObject = hideAttrubtesNBTObject.copy();
+        NBTObject unbreakableNBTObject = hideAttributesNBTObject.copy();
         unbreakableNBTObject.set("Unbreakable", NBTValue.of(1));
 
         com.nexia.nexus.api.world.item.ItemStack compass = com.nexia.nexus.api.world.item.ItemStack.create(Minecraft.Item.COMPASS);
-        compass.setItemNBT(hideAttrubtesNBTObject.copy());
+        compass.setItemNBT(hideAttributesNBTObject.copy());
         compass.setLore(Component.text("Right click to open the gamemode selector menu.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
         compass.setDisplayName(Component.text("Gamemode Selector", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
 
 
         com.nexia.nexus.api.world.item.ItemStack nameTag = com.nexia.nexus.api.world.item.ItemStack.create(Minecraft.Item.NAME_TAG);
-        nameTag.setItemNBT(hideAttrubtesNBTObject.copy());
+        nameTag.setItemNBT(hideAttributesNBTObject.copy());
         nameTag.setLore(Component.text("Right click to open the prefix selector menu.", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false));
         nameTag.setDisplayName(Component.text("Prefix Selector", ChatFormat.Minecraft.yellow).decoration(ChatFormat.italic, false));
 
