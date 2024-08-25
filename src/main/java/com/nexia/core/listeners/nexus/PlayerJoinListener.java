@@ -32,7 +32,8 @@ public class PlayerJoinListener {
 
             //setJoinMessage(player, playerJoinEvent);
 
-            CompletableFuture.runAsync(() -> PlayerDataManager.dataManagerMap.forEach((resourceLocation, playerDataManager) -> playerDataManager.addPlayerData(player)));
+            if (!player.getTags().contains("bot"))
+                CompletableFuture.runAsync(() -> PlayerDataManager.dataManagerMap.forEach((resourceLocation, playerDataManager) -> playerDataManager.addPlayerData(player)));
 
             LobbyUtil.returnToLobby(player, true);
             checkBooster(player);

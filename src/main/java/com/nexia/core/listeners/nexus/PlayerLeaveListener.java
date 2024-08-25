@@ -16,8 +16,8 @@ public class PlayerLeaveListener {
 
             //setLeaveMessage(player, playerDisconnectEvent);
 
-            if (playerDisconnectEvent.getPlayer().hasTag("bot")) return;
-            CompletableFuture.runAsync(() -> PlayerDataManager.dataManagerMap.forEach((resourceLocation, playerDataManager) -> playerDataManager.removePlayerData(player)));
+            if (!player.getTags().contains("bot"))
+                CompletableFuture.runAsync(() -> PlayerDataManager.dataManagerMap.forEach((resourceLocation, playerDataManager) -> playerDataManager.removePlayerData(player)));
         });
     }
 
