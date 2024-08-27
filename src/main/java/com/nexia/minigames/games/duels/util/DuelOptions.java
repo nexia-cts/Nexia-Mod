@@ -51,7 +51,6 @@ public class DuelOptions {
         public InviteOptions reset() {
             this.invitingPlayer = null;
             this.inviting = false;
-            this.inviteMap = DuelsMap.CITY;
             this.inviteKit = "";
             this.inviteKit2 = null;
             this.customDuel = false;
