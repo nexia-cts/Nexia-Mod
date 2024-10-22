@@ -461,21 +461,10 @@ public class BridgeGame {
 //            kicking.setHoverName(new TextComponent("§7§lKicking §7Sword §8[§710s cooldown§8]"));
 //            kicking.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
 
-            /*
-            ItemStack normal = new ItemStack(Items.IRON_SWORD);
-            normal.getOrCreateTag().putBoolean("Unbreakable", true);
-            normal.enchant(Enchantments.KNOCKBACK, 2);
-            normal.setHoverName(new TextComponent("§f§lNormal §fSword §8[§fno cooldown§8]"));
-            normal.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
 
-
-             */
-//            BridgeGame.createArmorStand();
 
             for(NexiaPlayer player : BridgeGame.players) {
-                //NexiaPlayer.inventory.setItem(0, normal);
-                //NexiaPlayer.inventory.setItem(1, kicking);
-//                player.unwrap().inventory.setItem(0, kicking);
+
 
                 BridgePlayerData data = (BridgePlayerData) PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player);
                 data.gameMode = BridgeGameMode.PLAYING;
@@ -527,15 +516,6 @@ public class BridgeGame {
 //                ItemStack sword = Items.IRON_SWORD.getDefaultInstance();
 //                sword.getOrCreateTag().putInt("Unbreakable", 1);
 //
-//                ItemStack pickaxe = Items.DIAMOND_PICKAXE.getDefaultInstance();
-//                pickaxe.getOrCreateTag().putInt("Unbreakable", 1);
-//                // idk how to add efficency 4
-//                // i plan to add more stuff and enchant diffrent things to balance the game
-//                // so this will prob change
-//                // also adding diff color blocks depending on team
-//                player.unwrap().setItemSlot(HotbarSlot.1, sword);
-//
-//                player.unwrap().setItemSlot(HotbarSlot.6, pickaxe);
 
                 giveKit(player)
 
