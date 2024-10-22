@@ -17,6 +17,9 @@ import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.football.FootballGameMode;
 import com.nexia.minigames.games.football.util.player.FootballPlayerData;
+import com.nexia.minigames.games.bridge.BridgeGame;
+import com.nexia.minigames.games.bridge.BridgeGameMode;
+import com.nexia.minigames.games.bridge.util.player.BridgePlayerData;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.oitc.OitcGameMode;
 import com.nexia.minigames.games.oitc.util.player.OITCPlayerData;
@@ -42,7 +45,7 @@ import static com.nexia.core.utilities.player.BanHandler.getBanTime;
 
 public class LobbyUtil {
 
-    public static String[] statsGameModes = {"FFA CLASSIC", "SKY FFA", "UHC FFA", "KIT FFA", "BEDWARS", "OITC", "DUELS", "SKYWARS", "FOOTBALL"};
+    public static String[] statsGameModes = {"FFA CLASSIC", "SKY FFA", "UHC FFA", "KIT FFA", "BEDWARS", "OITC", "DUELS", "SKYWARS", "FOOTBALL", "BRIDGE"};
 
     public static ServerLevel lobbyWorld = null;
 
@@ -85,6 +88,9 @@ public class LobbyUtil {
             "bedwars",
             PlayerGameMode.FOOTBALL.tag,
             "in_football_game",
+            "duels",
+            PlayerGameMode.BRIDGE.tag,
+            "in_bridge_game",
             "duels",
             PlayerGameMode.SKYWARS.tag,
             PlayerGameMode.OITC.tag,
@@ -305,6 +311,16 @@ public class LobbyUtil {
             FootballGame.joinQueue(player);
 
             if(message){player.sendActionBarMessage(Component.text("You have joined §7○ §7§lFootball §7\uD83D\uDDE1"));}
+        }
+
+        if(game.equalsIgnoreCase("bridge")){
+            player.addTag(BridgeGame.BRIDGE_TAG);
+            ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).gameMode = PlayerGameMode.BRIDGE;
+            ((BridgePlayerData)PlayerDataManager.getDataManager(NexiaCore.BRIDGE_DATA_MANAGER).get(player)).gameMode = BridgeGameMode.LOBBY;
+
+            BridgeGame.joinQueue(player);
+
+            if(message){player.sendActionBarMessage(Component.text("You have joined §7○ §7§lBridge §7\uD83D\uDDE1"));}
         }
 
 

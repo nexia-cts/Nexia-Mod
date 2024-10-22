@@ -17,6 +17,7 @@ import com.nexia.ffa.classic.utilities.ClassicFfaAreas;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.duels.DuelGameMode;
 import com.nexia.minigames.games.football.FootballGame;
+import com.nexia.minigames.games.bridge.BridgeGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import eu.pb4.sgui.api.ClickType;
@@ -229,13 +230,25 @@ public class PlayGUI extends SimpleGui {
         ItemDisplayUtil.addLore(football, "§f", 4);
         ItemDisplayUtil.addLore(football, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", FootballGame.world.players().size()), ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false), 5);
 
+        ItemStack bridge = new ItemStack(Items.DIAMOND_PICKAXE, 1);
+        bridge.setHoverName(ObjectMappings.convertComponent(net.kyori.adventure.text.Component.text("Bridge", ChatFormat.Minecraft.blue).decoration(ChatFormat.italic, false)));
+        ItemDisplayUtil.addGlint(bridge);
+        bridge.hideTooltipPart(ItemStack.TooltipPart.MODIFIERS);
+
+        ItemDisplayUtil.addLore(bridge, "§f", 0);
+        ItemDisplayUtil.addLore(bridge, net.kyori.adventure.text.Component.text("FINNALLY BRIDGE", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 1);
+        ItemDisplayUtil.addLore(bridge, net.kyori.adventure.text.Component.text("Jump into the opponents goal", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 2);
+        ItemDisplayUtil.addLore(bridge, net.kyori.adventure.text.Component.text("to achieve victory!", ChatFormat.Minecraft.gray).decoration(ChatFormat.italic, false), 3);
+        ItemDisplayUtil.addLore(bridge, "§f", 4);
+        ItemDisplayUtil.addLore(bridge, net.kyori.adventure.text.Component.text(String.format("There are %s people playing this gamemode.", BridgeGame.world.players().size()), ChatFormat.Minecraft.white).decoration(ChatFormat.italic, false), 5);
+
         fillEmptySlots(emptySlot);
 
         this.setSlot(2, oitc);
         this.setSlot(4, back);
         this.setSlot(6, football);
         this.setSlot(0, unknown);
-        this.setSlot(8, unknown);
+        this.setSlot(8, bridge);
     }
 
     public boolean click(int index, ClickType clickType, net.minecraft.world.inventory.ClickType action){
@@ -291,6 +304,11 @@ public class PlayGUI extends SimpleGui {
 
             if(name.getString().contains("Football")){
                 LobbyUtil.sendGame(nexiaPlayer, "football", true, true);
+                this.close();
+            }
+
+            if(name.getString().contains("Bridge")){
+                LobbyUtil.sendGame(nexiaPlayer, "bridge", true, true);
                 this.close();
             }
 
