@@ -1,7 +1,5 @@
 package com.nexia.base.player;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
 import com.nexia.core.NexiaCore;
@@ -13,6 +11,8 @@ import com.nexia.ffa.kits.utilities.player.KitFFAPlayerData;
 import com.nexia.minigames.games.base.player.WLKSavedPlayerData;
 import com.nexia.minigames.games.bedwars.util.player.BedwarsPlayerData;
 import com.nexia.minigames.games.bedwars.util.player.BedwarsSavedPlayerData;
+import com.nexia.minigames.games.bridge.util.player.BridgePlayerData;
+import com.nexia.minigames.games.bridge.util.player.BridgeSavedPlayerData;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.minigames.games.duels.util.player.DuelsSavedPlayerData;
 import com.nexia.minigames.games.football.util.player.FootballPlayerData;
@@ -31,12 +31,9 @@ public class PlayerDataManager {
     public static Map<ResourceLocation, PlayerDataManager> dataManagerMap = new HashMap<>();
 
     private final String collectionName;
-
-    HashMap<UUID, PlayerData> allPlayerData = new HashMap<>();
-
     public Class<? extends SavedPlayerData> savedPlayerDataClass;
-
     public Class<? extends PlayerData> playerDataClass;
+    HashMap<UUID, PlayerData> allPlayerData = new HashMap<>();
 
     public PlayerDataManager(ResourceLocation id, String collectionName, Class<? extends SavedPlayerData> savedPlayerDataClass, Class<? extends PlayerData> playerDataClass) {
         this.collectionName = collectionName;
@@ -48,6 +45,7 @@ public class PlayerDataManager {
     public static PlayerDataManager getDataManager(ResourceLocation identifier) {
         return dataManagerMap.get(identifier);
     }
+
     public static void init() {
         // <-----------  Core --------------->
         new PlayerDataManager(NexiaCore.CORE_DATA_MANAGER, "core", CoreSavedPlayerData.class, CorePlayerData.class);
@@ -70,6 +68,9 @@ public class PlayerDataManager {
 
         // <-----------  Football --------------->
         new PlayerDataManager(NexiaCore.FOOTBALL_DATA_MANAGER, "football", FootballSavedPlayerData.class, FootballPlayerData.class);
+
+        // <-----------  Bridge --------------->
+        new PlayerDataManager(NexiaCore.BRIDGE_DATA_MANAGER, "bridge", BridgeSavedPlayerData.class, BridgePlayerData.class);
 
         // <-----------  OITC --------------->
         new PlayerDataManager(NexiaCore.OITC_DATA_MANAGER, "oitc", WLKSavedPlayerData.class, OITCPlayerData.class);
@@ -101,7 +102,8 @@ public class PlayerDataManager {
         PlayerData playerData;
         try {
             playerData = playerDataClass.getConstructor(SavedPlayerData.class).newInstance(loadPlayerData(uuid, savedPlayerDataClass));
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                 InvocationTargetException e) {
             throw new RuntimeException(e);
         }
         allPlayerData.put(uuid, playerData);
