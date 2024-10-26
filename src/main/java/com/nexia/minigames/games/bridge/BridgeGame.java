@@ -181,7 +181,7 @@ public class BridgeGame {
         player.unwrap().setSlot(4, blocks);
         player.unwrap().setSlot(5, blocks);
         player.unwrap().setSlot(6, pickaxe);
-        player.unwrap().setSlot(9, gap);
+        player.unwrap().setSlot(8, gap);
 
     }
 
