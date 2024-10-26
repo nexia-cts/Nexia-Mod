@@ -47,6 +47,8 @@ public class NexiaCore implements ModInitializer, NexusPlugin {
 
 	public static final ResourceLocation FOOTBALL_DATA_MANAGER = id("football");
 
+	public static final ResourceLocation BRIDGE_DATA_MANAGER = id("bridge");
+
 	public static final ResourceLocation OITC_DATA_MANAGER = id("oitc");
 
 	public static final ResourceLocation SKYWARS_DATA_MANAGER = id("skywars");

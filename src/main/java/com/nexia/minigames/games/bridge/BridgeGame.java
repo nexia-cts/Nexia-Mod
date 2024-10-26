@@ -1,4 +1,4 @@
-package com.nexia.minigames.games.Bridge;
+package com.nexia.minigames.games.bridge;
 
 import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
@@ -12,8 +12,10 @@ import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.time.TickUtil;
 import com.nexia.core.utilities.world.WorldUtil;
+import com.nexia.minigames.games.bridge.BridgeMap;
+import com.nexia.nexus.api.event.player.PlayerDeathEvent;
 import com.nexia.minigames.games.duels.DuelGameHandler;
-import com.nexia.minigames.games.Bridge.util.player.BridgePlayerData;
+import com.nexia.minigames.games.bridge.util.player.BridgePlayerData;
 import com.nexia.nexus.api.world.types.Minecraft;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -38,6 +40,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -77,7 +80,7 @@ public class BridgeGame {
 
 
     public static void leave(NexiaPlayer player) {
-        Bridge PlayerData data = (BridgePlayerData) PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player);
+        BridgePlayerData data = (BridgePlayerData) PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player);
         BridgeGame.spectator.remove(player);
         BridgeGame.queue.remove(player);
         BridgeGame.players.remove(player);
@@ -104,7 +107,13 @@ public class BridgeGame {
             playerDeathEvent.setDropEquipment(false);
             playerDeathEvent.setDropExperience(false);
             playerDeathEvent.setDropLoot(false);
-            data.team.spawnPosition.teleportPlayer(BridgeGame.world, player.unwrap());
+            if (BridgeGame.team1.players.contains(victim)) {
+                BridgeGame.team1.spawnPosition.teleportPlayer(BridgeGame.world, victim.unwrap());
+            }
+
+            if (BridgeGame.team2.players.contains(victim)) {
+                BridgeGame.team2.spawnPosition.teleportPlayer(BridgeGame.world, victim.unwrap());
+            }
             giveKit(victim);
         }
 
@@ -118,11 +127,10 @@ public class BridgeGame {
         sword.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
 
         ItemStack bow = new ItemStack(Items.BOW);
-        ItemDisplayUtil.addGlint(bow);
         bow.getOrCreateTag().putBoolean("Unbreakable", true);
         bow.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
 
-        player.unwrap().getCooldowns().addCooldown(Items.BOW, 3)
+        player.unwrap().getCooldowns().addCooldown(Items.BOW, 3);
 
         ItemStack chestplate = Items.LEATHER_CHESTPLATE.getDefaultInstance();
         chestplate.getOrCreateTag().putInt("Unbreakable", 1);
@@ -135,16 +143,16 @@ public class BridgeGame {
 
         int colour = 0;
 
-        ItemStack blocks = new ItemStack(Items.GRAY_STAINED_CLAY);
+        ItemStack blocks = new ItemStack(Items.TERRACOTTA);
 
-        if(data.team.equals(BridgeGame.team1)) {
+        if(BridgeGame.team1.players.contains(player)) {
             // r * 65536 + g * 256 + b
             colour = 255 * 65536;
-            blocks = new ItemStack(Items.BLUE_STAINED_CLAY);
+            blocks = new ItemStack(Items.BLUE_TERRACOTTA);
 
-        } else if(data.team.equals(BridgeGame.team2)) {
+        } else if(BridgeGame.team2.players.contains(player)) {
             colour = 255;
-            blocks = new ItemStack(Items.RED_STAINED_CLAY);
+            blocks = new ItemStack(Items.RED_TERRACOTTA);
         }
 
         DyeableLeatherItem leatherItem = (DyeableLeatherItem) Items.LEATHER_CHESTPLATE;
@@ -252,40 +260,69 @@ public class BridgeGame {
         }
     }
 
-    public static void goal(BridgeTeam team) {
-//        endPortalblock.java isInBlock
+    public static void goal(NexiaPlayer player) {
 
 
         if(!team1.refreshTeam() || !team2.refreshTeam()) endGame(null);
 
+        var teamID = '0';
+
+
         if(!BridgeGame.isEnding) {
-            ServerPlayer closestPlayer = (ServerPlayer) BridgeGame.world.getNearestPlayer(entity.getX(), entity.getY(), entity.getZ(), 20, e -> e instanceof ServerPlayer se && !se.isSpectator() && !se.isCreative() && team.players.contains(new NexiaPlayer(se)));
-            if(closestPlayer != null) PlayerDataManager.getDataManager(Bridge_DATA_MANAGER).get(closestPlayer.getUUID()).savedData.incrementInteger("goals");
-            team.goals++;
-            if(team.goals >= BridgeGame.map.maxGoals) BridgeGame.endGame(team);
+
+            var i = 0;
+
+            for (i=0; player == team1.players.get(i); i++) {
+                PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player.getUUID()).savedData.incrementInteger("goals");
+                team1.goals++;
+                teamID = '1';
+
+            }
+
+            for (i=0; player == team2.players.get(i); i++) {
+                PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player.getUUID()).savedData.incrementInteger("goals");
+                team1.goals++;
+                teamID = '2';
+
+
+            }
+
+//            if(player instanceof BridgeGame.team1.players) {
+//                PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player.getUUID()).savedData.incrementInteger("goals");
+//                team1.goals++;
+//            }
+//
+//            if(player instanceof team2) {
+//                PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player.getUUID()).savedData.incrementInteger("goals");
+//                team2.goals++;
+//            }
+
+
+            if(team1.goals >= BridgeGame.map.maxGoals) BridgeGame.endGame(team1);
+            if(team2.goals >= BridgeGame.map.maxGoals) BridgeGame.endGame(team2);
+
+
         }
 
         BridgeGame.updateInfo();
 
-        //PlayerDataManager.getDataManager(NexiaCore.FOOTBALL_DATA_MANAGER).get(scorer.get()).savedData.goals++;
 
-        int teamID = 1;
-        if(team == BridgeGame.team2) teamID = 2;
+        //PlayerDataManager.getDataManager(NexiaCore.FOOTBALL_DATA_MANAGER).get(scorer.get()).savedData.goals++;
 
         if(!BridgeGame.isEnding) {
 //            entity.setDeltaMovement(0, 0, 0);
 //            entity.moveTo(0, 80, 0, 0, 0);
 
-            for(NexiaPlayer player : BridgeGame.getViewers()) {
-                player.sendTitle(Title.title(Component.text("Team " + teamID, ChatFormat.brandColor2), Component.text("has scored a goal!", ChatFormat.normalColor)));
+            for(NexiaPlayer viewer : BridgeGame.getViewers()) {
+                viewer.sendTitle(Title.title(Component.text("Team " + teamID, ChatFormat.brandColor2), Component.text("has scored a goal!", ChatFormat.normalColor)));
             }
 
-            for(NexiaPlayer player : BridgeGame.team1.players) {
-                BridgeGame.team1.spawnPosition.teleportPlayer(BridgeGame.world, player.unwrap());
+            for(NexiaPlayer playerT1 : BridgeGame.team1.players) {
+                BridgeGame.team1.spawnPosition.teleportPlayer(BridgeGame.world, playerT1.unwrap());
             }
 
-            for(NexiaPlayer player : BridgeGame.team2.players) {
-                BridgeGame.team2.spawnPosition.teleportPlayer(BridgeGame.world, player.unwrap());
+            for(NexiaPlayer playerT2 : BridgeGame.team2.players) {
+                BridgeGame.team2.spawnPosition.teleportPlayer(BridgeGame.world, playerT2.unwrap());
             }
         }
 
@@ -478,8 +515,12 @@ public class BridgeGame {
                     data.team = BridgeGame.assignPlayer(player);
                     // if you're still null then im going to beat the shit out of you
                 }
-                data.team.spawnPosition.teleportPlayer(BridgeGame.world, player.unwrap());
-
+                if (BridgeGame.team1.players.contains(player)) {
+                    BridgeGame.team1.spawnPosition.teleportPlayer(BridgeGame.world, player.unwrap());
+                }
+                if (BridgeGame.team2.players.contains(player)) {
+                    BridgeGame.team2.spawnPosition.teleportPlayer(BridgeGame.world, player.unwrap());
+                }
 //                ItemStack helmet = Items.LEATHER_HELMET.getDefaultInstance();
 //                helmet.getOrCreateTag().putInt("Unbreakable", 1);
 
@@ -517,7 +558,7 @@ public class BridgeGame {
 //                sword.getOrCreateTag().putInt("Unbreakable", 1);
 //
 
-                giveKit(player)
+                giveKit(player);
 
 
                 player.setGameMode(Minecraft.GameMode.SURVIVAL);
@@ -572,16 +613,31 @@ public class BridgeGame {
 //            return;
 //        }
 
-        // check if armor stand (football) is in goal, then reset football to middle and give goal
+        //if armor stand (football) is in goal, then r// eset football to middle and give goal
+//        aabb = new AABB(BridgeGame.map.team1goalCorner1, BridgeGame.map.team1goalCorner2);
+//        for (Entity entity : BridgeGame.world.getEntities(EntityType.PLAYER, aabb, predicate)) {
+//
+//        }
+//        for (NexiaPlayer player : BridgeGame.players) {
+//            for (player.unwrap() : BridgeGame.world.getPlayers(EntityType.PLAYER, aabb, predicate)) {
+//
+//                BridgeGame.goal(player, BridgeGame.team2);
+//            }
+//        }
+//        aabb = new AABB(BridgeGame.map.team2goalCorner1, BridgeGame.map.team2goalCorner2);
+//        for (NexiaPlayer player : BridgeGame.players) {
+//            ServerPlayer S = player.unwrap();
+//            for (S : BridgeGame.world.getPlayers(aabb, predicate)) {
+//
+//                BridgeGame.goal(player, BridgeGame.team1);
+//            }
+//        }
 
-        aabb = new AABB(BridgeGame.map.team1goalCorner1, BridgeGame.map.team1goalCorner2);
-        for (NexiaPlayer player : BridgeGame.world.getPlayers(EntityType.PLAYER, team2, aabb, predicate)) {
-            BridgeGame.goal(player, BridgeGame.team2);
-        }
-        aabb = new AABB(BridgeGame.map.team2goalCorner1, BridgeGame.map.team2goalCorner2);
-        for (NexiaPlayer player : BridgeGame.world.getPlayer(EntityType.PLAYER, team1, aabb, predicate)) {
-            BridgeGame.goal(player, BridgeGame.team1);
-        }
+//        aabb = new AABB(BridgeGame.map.team2goalCorner1, BridgeGame.map.team2goalCorner2);
+//        for (BridgeTeam.team1 player : BridgeGame.world.getPlayers(team1, aabb, predicate)) {
+//            BridgeGame.goal(player, BridgeGame.team1);
+//        }
+
     }
 
     public static void firstTick(){
