@@ -19,6 +19,7 @@ import com.nexia.minigames.games.bedwars.BwGame;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.areas.BwDimension;
 import com.nexia.minigames.games.bedwars.shop.BwLoadShop;
+import com.nexia.minigames.games.bridge.BridgeGame;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
@@ -73,6 +74,7 @@ public class ServerTime {
         BwDimension.register();
         BwGame.firstTick();
         FootballGame.firstTick();
+        BridgeGame.firstTick();
         WorldUtil.deleteTempWorlds();
 
         SkywarsGame.firstTick();
@@ -82,7 +84,7 @@ public class ServerTime {
 
     public static void stopServer() {
         try {
-            for(Player player : ServerTime.nexusServer.getPlayers()){
+            for (Player player : ServerTime.nexusServer.getPlayers()) {
                 player.disconnect(ChatFormat.nexiaMessage.append(Component.text("The server is restarting!", ChatFormat.Minecraft.white)));
             }
 
@@ -102,6 +104,7 @@ public class ServerTime {
         BwGame.tick();
         SkyFfaBlocks.tick();
         FootballGame.tick();
+        BridgeGame.tick();
         OitcGame.tick();
 
         if (totalTickCount % 5 == 0) {
@@ -115,8 +118,10 @@ public class ServerTime {
         // Most second methods are also handled here to avoid too many methods from being executed at the same time
         switch (totalTickCount % 20) {
             case 0 -> everySecond();
-            case 2 -> {}
-            case 4 -> {}
+            case 2 -> {
+            }
+            case 4 -> {
+            }
             case 6 -> BwGame.bedWarsSecond();
         }
     }
@@ -125,23 +130,26 @@ public class ServerTime {
         totalSecondCount++;
         OitcGame.second();
         FootballGame.second();
+        BridgeGame.second();
         SkywarsGame.second();
         try {
             for (DuelsGame game : DuelGameHandler.duelsGames) {
                 if (game == null) return;
                 game.duelSecond();
             }
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
 
         try {
             for (TeamDuelsGame game : DuelGameHandler.teamDuelsGames) {
                 if (game == null) return;
                 game.duelSecond();
             }
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
 
 
-        if(totalSecondCount % 3600 == 0 && !UhcFfaAreas.shouldResetMap) {
+        if (totalSecondCount % 3600 == 0 && !UhcFfaAreas.shouldResetMap) {
             UhcFfaAreas.shouldResetMap = true;
         }
     }

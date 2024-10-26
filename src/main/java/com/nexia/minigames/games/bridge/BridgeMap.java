@@ -22,7 +22,6 @@ public class BridgeMap {
     public EntityPos team1Pos;
     public EntityPos team2Pos;
 
-
     public BridgeMap(String id, String name, int maxGoals, BlockPos corner1, BlockPos corner2, EntityPos team1Pos, EntityPos team2Pos, BlockPos team1goalCorner1, BlockPos team1goalCorner2, BlockPos team2goalCorner1, BlockPos team2goalCorner2) {
         this.id = id;
         this.name = name;
@@ -49,4 +48,6 @@ public class BridgeMap {
         }
         return null;
     }
+
+
 }
