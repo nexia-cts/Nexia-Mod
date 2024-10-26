@@ -19,6 +19,7 @@ import com.nexia.minigames.games.bedwars.BwGame;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.areas.BwDimension;
 import com.nexia.minigames.games.bedwars.shop.BwLoadShop;
+import com.nexia.minigames.games.bridge.BridgeGame;
 import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.duels.DuelsGame;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
@@ -77,6 +78,7 @@ public class ServerTime {
 
         SkywarsGame.firstTick();
         OitcGame.firstTick();
+        BridgeGame.firstTick();
         DuelGameHandler.starting();
     }
 
@@ -103,6 +105,7 @@ public class ServerTime {
         SkyFfaBlocks.tick();
         FootballGame.tick();
         OitcGame.tick();
+        BridgeGame.tick();
 
         if (totalTickCount % 5 == 0) {
             FfaClassicUtil.INSTANCE.fiveTick();
@@ -126,6 +129,7 @@ public class ServerTime {
         OitcGame.second();
         FootballGame.second();
         SkywarsGame.second();
+        BridgeGame.second();
         try {
             for (DuelsGame game : DuelGameHandler.duelsGames) {
                 if (game == null) return;

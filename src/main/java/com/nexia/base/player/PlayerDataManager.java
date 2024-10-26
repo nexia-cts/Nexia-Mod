@@ -13,6 +13,7 @@ import com.nexia.ffa.kits.utilities.player.KitFFAPlayerData;
 import com.nexia.minigames.games.base.player.WLKSavedPlayerData;
 import com.nexia.minigames.games.bedwars.util.player.BedwarsPlayerData;
 import com.nexia.minigames.games.bedwars.util.player.BedwarsSavedPlayerData;
+import com.nexia.minigames.games.bridge.util.player.BridgePlayerData;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.minigames.games.duels.util.player.DuelsSavedPlayerData;
 import com.nexia.minigames.games.football.util.player.FootballPlayerData;
@@ -76,6 +77,9 @@ public class PlayerDataManager {
 
         // <-----------  SkyWars --------------->
         new PlayerDataManager(NexiaCore.SKYWARS_DATA_MANAGER, "skywars", WLKSavedPlayerData.class, SkywarsPlayerData.class);
+
+        // <-----------  Bridge --------------->
+        new PlayerDataManager(NexiaCore.BRIDGE_DATA_MANAGER, "bridge", WLKSavedPlayerData.class, BridgePlayerData.class);
     }
 
     public PlayerData get(NexiaPlayer player) {
