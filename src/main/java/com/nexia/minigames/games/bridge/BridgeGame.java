@@ -58,9 +58,9 @@ public class BridgeGame {
     public static ArrayList<NexiaPlayer> queue = new ArrayList<>();
     public static boolean isStarted = false;
     public static boolean isEnding = false;
+    public static UUID gameUUID = UUID.randomUUID();
     private static BridgeTeam winnerTeam = null;
     private static int endTime = 5;
-
 
     public static void leave(NexiaPlayer player) {
         BridgePlayerData data = (BridgePlayerData) PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player);
@@ -162,8 +162,8 @@ public class BridgeGame {
         player.unwrap().setSlot(0, sword);
         player.unwrap().setSlot(1, bow);
         player.unwrap().setSlot(2, arrow);
+        player.unwrap().setSlot(3, blocks);
         player.unwrap().setSlot(4, blocks);
-        player.unwrap().setSlot(5, blocks);
         player.unwrap().setSlot(6, pickaxe);
         player.unwrap().setSlot(8, gap);
 
@@ -184,9 +184,10 @@ public class BridgeGame {
                     for (NexiaPlayer player : BridgeGame.getViewers()) {
                         player.runCommand("/hub", 0, false);
                     }
-
+                    deleteWorld(gameUUID.toString());
                     BridgeGame.resetAll();
                 }
+
 
                 BridgeGame.endTime--;
             } else {
@@ -348,6 +349,9 @@ public class BridgeGame {
     }
 
     public static void endGame(BridgeTeam winnerTeam) {
+
+        deleteWorld(gameUUID.toString());
+
         BridgeGame.isEnding = true;
 
         if (winnerTeam == null) {
@@ -658,7 +662,7 @@ public class BridgeGame {
 
     public static void firstTick() {
         resetAll();
-        UUID gameUUID = UUID.randomUUID();
+
         map.structureMap.pasteMap(createWorld(gameUUID.toString(), true));
     }
 
