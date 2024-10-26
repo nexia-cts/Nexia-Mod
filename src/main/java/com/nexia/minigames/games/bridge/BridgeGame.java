@@ -143,14 +143,14 @@ public class BridgeGame {
 
         int colour = 0;
 
-        ItemStack blocks = new ItemStack(Items.TERRACOTTA);
+        ItemStack blocks = new ItemStack(Items.CLAY);
 
         if(BridgeGame.team1.players.contains(player)) {
             // r * 65536 + g * 256 + b
             colour = 255 * 65536;
             blocks = new ItemStack(Items.BLUE_TERRACOTTA);
 
-        } else if(BridgeGame.team2.players.contains(player)) {
+        } else if(BridgeGame.team1.players.contains(player)) {
             colour = 255;
             blocks = new ItemStack(Items.RED_TERRACOTTA);
         }
@@ -181,7 +181,7 @@ public class BridgeGame {
         player.unwrap().setSlot(4, blocks);
         player.unwrap().setSlot(5, blocks);
         player.unwrap().setSlot(6, pickaxe);
-        player.unwrap().setSlot(9, gap);
+        player.unwrap().setSlot(8, gap);
 
     }
 
