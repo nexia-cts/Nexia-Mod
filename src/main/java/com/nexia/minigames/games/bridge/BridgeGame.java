@@ -58,9 +58,9 @@ public class BridgeGame {
     public static ArrayList<NexiaPlayer> queue = new ArrayList<>();
     public static boolean isStarted = false;
     public static boolean isEnding = false;
+    public static UUID gameUUID = UUID.randomUUID();
     private static BridgeTeam winnerTeam = null;
     private static int endTime = 5;
-
 
     public static void leave(NexiaPlayer player) {
         BridgePlayerData data = (BridgePlayerData) PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player);
@@ -162,8 +162,8 @@ public class BridgeGame {
         player.unwrap().setSlot(0, sword);
         player.unwrap().setSlot(1, bow);
         player.unwrap().setSlot(2, arrow);
+        player.unwrap().setSlot(3, blocks);
         player.unwrap().setSlot(4, blocks);
-        player.unwrap().setSlot(5, blocks);
         player.unwrap().setSlot(6, pickaxe);
         player.unwrap().setSlot(8, gap);
 
@@ -184,9 +184,10 @@ public class BridgeGame {
                     for (NexiaPlayer player : BridgeGame.getViewers()) {
                         player.runCommand("/hub", 0, false);
                     }
-
+                    deleteWorld(gameUUID.toString());
                     BridgeGame.resetAll();
                 }
+
 
                 BridgeGame.endTime--;
             } else {
@@ -348,6 +349,9 @@ public class BridgeGame {
     }
 
     public static void endGame(BridgeTeam winnerTeam) {
+
+        deleteWorld(gameUUID.toString());
+
         BridgeGame.isEnding = true;
 
         if (winnerTeam == null) {
@@ -507,49 +511,12 @@ public class BridgeGame {
                 if (BridgeGame.team2.players.contains(player)) {
                     BridgeGame.team2.spawnPosition.teleportPlayer(BridgeGame.world, player.unwrap());
                 }
-//                ItemStack helmet = Items.LEATHER_HELMET.getDefaultInstance();
-//                helmet.getOrCreateTag().putInt("Unbreakable", 1);
-
-//                ItemStack chestplate = Items.LEATHER_CHESTPLATE.getDefaultInstance();
-//                chestplate.getOrCreateTag().putInt("Unbreakable", 1);
-//
-//                ItemStack leggings = Items.LEATHER_LEGGINGS.getDefaultInstance();
-//                leggings.getOrCreateTag().putInt("Unbreakable", 1);
-//
-//                ItemStack boots = Items.LEATHER_BOOTS.getDefaultInstance();
-//                boots.getOrCreateTag().putInt("Unbreakable", 1);
-//
-//                int colour = 0;
-//
-//                if(data.team.equals(BridgeGame.team1)) {
-//                    // r * 65536 + g * 256 + b
-//                    colour = 255 * 65536;
-//                } else if(data.team.equals(BridgeGame.team2)) {
-//                    colour = 255;
-//                }
-//
-//                DyeableLeatherItem leatherItem = (DyeableLeatherItem) Items.LEATHER_CHESTPLATE;
-//
-////                leatherItem.setColor(helmet, colour);
-//                leatherItem.setColor(chestplate, colour);
-//                leatherItem.setColor(leggings, colour);
-//                leatherItem.setColor(boots, colour);
-//
-////                player.unwrap().setItemSlot(EquipmentSlot.HEAD, helmet);
-//                player.unwrap().setItemSlot(EquipmentSlot.CHEST, chestplate);
-//                player.unwrap().setItemSlot(EquipmentSlot.LEGS, leggings);
-//                player.unwrap().setItemSlot(EquipmentSlot.FEET, boots);
-//
-//                ItemStack sword = Items.IRON_SWORD.getDefaultInstance();
-//                sword.getOrCreateTag().putInt("Unbreakable", 1);
-//
 
                 giveKit(player);
 
 
                 player.setGameMode(Minecraft.GameMode.SURVIVAL);
-                //player.setRespawnPosition(world.dimension(), pos, 0, true, false);
-//                player.unwrap().getCooldowns().addCooldown(Items.NETHERITE_SWORD, 200);
+
             }
 
             BridgeGame.spectator.clear();
@@ -658,7 +625,7 @@ public class BridgeGame {
 
     public static void firstTick() {
         resetAll();
-        UUID gameUUID = UUID.randomUUID();
+
         map.structureMap.pasteMap(createWorld(gameUUID.toString(), true));
     }
 
