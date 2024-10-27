@@ -39,6 +39,7 @@ import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
 
 import static com.nexia.core.NexiaCore.BRIDGE_DATA_MANAGER;
@@ -245,7 +246,7 @@ public class BridgeGame {
         }
     }
 
-    public static void goal(NexiaPlayer player) {
+    public static void goal(NexiaPlayer player, String team) {
 
 
         if (!team1.refreshTeam() || !team2.refreshTeam()) endGame(null);
@@ -255,7 +256,6 @@ public class BridgeGame {
 
         if (!BridgeGame.isEnding) {
 
-            var i = 0;
 
 //            for (i = 0; player == team1.players.get(i); i++) {
 //                PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player.getUUID()).savedData.incrementInteger("goals");
@@ -264,13 +264,13 @@ public class BridgeGame {
 //
 //            }
             //the most cursed thing ive ever written
-            if (BridgeGame.team1.players.contains(player)) {
+            if (Objects.equals(team, "team1")) {
                 PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player.getUUID()).savedData.incrementInteger("goals");
                 team1.goals++;
                 teamID = '1';
             }
 
-            if (BridgeGame.team2.players.contains(player)) {
+            if (Objects.equals(team, "team2")) {
                 PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player.getUUID()).savedData.incrementInteger("goals");
                 team2.goals++;
                 teamID = '2';
@@ -551,6 +551,7 @@ public class BridgeGame {
         if (BridgeGame.world.players().isEmpty()) {
         }
 
+
 //        AABB aabb = new AABB(BridgeGame.map.corner1, BridgeGame.map.corner2);
 //        Predicate<Entity> predicate = o -> true;
 
@@ -626,7 +627,7 @@ public class BridgeGame {
     public static void firstTick() {
         resetAll();
 
-        map.structureMap.pasteMap(createWorld(gameUUID.toString(), true));
+        BridgeGame.map.structureMap.pasteMap(createWorld(gameUUID.toString(), true));
     }
 
     public static ArrayList<NexiaPlayer> getViewers() {
