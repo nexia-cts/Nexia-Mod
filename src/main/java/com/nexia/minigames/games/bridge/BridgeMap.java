@@ -11,8 +11,8 @@ import java.util.List;
 public class BridgeMap {
 
 
+    public static final BridgeMap NETHFLAT = new BridgeMap("Neth Flat", "Neth Flat", new EntityPos(0, 80, -41, 0, 0), new EntityPos(0, 80, 41, 180, 0), new StructureMap(new Identifier("duels", "nethflat"), StructureMap.Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-36, -3, -51), true));
     public static List<BridgeMap> bridgeMaps = new ArrayList<>();
-    public static BridgeMap NETHFLAT = new BridgeMap("Neth Flat", "Neth Flat", new EntityPos(0, 80, -41, 0, 0), new EntityPos(0, 80, 41, 180, 0), new StructureMap(new Identifier("bridge", "nethflat"), StructureMap.Rotation.NO_ROTATION, true, new BlockPos(0, 80, 0), new BlockPos(-36, -3, -51), true));
     public String id;
     public String name;
     public EntityPos team1Pos;
