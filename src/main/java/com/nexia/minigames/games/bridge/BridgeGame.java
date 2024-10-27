@@ -12,72 +12,56 @@ import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.time.TickUtil;
 import com.nexia.core.utilities.world.WorldUtil;
-import com.nexia.minigames.games.bridge.BridgeMap;
-import com.nexia.nexus.api.event.player.PlayerDeathEvent;
-import com.nexia.minigames.games.duels.DuelGameHandler;
 import com.nexia.minigames.games.bridge.util.player.BridgePlayerData;
+import com.nexia.minigames.games.duels.DuelGameHandler;
+import com.nexia.nexus.api.event.player.PlayerDeathEvent;
+import com.nexia.nexus.api.util.Identifier;
 import com.nexia.nexus.api.world.types.Minecraft;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.dimension.DimensionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.function.Predicate;
+import java.util.Objects;
+import java.util.UUID;
 
 import static com.nexia.core.NexiaCore.BRIDGE_DATA_MANAGER;
+import static com.nexia.core.utilities.world.WorldUtil.getChunkGenerator;
 
 public class BridgeGame {
+    public static final String BRIDGE_TAG = "bridge";
     public static ArrayList<NexiaPlayer> players = new ArrayList<>();
-
     public static ArrayList<NexiaPlayer> spectator = new ArrayList<>();
-
     public static ServerLevel world = null;
-
-    public static BridgeMap map = BridgeMap.STADIUM;
-
+    public static BridgeMap map = BridgeMap.NETHFLAT;
     public static BridgeTeam team1 = new BridgeTeam(new ArrayList<>(), map.team1Pos);
     public static BridgeTeam team2 = new BridgeTeam(new ArrayList<>(), map.team2Pos);
-
-
     // Both timers counted in seconds.
     public static int gameTime = 600;
-
     public static int queueTime = 15;
-
     public static ArrayList<NexiaPlayer> queue = new ArrayList<>();
-
     public static boolean isStarted = false;
-
     public static boolean isEnding = false;
-
+    public static UUID gameUUID = UUID.randomUUID();
     private static BridgeTeam winnerTeam = null;
-
-    public static final String BRIDGE_TAG = "bridge";
-
     private static int endTime = 5;
-
 
     public static void leave(NexiaPlayer player) {
         BridgePlayerData data = (BridgePlayerData) PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player);
@@ -85,25 +69,26 @@ public class BridgeGame {
         BridgeGame.queue.remove(player);
         BridgeGame.players.remove(player);
 
-        if(data.gameMode.equals(BridgeGameMode.PLAYING) && (winnerTeam == null || !winnerTeam.players.contains(player))) data.savedData.incrementInteger("losses");
+        if (data.gameMode.equals(BridgeGameMode.PLAYING) && (winnerTeam == null || !winnerTeam.players.contains(player)))
+            data.savedData.incrementInteger("losses");
         data.team = null;
 
         player.removeTag("in_bridge_game");
 
         player.reset(true, Minecraft.GameMode.ADVENTURE);
 
-        if(!BridgeGame.team1.refreshTeam()) BridgeGame.endGame(BridgeGame.team2);
-        if(!BridgeGame.team2.refreshTeam()) BridgeGame.endGame(BridgeGame.team1);
+        if (!BridgeGame.team1.refreshTeam()) BridgeGame.endGame(BridgeGame.team2);
+        if (!BridgeGame.team2.refreshTeam()) BridgeGame.endGame(BridgeGame.team1);
 
         player.removeTag("bridge");
 
         data.gameMode = BridgeGameMode.LOBBY;
     }
 
-    public static void death(NexiaPlayer victim, @Nullable PlayerDeathEvent playerDeathEvent){
+    public static void death(NexiaPlayer victim, @Nullable PlayerDeathEvent playerDeathEvent) {
         BridgePlayerData victimData = (BridgePlayerData) PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(victim);
 
-        if(playerDeathEvent != null) {
+        if (playerDeathEvent != null) {
             playerDeathEvent.setDropEquipment(false);
             playerDeathEvent.setDropExperience(false);
             playerDeathEvent.setDropLoot(false);
@@ -145,12 +130,12 @@ public class BridgeGame {
 
         ItemStack blocks = new ItemStack(Items.CLAY);
 
-        if(BridgeGame.team1.players.contains(player)) {
+        if (BridgeGame.team1.players.contains(player)) {
             // r * 65536 + g * 256 + b
             colour = 255 * 65536;
             blocks = new ItemStack(Items.BLUE_TERRACOTTA);
 
-        } else if(BridgeGame.team1.players.contains(player)) {
+        } else if (BridgeGame.team2.players.contains(player)) {
             colour = 255;
             blocks = new ItemStack(Items.RED_TERRACOTTA);
         }
@@ -178,57 +163,58 @@ public class BridgeGame {
         player.unwrap().setSlot(0, sword);
         player.unwrap().setSlot(1, bow);
         player.unwrap().setSlot(2, arrow);
+        player.unwrap().setSlot(3, blocks);
         player.unwrap().setSlot(4, blocks);
-        player.unwrap().setSlot(5, blocks);
         player.unwrap().setSlot(6, pickaxe);
         player.unwrap().setSlot(8, gap);
 
     }
 
     public static void second() {
-        if(BridgeGame.isStarted) {
-            if(BridgeGame.isEnding) {
+        if (BridgeGame.isStarted) {
+            if (BridgeGame.isEnding) {
                 int color = 244 * 65536 + 166 * 256 + 71;
                 // r * 65536 + g * 256 + b;
 
-                if(winnerTeam != null) {
+                if (winnerTeam != null) {
                     NexiaPlayer randomPlayer = winnerTeam.players.get(RandomUtil.randomInt(winnerTeam.players.size()));
-                    if(randomPlayer != null) DuelGameHandler.winnerRockets(randomPlayer, BridgeGame.world, color);
+                    if (randomPlayer != null) DuelGameHandler.winnerRockets(randomPlayer, BridgeGame.world, color);
                 }
 
-                if(BridgeGame.endTime <= 0) {
-                    for(NexiaPlayer player : BridgeGame.getViewers()){
+                if (BridgeGame.endTime <= 0) {
+                    for (NexiaPlayer player : BridgeGame.getViewers()) {
                         player.runCommand("/hub", 0, false);
                     }
-
+                    deleteWorld(gameUUID.toString());
                     BridgeGame.resetAll();
                 }
+
 
                 BridgeGame.endTime--;
             } else {
                 BridgeGame.updateInfo();
 
-                if(BridgeGame.gameTime <= 0 && !BridgeGame.isEnding){
+                if (BridgeGame.gameTime <= 0 && !BridgeGame.isEnding) {
 
                     int team1 = BridgeGame.team1.goals;
                     int team2 = BridgeGame.team2.goals;
 
 
-                    if(team1 == team2) endGame(null);
-                    if(team1 > team2) endGame(BridgeGame.team1);
+                    if (team1 == team2) endGame(null);
+                    if (team1 > team2) endGame(BridgeGame.team1);
                     else endGame(BridgeGame.team2);
-                } else if(BridgeGame.gameTime > 0 && !BridgeGame.isEnding){
+                } else if (BridgeGame.gameTime > 0 && !BridgeGame.isEnding) {
                     BridgeGame.gameTime--;
                 }
             }
 
 
         } else {
-            if(BridgeGame.queue.size() >= 2) {
-                for(NexiaPlayer player : BridgeGame.queue){
-                    if(player == null || player.unwrap() == null) return;
+            if (BridgeGame.queue.size() >= 2) {
+                for (NexiaPlayer player : BridgeGame.queue) {
+                    if (player == null || player.unwrap() == null) return;
 
-                    if(BridgeGame.queueTime <= 5) {
+                    if (BridgeGame.queueTime <= 5) {
                         Title title = getTitle(BridgeGame.queueTime);
 
                         player.sendTitle(title);
@@ -244,7 +230,7 @@ public class BridgeGame {
                                     .append(Component.text(BridgeGame.queueTime, ChatFormat.brandColor2))
                     );
 
-                    if(BridgeGame.queueTime <= 5 || BridgeGame.queueTime == 10 || BridgeGame.queueTime == 15) {
+                    if (BridgeGame.queueTime <= 5 || BridgeGame.queueTime == 10 || BridgeGame.queueTime == 15) {
                         player.sendMessage(Component.text("The game will start in ").color(TextColor.fromHexString("#b3b3b3"))
                                 .append(Component.text(BridgeGame.queueTime, ChatFormat.brandColor1))
                                 .append(Component.text(" seconds.").color(TextColor.fromHexString("#b3b3b3")))
@@ -256,35 +242,38 @@ public class BridgeGame {
             } else {
                 BridgeGame.queueTime = 15;
             }
-            if(BridgeGame.queueTime <= 0) startGame();
+            if (BridgeGame.queueTime <= 0) startGame();
         }
     }
 
-    public static void goal(NexiaPlayer player) {
+    public static void goal(NexiaPlayer player, String team) {
 
 
-        if(!team1.refreshTeam() || !team2.refreshTeam()) endGame(null);
+        if (!team1.refreshTeam() || !team2.refreshTeam()) endGame(null);
 
         var teamID = '0';
 
 
-        if(!BridgeGame.isEnding) {
+        if (!BridgeGame.isEnding) {
 
-            var i = 0;
 
-            for (i=0; player == team1.players.get(i); i++) {
+//            for (i = 0; player == team1.players.get(i); i++) {
+//                PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player.getUUID()).savedData.incrementInteger("goals");
+//                team1.goals++;
+//                teamID = '1';
+//
+//            }
+            //the most cursed thing ive ever written
+            if (Objects.equals(team, "team1")) {
                 PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player.getUUID()).savedData.incrementInteger("goals");
                 team1.goals++;
                 teamID = '1';
-
             }
 
-            for (i=0; player == team2.players.get(i); i++) {
+            if (Objects.equals(team, "team2")) {
                 PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player.getUUID()).savedData.incrementInteger("goals");
-                team1.goals++;
+                team2.goals++;
                 teamID = '2';
-
-
             }
 
 //            if(player instanceof BridgeGame.team1.players) {
@@ -298,8 +287,8 @@ public class BridgeGame {
 //            }
 
 
-            if(team1.goals >= BridgeGame.map.maxGoals) BridgeGame.endGame(team1);
-            if(team2.goals >= BridgeGame.map.maxGoals) BridgeGame.endGame(team2);
+            if (team1.goals >= 5) BridgeGame.endGame(team1);
+            if (team2.goals >= 5) BridgeGame.endGame(team2);
 
 
         }
@@ -309,23 +298,22 @@ public class BridgeGame {
 
         //PlayerDataManager.getDataManager(NexiaCore.FOOTBALL_DATA_MANAGER).get(scorer.get()).savedData.goals++;
 
-        if(!BridgeGame.isEnding) {
+        if (!BridgeGame.isEnding) {
 //            entity.setDeltaMovement(0, 0, 0);
 //            entity.moveTo(0, 80, 0, 0, 0);
 
-            for(NexiaPlayer viewer : BridgeGame.getViewers()) {
+            for (NexiaPlayer viewer : BridgeGame.getViewers()) {
                 viewer.sendTitle(Title.title(Component.text("Team " + teamID, ChatFormat.brandColor2), Component.text("has scored a goal!", ChatFormat.normalColor)));
             }
 
-            for(NexiaPlayer playerT1 : BridgeGame.team1.players) {
+            for (NexiaPlayer playerT1 : BridgeGame.team1.players) {
                 BridgeGame.team1.spawnPosition.teleportPlayer(BridgeGame.world, playerT1.unwrap());
             }
 
-            for(NexiaPlayer playerT2 : BridgeGame.team2.players) {
+            for (NexiaPlayer playerT2 : BridgeGame.team2.players) {
                 BridgeGame.team2.spawnPosition.teleportPlayer(BridgeGame.world, playerT2.unwrap());
             }
         }
-
 
 
     }
@@ -347,9 +335,9 @@ public class BridgeGame {
         BridgePlayerData data = (BridgePlayerData) PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player);
         data.team = null;
 
-        if(BridgeGame.isStarted){
+        if (BridgeGame.isStarted) {
             BridgeGame.spectator.add(player);
-            ((BridgePlayerData)PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player)).gameMode = BridgeGameMode.SPECTATOR;
+            ((BridgePlayerData) PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player)).gameMode = BridgeGameMode.SPECTATOR;
             player.setGameMode(Minecraft.GameMode.SPECTATOR);
         } else {
             BridgeGame.queue.add(player);
@@ -361,16 +349,19 @@ public class BridgeGame {
     }
 
     public static void endGame(BridgeTeam winnerTeam) {
+
+        deleteWorld(gameUUID.toString());
+
         BridgeGame.isEnding = true;
 
-        if(winnerTeam == null) {
+        if (winnerTeam == null) {
             Component msg = Component.text("The game was a ")
                     .color(ChatFormat.normalColor)
                     .append(Component.text("draw", ChatFormat.brandColor2))
                     .append(Component.text("!", ChatFormat.normalColor)
                     );
-            for(NexiaPlayer player : BridgeGame.getViewers()){
-                if(player != null && player.unwrap() != null) player.sendTitle(Title.title(msg, Component.text("")));
+            for (NexiaPlayer player : BridgeGame.getViewers()) {
+                if (player != null && player.unwrap() != null) player.sendTitle(Title.title(msg, Component.text("")));
             }
 
             return;
@@ -379,14 +370,14 @@ public class BridgeGame {
         BridgeGame.winnerTeam = winnerTeam;
 
         int teamID = 1;
-        if(winnerTeam == BridgeGame.team2) teamID = 2;
+        if (winnerTeam == BridgeGame.team2) teamID = 2;
 
-        for(NexiaPlayer player : winnerTeam.players) {
+        for (NexiaPlayer player : winnerTeam.players) {
             player.sendTitle(Title.title(Component.text("You won!").color(ChatFormat.greenColor), Component.text("")));
             PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player).savedData.incrementInteger("wins");
         }
 
-        for(NexiaPlayer player : BridgeGame.getViewers()){
+        for (NexiaPlayer player : BridgeGame.getViewers()) {
             player.sendTitle(Title.title(Component.text("Team " + teamID, ChatFormat.brandColor2), Component.text("has won the game! (" + winnerTeam.goals + " goals)", ChatFormat.normalColor)));
         }
     }
@@ -394,12 +385,12 @@ public class BridgeGame {
     public static void updateInfo() {
 
         String[] timer = TickUtil.minuteTimeStamp(BridgeGame.gameTime * 20);
-        for(NexiaPlayer player : BridgeGame.getViewers()) {
-            if(player == null) return;
-            BridgeTeam playerTeam = ((BridgePlayerData)PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player)).team;
-            if(playerTeam == null) playerTeam = BridgeGame.team1; // maybe cuz spectator
+        for (NexiaPlayer player : BridgeGame.getViewers()) {
+            if (player == null) return;
+            BridgeTeam playerTeam = ((BridgePlayerData) PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player)).team;
+            if (playerTeam == null) playerTeam = BridgeGame.team1; // maybe cuz spectator
             BridgeTeam otherTeam = BridgeGame.team1;
-            if(playerTeam.equals(BridgeGame.team1)) otherTeam = BridgeGame.team2;
+            if (playerTeam.equals(BridgeGame.team1)) otherTeam = BridgeGame.team2;
 
             player.sendActionBarMessage(
                     Component.text("Map » ").color(TextColor.fromHexString("#b3b3b3"))
@@ -409,10 +400,10 @@ public class BridgeGame {
                             .append(Component.text(timer[0] + ":" + timer[1], ChatFormat.brandColor2))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
                             .append(Component.text("Goals » ").color(TextColor.fromHexString("#b3b3b3")))
-                            .append(Component.text(playerTeam.goals + "/" + BridgeGame.map.maxGoals, ChatFormat.brandColor2))
+                            .append(Component.text(playerTeam.goals + "/" + 5, ChatFormat.brandColor2))
                             .append(Component.text(" | ").color(ChatFormat.lineColor))
                             .append(Component.text("Enemy Team Goals » ").color(TextColor.fromHexString("#b3b3b3")))
-                            .append(Component.text(otherTeam.goals + "/" + BridgeGame.map.maxGoals, ChatFormat.brandColor2))
+                            .append(Component.text(otherTeam.goals + "/" + 5, ChatFormat.brandColor2))
             );
         }
     }
@@ -465,15 +456,15 @@ public class BridgeGame {
         int team1 = BridgeGame.team1.players.size();
         int team2 = BridgeGame.team2.players.size();
 
-        if(team1 >= players/2) {
+        if (team1 >= players / 2) {
             BridgeGame.team2.addPlayer(player);
             return BridgeGame.team2;
-        } else if (team2 >= players/2) {
+        } else if (team2 >= players / 2) {
             BridgeGame.team1.addPlayer(player);
             return BridgeGame.team1;
         }
 
-        if(random == 1) {
+        if (random == 1) {
             BridgeGame.team1.addPlayer(player);
             return BridgeGame.team1;
         } else if (random == 2) {
@@ -485,7 +476,7 @@ public class BridgeGame {
     }
 
     public static void startGame() {
-        if(BridgeGame.queueTime <= 0){
+        if (BridgeGame.queueTime <= 0) {
             BridgeGame.isStarted = true;
             BridgeGame.gameTime = 600;
             BridgeGame.players.addAll(BridgeGame.queue);
@@ -499,8 +490,7 @@ public class BridgeGame {
 //            kicking.hideTooltipPart(ItemStack.TooltipPart.UNBREAKABLE);
 
 
-
-            for(NexiaPlayer player : BridgeGame.players) {
+            for (NexiaPlayer player : BridgeGame.players) {
 
 
                 BridgePlayerData data = (BridgePlayerData) PlayerDataManager.getDataManager(BRIDGE_DATA_MANAGER).get(player);
@@ -511,7 +501,7 @@ public class BridgeGame {
 //                player.unwrap().addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 99999, 255, false, false, false));
 
                 data.team = BridgeGame.assignPlayer(player);
-                while(data.team == null) {
+                while (data.team == null) {
                     data.team = BridgeGame.assignPlayer(player);
                     // if you're still null then im going to beat the shit out of you
                 }
@@ -521,49 +511,12 @@ public class BridgeGame {
                 if (BridgeGame.team2.players.contains(player)) {
                     BridgeGame.team2.spawnPosition.teleportPlayer(BridgeGame.world, player.unwrap());
                 }
-//                ItemStack helmet = Items.LEATHER_HELMET.getDefaultInstance();
-//                helmet.getOrCreateTag().putInt("Unbreakable", 1);
-
-//                ItemStack chestplate = Items.LEATHER_CHESTPLATE.getDefaultInstance();
-//                chestplate.getOrCreateTag().putInt("Unbreakable", 1);
-//
-//                ItemStack leggings = Items.LEATHER_LEGGINGS.getDefaultInstance();
-//                leggings.getOrCreateTag().putInt("Unbreakable", 1);
-//
-//                ItemStack boots = Items.LEATHER_BOOTS.getDefaultInstance();
-//                boots.getOrCreateTag().putInt("Unbreakable", 1);
-//
-//                int colour = 0;
-//
-//                if(data.team.equals(BridgeGame.team1)) {
-//                    // r * 65536 + g * 256 + b
-//                    colour = 255 * 65536;
-//                } else if(data.team.equals(BridgeGame.team2)) {
-//                    colour = 255;
-//                }
-//
-//                DyeableLeatherItem leatherItem = (DyeableLeatherItem) Items.LEATHER_CHESTPLATE;
-//
-////                leatherItem.setColor(helmet, colour);
-//                leatherItem.setColor(chestplate, colour);
-//                leatherItem.setColor(leggings, colour);
-//                leatherItem.setColor(boots, colour);
-//
-////                player.unwrap().setItemSlot(EquipmentSlot.HEAD, helmet);
-//                player.unwrap().setItemSlot(EquipmentSlot.CHEST, chestplate);
-//                player.unwrap().setItemSlot(EquipmentSlot.LEGS, leggings);
-//                player.unwrap().setItemSlot(EquipmentSlot.FEET, boots);
-//
-//                ItemStack sword = Items.IRON_SWORD.getDefaultInstance();
-//                sword.getOrCreateTag().putInt("Unbreakable", 1);
-//
 
                 giveKit(player);
 
 
                 player.setGameMode(Minecraft.GameMode.SURVIVAL);
-                //player.setRespawnPosition(world.dimension(), pos, 0, true, false);
-//                player.unwrap().getCooldowns().addCooldown(Items.NETHERITE_SWORD, 200);
+
             }
 
             BridgeGame.spectator.clear();
@@ -571,8 +524,8 @@ public class BridgeGame {
         }
     }
 
-    public static boolean isBridgePlayer(NexiaPlayer player){
-        return ((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).gameMode == PlayerGameMode.BRIDGE || player.hasTag("bridge") || player.hasTag("in_bridge_game");
+    public static boolean isBridgePlayer(NexiaPlayer player) {
+        return ((CorePlayerData) PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(player)).gameMode == PlayerGameMode.BRIDGE || player.hasTag("bridge") || player.hasTag("in_bridge_game");
     }
 
     public static void resetAll() {
@@ -580,7 +533,7 @@ public class BridgeGame {
         players.clear();
         spectator.clear();
 
-        map = BridgeMap. bridgeMaps.get(RandomUtil.randomInt(BridgeMap.bridgeMaps.size()));
+        map = BridgeMap.bridgeMaps.get(RandomUtil.randomInt(BridgeMap.bridgeMaps.size()));
         world = ServerTime.fantasy.getOrOpenPersistentWorld(new ResourceLocation("bridge", BridgeGame.map.id), WorldUtil.defaultWorldConfig).asWorld();
 
         isStarted = false;
@@ -594,11 +547,13 @@ public class BridgeGame {
     }
 
     public static void tick() {
-        if(BridgeGame.world == null) return;
-        if(BridgeGame.world.players().isEmpty()) return;
+        if (BridgeGame.world == null) return;
+        if (BridgeGame.world.players().isEmpty()) {
+        }
 
-        AABB aabb = new AABB(BridgeGame.map.corner1, BridgeGame.map.corner2);
-        Predicate<Entity> predicate = o -> true;
+
+//        AABB aabb = new AABB(BridgeGame.map.corner1, BridgeGame.map.corner2);
+//        Predicate<Entity> predicate = o -> true;
 
 //        for (ItemEntity entity : BridgeGame.world.getEntities(EntityType.ITEM, aabb, predicate)) {
 //            // kill @e[type=item,distance=0..]
@@ -640,8 +595,39 @@ public class BridgeGame {
 
     }
 
-    public static void firstTick(){
+    public static ServerLevel createWorld(String uuid, boolean doRegeneration) {
+        RuntimeWorldConfig config = new RuntimeWorldConfig()
+                .setDimensionType(DimensionType.OVERWORLD_LOCATION)
+                .setGenerator(getChunkGenerator(Biomes.PLAINS))
+                .setDifficulty(Difficulty.HARD)
+                .setGameRule(GameRules.RULE_KEEPINVENTORY, false)
+                .setGameRule(GameRules.RULE_MOBGRIEFING, false)
+                .setGameRule(GameRules.RULE_WEATHER_CYCLE, false)
+                .setGameRule(GameRules.RULE_DAYLIGHT, false)
+                .setGameRule(GameRules.RULE_DO_IMMEDIATE_RESPAWN, true)
+                .setGameRule(GameRules.RULE_DOMOBSPAWNING, false)
+                .setGameRule(GameRules.RULE_NATURAL_REGENERATION, doRegeneration)
+                .setGameRule(GameRules.RULE_SHOWDEATHMESSAGES, true)
+                .setGameRule(GameRules.RULE_SPAWN_RADIUS, 0)
+                .setGameRule(GameRules.RULE_ANNOUNCE_ADVANCEMENTS, false)
+                .setGameRule(GameRules.RULE_DOFIRETICK, false)
+                .setTimeOfDay(6000);
+
+
+        if (NexiaCore.config.debugMode) NexiaCore.logger.info("[DEBUG]: Created world: bridge:{}", uuid);
+
+        return ServerTime.fantasy.openTemporaryWorld(config, new ResourceLocation("bridge", uuid)).asWorld();
+        //return ServerTime.fantasy.getOrOpenPersistentWorld(ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation("duels", uuid)).location(), config).asWorld();
+    }
+
+    public static void deleteWorld(String id) {
+        WorldUtil.deleteWorld(new Identifier("bridge", id));
+    }
+
+    public static void firstTick() {
         resetAll();
+
+        BridgeGame.map.structureMap.pasteMap(createWorld(gameUUID.toString(), true));
     }
 
     public static ArrayList<NexiaPlayer> getViewers() {

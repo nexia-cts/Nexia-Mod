@@ -7,6 +7,7 @@ import com.nexia.core.games.util.PlayerGameMode;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.minigames.games.bedwars.areas.BwAreas;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
+import com.nexia.minigames.games.bridge.BridgeGame;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
@@ -33,21 +34,26 @@ public class PlayerDeathListener {
                 return;
             }
 
-            if(gameMode == PlayerGameMode.OITC){
+            if (gameMode == PlayerGameMode.OITC) {
                 OitcGame.death(nexiaPlayer, playerDeathEvent);
                 return;
             }
 
-            if(gameMode == PlayerGameMode.SKYWARS) {
+            if (gameMode == PlayerGameMode.BRIDGE) {
+                BridgeGame.death(nexiaPlayer, playerDeathEvent);
+                return;
+            }
+
+            if (gameMode == PlayerGameMode.SKYWARS) {
                 SkywarsGame.death(nexiaPlayer, playerDeathEvent);
             }
 
-            if(gameMode == PlayerGameMode.LOBBY && duelsData.gameOptions != null) {
-                if(duelsData.gameOptions.duelsGame != null) {
+            if (gameMode == PlayerGameMode.LOBBY && duelsData.gameOptions != null) {
+                if (duelsData.gameOptions.duelsGame != null) {
                     duelsData.gameOptions.duelsGame.death(nexiaPlayer);
                     return;
                 }
-                if(duelsData.gameOptions.teamDuelsGame != null) {
+                if (duelsData.gameOptions.teamDuelsGame != null) {
                     duelsData.gameOptions.teamDuelsGame.death(nexiaPlayer, playerDeathEvent);
                 }
             }
