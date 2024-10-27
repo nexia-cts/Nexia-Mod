@@ -77,6 +77,9 @@ public class PlayerDataManager {
 
         // <-----------  SkyWars --------------->
         new PlayerDataManager(NexiaCore.SKYWARS_DATA_MANAGER, "skywars", WLKSavedPlayerData.class, SkywarsPlayerData.class);
+
+        // <-----------  Bridge --------------->
+        new PlayerDataManager(NexiaCore.BRIDGE_DATA_MANAGER, "bridge", WLKSavedPlayerData.class, BridgePlayerData.class);
     }
 
     public PlayerData get(NexiaPlayer player) {

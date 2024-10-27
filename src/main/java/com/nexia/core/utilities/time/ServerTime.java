@@ -79,6 +79,7 @@ public class ServerTime {
 
         SkywarsGame.firstTick();
         OitcGame.firstTick();
+        BridgeGame.firstTick();
         DuelGameHandler.starting();
     }
 
@@ -106,6 +107,7 @@ public class ServerTime {
         FootballGame.tick();
         BridgeGame.tick();
         OitcGame.tick();
+        BridgeGame.tick();
 
         if (totalTickCount % 5 == 0) {
             FfaClassicUtil.INSTANCE.fiveTick();
@@ -132,6 +134,7 @@ public class ServerTime {
         FootballGame.second();
         BridgeGame.second();
         SkywarsGame.second();
+        BridgeGame.second();
         try {
             for (DuelsGame game : DuelGameHandler.duelsGames) {
                 if (game == null) return;
