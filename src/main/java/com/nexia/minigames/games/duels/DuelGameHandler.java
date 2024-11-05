@@ -13,7 +13,6 @@ import com.nexia.minigames.games.duels.gamemodes.GamemodeHandler;
 import com.nexia.minigames.games.duels.team.TeamDuelsGame;
 import com.nexia.minigames.games.duels.util.player.DuelsPlayerData;
 import com.nexia.nexus.api.util.Identifier;
-import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -94,7 +93,9 @@ public class DuelGameHandler {
         }
 
         if(layout != null) {
-            player.unwrap().inventory.replaceWith(layout.asPlayerInventory());
+            for (int i = 0; i < player.unwrap().inventory.getContainerSize(); i++) {
+                player.unwrap().inventory.setItem(i, layout.asPlayerInventory().getItem(i));
+            }
         } else {
             InventoryUtil.loadInventory(player, "duels", gameMode.toLowerCase());
         }
