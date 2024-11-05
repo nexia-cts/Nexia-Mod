@@ -22,7 +22,6 @@ import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.nexus.api.world.util.BoundingBox;
 import com.nexia.nexus.api.world.util.Location;
 import com.nexia.nexus.builder.implementation.world.entity.projectile.WrappedProjectile;
-import io.github.blumbo.inventorymerger.InventoryMerger;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
@@ -35,8 +34,6 @@ import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -253,10 +250,11 @@ public abstract class BaseFfaUtil {
             return;
         }
 
-        if(layout != null) {
-            player.unwrap().inventory.replaceWith(layout.asPlayerInventory());
-        } else {
-            player.unwrap().inventory.replaceWith(defaultInventory.asPlayerInventory());
+        for (int i = 0; i < player.unwrap().inventory.getContainerSize(); ++i) {
+            player.unwrap().inventory.setItem(i,
+                    (layout != null) ?
+                            layout.asPlayerInventory().getItem(i) :
+                            defaultInventory.asPlayerInventory().getItem(i));
         }
 
         alterInventory(player);
