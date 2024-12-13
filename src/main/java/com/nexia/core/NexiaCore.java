@@ -56,6 +56,11 @@ public class NexiaCore implements ModInitializer, NexusPlugin {
 		AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
 		config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
 
+		if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
+			config.serverType = "dev";
+			config.debugMode = true;
+		}
+
 		logger.info("Loading mod...");
 		PlayerDataManager.init();
 		logger.info("Registering commands...");

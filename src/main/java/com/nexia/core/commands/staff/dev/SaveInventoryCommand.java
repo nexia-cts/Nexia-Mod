@@ -9,6 +9,7 @@ import com.natamus.collective_fabric.functions.StringFunctions;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
 import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -23,7 +24,7 @@ public class SaveInventoryCommand {
         dispatcher.register((Commands.literal("saveinventory")
                         .requires(commandSourceStack -> {
                             try {
-                                return Permissions.check(commandSourceStack, "nexia.inventory.save", 4);
+                                return Permissions.check(commandSourceStack, "nexia.inventory.save", 4)  || FabricLoader.getInstance().isDevelopmentEnvironment();
                             } catch (Exception ignored) {
                                 return false;
                             }

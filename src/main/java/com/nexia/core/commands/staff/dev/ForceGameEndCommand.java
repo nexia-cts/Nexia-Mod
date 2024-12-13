@@ -8,6 +8,7 @@ import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -18,7 +19,7 @@ public class ForceGameEndCommand {
         dispatcher.register((Commands.literal("forcegameend")
                         .requires(commandSourceStack -> {
                             try {
-                                return Permissions.check(commandSourceStack, "nexia.dev.forcegameend");
+                                return Permissions.check(commandSourceStack, "nexia.dev.forcegameend")  || FabricLoader.getInstance().isDevelopmentEnvironment();
                             } catch (Exception ignored) {
                                 return false;
                             }

@@ -166,6 +166,7 @@ public class BwAreas {
     }
 
     public static void clearQueueBuild() {
+        if(bedWarsWorld == null) return;
         for (BlockPos pos : BlockPos.betweenClosed(
                 queueC1.x, queueC1.y, queueC1.z,
                 queueC2.x, queueC2.y, queueC2.z)) {

@@ -23,6 +23,7 @@ import com.nexia.minigames.games.football.FootballGame;
 import com.nexia.minigames.games.oitc.OitcGame;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.*;
@@ -78,7 +79,7 @@ public class ServerGamePacketListenerMixin {
             )
     )
     public boolean canUseCommandBlock(boolean original) {
-        return Permissions.check(this.player, "nexia.dev.commandblock");
+        return Permissions.check(this.player, "nexia.dev.commandblock")  || FabricLoader.getInstance().isDevelopmentEnvironment();
     }
 
     @Inject(at = @At("HEAD"), method = "onDisconnect")

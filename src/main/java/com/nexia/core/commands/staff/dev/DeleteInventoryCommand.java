@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
 import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -20,7 +21,7 @@ public class DeleteInventoryCommand {
         dispatcher.register((Commands.literal("deleteinventory")
                         .requires(commandSourceStack -> {
                             try {
-                                return Permissions.check(commandSourceStack, "nexia.inventory.delete", 4);
+                                return Permissions.check(commandSourceStack, "nexia.inventory.delete", 4) || FabricLoader.getInstance().isDevelopmentEnvironment();
                             } catch (Exception ignored) {
                                 return false;
                             }

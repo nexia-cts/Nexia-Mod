@@ -2,7 +2,6 @@ package com.nexia.core.utilities.database;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.internal.bind.TypeAdapters;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
@@ -10,15 +9,13 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import net.fabricmc.loader.api.FabricLoader;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-
-import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
 import static com.nexia.core.NexiaCore.config;
 
 @SuppressWarnings("unused")
@@ -36,6 +33,7 @@ public class MongoManager {
     }
 
     public void openConnection() {
+        if(FabricLoader.getInstance().isDevelopmentEnvironment()) return;
         final MongoCredential mongoCredential = MongoCredential.createCredential(
                 config.username,
                 config.database,

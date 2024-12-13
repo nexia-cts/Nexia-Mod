@@ -1,0 +1,4 @@
+[submodule "run/world/datapacks"]
+	path = run/world/datapacks
+	url = https://github.com/nexia-cts/Nexia-Datapack.git
+	branch = main

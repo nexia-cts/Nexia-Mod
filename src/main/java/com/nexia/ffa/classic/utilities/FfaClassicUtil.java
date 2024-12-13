@@ -9,14 +9,12 @@ import com.nexia.ffa.FfaGameMode;
 import com.nexia.ffa.base.BaseFfaUtil;
 import com.nexia.nexus.api.world.entity.player.Player;
 import com.nexia.nexus.api.world.util.Location;
+import net.fabricmc.loader.api.FabricLoader;
 import net.kyori.adventure.text.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.timers.FunctionCallback;
 import net.minecraft.world.level.timers.TimerQueue;
-
-import java.util.List;
 
 public class FfaClassicUtil extends BaseFfaUtil {
     public static final FfaClassicUtil INSTANCE = new FfaClassicUtil();
@@ -42,6 +40,8 @@ public class FfaClassicUtil extends BaseFfaUtil {
     
     @Override
     public boolean checkBot() {
+        if(FabricLoader.getInstance().isDevelopmentEnvironment()) return false;
+
         Player bot = ServerTime.nexusServer.getPlayer("femboy.ai");
 
         if (bot != null && getNexusFfaWorld().getPlayers().size() == 1) {

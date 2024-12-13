@@ -24,7 +24,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -81,7 +80,7 @@ public abstract class ArmorStandMixin extends LivingEntity {
      * @reason Make armor stands pushable
      */
     @Overwrite
-    protected void doPush(Entity entity) {
+    public void doPush(Entity entity) {
         if(!FootballGame.world.equals(this.level)) return;
         entity.push(this);
     }
@@ -92,7 +91,7 @@ public abstract class ArmorStandMixin extends LivingEntity {
      * @reason Make armor stands pushable
      */
     @Overwrite
-    protected void pushEntities() {
+    public void pushEntities() {
         if(!FootballGame.world.equals(this.level)) {
             List<Entity> list = this.level.getEntities(this, this.getBoundingBox(), RIDABLE_MINECARTS);
 

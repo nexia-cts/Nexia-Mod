@@ -93,6 +93,7 @@ public class ProtectionMap {
             map = gson.fromJson(possibleJson, byte[][][].class);
         } catch (Exception e) {
             NexiaCore.logger.error(NexiaCore.MOD_NAME + ": Failed to import protection map from {}", filePath);
+            NexiaCore.logger.error("Use '/protectionmap' to recreate them (go to the correct dimension first)!");
             return null;
         }
         return new ProtectionMap(map, listedBlocks, notListedBlock, outsideMessage);

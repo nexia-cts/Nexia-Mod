@@ -32,7 +32,7 @@ public class DevExperimentalCommandsCommand {
         dispatcher.register((Commands.literal("devexperimentalcmds")
                         .requires(commandSourceStack -> {
                             try {
-                                return Permissions.check(commandSourceStack, "nexia.dev.experimentalcmds");
+                                return Permissions.check(commandSourceStack, "nexia.dev.experimentalcmds") || FabricLoader.getInstance().isDevelopmentEnvironment();
                             } catch (Exception ignored) {
                                 return false;
                             }

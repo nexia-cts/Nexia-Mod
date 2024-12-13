@@ -57,7 +57,12 @@ dependencies {
 	// Important!
 	modImplementation("com.nexia.nexus:nexus-api:${project.nexus_version}-full")
 	modImplementation("com.nexia.nexus:nexus-builder:${project.nexus_version}-${project.minecraft_version}-full")
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+	// Using Fabric API for CTS apparently just doesn't want to make it build but we have to use it so the server doesn't crash when right clicking something
+	modCompileOnlyApi("net.fabricmc.fabric-api:fabric-api:${project.fabric_version}")
+	//modRuntimeOnly("net.fabricmc.fabric-api:fabric-api:${project.fabric_version}.combat")
+	// ↑ included in run/mods/ instead
+
 	include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${project.mixin_extras_version}")))
 
 	// MongoDB
@@ -78,7 +83,7 @@ dependencies {
 	modApi("me.lucko:fabric-permissions-api:${project.fabric_permissions_api_version}")
 	include(implementation("net.kyori:adventure-text-minimessage:${project.adventure_version}"))
 	include(implementation("net.kyori:adventure-text-serializer-gson:${project.adventure_version}"))
-	include(compileOnly("de.themoep:minedown-adventure:${project.minedown_adventure_version}"))
+	include(implementation("de.themoep:minedown-adventure:${project.minedown_adventure_version}"))
 	compileOnly("net.luckperms:api:${project.luckperms_api_version}")
 
 	// discord shit
@@ -89,7 +94,6 @@ dependencies {
 	// useless libraries
 	include(implementation("com.google.code.gson:gson:${project.gson_version}"))
 	include(implementation("com.googlecode.json-simple:json-simple:${project.json_simple_version}"))
-
 }
 
 // Custom Manifest and Intermediary mappings declaration
