@@ -1,7 +1,5 @@
 package com.nexia.base.player;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
 import com.nexia.core.NexiaCore;
@@ -19,9 +17,9 @@ import com.nexia.minigames.games.football.util.player.FootballPlayerData;
 import com.nexia.minigames.games.football.util.player.FootballSavedPlayerData;
 import com.nexia.minigames.games.oitc.util.player.OITCPlayerData;
 import com.nexia.minigames.games.skywars.util.player.SkywarsPlayerData;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.ResourceLocation;
 import org.bson.Document;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
@@ -114,6 +112,7 @@ public class PlayerDataManager {
     }
 
     private void savePlayerData(UUID uuid) {
+        if(FabricLoader.getInstance().isDevelopmentEnvironment()) return;
         Document document = NexiaCore.mongoManager.toDocument(get(uuid).savedData);
         document.append("uuid", uuid.toString());
         document.remove("data");
@@ -126,6 +125,14 @@ public class PlayerDataManager {
     }
 
     private <T extends SavedPlayerData> T loadPlayerData(UUID uuid, Class<T> toLoad) throws InstantiationException, IllegalAccessException {
+        if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
+            try {
+                return toLoad.getDeclaredConstructor().newInstance();
+            } catch (InvocationTargetException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         T savedPlayerData = NexiaCore.mongoManager.getObject(collectionName, Filters.eq("uuid", uuid.toString()), toLoad);
         if (savedPlayerData != null) {
             return savedPlayerData;

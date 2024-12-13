@@ -1,6 +1,7 @@
 package com.nexia.core.mixin.misc;
 
 import com.mojang.authlib.GameProfile;
+import com.nexia.core.NexiaCore;
 import com.nexia.core.utilities.time.ServerTime;
 import com.nexia.core.utilities.time.ServerType;
 import net.minecraft.Util;
@@ -8,10 +9,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.status.ServerStatus;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -21,8 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin {
-
-    @Shadow public abstract PlayerList getPlayerList();
 
     @Unique
     boolean firstTickPassed = false;
@@ -53,7 +50,7 @@ public abstract class MinecraftServerMixin {
     @ModifyArg(method = "tickServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/status/ServerStatus$Players;setSample([Lcom/mojang/authlib/GameProfile;)V"))
     private GameProfile[] hidePlayers(GameProfile[] gameProfiles) {
 
-        if(ServerType.returnServer().equals(ServerType.DEV)) {
+        if(ServerType.returnServer().equals(ServerType.DEV) && !NexiaCore.config.debugMode) {
             return new GameProfile[]{new GameProfile(Util.NIL_UUID, "§e⟡ you tried ⟡"),
                     new GameProfile(Util.NIL_UUID, "§eヽ(・∀・)ﾉ"),
                     new GameProfile(Util.NIL_UUID, " "),
@@ -68,7 +65,7 @@ public abstract class MinecraftServerMixin {
 
     @ModifyArg(method = "tickServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/status/ServerStatus;setPlayers(Lnet/minecraft/network/protocol/status/ServerStatus$Players;)V"))
     private ServerStatus.Players hidePlayerCount(ServerStatus.Players players) {
-        if(ServerType.returnServer().equals(ServerType.DEV)) {
+        if(ServerType.returnServer().equals(ServerType.DEV) && !NexiaCore.config.debugMode) {
             // can't set current player count for some reason (69)
             return new ServerStatus.Players(420, 69);
         }

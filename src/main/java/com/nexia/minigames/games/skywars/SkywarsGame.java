@@ -29,6 +29,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.BossEvent;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.biome.Biomes;
@@ -476,6 +477,11 @@ public class SkywarsGame {
     public static void firstTick(){
         SkywarsGame.resetAll();
         BOSSBAR = ServerTime.minecraftServer.getCustomBossEvents().get(new ResourceLocation("skywars", "timer"));
+        if(BOSSBAR == null) {
+            BOSSBAR = ServerTime.minecraftServer.getCustomBossEvents().create(new ResourceLocation("skywars", "timer"), new TextComponent(""));
+            BOSSBAR.setMax(180);
+            BOSSBAR.setColor(BossEvent.BossBarColor.GREEN);
+        }
     }
 
     public static ArrayList<NexiaPlayer> getViewers() {

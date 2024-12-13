@@ -8,6 +8,7 @@ import com.nexia.core.utilities.chat.LegacyChatFormat;
 import com.nexia.core.utilities.item.InventoryUtil;
 import com.nexia.base.player.NexiaPlayer;
 import me.lucko.fabric.api.permissions.v0.Permissions;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -25,7 +26,7 @@ public class LoadInventoryCommand {
         dispatcher.register((Commands.literal("loadinventory")
                         .requires(commandSourceStack -> {
                             try {
-                                return Permissions.check(commandSourceStack, "nexia.inventory.load", 4);
+                                return Permissions.check(commandSourceStack, "nexia.inventory.load", 4)  || FabricLoader.getInstance().isDevelopmentEnvironment();
                             } catch (Exception ignored) {
                                 return false;
                             }
