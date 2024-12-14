@@ -20,10 +20,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.io.File;
 import java.util.UUID;
-
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 
 public class CustomTeamDuelsGame extends TeamDuelsGame {
@@ -46,10 +44,10 @@ public class CustomTeamDuelsGame extends TeamDuelsGame {
             NexiaCore.logger.error(String.format("[Nexia]: Invalid per-custom (team 2) duel kit (%s) selected!", team1LeaderData.inviteOptions.inviteKit2));
         else perCustomKitID = team1LeaderData.inviteOptions.inviteKit2;
 
-        team1.alive.clear();
-        team1.alive.addAll(team1.all);
+        team1.refreshTeam();
+        team2.refreshTeam();
 
-        team2.alive.clear();
+        team1.alive.addAll(team1.all);
         team2.alive.addAll(team2.all);
 
         UUID gameUUID = UUID.randomUUID();
@@ -71,6 +69,8 @@ public class CustomTeamDuelsGame extends TeamDuelsGame {
         DuelGameHandler.teamDuelsGames.add(game);
 
         for (NexiaPlayer player : team1.all) {
+            player = player.refreshPlayer();
+
             ServerPlayer serverPlayer = player.unwrap();
             DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
 
@@ -84,6 +84,8 @@ public class CustomTeamDuelsGame extends TeamDuelsGame {
 
             selectedMap.p1Pos.teleportPlayer(duelLevel, serverPlayer);
 
+            player.reset(true, Minecraft.GameMode.ADVENTURE);
+
             player.sendNexiaMessage(
                     Component.text("Your opponent: ", ChatFormat.normalColor)
                             .append(Component.text(team2.getLeader().getRawName() + "'s Team", ChatFormat.brandColor2))
@@ -94,11 +96,11 @@ public class CustomTeamDuelsGame extends TeamDuelsGame {
 
             player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
             player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
-
-            player.reset(true, Minecraft.GameMode.ADVENTURE);
         }
 
         for (NexiaPlayer player : team2.all) {
+            player = player.refreshPlayer();
+
             ServerPlayer serverPlayer = player.unwrap();
             DuelsPlayerData data = (DuelsPlayerData) PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player);
 
@@ -111,6 +113,8 @@ public class CustomTeamDuelsGame extends TeamDuelsGame {
             removeQueue(player, null, true);
 
             selectedMap.p2Pos.teleportPlayer(duelLevel, serverPlayer);
+
+            player.reset(true, Minecraft.GameMode.ADVENTURE);
 
             player.sendNexiaMessage(
                     Component.text("Your opponent: ", ChatFormat.normalColor)
@@ -127,8 +131,6 @@ public class CustomTeamDuelsGame extends TeamDuelsGame {
 
             player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
             player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
-
-           player.reset(true, Minecraft.GameMode.ADVENTURE);
         }
 
         game.uuid = gameUUID;

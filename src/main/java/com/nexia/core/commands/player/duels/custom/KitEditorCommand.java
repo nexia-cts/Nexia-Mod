@@ -90,7 +90,9 @@ public class KitEditorCommand {
             File playerDir = playerPath.toFile();
             try {
                 if(!playerDir.exists()) Files.createDirectory(playerPath);
-            } catch (IOException ignored) { }
+            } catch (IOException e) {
+                if(NexiaCore.config.debugMode) NexiaCore.logger.info("[DEBUG]: Failed to create custom duels inventory path for {}!\nPath: {}\n{}", player, playerPath.toString(), e.getMessage());
+            }
 
             KitRoom kitRoom = playerData.kitRoom;
 

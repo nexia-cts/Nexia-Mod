@@ -31,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -45,6 +46,16 @@ import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQu
 public class DuelGameHandler {
     public static List<DuelsGame> duelsGames = new ArrayList<>();
     public static List<TeamDuelsGame> teamDuelsGames = new ArrayList<>();
+
+    public static void createDirectories() {
+
+        Path customDuelsInventoriesPath = Path.of(InventoryUtil.dirpath + File.separator + "duels" + File.separator + "custom");
+        try {
+            if(!customDuelsInventoriesPath.toFile().exists()) Files.createDirectory(customDuelsInventoriesPath);
+        } catch (IOException e) {
+            if(NexiaCore.config.debugMode) NexiaCore.logger.info("[DEBUG]: Failed to create custom duels inventory path!\nPath: {}\n{}", customDuelsInventoriesPath.toString(), e.getMessage());
+        }
+    }
 
     public static boolean validCustomKit(NexiaPlayer player, String kitID) {
         if(kitID.trim().isEmpty()) return false;

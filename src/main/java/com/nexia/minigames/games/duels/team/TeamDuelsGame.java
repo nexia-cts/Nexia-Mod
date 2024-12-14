@@ -1,11 +1,11 @@
 package com.nexia.minigames.games.duels.team;
 
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.base.player.PlayerDataManager;
 import com.nexia.core.NexiaCore;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.utilities.chat.ChatFormat;
 import com.nexia.core.utilities.misc.RandomUtil;
-import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.utilities.player.PlayerUtil;
 import com.nexia.core.utilities.pos.EntityPos;
 import com.nexia.minigames.games.duels.DuelGameHandler;
@@ -25,10 +25,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.Random;
 import java.util.UUID;
-
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 
 public class TeamDuelsGame extends DuelsGame {
@@ -165,17 +163,11 @@ public class TeamDuelsGame extends DuelsGame {
 
     public void duelSecond() {
         String isBroken = this.detectBrokenGame();
-        if (isBroken != null) {
+        if (isBroken != null && !this.isEnding) {
             Component error = ChatFormat.nexiaMessage
                     .append(Component.text("The game you were in was identified as broken, please contact a developer with a video of the last 30 seconds.", ChatFormat.normalColor));
 
             Component errormsg = Component.text("Cause: " + isBroken);
-
-            for (NexiaPlayer spectator : this.spectators) {
-                spectator.sendMessage(error);
-                spectator.sendMessage(errormsg);
-            }
-
             for (ServerPlayer player : this.level.players()) {
                 NexiaPlayer nexusPlayer = new NexiaPlayer(player);
                 nexusPlayer.sendMessage(error);
@@ -192,42 +184,34 @@ public class TeamDuelsGame extends DuelsGame {
             if(notNullTeam != null) this.endGame(notNullTeam, null, false);
         }
         if (this.isEnding) {
-            int color = 160 * 65536 + 248;
-            // r * 65536 + g * 256 + b;
-            DuelGameHandler.winnerRockets(this.winner.alive.get(new Random().nextInt(this.winner.alive.size())),
-                    this.level, color);
+
+            if(this.winner != null && this.winner.alive != null && !this.winner.alive.isEmpty() && this.shouldWait) {
+                int color = 160 * 65536 + 248;
+
+                // r * 65536 + g * 256 + b;
+                DuelGameHandler.winnerRockets(this.winner.alive.get(new Random().nextInt(this.winner.alive.size())), this.level, color);
+            }
+
             this.currentEndTime++;
+
             if (this.currentEndTime >= this.endTime || !this.shouldWait) {
                 DuelsTeam winnerTeam = this.winner == null ? this.team1 : this.winner;
                 DuelsTeam loserTeam = this.loser == null ? this.team2 : this.loser;
 
-                for (NexiaPlayer spectator : this.spectators) {
-                    spectator = spectator.refreshPlayer();
-                    spectator.runCommand("/hub", 0, false);
+                for(ServerPlayer serverPlayer : this.level.players()) {
+                    NexiaPlayer player = new NexiaPlayer(serverPlayer);
+
+                    ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).gameOptions = null;
+                    player.runCommand("/hub", 0, false);
                 }
 
-                this.isEnding = false;
+                if(loserTeam != null) loserTeam.refreshTeam();
+                if(winnerTeam != null) winnerTeam.refreshTeam();
 
-                if(loserTeam != null) {
-                    for (NexiaPlayer player : loserTeam.all) {
-                        player = player.refreshPlayer();
-                        ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).gameOptions = null;
-                        player.runCommand("/hub", 0, false);
-                    }
-                    loserTeam.refreshTeam();
-                }
-
-                if(winnerTeam != null) {
-                    for (NexiaPlayer player : winnerTeam.all) {
-                        player = player.refreshPlayer();
-                        ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(player)).gameOptions = null;
-                        player.runCommand("/hub", 0, false);
-                    }
-                    winnerTeam.refreshTeam();
-                }
 
                 DuelGameHandler.deleteWorld(String.valueOf(this.uuid));
                 removeDuelsGame();
+                this.isEnding = false;
                 return;
             }
         }
@@ -304,7 +288,8 @@ public class TeamDuelsGame extends DuelsGame {
         Component subtitleWin = win;
 
         if ((winnerTeam == null || winnerTeam.getLeader() == null || winnerTeam.getLeader().unwrap() == null)) {
-            for (NexiaPlayer player : loserTeam.all) {
+            for (ServerPlayer serverPlayer : level.players()) {
+                NexiaPlayer player = new NexiaPlayer(serverPlayer);
                 player.sendTitle(Title.title(titleWin, subtitleWin));
                 player.sendMessage(win);
             }
