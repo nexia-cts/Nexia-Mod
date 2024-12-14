@@ -25,8 +25,10 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.Random;
 import java.util.UUID;
+
 import static com.nexia.minigames.games.duels.gamemodes.GamemodeHandler.removeQueue;
 
 public class TeamDuelsGame extends DuelsGame {
@@ -114,6 +116,7 @@ public class TeamDuelsGame extends DuelsGame {
                     .append(Component.text(team2.getLeader().getRawName() + "'s Team", ChatFormat.brandColor2))
             );
 
+            player.reset(true, Minecraft.GameMode.ADVENTURE);
             DuelGameHandler.loadInventory(player, stringGameMode);
 
             if (!gameMode.hasSaturation) {
@@ -122,8 +125,6 @@ public class TeamDuelsGame extends DuelsGame {
 
             player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
             player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
-
-            player.reset(true, Minecraft.GameMode.ADVENTURE);
         }
 
         for (NexiaPlayer player : team2.all) {
@@ -144,6 +145,7 @@ public class TeamDuelsGame extends DuelsGame {
                             .append(Component.text(team1.getLeader().getRawName() + "'s Team", ChatFormat.brandColor2))
             );
 
+            player.reset(true, Minecraft.GameMode.ADVENTURE);
             DuelGameHandler.loadInventory(player, stringGameMode);
 
             if (!gameMode.hasSaturation) {
@@ -152,8 +154,6 @@ public class TeamDuelsGame extends DuelsGame {
 
             player.removeTag(LobbyUtil.NO_DAMAGE_TAG);
             player.removeTag(LobbyUtil.NO_FALL_DAMAGE_TAG);
-
-            player.reset(true, Minecraft.GameMode.ADVENTURE);
         }
 
         game.uuid = gameUUID;
