@@ -1,5 +1,7 @@
 package com.nexia.core.commands.staff.dev;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -11,21 +13,30 @@ import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.uhc.utilities.UhcFfaAreas;
 import com.nexia.minigames.games.skywars.SkywarsGame;
 import com.nexia.minigames.games.skywars.SkywarsMap;
+import com.nexia.nexus.builder.implementation.util.ObjectMappings;
 import io.github.blumbo.inventorymerger.saving.SavableInventory;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.loader.api.FabricLoader;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.minecraft.Util;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.io.FileWriter;
+import java.util.UUID;
 
 public class DevExperimentalCommandsCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean bl) {
@@ -38,7 +49,7 @@ public class DevExperimentalCommandsCommand {
                             }
                         })
                         .then(Commands.argument("argument", StringArgumentType.string())
-                                .suggests(((context, builder) -> SharedSuggestionProvider.suggest((new String[]{"cffa", "rluhc", "swmap", "saveinventory"}), builder)))
+                                .suggests(((context, builder) -> SharedSuggestionProvider.suggest((new String[]{"cffa", "rluhc", "swmap", "saveinventory", "ghead"}), builder)))
                                 .executes(DevExperimentalCommandsCommand::run))
                 )
         );
@@ -84,6 +95,16 @@ public class DevExperimentalCommandsCommand {
             }
 
 
+        } else if (argument.equalsIgnoreCase("ghead")) {
+            ItemStack itemStack = new ItemStack(Items.PLAYER_HEAD);
+            itemStack.setHoverName(ObjectMappings.convertComponent(Component.text("Golden head").decoration(TextDecoration.ITALIC, false).decorate(TextDecoration.BOLD).color(NamedTextColor.GOLD)));
+
+            GameProfile gameProfile = new GameProfile(UUID.fromString("70e06280-13c1-4c9d-8ca8-0d3ce118a534"), "NotInfinityy");
+            gameProfile.getProperties().get("textures").add(new Property("value", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2JiNjEyZWI0OTVlZGUyYzVjYTUxNzhkMmQxZWNmMWNhNWEyNTVkMjVkZmMzYzI1NGJjNDdmNjg0ODc5MWQ4In19fQ=="));
+
+            itemStack.getOrCreateTag().put("SkullOwner", NbtUtils.writeGameProfile(new CompoundTag(), gameProfile));
+
+            player.addItem(itemStack);
         }
 
         return 1;

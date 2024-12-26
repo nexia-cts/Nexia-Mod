@@ -1,8 +1,8 @@
 package com.nexia.core.utilities.misc;
 
+import com.nexia.base.player.NexiaPlayer;
 import com.nexia.core.games.util.LobbyUtil;
 import com.nexia.core.gui.ffa.KitGUI;
-import com.nexia.base.player.NexiaPlayer;
 import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.kits.utilities.KitFfaAreas;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
@@ -48,7 +48,7 @@ public class EventUtil {
     }
 
     public static boolean craftItem(NexiaPlayer player) {
-        if(FfaUtil.isFfaPlayer(player)) return false;
+        if (FfaUtil.isFfaPlayer(player)) return true;
         if(LobbyUtil.isLobbyWorld(player.getWorld())) return false;
         if(OitcGame.isOITCPlayer(player)) return false;
         if(FootballGame.isFootballPlayer(player)) return false;

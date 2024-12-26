@@ -10,7 +10,6 @@ import com.nexia.core.utilities.chat.PlayerMutes;
 import com.nexia.core.utilities.misc.EventUtil;
 import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.core.utilities.time.ServerTime;
-import com.nexia.ffa.FfaUtil;
 import com.nexia.ffa.classic.utilities.FfaClassicUtil;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
 import com.nexia.ffa.pot.utilities.FfaPotUtil;
@@ -136,7 +135,7 @@ public class ServerGamePacketListenerMixin {
             }
         }
 
-        if (FfaUtil.isFfaPlayer(nexiaPlayer) || BwUtil.isBedWarsPlayer(nexiaPlayer)) {
+        if (BwUtil.isBedWarsPlayer(nexiaPlayer)) {
             // If clicks on crafting slot
             if (containerId == 0 && slot >= 1 && slot <= 4) {
                 ci.cancel();

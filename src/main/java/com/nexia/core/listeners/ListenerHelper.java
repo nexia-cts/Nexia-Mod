@@ -5,6 +5,7 @@ import com.nexia.core.listeners.nexus.*;
 public class ListenerHelper {
     public static void registerListeners() {
         // Nexus Listeners
+        new LivingEntityHealListener().registerListener();
         new PlayerJoinListener().registerListener();
         new PlayerDamageListener().registerListener();
         new PlayerDeathListener().registerListener();
