@@ -8,6 +8,7 @@ import com.nexia.core.utilities.player.CorePlayerData;
 import com.nexia.ffa.kits.utilities.FfaKitsUtil;
 import com.nexia.ffa.pot.utilities.FfaPotUtil;
 import com.nexia.ffa.sky.utilities.FfaSkyUtil;
+import com.nexia.ffa.uhc.utilities.FfaUhcUtil;
 import com.nexia.minigames.games.bedwars.players.BwPlayerEvents;
 import com.nexia.minigames.games.bedwars.util.BwUtil;
 import com.nexia.minigames.games.duels.DuelGameMode;
@@ -38,7 +39,11 @@ public class PotionItemMixin {
             this.player = (ServerPlayer) livingEntity;
             NexiaPlayer nexiaPlayer = new NexiaPlayer(this.player);
 
-            if((FfaKitsUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && FfaKitsUtil.INSTANCE.wasInSpawn.contains(player.getUUID())) || (FfaPotUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && FfaPotUtil.INSTANCE.wasInSpawn.contains(player.getUUID())) || (FfaSkyUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && FfaSkyUtil.INSTANCE.wasInSpawn.contains(player.getUUID())) ||(((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(nexiaPlayer)).gameMode.equals(PlayerGameMode.LOBBY) && ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(nexiaPlayer)).gameMode.equals(DuelGameMode.LOBBY))) {
+            if((FfaKitsUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && FfaKitsUtil.INSTANCE.wasInSpawn.contains(player.getUUID())) ||
+                    (FfaPotUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && FfaPotUtil.INSTANCE.wasInSpawn.contains(player.getUUID())) ||
+                    (FfaSkyUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && FfaSkyUtil.INSTANCE.wasInSpawn.contains(player.getUUID())) ||
+                    (FfaUhcUtil.INSTANCE.isFfaPlayer(nexiaPlayer) && FfaUhcUtil.INSTANCE.wasInSpawn.contains(player.getUUID())) ||
+                    (((CorePlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(nexiaPlayer)).gameMode.equals(PlayerGameMode.LOBBY) && ((DuelsPlayerData)PlayerDataManager.getDataManager(NexiaCore.DUELS_DATA_MANAGER).get(nexiaPlayer)).gameMode.equals(DuelGameMode.LOBBY))) {
                 cir.setReturnValue(itemStack);
                 nexiaPlayer.refreshInventory();
             }
