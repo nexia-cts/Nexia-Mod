@@ -48,7 +48,6 @@ public class EventUtil {
     }
 
     public static boolean craftItem(NexiaPlayer player) {
-        if (FfaUtil.isFfaPlayer(player)) return true;
         if(LobbyUtil.isLobbyWorld(player.getWorld())) return false;
         if(OitcGame.isOITCPlayer(player)) return false;
         if(FootballGame.isFootballPlayer(player)) return false;

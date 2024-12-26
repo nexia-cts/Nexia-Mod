@@ -97,7 +97,7 @@ public class DevExperimentalCommandsCommand {
 
         } else if (argument.equalsIgnoreCase("ghead")) {
             ItemStack itemStack = new ItemStack(Items.PLAYER_HEAD);
-            itemStack.setHoverName(ObjectMappings.convertComponent(Component.text("Golden head").decoration(TextDecoration.ITALIC, false).decorate(TextDecoration.BOLD).color(NamedTextColor.GOLD)));
+            itemStack.setHoverName(ObjectMappings.convertComponent(Component.text("Golden Head").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.AQUA)));
 
             GameProfile gameProfile = new GameProfile(UUID.fromString("70e06280-13c1-4c9d-8ca8-0d3ce118a534"), "NotInfinityy");
             gameProfile.getProperties().get("textures").add(new Property("value", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2JiNjEyZWI0OTVlZGUyYzVjYTUxNzhkMmQxZWNmMWNhNWEyNTVkMjVkZmMzYzI1NGJjNDdmNjg0ODc5MWQ4In19fQ=="));

@@ -27,7 +27,7 @@ public class PlayerUseItemListener {
         player.unwrap().playNotifySound(SoundEvents.PLAYER_BURP, SoundSource.PLAYERS, 0.5F, new Random().nextFloat() * 0.1F + 0.9F);
 
         player.unwrap().getCooldowns().addCooldown(((WrappedItemStack) itemStack).unwrap().getItem(), 240);
-        itemStack.decrementCount();
+        if (!player.unwrap().isCreative()) itemStack.decrementCount();
         player.refreshInventory();
     }
 
