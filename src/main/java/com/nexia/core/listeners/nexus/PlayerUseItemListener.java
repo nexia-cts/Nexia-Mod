@@ -12,6 +12,7 @@ import com.nexia.nexus.api.world.item.ItemStack;
 import com.nexia.nexus.api.world.types.Minecraft;
 import com.nexia.nexus.builder.implementation.world.effect.WrappedStatusEffectInstance;
 import com.nexia.nexus.builder.implementation.world.item.WrappedItemStack;
+import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -24,7 +25,7 @@ public class PlayerUseItemListener {
         player.addEffectInstance(new WrappedStatusEffectInstance(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 100)));
         player.addEffectInstance(new WrappedStatusEffectInstance(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 1)));
         player.addEffectInstance(new WrappedStatusEffectInstance(new MobEffectInstance(MobEffects.REGENERATION, 100, 2)));
-        player.unwrap().playNotifySound(SoundEvents.PLAYER_BURP, SoundSource.PLAYERS, 0.5F, new Random().nextFloat() * 0.1F + 0.9F);
+        player.unwrap().level.playSound(null, new BlockPos(player.unwrap().position()), SoundEvents.PLAYER_BURP, SoundSource.PLAYERS, 0.5F, new Random().nextFloat() * 0.1F + 0.9F);
 
         player.unwrap().getCooldowns().addCooldown(((WrappedItemStack) itemStack).unwrap().getItem(), 240);
         if (!player.unwrap().isCreative()) itemStack.decrementCount();
