@@ -114,10 +114,4 @@ public abstract class PlayerMixin extends LivingEntity {
             BwUtil.setAttackSpeed(player);
         }
     }
-
-
-    @ModifyArg(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;setSprinting(Z)V"))
-    public boolean setSprintFix(boolean par1) {
-        return ((CoreSavedPlayerData)PlayerDataManager.getDataManager(NexiaCore.CORE_DATA_MANAGER).get(this.getUUID()).savedData).isSprintFix();
-    }
 }

@@ -56,7 +56,6 @@ public class CommandLoader {
         StatsCommand.register(commandDispatcher);
         RulesCommand.register(commandDispatcher);
         ReportCommand.register(commandDispatcher);
-        SprintFixCommand.register(commandDispatcher);
         MessageCommand.registerMsg(commandDispatcher);
         MessageCommand.registerReply(commandDispatcher);
         HealCommand.register(commandDispatcher);
