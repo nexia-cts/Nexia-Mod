@@ -21,7 +21,7 @@ public class CoreSavedPlayerData extends SavedPlayerData {
         setMuteEnd(LocalDateTime.MIN);
         this.muteReason = null;
         this.isReportBanned = false;
-        this.sprintFix = true;
+        this.sprintFix = false;
         set(String.class, "muteEnd", muteEnd);
         set(String.class, "muteReason", muteReason);
         set(Boolean.class, "isReportBanned", isReportBanned);
