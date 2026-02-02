@@ -4,15 +4,6 @@ plugins {
 	id 'fabric-loom' version '1.6-SNAPSHOT'
 }
 
-String getGitCommit() {
-	ByteArrayOutputStream stdout = new ByteArrayOutputStream();
-	exec {
-		commandLine("git", "rev-parse", "--short", "HEAD")
-		standardOutput = stdout
-	}
-	return stdout.toString().trim()
-}
-
 String getGitBranch() {
 	ByteArrayOutputStream stdout = new ByteArrayOutputStream();
 	exec {
@@ -22,7 +13,8 @@ String getGitBranch() {
 	return stdout.toString().trim()
 }
 
-version = project.mod_version + "+" + getGitBranch() + "." + getGitCommit()
+project.mod_version = new Date().format('dd-MM-YYYY')
+version = project.mod_version + "+" + getGitBranch()
 group = project.maven_group
 
 // Set Build Dir to main to differentiate
