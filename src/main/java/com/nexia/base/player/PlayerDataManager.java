@@ -1,5 +1,7 @@
 package com.nexia.base.player;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
 import com.nexia.core.NexiaCore;
@@ -20,12 +22,19 @@ import com.nexia.minigames.games.skywars.util.player.SkywarsPlayerData;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.ResourceLocation;
 import org.bson.Document;
+
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class PlayerDataManager {
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
     public static Map<ResourceLocation, PlayerDataManager> dataManagerMap = new HashMap<>();
 
     private final String collectionName;
@@ -113,6 +122,12 @@ public class PlayerDataManager {
 
     private void savePlayerData(UUID uuid) {
         if(FabricLoader.getInstance().isDevelopmentEnvironment()) return;
+
+        if (!NexiaCore.mongoManager.isConnected()) {
+            savePlayerDataToJson(uuid);
+            return;
+        }
+
         Document document = NexiaCore.mongoManager.toDocument(get(uuid).savedData);
         document.append("uuid", uuid.toString());
         document.remove("data");
@@ -124,6 +139,26 @@ public class PlayerDataManager {
         }
     }
 
+    private void savePlayerDataToJson(UUID uuid) {
+        try {
+            Path jsonFile = getJsonFilePath(uuid);
+            Files.createDirectories(jsonFile.getParent());
+
+            String json = GSON.toJson(get(uuid).savedData);
+
+            try (Writer writer = new OutputStreamWriter(new FileOutputStream(jsonFile.toFile()), StandardCharsets.UTF_8)) {
+                writer.write(json);
+            }
+        } catch (IOException e) {
+            NexiaCore.logger.error("Failed to save player data to JSON file for UUID {}: {}", uuid, e.getMessage());
+        }
+    }
+
+    private Path getJsonFilePath(UUID uuid) {
+        Path configDir = FabricLoader.getInstance().getConfigDir();
+        return configDir.resolve("nexia").resolve("playerdata").resolve(collectionName).resolve(uuid.toString() + ".json");
+    }
+
     private <T extends SavedPlayerData> T loadPlayerData(UUID uuid, Class<T> toLoad) throws InstantiationException, IllegalAccessException {
         if(FabricLoader.getInstance().isDevelopmentEnvironment()) {
             try {
@@ -133,15 +168,39 @@ public class PlayerDataManager {
             }
         }
 
-        T savedPlayerData = NexiaCore.mongoManager.getObject(collectionName, Filters.eq("uuid", uuid.toString()), toLoad);
-        if (savedPlayerData != null) {
-            return savedPlayerData;
+        T savedPlayerData;
+
+        if (NexiaCore.mongoManager.isConnected()) {
+            savedPlayerData = NexiaCore.mongoManager.getObject(collectionName, Filters.eq("uuid", uuid.toString()), toLoad);
+        } else {
+            savedPlayerData = loadPlayerDataFromJson(uuid, toLoad);
         }
 
+        if (savedPlayerData == null) {
+            try {
+                savedPlayerData = toLoad.getDeclaredConstructor().newInstance();
+            } catch (InvocationTargetException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return savedPlayerData;
+    }
+
+    private <T extends SavedPlayerData> T loadPlayerDataFromJson(UUID uuid, Class<T> toLoad) {
         try {
-            return toLoad.getDeclaredConstructor().newInstance();
-        } catch (InvocationTargetException | NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            Path jsonFile = getJsonFilePath(uuid);
+
+            if (!Files.exists(jsonFile)) {
+                return null;
+            }
+
+            try (Reader reader = new InputStreamReader(new FileInputStream(jsonFile.toFile()), StandardCharsets.UTF_8)) {
+                return GSON.fromJson(reader, toLoad);
+            }
+        } catch (IOException e) {
+            NexiaCore.logger.error("Failed to load player data from JSON file for UUID {}: {}", uuid, e.getMessage());
+            return null;
         }
     }
 }

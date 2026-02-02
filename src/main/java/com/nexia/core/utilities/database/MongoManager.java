@@ -12,10 +12,9 @@ import com.mongodb.client.MongoDatabase;
 import net.fabricmc.loader.api.FabricLoader;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+
+import java.util.concurrent.*;
+
 import static com.nexia.core.NexiaCore.config;
 
 @SuppressWarnings("unused")
@@ -26,6 +25,7 @@ public class MongoManager {
 
     private MongoClient client;
     private MongoDatabase database;
+    private boolean isConnected = false;
 
     public MongoManager() {
         this.service = Executors.newCachedThreadPool();
@@ -53,15 +53,23 @@ public class MongoManager {
         MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
                 .credential(mongoCredential)
                 .applyConnectionString(new ConnectionString(connectionString))
+                .applyToSocketSettings(builder ->
+                        builder.connectTimeout(5000, TimeUnit.MILLISECONDS)
+                                .readTimeout(5000, TimeUnit.MILLISECONDS))
+                .applyToClusterSettings(builder ->
+                        builder.serverSelectionTimeout(5000, TimeUnit.MILLISECONDS))
                 .build();
 
         try {
             this.client = MongoClients.create(mongoClientSettings);
             this.database = this.client.getDatabase(config.database);
+            this.isConnected = true;
             System.out.println("Connection to MongoDB established successfully.");
         } catch (Exception e) {
+            this.isConnected = false;
             e.printStackTrace();
             System.out.println("Failed to connect to MongoDB: " + e.getMessage());
+            System.out.println("Server will use JSON fallback for player data.");
         }
     }
 
@@ -123,5 +131,13 @@ public class MongoManager {
 
     public void shutdown() {
         this.client.close();
+    }
+
+    public boolean isConnected() {
+        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+            return false;
+        }
+
+        return this.isConnected && this.client != null && this.database != null;
     }
 }
