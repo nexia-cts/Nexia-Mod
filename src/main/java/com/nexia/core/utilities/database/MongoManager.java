@@ -63,6 +63,10 @@ public class MongoManager {
         try {
             this.client = MongoClients.create(mongoClientSettings);
             this.database = this.client.getDatabase(config.database);
+
+            // test if the database actually works
+            this.database.runCommand(new Document("ping", 1));
+
             this.isConnected = true;
             System.out.println("Connection to MongoDB established successfully.");
         } catch (Exception e) {
